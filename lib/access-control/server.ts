@@ -149,11 +149,17 @@ export async function getDashboardAccessForSessionUser(
   sessionUser: AuthenticatedSessionUser,
 ) {
   const user = await ensureApplicationUserForSessionUser(sessionUser)
-  const canReadDashboard = await userHasPermission(user.id, "dashboard", "read")
+  const effectivePermissionKeys = await getUserEffectivePermissionKeys(user.id)
+  const canReadDashboard = hasPermission(
+    effectivePermissionKeys,
+    "dashboard",
+    "read",
+  )
 
   return {
     user,
     canReadDashboard,
+    effectivePermissionKeys: [...effectivePermissionKeys],
   }
 }
 

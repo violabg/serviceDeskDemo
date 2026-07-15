@@ -72,3 +72,21 @@ export function hasPermission(
 ) {
   return effectivePermissions.has(permissionKey(section, operation))
 }
+
+export function getDashboardAccessRedirectPath({
+  isAuthenticated,
+  canReadDashboard,
+}: {
+  isAuthenticated: boolean
+  canReadDashboard?: boolean
+}) {
+  if (!isAuthenticated) {
+    return "/login"
+  }
+
+  if (!canReadDashboard) {
+    return "/pending-access"
+  }
+
+  return null
+}

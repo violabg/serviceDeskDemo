@@ -5,6 +5,7 @@ import {
   ACCESS_SECTIONS,
   ADMIN_ROLE_NAME,
   INITIAL_PERMISSIONS,
+  getDashboardAccessRedirectPath,
   getEffectivePermissionKeys,
   hasPermission,
   permissionKey,
@@ -81,6 +82,24 @@ describe("access-control permissions", () => {
     )
     expect(hasPermission(permissions, "tickets", "read")).toBe(true)
     expect(hasPermission(permissions, "tickets", "manage")).toBe(false)
+  })
+
+  it("returns dashboard redirect paths for unauthenticated and unauthorized access", () => {
+    expect(getDashboardAccessRedirectPath({ isAuthenticated: false })).toBe(
+      "/login",
+    )
+    expect(
+      getDashboardAccessRedirectPath({
+        isAuthenticated: true,
+        canReadDashboard: false,
+      })
+    ).toBe("/pending-access")
+    expect(
+      getDashboardAccessRedirectPath({
+        isAuthenticated: true,
+        canReadDashboard: true,
+      }),
+    ).toBeNull()
   })
 })
 
@@ -258,5 +277,47 @@ describe("first-login application user access", () => {
 
     expect(access.canReadDashboard).toBe(false)
     expect(access.user.id).toBe("user-zero-role")
+  })
+
+  it("allows dashboard access for a seeded administrator with dashboard read permission", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      id: "admin-user",
+      neonAuthId: "neon-admin",
+      email: "admin@example.com",
+      name: "Admin User",
+      image: null,
+    })
+    prismaMock.user.update.mockResolvedValue({
+      id: "admin-user",
+      neonAuthId: "neon-admin",
+      email: "admin@example.com",
+      name: "Admin User",
+      image: null,
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "dashboard", operation: "read" } },
+            ],
+          },
+        },
+      ],
+    })
+
+    const { getDashboardAccessForSessionUser } = await import(
+      "@/lib/access-control/server"
+    )
+
+    const access = await getDashboardAccessForSessionUser({
+      id: "neon-admin",
+      email: "admin@example.com",
+      name: "Admin User",
+      image: null,
+    })
+
+    expect(access.canReadDashboard).toBe(true)
+    expect(access.user.id).toBe("admin-user")
   })
 })

@@ -13,6 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { getDashboardAccessRedirectPath } from "@/lib/access-control"
 import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { redirect } from "next/navigation"
@@ -31,11 +32,19 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
-  const { user: applicationUser, canReadDashboard } =
-    await getDashboardAccessForSessionUser(sessionUser)
+  const {
+    user: applicationUser,
+    canReadDashboard,
+    effectivePermissionKeys,
+  } = await getDashboardAccessForSessionUser(sessionUser)
 
-  if (!canReadDashboard) {
-    redirect("/pending-access")
+  const accessRedirectPath = getDashboardAccessRedirectPath({
+    isAuthenticated: true,
+    canReadDashboard,
+  })
+
+  if (accessRedirectPath) {
+    redirect(accessRedirectPath)
   }
 
   const user = {
@@ -45,7 +54,10 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar user={user} />
+      <AppSidebar
+        user={user}
+        effectivePermissionKeys={effectivePermissionKeys}
+      />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
