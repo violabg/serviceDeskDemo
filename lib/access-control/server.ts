@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma"
 import {
   ADMIN_ROLE_NAME,
   INITIAL_PERMISSIONS,
@@ -7,8 +6,31 @@ import {
   type AccessOperation,
   type AccessSection,
 } from "@/lib/access-control"
+import { prisma } from "@/lib/prisma"
 
 const ADMIN_ROLE_DESCRIPTION = "Full access to all service desk sections"
+
+export type AuthenticatedSessionUser = {
+  id: string
+  email?: string | null
+  name?: string | null
+  image?: string | null
+}
+
+function getApplicationUserData(sessionUser: AuthenticatedSessionUser) {
+  const email = sessionUser.email?.trim().toLowerCase()
+
+  if (!email) {
+    throw new Error("Authenticated user must have an email address")
+  }
+
+  return {
+    neonAuthId: sessionUser.id,
+    email,
+    name: sessionUser.name ?? null,
+    image: sessionUser.image ?? null,
+  }
+}
 
 export async function bootstrapAccessControl(
   initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL,
@@ -30,18 +52,28 @@ export async function bootstrapAccessControl(
     ),
   )
 
-  const adminRole = await prisma.role.upsert({
-    where: { name: ADMIN_ROLE_NAME },
-    update: {
-      description: ADMIN_ROLE_DESCRIPTION,
-      isSystem: true,
-    },
-    create: {
-      name: ADMIN_ROLE_NAME,
-      description: ADMIN_ROLE_DESCRIPTION,
-      isSystem: true,
-    },
-  })
+  const normalizedEmail = initialAdminEmail?.trim().toLowerCase()
+  const [adminRole, adminUser] = await Promise.all([
+    prisma.role.upsert({
+      where: { name: ADMIN_ROLE_NAME },
+      update: {
+        description: ADMIN_ROLE_DESCRIPTION,
+        isSystem: true,
+      },
+      create: {
+        name: ADMIN_ROLE_NAME,
+        description: ADMIN_ROLE_DESCRIPTION,
+        isSystem: true,
+      },
+    }),
+    normalizedEmail
+      ? prisma.user.upsert({
+          where: { email: normalizedEmail },
+          update: {},
+          create: { email: normalizedEmail },
+        })
+      : Promise.resolve(null),
+  ])
 
   await Promise.all(
     permissions.map((permission) =>
@@ -60,15 +92,6 @@ export async function bootstrapAccessControl(
       }),
     ),
   )
-
-  const normalizedEmail = initialAdminEmail?.trim().toLowerCase()
-  const adminUser = normalizedEmail
-    ? await prisma.user.upsert({
-        where: { email: normalizedEmail },
-        update: {},
-        create: { email: normalizedEmail },
-      })
-    : null
 
   if (adminUser) {
     await prisma.userRole.upsert({
@@ -90,6 +113,47 @@ export async function bootstrapAccessControl(
     adminRole,
     adminUser,
     permissionCount: permissions.length,
+  }
+}
+
+export async function ensureApplicationUserForSessionUser(
+  sessionUser: AuthenticatedSessionUser,
+) {
+  const data = getApplicationUserData(sessionUser)
+  const existingByAuthId = await prisma.user.findUnique({
+    where: { neonAuthId: data.neonAuthId },
+  })
+
+  if (existingByAuthId) {
+    return prisma.user.update({
+      where: { id: existingByAuthId.id },
+      data,
+    })
+  }
+
+  const existingByEmail = await prisma.user.findUnique({
+    where: { email: data.email },
+  })
+
+  if (existingByEmail) {
+    return prisma.user.update({
+      where: { id: existingByEmail.id },
+      data,
+    })
+  }
+
+  return prisma.user.create({ data })
+}
+
+export async function getDashboardAccessForSessionUser(
+  sessionUser: AuthenticatedSessionUser,
+) {
+  const user = await ensureApplicationUserForSessionUser(sessionUser)
+  const canReadDashboard = await userHasPermission(user.id, "dashboard", "read")
+
+  return {
+    user,
+    canReadDashboard,
   }
 }
 

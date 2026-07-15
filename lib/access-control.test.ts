@@ -21,7 +21,9 @@ const prismaMock = vi.hoisted(() => ({
     upsert: vi.fn(),
   },
   user: {
+    create: vi.fn(),
     upsert: vi.fn(),
+    update: vi.fn(),
     findUnique: vi.fn(),
   },
   userRole: {
@@ -150,5 +152,111 @@ describe("bootstrapAccessControl", () => {
     expect(result.adminUser).toBeNull()
     expect(prismaMock.user.upsert).not.toHaveBeenCalled()
     expect(prismaMock.userRole.upsert).not.toHaveBeenCalled()
+  })
+})
+
+describe("first-login application user access", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("creates a local application user linked to the Neon Auth identity without roles", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValue({
+      id: "user-local",
+      neonAuthId: "neon-user-1",
+      email: "new.user@example.com",
+      name: "New User",
+      image: "https://example.com/avatar.png",
+    })
+
+    const { ensureApplicationUserForSessionUser } = await import(
+      "@/lib/access-control/server"
+    )
+
+    const user = await ensureApplicationUserForSessionUser({
+      id: "neon-user-1",
+      email: " New.User@Example.COM ",
+      name: "New User",
+      image: "https://example.com/avatar.png",
+    })
+
+    expect(user.id).toBe("user-local")
+    expect(prismaMock.user.create).toHaveBeenCalledWith({
+      data: {
+        neonAuthId: "neon-user-1",
+        email: "new.user@example.com",
+        name: "New User",
+        image: "https://example.com/avatar.png",
+      },
+    })
+    expect(prismaMock.userRole.upsert).not.toHaveBeenCalled()
+  })
+
+  it("completes an existing email bootstrap user by attaching Neon Auth identity", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      id: "seed-user",
+      email: "admin@example.com",
+      neonAuthId: null,
+    })
+    prismaMock.user.update.mockResolvedValue({
+      id: "seed-user",
+      neonAuthId: "neon-admin",
+      email: "admin@example.com",
+      name: "Admin User",
+      image: null,
+    })
+
+    const { ensureApplicationUserForSessionUser } = await import(
+      "@/lib/access-control/server"
+    )
+
+    await ensureApplicationUserForSessionUser({
+      id: "neon-admin",
+      email: "admin@example.com",
+      name: "Admin User",
+      image: null,
+    })
+
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { id: "seed-user" },
+      data: {
+        neonAuthId: "neon-admin",
+        email: "admin@example.com",
+        name: "Admin User",
+        image: null,
+      },
+    })
+  })
+
+  it("denies dashboard access for a newly-created zero-role user", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValue({
+      id: "user-zero-role",
+      neonAuthId: "neon-user-2",
+      email: "pending@example.com",
+      name: "Pending User",
+      image: null,
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [],
+    })
+
+    const { getDashboardAccessForSessionUser } = await import(
+      "@/lib/access-control/server"
+    )
+
+    const access = await getDashboardAccessForSessionUser({
+      id: "neon-user-2",
+      email: "pending@example.com",
+      name: "Pending User",
+      image: null,
+    })
+
+    expect(access.canReadDashboard).toBe(false)
+    expect(access.user.id).toBe("user-zero-role")
   })
 })

@@ -13,7 +13,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
+import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
@@ -24,12 +26,22 @@ export default async function DashboardLayout({
 }>) {
   const { data: session } = await auth.getSession()
   const sessionUser = session?.user
-  const user = sessionUser
-    ? {
-        name: sessionUser.name || sessionUser.email || sessionUser.id,
-        email: sessionUser.email || "No email provided",
-      }
-    : null
+
+  if (!sessionUser) {
+    redirect("/login")
+  }
+
+  const { user: applicationUser, canReadDashboard } =
+    await getDashboardAccessForSessionUser(sessionUser)
+
+  if (!canReadDashboard) {
+    redirect("/pending-access")
+  }
+
+  const user = {
+    name: applicationUser.name || applicationUser.email || applicationUser.id,
+    email: applicationUser.email,
+  }
 
   return (
     <SidebarProvider>
