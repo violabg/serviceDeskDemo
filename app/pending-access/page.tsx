@@ -1,4 +1,5 @@
 import { LogoutButton } from "@/components/auth/logout-button"
+import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { redirect } from "next/navigation"
 
@@ -7,8 +8,16 @@ export const dynamic = "force-dynamic"
 export default async function PendingAccessPage() {
   const { data: session } = await auth.getSession()
 
-  if (!session?.user) {
+  const sessionUser = session?.user
+
+  if (!sessionUser) {
     redirect("/login")
+  }
+
+  const { isAdmin } = await getDashboardAccessForSessionUser(sessionUser)
+
+  if (isAdmin) {
+    redirect("/")
   }
 
   return (
@@ -22,8 +31,8 @@ export default async function PendingAccessPage() {
             Your service desk access is not ready yet
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            You are signed in, but an administrator has not assigned dashboard
-            privileges to this account.
+            You are signed in, but this account has not been assigned admin
+            access yet.
           </p>
         </div>
         <LogoutButton />

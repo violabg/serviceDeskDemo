@@ -5,5 +5,5 @@ export default auth.middleware({
 })
 
 export const config = {
-  matcher: ["/account/:path*", "/admin/:path*"],
+  matcher: ["/account/:path*"],
 }

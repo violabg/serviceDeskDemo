@@ -15,20 +15,16 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { getReadableServiceDeskNavigation } from "@/lib/service-desk-navigation"
 import type { ServiceDeskNavigationId } from "@/lib/service-desk-navigation"
+import { getReadableServiceDeskNavigation } from "@/lib/service-desk-navigation"
 import {
   ChartBarIcon,
-  CommandIcon,
   DesktopTowerIcon,
   GaugeIcon,
   GithubLogoIcon,
   IdentificationBadgeIcon,
-  KeyIcon,
   RowsIcon,
-  ShieldCheckIcon,
   TicketIcon,
-  UserGearIcon,
   UsersThreeIcon,
   WaveformIcon,
 } from "@phosphor-icons/react"
@@ -45,11 +41,6 @@ const teams = [
     logo: <WaveformIcon />,
     plan: "Agentic",
   },
-  {
-    name: "Admin Console",
-    logo: <CommandIcon />,
-    plan: "Privileged",
-  },
 ]
 
 const navigationIcons: Record<ServiceDeskNavigationId, React.ReactNode> = {
@@ -59,9 +50,6 @@ const navigationIcons: Record<ServiceDeskNavigationId, React.ReactNode> = {
   technicians: <IdentificationBadgeIcon />,
   assets: <DesktopTowerIcon />,
   reports: <ChartBarIcon />,
-  administration: <ShieldCheckIcon />,
-  "user-management": <UserGearIcon />,
-  "role-management": <KeyIcon />,
 }
 
 type SidebarUser = {

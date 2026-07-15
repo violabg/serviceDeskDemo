@@ -1,7 +1,7 @@
 import {
-  hasPermission,
-  type AccessOperation,
-  type AccessSection,
+    hasPermission,
+    type AccessOperation,
+    type AccessSection,
 } from "@/lib/access-control"
 
 export type ServiceDeskNavigationItem = {
@@ -50,24 +50,6 @@ export const SERVICE_DESK_NAVIGATION = [
     title: "Reports",
     url: "/reports",
     requiredPermission: { section: "reports", operation: "read" },
-  },
-  {
-    id: "administration",
-    title: "Administration",
-    url: "/admin",
-    requiredPermission: { section: "administration", operation: "read" },
-  },
-  {
-    id: "user-management",
-    title: "User Management",
-    url: "/admin/users",
-    requiredPermission: { section: "users", operation: "read" },
-  },
-  {
-    id: "role-management",
-    title: "Role Management",
-    url: "/admin/roles",
-    requiredPermission: { section: "roles", operation: "read" },
   },
 ] as const satisfies readonly ServiceDeskNavigationItem[]
 

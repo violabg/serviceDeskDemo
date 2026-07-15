@@ -149,28 +149,36 @@ export async function getDashboardAccessForSessionUser(
   sessionUser: AuthenticatedSessionUser,
 ) {
   const user = await ensureApplicationUserForSessionUser(sessionUser)
-  const effectivePermissionKeys = await getUserEffectivePermissionKeys(user.id)
+  const userWithRoles = await getUserRolesWithPermissions(user.id)
+  const effectivePermissionKeys = getEffectivePermissionKeys(
+    userWithRoles?.roles ?? [],
+  )
   const canReadDashboard = hasPermission(
     effectivePermissionKeys,
     "dashboard",
     "read",
   )
+  const isAdmin =
+    userWithRoles?.roles.some(({ role }) => role.name === ADMIN_ROLE_NAME) ??
+    false
 
   return {
     user,
     canReadDashboard,
+    isAdmin,
     effectivePermissionKeys: [...effectivePermissionKeys],
   }
 }
 
-export async function getUserEffectivePermissionKeys(userId: string) {
-  const user = await prisma.user.findUnique({
+async function getUserRolesWithPermissions(userId: string) {
+  return prisma.user.findUnique({
     where: { id: userId },
     include: {
       roles: {
         include: {
           role: {
-            include: {
+            select: {
+              name: true,
               permissions: {
                 include: {
                   permission: {
@@ -187,6 +195,10 @@ export async function getUserEffectivePermissionKeys(userId: string) {
       },
     },
   })
+}
+
+export async function getUserEffectivePermissionKeys(userId: string) {
+  const user = await getUserRolesWithPermissions(userId)
 
   return getEffectivePermissionKeys(user?.roles ?? [])
 }

@@ -13,7 +13,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { getDashboardAccessRedirectPath } from "@/lib/access-control"
 import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { redirect } from "next/navigation"
@@ -34,17 +33,12 @@ export default async function DashboardLayout({
 
   const {
     user: applicationUser,
-    canReadDashboard,
+    isAdmin,
     effectivePermissionKeys,
   } = await getDashboardAccessForSessionUser(sessionUser)
 
-  const accessRedirectPath = getDashboardAccessRedirectPath({
-    isAuthenticated: true,
-    canReadDashboard,
-  })
-
-  if (accessRedirectPath) {
-    redirect(accessRedirectPath)
+  if (!isAdmin) {
+    redirect("/pending-access")
   }
 
   const user = {

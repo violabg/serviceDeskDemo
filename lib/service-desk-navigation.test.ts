@@ -16,23 +16,15 @@ describe("service desk navigation", () => {
     expect(items.map((item) => item.title)).toEqual(["Dashboard", "Tickets"])
   })
 
-  it("shows User Management only with users read permission", () => {
-    expect(
-      getReadableServiceDeskNavigation(
-        new Set([
-          permissionKey("dashboard", "read"),
-          permissionKey("users", "write"),
-        ]),
-      ).map((item) => item.title),
-    ).not.toContain("User Management")
+  it("does not include admin pages", () => {
+    const items = getReadableServiceDeskNavigation(
+      new Set([
+        permissionKey("administration", "read"),
+        permissionKey("users", "read"),
+        permissionKey("roles", "read"),
+      ]),
+    )
 
-    expect(
-      getReadableServiceDeskNavigation(
-        new Set([
-          permissionKey("dashboard", "read"),
-          permissionKey("users", "read"),
-        ]),
-      ).map((item) => item.title),
-    ).toContain("User Management")
+    expect(items.map((item) => item.title)).toEqual([])
   })
 })

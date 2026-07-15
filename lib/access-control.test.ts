@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
-  ACCESS_OPERATIONS,
-  ACCESS_SECTIONS,
-  ADMIN_ROLE_NAME,
-  INITIAL_PERMISSIONS,
-  getDashboardAccessRedirectPath,
-  getEffectivePermissionKeys,
-  hasPermission,
-  permissionKey,
+    ACCESS_OPERATIONS,
+    ACCESS_SECTIONS,
+    ADMIN_ROLE_NAME,
+    INITIAL_PERMISSIONS,
+    getDashboardAccessRedirectPath,
+    getEffectivePermissionKeys,
+    hasPermission,
+    permissionKey,
 } from "@/lib/access-control"
 
 const prismaMock = vi.hoisted(() => ({
@@ -276,10 +276,54 @@ describe("first-login application user access", () => {
     })
 
     expect(access.canReadDashboard).toBe(false)
+    expect(access.isAdmin).toBe(false)
     expect(access.user.id).toBe("user-zero-role")
   })
 
-  it("allows dashboard access for a seeded administrator with dashboard read permission", async () => {
+  it("does not treat dashboard read permission as administrator access", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      id: "support-user",
+      neonAuthId: "neon-support",
+      email: "support@example.com",
+      name: "Support User",
+      image: null,
+    })
+    prismaMock.user.update.mockResolvedValue({
+      id: "support-user",
+      neonAuthId: "neon-support",
+      email: "support@example.com",
+      name: "Support User",
+      image: null,
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            name: "Support",
+            permissions: [
+              { permission: { section: "dashboard", operation: "read" } },
+            ],
+          },
+        },
+      ],
+    })
+
+    const { getDashboardAccessForSessionUser } = await import(
+      "@/lib/access-control/server"
+    )
+
+    const access = await getDashboardAccessForSessionUser({
+      id: "neon-support",
+      email: "support@example.com",
+      name: "Support User",
+      image: null,
+    })
+
+    expect(access.canReadDashboard).toBe(true)
+    expect(access.isAdmin).toBe(false)
+  })
+
+  it("allows site access for a seeded administrator", async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce({
       id: "admin-user",
       neonAuthId: "neon-admin",
@@ -298,6 +342,7 @@ describe("first-login application user access", () => {
       roles: [
         {
           role: {
+            name: ADMIN_ROLE_NAME,
             permissions: [
               { permission: { section: "dashboard", operation: "read" } },
             ],
@@ -318,6 +363,7 @@ describe("first-login application user access", () => {
     })
 
     expect(access.canReadDashboard).toBe(true)
+    expect(access.isAdmin).toBe(true)
     expect(access.user.id).toBe("admin-user")
   })
 })

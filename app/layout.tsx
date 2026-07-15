@@ -47,6 +47,9 @@ export default function RootLayout({
       <body>
         <NeonAuthUIProvider
           authClient={authClient}
+          credentials={false}
+          persistClient
+          redirectTo="/"
           social={{ providers: ["github"] }}
         >
           <ThemeProvider>{children}</ThemeProvider>
