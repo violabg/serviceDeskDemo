@@ -1,5 +1,9 @@
 # Implementation Plan
 
+## Session ID
+
+- Session:
+
 ## Approval Status
 
 - Approved: false
@@ -16,17 +20,38 @@
 ## 3. File Details
 
 ### `<path>`
+
 - Operation:
 - Purpose:
 - Planned Changes:
 - Business Logic:
 - Coverage Scenarios:
 
-## 4. Operations and Timeline
+## 4. Proposed Diffs
+
+### Proposed Diff: `<path>`
+
+**Before:**
+
+```text
+Existing snippet with enough context to locate the change.
+```
+
+**After:**
+
+```text
+Proposed snippet for the same scope.
+```
+
+**Rationale:**
+
+- Explain why this change is needed.
+
+## 5. Operations and Timeline
 
 | Step | Action | Validation |
 | --- | --- | --- |
 
-## 5. Validation Commands
+## 6. Validation Commands
 
-## 6. Risks and Rollback
+## 7. Risks and Rollback

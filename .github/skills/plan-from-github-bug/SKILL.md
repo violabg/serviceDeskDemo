@@ -36,8 +36,8 @@ If the reference is missing or ambiguous, ask for `owner/repo#bug-issue-number` 
    - Expand to other possible code, configuration, data, and external dependency causes.
    - Explain interactions when internal behavior and external dependencies combine to cause the bug.
 6. Present the top 2-3 probable causes with evidence and wait for the user to select one.
-7. After selection, create or update a cause analysis artifact named `bug_<owner>_<repo>_<issue>_cause_analysis.md` in the current session artifact location when one exists. If no session artifact location is available, include the artifact content in the response and ask the user where to save it.
-8. Continue with `Demo Planner` using the selected-cause intake.
+7. After selection, continue with `Demo Planner` using the selected-cause intake. The planner must ask for or confirm a session name and create `artifacts/<session-id>/` before requirements analysis.
+8. Store the selected cause analysis as `artifacts/<session-id>/bug_<owner>_<repo>_<issue>_cause_analysis.md` after the session folder exists.
 
 ## Cause Selection Format
 
@@ -85,6 +85,8 @@ Please select which cause you want to address in the plan.
 ## Planner Instructions
 
 - Produce a single-step implementation plan.
+- Start with session naming and create or reuse `artifacts/<session-id>/` before planning artifacts are generated.
+- Store this selected cause analysis in the session folder after session creation.
 - Focus on the selected root cause, not symptoms.
 - Prefer modifying existing code over adding new code unless new code is essential.
 - Clearly describe external dependency changes when required.

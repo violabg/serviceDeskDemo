@@ -32,7 +32,7 @@ If the reference is missing or ambiguous, ask for `owner/repo#issue-number` and 
 3. Normalize the returned issue data into the planning intake format below.
 4. Preserve Markdown, code blocks, image URLs, labels, assignees, milestone, comments, and related items when available.
 5. If retrieval is incomplete, list explicit gaps and ask only for missing information that can change planning scope.
-6. Continue with `Demo Planner` using the normalized intake content.
+6. Continue with `Demo Planner` using the normalized intake content. The planner must ask for or confirm a session name and create `artifacts/<session-id>/` before requirements analysis.
 
 ## Planning Intake Format
 
@@ -64,6 +64,7 @@ If the reference is missing or ambiguous, ask for `owner/repo#issue-number` and 
 ## Planner Instructions
 
 - Treat this as a plannable Service Desk IT requirement.
+- Start with session naming and create or reuse `artifacts/<session-id>/` before planning artifacts are generated.
 - Run the standard Demo Planner gates.
 - Ask focused clarification questions only when missing details can change scope, behavior, data, UX, security, or test coverage.
 ```

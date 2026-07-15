@@ -16,6 +16,7 @@ Use this skill to create the plan that gates implementation.
 4. Produce a file-level plan using the plan schema.
 5. For every file with executable business logic, include coverage scenarios.
 6. Include focused validation commands.
-7. Ask for explicit approval before implementation.
+7. For material file changes, include concise before/after snippets in `Proposed Diffs` so the implementor can review intended edits before changing files.
+8. Ask for explicit approval before implementation.
 
 Use [the plan schema](./references/plan-schema.md).

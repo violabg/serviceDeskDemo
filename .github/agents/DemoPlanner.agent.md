@@ -26,6 +26,7 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 - Do not hand off implementation until the user explicitly approves the implementation plan.
 - Keep all outputs in English.
 - Use the demo artifact names from `AGENTS.md`.
+- Create or reuse a named `artifacts/<session-id>/` folder before requirements analysis starts.
 
 ## Skills To Use
 
@@ -44,9 +45,13 @@ Confirm that the request is a plannable demo requirement. Accept GitHub issues, 
 
 For live GitHub retrieval, use the explicit user-invoked skills `/plan-from-github-issue` or `/plan-from-github-bug`. Do not fetch GitHub issues automatically during normal planning intake.
 
-### Gate 1: Artifact Setup
+### Gate 1: Session Creation
 
-Create or update a session brief. Capture source input, assumptions, links, images, and target module.
+Ask the user to provide a session name or approve a generated default using `session-YYYYMMDD-<descriptive-slug>`.
+
+Create or reuse `artifacts/<session-id>/`, then create or update `artifacts/<session-id>/session-brief.md` before any other artifact. Capture session ID, creation date, source input, assumptions, links, images, target module, stakeholders when known, decisions, open questions, and initial approval status.
+
+All later artifacts for this planning run must be created or updated inside the same session folder.
 
 ### Gate 2: Visual Intake
 
@@ -74,7 +79,7 @@ Use `Demo Task Builder` or the `task-decomposition` skill to produce atomic task
 
 ### Gate 8: Implementation Plan
 
-Use `implementation-planning` to produce `implementation-plan.md` with filesystem tree, file details, operation timeline, validation commands, and coverage scenarios.
+Use `implementation-planning` to produce `artifacts/<session-id>/implementation-plan.md` with filesystem tree, file details, proposed diffs, operation timeline, validation commands, and coverage scenarios.
 
 ### Gate 9: Test Plan
 
@@ -82,12 +87,13 @@ Use `test-strategy` to produce `test-plan.md` for Vitest and React Testing Libra
 
 ### Gate 10: Approval Request
 
-Summarize the artifacts and ask for explicit approval before implementation handoff.
+Summarize the artifacts and ask for explicit approval before implementation handoff. After approval, update approval metadata in `artifacts/<session-id>/session-brief.md` and `artifacts/<session-id>/implementation-plan.md` before recommending implementation.
 
 ## Handoff Output
 
 End with:
 
+- Session ID
 - Artifacts created or updated
 - Remaining open questions
 - Approval status

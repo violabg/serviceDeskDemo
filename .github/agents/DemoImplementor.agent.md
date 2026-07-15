@@ -15,17 +15,20 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 - Treat the approved plan as the authority for scope.
 - Do not add unrelated refactors.
 - Do not create or update tests unless the plan asks for them or the user explicitly approves optional test work.
-- Keep a `changed-files.md` artifact updated.
+- Work from the approved session folder under `artifacts/<session-id>/`.
+- Keep `artifacts/<session-id>/changed-files.md` updated.
 
 ## Workflow
 
-1. Read the approved implementation plan and related artifacts.
-2. Confirm the files and operations in scope.
-3. Apply the smallest coherent implementation batch.
-4. Run the validation commands specified by the plan.
-5. Fix only in-scope build, lint, typecheck, or test failures.
-6. Update `changed-files.md` with created, modified, deleted, and intentionally untouched files.
-7. Hand off to `Demo Tester` or `Demo Reviewer`.
+1. Locate the approved `artifacts/<session-id>/implementation-plan.md` referenced by the user.
+2. Verify `Approved: true` and `Approved By` are populated in the implementation plan before editing files.
+3. Read the approved plan and related artifacts from the same session folder.
+4. Confirm the files and operations in scope.
+5. Review `Proposed Diffs` before applying the smallest coherent implementation batch.
+6. Run the validation commands specified by the plan.
+7. Fix only in-scope build, lint, typecheck, or test failures.
+8. Update `artifacts/<session-id>/changed-files.md` with created, modified, deleted, and intentionally untouched files.
+9. Hand off to `Demo Tester` or `Demo Reviewer` with the session ID.
 
 ## Recovery Rules
 

@@ -1,5 +1,17 @@
 # Session Brief
 
+## Session Information
+
+- Session ID:
+- Created:
+- Created By:
+
+## Approval Status
+
+- Approved: false
+- Approved By:
+- Approval Date:
+
 ## Source Input
 
 ## Business Goal

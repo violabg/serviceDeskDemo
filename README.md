@@ -7,13 +7,14 @@ This folder contains a standalone agentic development demo pack for an enterpris
 The demo shows the difference between a traditional prompt and an enterprise agentic workflow:
 
 1. Intake a GitHub issue, product request, or sample user story.
-2. Analyze gaps, ambiguity, risks, and missing acceptance criteria.
-3. Ask focused grooming questions.
-4. Produce a specification and task breakdown.
-5. Produce an implementation plan with file-level intent and test coverage scenarios.
-6. Hand the approved plan to an implementor.
-7. Create or update tests.
-8. Review the result and produce PR-ready artifacts.
+2. Create or confirm a named planning session under `artifacts/<session-id>/`.
+3. Analyze gaps, ambiguity, risks, and missing acceptance criteria.
+4. Ask focused grooming questions.
+5. Produce a specification and task breakdown.
+6. Produce an implementation plan with file-level intent, proposed diffs, and test coverage scenarios.
+7. Hand the approved plan to an implementor.
+8. Create or update tests.
+9. Review the result and produce PR-ready artifacts.
 
 ## Layout
 
@@ -29,10 +30,14 @@ enterprise-agentic-demo/
 ├── .agents/
 │   ├── skills/
 │   └── templates/
+├── artifacts/
+│   └── <session-id>/
 └── examples/
 ```
 
 Copilot custom agents live in `.github/agents/` because VS Code discovers them from that location. Portable skills and templates live in `.agents/` so the workflow can be reused by other agent runtimes later.
+
+Generated workflow artifacts live in `artifacts/<session-id>/`. Each planning run starts by asking for a session name or confirming the generated default, then writes `session-brief.md`, `requirements-analysis.md`, `spec.md`, `task-breakdown.md`, `implementation-plan.md`, `test-plan.md`, and later handoff artifacts into that folder.
 
 ## Demo Stack
 
@@ -61,7 +66,7 @@ flowchart LR
     H --> I[Demo Reviewer]
 ```
 
-The planner is planning-only. It must not implement code, run project commands, or bypass approval. The implementor works only from an approved plan.
+The planner is planning-only. It must not implement code, run project commands, or bypass approval. The implementor works only from an approved plan in `artifacts/<session-id>/`.
 
 ## GitHub Issue Intake
 
@@ -74,7 +79,13 @@ Both skills are configured with `disable-model-invocation: true`, so they appear
 
 The workspace MCP configuration is in `.vscode/mcp.json` and defines a `github` MCP server. If the server is enabled and trusted in VS Code, GitHub tools are exposed as `github/*` to the hidden `Demo GitHub Issue Intake` agent.
 
-Bug planning follows an additional gate before `Demo Planner`: gather bug details, inspect likely local causes, expand to code/config/data/external dependencies, present the top probable causes, wait for user cause selection, then create a root-cause-focused planning intake.
+Bug planning follows an additional gate before `Demo Planner`: gather bug details, inspect likely local causes, expand to code/config/data/external dependencies, present the top probable causes, wait for user cause selection, then create a root-cause-focused planning intake. The selected cause analysis is saved in the planner-created session folder.
+
+## Session Artifacts
+
+Session IDs use `session-YYYYMMDD-<descriptive-slug>` unless the user provides a clearer name. The planner creates or reuses `artifacts/<session-id>/` before requirements analysis starts.
+
+`implementation-plan.md` includes a `Proposed Diffs` section. These are concise before/after snippets for material code, markdown, configuration, schema, skill, prompt, or agent changes. They are not a replacement for review, but they make the handoff concrete before implementation begins.
 
 ## Vision Handling
 
@@ -90,11 +101,12 @@ Expected teaching artifacts are shown in [examples/expected-artifacts](examples/
 
 1. Open the sample user story.
 2. Ask `Demo Planner` to plan the story.
-3. Answer any grooming questions.
-4. Review generated requirements analysis, spec, task breakdown, implementation plan, and test plan.
-5. Approve the plan.
-6. Ask `Demo Implementor` to implement the approved plan.
-7. Ask `Demo Tester` to create or run the relevant tests.
-8. Ask `Demo Reviewer` for a technical review.
+3. Provide a session name or approve the generated default.
+4. Answer any grooming questions.
+5. Review generated requirements analysis, spec, task breakdown, implementation plan, and test plan in `artifacts/<session-id>/`.
+6. Approve the plan.
+7. Ask `Demo Implementor` to implement the approved plan from the session folder.
+8. Ask `Demo Tester` to create or run the relevant tests.
+9. Ask `Demo Reviewer` for a technical review.
 
 The teaching point is that the prompt becomes small because the workflow carries the process knowledge.
