@@ -50,6 +50,21 @@ Generated workflow artifacts live in `artifacts/<session-id>/`. Each planning ru
 - Vitest
 - React Testing Library
 
+## Prisma and Neon
+
+Prisma is configured for Neon Postgres with Prisma 7's Neon driver adapter.
+Application queries use the pooled `DATABASE_URL`; Prisma CLI commands use
+`DATABASE_URL_UNPOOLED` from `.env.local` through [prisma.config.ts](prisma.config.ts).
+
+Useful commands:
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+pnpm db:push
+pnpm db:studio
+```
+
 ## Agent Flow
 
 Use `Demo Planner` as the primary entry point.

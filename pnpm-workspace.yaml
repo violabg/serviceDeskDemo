@@ -5,3 +5,5 @@ allowBuilds:
   unrs-resolver: true
   msw: false
   core-js: false
+  '@prisma/engines': true
+  prisma: true
