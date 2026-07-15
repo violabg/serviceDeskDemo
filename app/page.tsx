@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button"
+import { GithubLogoIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr"
+import Link from "next/link"
 
 export default function Page() {
   return (
@@ -8,7 +10,23 @@ export default function Page() {
           <h1 className="font-medium">Project ready!</h1>
           <p>You may now add components and start building.</p>
           <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
+          <Button
+            className="mt-2"
+            render={<Link href="/login" />}
+            nativeButton={false}
+          >
+            <GithubLogoIcon weight="fill" />
+            Log in with GitHub
+          </Button>
+          <Button
+            className="mt-2 ml-2"
+            variant="outline"
+            render={<Link href="/admin" />}
+            nativeButton={false}
+          >
+            <ShieldCheckIcon weight="fill" />
+            Test admin auth
+          </Button>
         </div>
         <div className="font-mono text-xs text-muted-foreground">
           (Press <kbd>d</kbd> to toggle dark mode)
