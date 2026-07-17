@@ -24,7 +24,7 @@ Do not use this file for:
 - User-facing agents must ask for a session ID, then reuse `sessions/<session-id>/` when present or create it when missing.
 - For GitHub-driven workflows, session ID is the GitHub issue ID resolved during intake. Manual session IDs are fallback only for offline work.
 - Durable policy belongs in repository docs, not in session artifact bundles.
-- Agent and skill behavior must follow the precedence chain defined in `AGENTS2.md` and `docs/agents/governance.md`.
+- Agent and skill behavior must follow the precedence chain defined in `AGENTS.md` and `docs/agents/governance.md`.
 - Gate-specific skill allow-lists are mandatory for reproducible runs.
 - Approved artifacts are immutable; revisions create new files rather than overwriting approved ones.
 

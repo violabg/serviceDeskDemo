@@ -26,7 +26,7 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 - Do not skip planning gates.
 - Do not hand off implementation until the user explicitly approves the implementation plan and approval metadata is recorded in the session artifact set.
 - Keep all outputs in English.
-- Use the demo artifact names from `AGENTS2.md`.
+- Use the demo artifact names from `AGENTS.md`.
 - Work in a named session artifact package. Do not treat the repository as the durable storage location for session evidence.
 
 ## Skills To Use

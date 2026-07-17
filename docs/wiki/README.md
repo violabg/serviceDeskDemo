@@ -13,16 +13,28 @@ The repo uses a role-based workflow for software delivery:
 
 Policy and behavior are defined in these contract files:
 
-- `AGENTS2.md`
+- `AGENTS.md`
 - `docs/agents/governance.md`
 - `docs/agents/enforcement-spec.md`
 
 Instruction precedence is:
 
-1. `AGENTS2.md`
+1. `AGENTS.md`
 2. agent files under `.github/agents/`
-3. skill files under `.agents/skills/`
-4. ad hoc prompt instructions
+3. custom skill files under `.agents/skills/`
+4. non-custom skill files under `.github/skills/`
+5. ad hoc prompt instructions
+
+## Agent Customization Mode
+
+If your prompt contains the exact phrase `customize agents`, the assistant switches to agent-customization-only mode.
+
+In this mode:
+
+- The task is treated as agent-system maintenance, not feature development.
+- Work is limited to `AGENTS*.md`, `.github/agents/`, `.agents/skills/`, and `.github/skills/`.
+- Normal app code changes are out of scope unless explicitly requested.
+- Planning and implementation gates for product code are disregarded for that customization task.
 
 ## Session Model
 
@@ -114,7 +126,7 @@ Lint modes are stage-aware and check artifact completeness and handoff quality.
 
 ## Quick Start for New Developers
 
-1. Read `AGENTS2.md` and `docs/agents/governance.md`.
+1. Read `AGENTS.md` and `docs/agents/governance.md`.
 2. Pick a real issue and use issue number as session ID.
 3. Create `sessions/<issue-number>/`.
 4. Write `session-brief.md` first.
@@ -124,6 +136,96 @@ Lint modes are stage-aware and check artifact completeness and handoff quality.
 8. Run `approval-ready` lint.
 9. Start implementation and keep `changed-files.md` updated.
 10. Run `implementation-handoff` and `review-ready` lints before review handoff.
+
+## User-Invokable Agents
+
+Use these as explicit role tools. In chat, invoke them with direct phrasing such as `Use Demo Planner to ...`.
+
+| Agent | When to use | How to invoke well |
+| --- | --- | --- |
+| `Demo Planner` | You need full planning artifacts from issue/story/screenshot/requirement. | Provide session ID, source input, constraints, and ask for spec, tasks, implementation plan, and test plan. |
+| `Demo Implementor` | You have approved plan and need code implementation only. | Provide session ID and approved artifact references; request implementation against plan only. |
+| `Demo Tester` | You need test planning or test implementation for approved work. | Provide feature scope and ask for Vitest/RTL coverage matrix plus commands and residual risks. |
+| `Demo Reviewer` | You need final quality review before merge/handoff. | Provide changed files and ask for findings by severity, regressions, gaps, and readiness verdict. |
+
+## Internal Agent Subagent Flow
+
+### Demo Planner Flow
+
+```mermaid
+flowchart TD
+  P0[Scope Intake]
+  P1[Session Creation]
+  P2[Visual Intake]
+  P3[Knowledge Selection]
+  P4[Requirements Analysis]
+  P5[Task Breakdown]
+  P6[Implementation Plan]
+  P7[Test Plan]
+  P8[Approval Request]
+
+  P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
+
+  P0 -. GitHub-driven intake .-> GI[Demo GitHub Issue Intake]
+  P2 -. fallback vision only .-> GV[Demo Vision UI]
+  P4 -. deep requirement analysis .-> GR[Demo Requirements Analyst]
+  P5 -. atomic task decomposition .-> GT[Demo Task Builder]
+  P3 -. durable knowledge extraction .-> GK[Demo Knowledge Builder]
+```
+
+### Demo Implementor Flow
+
+```mermaid
+flowchart TD
+  I0[Read Approved Plan]
+  I1[Implement Smallest Coherent Batch]
+  I2[Run Plan Validation Commands]
+  I3[Update changed-files.md]
+  I4[Handoff to Tester or Reviewer]
+
+  I0 --> I1 --> I2 --> I3 --> I4
+  I0 -. no internal subagents .-> I5[Direct Execution Path]
+```
+
+### Demo Tester Flow
+
+```mermaid
+flowchart TD
+  T0[Read Plan and Test Inputs]
+  T1[Implement Focused Tests]
+  T2[Run Narrow Test Commands]
+  T3[Classify and Fix In-scope Failures]
+  T4[Handoff Results]
+
+  T0 --> T1 --> T2 --> T3 --> T4
+  T0 -. no internal subagents .-> T5[Direct Execution Path]
+```
+
+### Demo Reviewer Flow
+
+```mermaid
+flowchart TD
+  R0[Read Required Review Inputs]
+  R1[Analyze Defects and Regressions]
+  R2[Produce Severity-Ordered Findings]
+  R3[PR Readiness Recommendation]
+
+  R0 --> R1 --> R2 --> R3
+  R0 -. no internal subagents .-> R4[Direct Review Path]
+```
+
+## User-Invokable Skills
+
+Use explicit skill requests in prompt.
+
+This section lists only skills with `disable-model-invocation: true`.
+
+### Custom Skills (`.agents/skills/`)
+
+| Skill | When to use | How to invoke well |
+| --- | --- | --- |
+| `plan-from-github-issue` | You want direct planning intake from a GitHub issue. | Provide issue ID/URL and ask for planning intake output format. |
+| `plan-from-github-bug` | You want bug-first planning with cause analysis from issue data. | Provide issue ID/URL and request root-cause candidates before implementation planning. |
 
 ## Tips
 

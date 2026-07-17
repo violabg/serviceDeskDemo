@@ -47,7 +47,7 @@ All demo agents, skills, artifacts, and user-facing outputs use English.
 
 When instructions conflict, use this order:
 
-1. `AGENTS2.md`
+1. `AGENTS.md`
 2. Agent files under `.github/agents/`
 3. Custom skill files under `.agents/skills/`
 4. Non-custom skill files under `.github/skills/`

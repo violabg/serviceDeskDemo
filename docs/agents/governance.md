@@ -10,7 +10,7 @@ Older sessions may be restored locally by downloading the zip attachment from th
 
 When instructions conflict, resolve them in this order:
 
-1. `AGENTS2.md`
+1. `AGENTS.md`
 2. Agent files under `.github/agents/`
 3. Skill files under `.agents/skills/`
 4. Prompt-specific ad hoc instructions
