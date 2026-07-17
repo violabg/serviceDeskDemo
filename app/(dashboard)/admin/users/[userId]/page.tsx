@@ -33,7 +33,7 @@ export default async function UserDetailPage({
     })
   const assignedRoleIds = new Set(user.roles.map(({ roleId }) => roleId))
   const assignableRoles = availableRoles.filter(
-    (role) => !assignedRoleIds.has(role.id),
+    (role) => !assignedRoleIds.has(role.id)
   )
 
   return (

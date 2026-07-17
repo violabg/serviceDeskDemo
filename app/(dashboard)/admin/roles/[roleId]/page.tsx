@@ -13,7 +13,7 @@ import { redirect } from "next/navigation"
 export const dynamic = "force-dynamic"
 
 const operationOrder = new Map<string, number>(
-  ACCESS_OPERATIONS.map((operation, index) => [operation, index]),
+  ACCESS_OPERATIONS.map((operation, index) => [operation, index])
 )
 
 export default async function RoleDetailPage({
@@ -32,13 +32,16 @@ export default async function RoleDetailPage({
   }
 
   const canWriteRoles = hasPermission(permissions, "roles", "write")
-  const { role, permissions: availablePermissions, sections } =
-    await getRoleForManagement({
-      actorUserId: access.user.id,
-      roleId,
-    })
+  const {
+    role,
+    permissions: availablePermissions,
+    sections,
+  } = await getRoleForManagement({
+    actorUserId: access.user.id,
+    roleId,
+  })
   const assignedPermissionIds = new Set(
-    role.permissions.map(({ permissionId }) => permissionId),
+    role.permissions.map(({ permissionId }) => permissionId)
   )
   const canEditRole = canWriteRoles && !role.isSystem
 
@@ -72,10 +75,7 @@ export default async function RoleDetailPage({
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <label className="grid gap-1.5 text-sm font-medium">
               Name
-              <Input
-                defaultValue={role.name}
-                disabled
-              />
+              <Input defaultValue={role.name} disabled />
             </label>
             <label className="grid gap-1.5 text-sm font-medium md:col-span-2">
               Description
@@ -106,7 +106,7 @@ export default async function RoleDetailPage({
                     (operationOrder.get(left.operation) ??
                       ACCESS_OPERATIONS.length) -
                     (operationOrder.get(right.operation) ??
-                      ACCESS_OPERATIONS.length),
+                      ACCESS_OPERATIONS.length)
                 )
 
               if (sectionPermissions.length === 0) {
@@ -129,7 +129,7 @@ export default async function RoleDetailPage({
                           name="permissionIds"
                           value={permission.id}
                           defaultChecked={assignedPermissionIds.has(
-                            permission.id,
+                            permission.id
                           )}
                           disabled={!canEditRole}
                           className="size-4 rounded border-input"
@@ -137,7 +137,7 @@ export default async function RoleDetailPage({
                         <span>
                           {permissionKey(
                             permission.section,
-                            permission.operation,
+                            permission.operation
                           )}
                         </span>
                       </label>

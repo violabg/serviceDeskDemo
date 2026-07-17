@@ -16,7 +16,7 @@ import { redirect } from "next/navigation"
 export const dynamic = "force-dynamic"
 
 const operationOrder = new Map<string, number>(
-  ACCESS_OPERATIONS.map((operation, index) => [operation, index]),
+  ACCESS_OPERATIONS.map((operation, index) => [operation, index])
 )
 
 function sortPermissionsByAccessModel<
@@ -95,10 +95,10 @@ export default async function RolesPage() {
                 </div>
                 <p className="truncate text-muted-foreground">
                   {sortPermissionsByAccessModel(
-                    role.permissions.map(({ permission }) => permission),
+                    role.permissions.map(({ permission }) => permission)
                   )
                     .map((permission) =>
-                      permissionKey(permission.section, permission.operation),
+                      permissionKey(permission.section, permission.operation)
                     )
                     .join(", ") || "No permissions"}
                 </p>
@@ -143,7 +143,7 @@ export default async function RolesPage() {
                         (operationOrder.get(left.operation) ??
                           ACCESS_OPERATIONS.length) -
                         (operationOrder.get(right.operation) ??
-                          ACCESS_OPERATIONS.length),
+                          ACCESS_OPERATIONS.length)
                     )
 
                   if (sectionPermissions.length === 0) {
@@ -170,7 +170,7 @@ export default async function RolesPage() {
                             <span>
                               {permissionKey(
                                 permission.section,
-                                permission.operation,
+                                permission.operation
                               )}
                             </span>
                           </label>

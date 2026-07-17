@@ -1,12 +1,12 @@
 import {
-  ADMIN_ROLE_NAME,
-  ACCESS_SECTIONS,
-  INITIAL_PERMISSIONS,
-  getEffectivePermissionKeys,
-  hasPermission,
-  permissionKey,
-  type AccessOperation,
-  type AccessSection,
+    ACCESS_SECTIONS,
+    ADMIN_ROLE_NAME,
+    INITIAL_PERMISSIONS,
+    getEffectivePermissionKeys,
+    hasPermission,
+    permissionKey,
+    type AccessOperation,
+    type AccessSection,
 } from "@/lib/access-control"
 import { prisma } from "@/lib/prisma"
 

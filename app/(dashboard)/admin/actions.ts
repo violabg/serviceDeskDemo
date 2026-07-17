@@ -2,10 +2,10 @@
 
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import {
-  assignRoleToUser,
-  createRoleForManagement,
-  removeRoleFromUser,
-  updateRoleForManagement,
+    assignRoleToUser,
+    createRoleForManagement,
+    removeRoleFromUser,
+    updateRoleForManagement,
 } from "@/lib/access-control/server"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
