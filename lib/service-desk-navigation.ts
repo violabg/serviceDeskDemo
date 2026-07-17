@@ -51,6 +51,18 @@ export const SERVICE_DESK_NAVIGATION = [
     url: "/reports",
     requiredPermission: { section: "reports", operation: "read" },
   },
+  {
+    id: "users",
+    title: "Users",
+    url: "/admin/users",
+    requiredPermission: { section: "users", operation: "read" },
+  },
+  {
+    id: "roles",
+    title: "Roles",
+    url: "/admin/roles",
+    requiredPermission: { section: "roles", operation: "read" },
+  },
 ] as const satisfies readonly ServiceDeskNavigationItem[]
 
 export type ServiceDeskNavigationId =

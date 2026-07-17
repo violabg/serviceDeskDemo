@@ -17,9 +17,14 @@ const prismaMock = vi.hoisted(() => ({
   },
   role: {
     upsert: vi.fn(),
+    create: vi.fn(),
+    findUnique: vi.fn(),
+    update: vi.fn(),
   },
   rolePermission: {
     upsert: vi.fn(),
+    deleteMany: vi.fn(),
+    createMany: vi.fn(),
   },
   user: {
     create: vi.fn(),
@@ -29,6 +34,7 @@ const prismaMock = vi.hoisted(() => ({
   },
   userRole: {
     upsert: vi.fn(),
+    delete: vi.fn(),
   },
 }))
 
@@ -365,5 +371,183 @@ describe("first-login application user access", () => {
     expect(access.canReadDashboard).toBe(true)
     expect(access.isAdmin).toBe(true)
     expect(access.user.id).toBe("admin-user")
+  })
+})
+
+describe("management mutations", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("requires users write permission before assigning a role", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ roles: [] })
+
+    const { assignRoleToUser } = await import("@/lib/access-control/server")
+
+    await expect(
+      assignRoleToUser({
+        actorUserId: "actor-read-only",
+        targetUserId: "target-user",
+        roleId: "role-technician",
+      }),
+    ).rejects.toThrow("Missing permission: users:write")
+    expect(prismaMock.userRole.upsert).not.toHaveBeenCalled()
+  })
+
+  it("assigns an existing role when the actor has users write permission", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "users", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.userRole.upsert.mockResolvedValue({})
+
+    const { assignRoleToUser } = await import("@/lib/access-control/server")
+
+    await assignRoleToUser({
+      actorUserId: "actor-admin",
+      targetUserId: "target-user",
+      roleId: "role-technician",
+    })
+
+    expect(prismaMock.userRole.upsert).toHaveBeenCalledWith({
+      where: {
+        userId_roleId: {
+          userId: "target-user",
+          roleId: "role-technician",
+        },
+      },
+      update: {},
+      create: {
+        userId: "target-user",
+        roleId: "role-technician",
+      },
+    })
+  })
+
+  it("requires roles write permission before creating a role", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ roles: [] })
+
+    const { createRoleForManagement } = await import(
+      "@/lib/access-control/server"
+    )
+
+    await expect(
+      createRoleForManagement({
+        actorUserId: "actor-read-only",
+        name: "Reports Viewer",
+        description: "Can read reports",
+        permissionIds: ["permission-reports-read"],
+      }),
+    ).rejects.toThrow("Missing permission: roles:write")
+    expect(prismaMock.role.create).not.toHaveBeenCalled()
+  })
+
+  it("creates a role with seeded permissions when authorized", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "roles", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.role.create.mockResolvedValue({
+      id: "role-reports",
+      name: "Reports Viewer",
+    })
+    prismaMock.rolePermission.createMany.mockResolvedValue({ count: 1 })
+
+    const { createRoleForManagement } = await import(
+      "@/lib/access-control/server"
+    )
+
+    await createRoleForManagement({
+      actorUserId: "actor-admin",
+      name: "Reports Viewer",
+      description: "Can read reports",
+      permissionIds: ["permission-reports-read", "permission-reports-read"],
+    })
+
+    expect(prismaMock.role.create).toHaveBeenCalledWith({
+      data: {
+        name: "Reports Viewer",
+        description: "Can read reports",
+      },
+    })
+    expect(prismaMock.rolePermission.createMany).toHaveBeenCalledWith({
+      data: [
+        {
+          roleId: "role-reports",
+          permissionId: "permission-reports-read",
+        },
+      ],
+      skipDuplicates: true,
+    })
+  })
+
+  it("replaces role permissions for non-system roles when authorized", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "roles", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.role.findUnique.mockResolvedValue({
+      id: "role-reports",
+      isSystem: false,
+    })
+    prismaMock.role.update.mockResolvedValue({})
+    prismaMock.rolePermission.deleteMany.mockResolvedValue({ count: 2 })
+    prismaMock.rolePermission.createMany.mockResolvedValue({ count: 2 })
+
+    const { updateRoleForManagement } = await import(
+      "@/lib/access-control/server"
+    )
+
+    await updateRoleForManagement({
+      actorUserId: "actor-admin",
+      roleId: "role-reports",
+      name: "Reports Viewer",
+      description: "Can read reports",
+      permissionIds: ["permission-reports-read", "permission-dashboard-read"],
+    })
+
+    expect(prismaMock.role.update).toHaveBeenCalledWith({
+      where: { id: "role-reports" },
+      data: {
+        description: "Can read reports",
+      },
+    })
+    expect(prismaMock.rolePermission.deleteMany).toHaveBeenCalledWith({
+      where: { roleId: "role-reports" },
+    })
+    expect(prismaMock.rolePermission.createMany).toHaveBeenCalledWith({
+      data: [
+        {
+          roleId: "role-reports",
+          permissionId: "permission-reports-read",
+        },
+        {
+          roleId: "role-reports",
+          permissionId: "permission-dashboard-read",
+        },
+      ],
+      skipDuplicates: true,
+    })
   })
 })

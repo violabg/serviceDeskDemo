@@ -16,7 +16,23 @@ describe("service desk navigation", () => {
     expect(items.map((item) => item.title)).toEqual(["Dashboard", "Tickets"])
   })
 
-  it("does not include admin pages", () => {
+  it("shows user management only with users read permission", () => {
+    const items = getReadableServiceDeskNavigation(
+      new Set([permissionKey("users", "read")]),
+    )
+
+    expect(items.map((item) => item.title)).toEqual(["Users"])
+  })
+
+  it("shows role management only with roles read permission", () => {
+    const items = getReadableServiceDeskNavigation(
+      new Set([permissionKey("roles", "read")]),
+    )
+
+    expect(items.map((item) => item.title)).toEqual(["Roles"])
+  })
+
+  it("does not include the administration umbrella section", () => {
     const items = getReadableServiceDeskNavigation(
       new Set([
         permissionKey("administration", "read"),
@@ -25,6 +41,6 @@ describe("service desk navigation", () => {
       ]),
     )
 
-    expect(items.map((item) => item.title)).toEqual([])
+    expect(items.map((item) => item.title)).toEqual(["Users", "Roles"])
   })
 })

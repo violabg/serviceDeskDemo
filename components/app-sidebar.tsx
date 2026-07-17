@@ -23,6 +23,8 @@ import {
   GaugeIcon,
   GithubLogoIcon,
   IdentificationBadgeIcon,
+  IdentificationCardIcon,
+  ShieldCheckIcon,
   RowsIcon,
   TicketIcon,
   UsersThreeIcon,
@@ -50,6 +52,8 @@ const navigationIcons: Record<ServiceDeskNavigationId, React.ReactNode> = {
   technicians: <IdentificationBadgeIcon />,
   assets: <DesktopTowerIcon />,
   reports: <ChartBarIcon />,
+  users: <IdentificationCardIcon />,
+  roles: <ShieldCheckIcon />,
 }
 
 type SidebarUser = {
