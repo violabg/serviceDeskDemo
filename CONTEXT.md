@@ -20,6 +20,10 @@ _Avoid_: User, Account
 A named collection of permissions assignable to one or more users.
 _Avoid_: Group
 
+**Access Management**:
+The administrative area where users and roles are managed.
+_Avoid_: Security Settings, Identity Group
+
 **Permission**:
 An allow-only access grant for one section and one operation, such as `users:read`.
 _Avoid_: Privilege, Right

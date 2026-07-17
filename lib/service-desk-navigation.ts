@@ -14,32 +14,57 @@ export type ServiceDeskNavigationItem = {
   }
 }
 
+export type ServiceDeskNavigationGroup = {
+  id: string
+  title: string
+  items: readonly ServiceDeskNavigationItem[]
+}
+
 export const SERVICE_DESK_NAVIGATION = [
   {
-    id: "users",
-    title: "Users",
-    url: "/admin/users",
-    requiredPermission: { section: "users", operation: "read" },
+    id: "access-management",
+    title: "Access Management",
+    items: [
+      {
+        id: "users",
+        title: "Users",
+        url: "/admin/users",
+        requiredPermission: { section: "users", operation: "read" },
+      },
+      {
+        id: "roles",
+        title: "Roles",
+        url: "/admin/roles",
+        requiredPermission: { section: "roles", operation: "read" },
+      },
+    ],
   },
-  {
-    id: "roles",
-    title: "Roles",
-    url: "/admin/roles",
-    requiredPermission: { section: "roles", operation: "read" },
-  },
-] as const satisfies readonly ServiceDeskNavigationItem[]
+] as const satisfies readonly ServiceDeskNavigationGroup[]
 
 export type ServiceDeskNavigationId =
-  (typeof SERVICE_DESK_NAVIGATION)[number]["id"]
+  (typeof SERVICE_DESK_NAVIGATION)[number]["items"][number]["id"]
+
+export function getReadableServiceDeskNavigationGroups(
+  effectivePermissions: ReadonlySet<string>,
+) {
+  return SERVICE_DESK_NAVIGATION
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) =>
+        hasPermission(
+          effectivePermissions,
+          item.requiredPermission.section,
+          item.requiredPermission.operation,
+        ),
+      ),
+    }))
+    .filter((group) => group.items.length > 0)
+}
 
 export function getReadableServiceDeskNavigation(
   effectivePermissions: ReadonlySet<string>,
 ) {
-  return SERVICE_DESK_NAVIGATION.filter((item) =>
-    hasPermission(
-      effectivePermissions,
-      item.requiredPermission.section,
-      item.requiredPermission.operation,
-    ),
+  return getReadableServiceDeskNavigationGroups(effectivePermissions).flatMap(
+    (group) => group.items,
   )
 }
