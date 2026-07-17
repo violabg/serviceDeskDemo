@@ -30,9 +30,8 @@ enterprise-agentic-demo/
 ├── .agents/
 │   ├── skills/
 │   └── templates/
-├── artifacts/
-│   └── <session-id>/
-└── examples/
+└── artifacts/
+    └── <session-id>/
 ```
 
 Copilot custom agents live in `.github/agents/` because VS Code discovers them from that location. Portable skills and templates live in `.agents/` so the workflow can be reused by other agent runtimes later.
@@ -106,15 +105,9 @@ Session IDs use `session-YYYYMMDD-<descriptive-slug>` unless the user provides a
 
 For screenshots and mockups, the planner should use the active model's native vision capability when available. `Demo Vision UI` is only a fallback subagent for text-only models or environments where image inspection is unavailable.
 
-## Offline Demo Input
-
-Use [examples/sample-service-desk-user-story.md](examples/sample-service-desk-user-story.md) when GitHub issue access is not available.
-
-Expected teaching artifacts are shown in [examples/expected-artifacts](examples/expected-artifacts/).
-
 ## Suggested Walkthrough
 
-1. Open the sample user story.
+1. Start from GitHub issue, product request, or user-provided story.
 2. Ask `Demo Planner` to plan the story.
 3. Provide a session name or approve the generated default.
 4. Answer any grooming questions.
