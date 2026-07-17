@@ -10,7 +10,7 @@ import {
 } from "@/lib/access-control"
 import { prisma } from "@/lib/prisma"
 
-const ADMIN_ROLE_DESCRIPTION = "Full access to all service desk sections"
+const ADMIN_ROLE_DESCRIPTION = "Full access to dashboard, users, and roles"
 
 type ManagementActorInput = {
   actorUserId: string
@@ -89,6 +89,14 @@ async function requireUserPermission(
 export async function bootstrapAccessControl(
   initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL,
 ) {
+  await prisma.permission.deleteMany({
+    where: {
+      section: {
+        notIn: [...ACCESS_SECTIONS],
+      },
+    },
+  })
+
   const permissions = await Promise.all(
     INITIAL_PERMISSIONS.map((permission) =>
       prisma.permission.upsert({

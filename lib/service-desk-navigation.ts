@@ -16,42 +16,6 @@ export type ServiceDeskNavigationItem = {
 
 export const SERVICE_DESK_NAVIGATION = [
   {
-    id: "dashboard",
-    title: "Dashboard",
-    url: "/",
-    requiredPermission: { section: "dashboard", operation: "read" },
-  },
-  {
-    id: "tickets",
-    title: "Tickets",
-    url: "/tickets",
-    requiredPermission: { section: "tickets", operation: "read" },
-  },
-  {
-    id: "clients",
-    title: "Clients",
-    url: "/clients",
-    requiredPermission: { section: "clients", operation: "read" },
-  },
-  {
-    id: "technicians",
-    title: "Technicians",
-    url: "/technicians",
-    requiredPermission: { section: "technicians", operation: "read" },
-  },
-  {
-    id: "assets",
-    title: "Assets",
-    url: "/assets",
-    requiredPermission: { section: "assets", operation: "read" },
-  },
-  {
-    id: "reports",
-    title: "Reports",
-    url: "/reports",
-    requiredPermission: { section: "reports", operation: "read" },
-  },
-  {
     id: "users",
     title: "Users",
     url: "/admin/users",

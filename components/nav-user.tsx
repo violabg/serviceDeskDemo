@@ -17,7 +17,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth/client"
-import { CaretUpDownIcon, SignOutIcon } from "@phosphor-icons/react"
+import {
+  CaretUpDownIcon,
+  MoonIcon,
+  SignOutIcon,
+  SunIcon,
+} from "@phosphor-icons/react"
+import { useTheme } from "next-themes"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 
@@ -31,6 +37,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { resolvedTheme, setTheme } = useTheme()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -83,6 +90,14 @@ export function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
+            >
+              {resolvedTheme === "dark" ? <SunIcon /> : <MoonIcon />}
+              {resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
+            </DropdownMenuItem>
             <DropdownMenuItem
               disabled={disabled}
               variant="destructive"

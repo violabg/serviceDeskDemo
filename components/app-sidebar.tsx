@@ -4,7 +4,6 @@ import * as React from "react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -18,40 +17,15 @@ import {
 import type { ServiceDeskNavigationId } from "@/lib/service-desk-navigation"
 import { getReadableServiceDeskNavigation } from "@/lib/service-desk-navigation"
 import {
-  ChartBarIcon,
-  DesktopTowerIcon,
-  GaugeIcon,
   GithubLogoIcon,
   IdentificationBadgeIcon,
   IdentificationCardIcon,
   RowsIcon,
   ShieldCheckIcon,
-  TicketIcon,
-  UsersThreeIcon,
-  WaveformIcon,
 } from "@phosphor-icons/react"
 import Link from "next/link"
 
-const teams = [
-  {
-    name: "Service Desk",
-    logo: <RowsIcon />,
-    plan: "Operations",
-  },
-  {
-    name: "Automation Lab",
-    logo: <WaveformIcon />,
-    plan: "Agentic",
-  },
-]
-
 const navigationIcons: Record<ServiceDeskNavigationId, React.ReactNode> = {
-  dashboard: <GaugeIcon />,
-  tickets: <TicketIcon />,
-  clients: <UsersThreeIcon />,
-  technicians: <IdentificationBadgeIcon />,
-  assets: <DesktopTowerIcon />,
-  reports: <ChartBarIcon />,
   users: <IdentificationCardIcon />,
   roles: <ShieldCheckIcon />,
 }
@@ -82,7 +56,24 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+              render={<Link href="/dashboard" />}
+            >
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <RowsIcon />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">Service Desk</span>
+                <span className="truncate text-xs">Operations</span>
+              </div>
+              <IdentificationBadgeIcon className="ml-auto" />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />

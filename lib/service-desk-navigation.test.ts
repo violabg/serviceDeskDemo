@@ -8,12 +8,12 @@ describe("service desk navigation", () => {
     const items = getReadableServiceDeskNavigation(
       new Set([
         permissionKey("dashboard", "read"),
-        permissionKey("tickets", "read"),
-        permissionKey("reports", "write"),
+        permissionKey("users", "read"),
+        permissionKey("roles", "read"),
       ]),
     )
 
-    expect(items.map((item) => item.title)).toEqual(["Dashboard", "Tickets"])
+    expect(items.map((item) => item.title)).toEqual(["Users", "Roles"])
   })
 
   it("shows user management only with users read permission", () => {
@@ -32,10 +32,10 @@ describe("service desk navigation", () => {
     expect(items.map((item) => item.title)).toEqual(["Roles"])
   })
 
-  it("does not include the administration umbrella section", () => {
+  it("does not include unknown sections", () => {
     const items = getReadableServiceDeskNavigation(
       new Set([
-        permissionKey("administration", "read"),
+        permissionKey("dashboard", "read"),
         permissionKey("users", "read"),
         permissionKey("roles", "read"),
       ]),

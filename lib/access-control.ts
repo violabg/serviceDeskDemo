@@ -2,12 +2,6 @@ export const ACCESS_SECTIONS = [
   "dashboard",
   "users",
   "roles",
-  "tickets",
-  "clients",
-  "technicians",
-  "assets",
-  "reports",
-  "administration",
 ] as const
 
 export const ACCESS_OPERATIONS = ["read", "write", "manage"] as const
