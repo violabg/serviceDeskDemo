@@ -17,14 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth/client"
-import {
-  BellIcon,
-  CaretUpDownIcon,
-  CheckCircleIcon,
-  CreditCardIcon,
-  SignOutIcon,
-  SparkleIcon,
-} from "@phosphor-icons/react"
+import { CaretUpDownIcon, SignOutIcon } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 
@@ -88,28 +81,6 @@ export function NavUser({
                   </div>
                 </div>
               </DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <SparkleIcon />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CheckCircleIcon />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon />
-                Notifications
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
