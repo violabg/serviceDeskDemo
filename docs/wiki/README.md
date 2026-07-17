@@ -20,8 +20,8 @@ Policy and behavior are defined in these contract files:
 Instruction precedence is:
 
 1. `AGENTS2.md`
-2. agent files under `.github/agents2/`
-3. skill files under `.agents2/skills/`
+2. agent files under `.github/agents/`
+3. skill files under `.agents/skills/`
 4. ad hoc prompt instructions
 
 ## Session Model
