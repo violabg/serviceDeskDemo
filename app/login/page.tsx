@@ -1,3 +1,4 @@
+import { NeonAuthUiProvider } from "@/components/auth/neon-auth-ui-provider"
 import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { AuthView } from "@neondatabase/auth/react"
@@ -19,7 +20,9 @@ export default async function LoginPage() {
   return (
     <main className="grid min-h-svh place-items-center p-6">
       <div className="w-full max-w-md space-y-4">
-        <AuthView path="sign-in" />
+        <NeonAuthUiProvider>
+          <AuthView path="sign-in" />
+        </NeonAuthUiProvider>
       </div>
     </main>
   )
