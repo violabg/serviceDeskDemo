@@ -23,6 +23,19 @@ In this mode:
 - Modify only agentic configuration content, including `AGENTS*.md`, `.github/agents/`, `.agents/skills/`, and `.github/skills/`.
 - Do not perform normal app code development changes under application source folders unless the user explicitly asks.
 
+## Intake Override
+
+If the user invokes `/create-user-story` or `/create-bug`, enter **intake mode**.
+
+In this mode:
+
+- Disregard all repo-exploration, planning, implementation, testing, and review gates.
+- This is a non-repo workflow: do **not** explore the application codebase unless the user explicitly requests it.
+- Permitted skills in this mode: `grill-with-docs`, `to-spec`, `to-tickets`.
+- Follow the three-step process defined in the invoked skill: **Grill → Spec → Tickets**.
+- Ask one question at a time. Do not advance to the next step until the user confirms a shared understanding.
+- Stay in the service desk domain vocabulary (tickets, clients, technicians, assets, SLA, priority, status) when working inside this project.
+
 ## Language
 
 All demo agents, skills, artifacts, and user-facing outputs use English.
