@@ -1,9 +1,7 @@
-import { NeonAuthUIProvider } from "@neondatabase/auth/react"
 import type { Metadata } from "next"
 import { Geist_Mono, IBM_Plex_Sans, Source_Sans_3 } from "next/font/google"
 
 import { ThemeProvider } from "@/components/theme-provider"
-import { authClient } from "@/lib/auth/client"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 
@@ -45,15 +43,7 @@ export default function RootLayout({
       )}
     >
       <body>
-        <NeonAuthUIProvider
-          authClient={authClient}
-          credentials={false}
-          persistClient
-          redirectTo="/"
-          social={{ providers: ["github"] }}
-        >
-          <ThemeProvider>{children}</ThemeProvider>
-        </NeonAuthUIProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   )

@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "agent:lint-artifacts": "tsx scripts/agent-lint-artifacts.ts",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

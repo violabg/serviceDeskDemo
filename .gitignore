@@ -39,8 +39,5 @@ next-env.d.ts
 /lib/generated/prisma
 
 tmp/
-.agents/
-.agents2/
-.github/
-.github2/
-.claude/
+sessions/
+.github/skills

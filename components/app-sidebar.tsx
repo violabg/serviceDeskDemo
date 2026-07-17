@@ -15,7 +15,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import type { ServiceDeskNavigationId } from "@/lib/service-desk-navigation"
-import { getReadableServiceDeskNavigation } from "@/lib/service-desk-navigation"
+import { getReadableServiceDeskNavigationGroups } from "@/lib/service-desk-navigation"
 import {
   GithubLogoIcon,
   IdentificationBadgeIcon,
@@ -24,6 +24,7 @@ import {
   ShieldCheckIcon,
 } from "@phosphor-icons/react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const navigationIcons: Record<ServiceDeskNavigationId, React.ReactNode> = {
   users: <IdentificationCardIcon />,
@@ -46,11 +47,19 @@ export function AppSidebar({
   effectivePermissionKeys = [],
   ...props
 }: AppSidebarProps) {
-  const navItems = getReadableServiceDeskNavigation(
+  const pathname = usePathname()
+  const navItems = getReadableServiceDeskNavigationGroups(
     new Set(effectivePermissionKeys)
-  ).map((item) => ({
-    ...item,
-    icon: navigationIcons[item.id],
+  ).map((group) => ({
+    ...group,
+    isActive: group.items.some(
+      (item) => pathname === item.url || pathname.startsWith(`${item.url}/`)
+    ),
+    items: group.items.map((item) => ({
+      ...item,
+      icon: navigationIcons[item.id],
+      isActive: pathname === item.url || pathname.startsWith(`${item.url}/`),
+    })),
   }))
 
   return (
