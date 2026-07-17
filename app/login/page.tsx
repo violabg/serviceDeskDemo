@@ -10,14 +10,15 @@ export default async function LoginPage() {
   const sessionUser = session?.user
 
   if (sessionUser) {
-    const { isAdmin } = await getDashboardAccessForSessionUser(sessionUser)
+    const { canReadDashboard } =
+      await getDashboardAccessForSessionUser(sessionUser)
 
-    redirect(isAdmin ? "/" : "/pending-access")
+    redirect(canReadDashboard ? "/dashboard" : "/pending-access")
   }
 
   return (
-    <main className="place-items-center grid p-6 min-h-svh">
-      <div className="space-y-4 w-full max-w-md">
+    <main className="grid min-h-svh place-items-center p-6">
+      <div className="w-full max-w-md space-y-4">
         <AuthView path="sign-in" />
       </div>
     </main>

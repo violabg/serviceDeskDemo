@@ -14,10 +14,11 @@ export default async function PendingAccessPage() {
     redirect("/login")
   }
 
-  const { isAdmin } = await getDashboardAccessForSessionUser(sessionUser)
+  const { canReadDashboard } =
+    await getDashboardAccessForSessionUser(sessionUser)
 
-  if (isAdmin) {
-    redirect("/")
+  if (canReadDashboard) {
+    redirect("/dashboard")
   }
 
   return (
@@ -31,7 +32,7 @@ export default async function PendingAccessPage() {
             Your service desk access is not ready yet
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            You are signed in, but this account has not been assigned admin
+            You are signed in, but this user has not been assigned dashboard
             access yet.
           </p>
         </div>

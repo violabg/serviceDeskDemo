@@ -14,4 +14,8 @@ Issues tracked in GitHub Issues for this repo. See `docs/agents/issue-tracker.md
 
 Domain docs use single-context layout at repo root. See `docs/agents/domain.md`.
 
+### Access control workflow
+
+Permissions are code-defined and seed-created. See `docs/agents/access-control.md`.
+
 always use caveman skill

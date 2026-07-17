@@ -33,11 +33,11 @@ export default async function DashboardLayout({
 
   const {
     user: applicationUser,
-    isAdmin,
+    canReadDashboard,
     effectivePermissionKeys,
   } = await getDashboardAccessForSessionUser(sessionUser)
 
-  if (!isAdmin) {
+  if (!canReadDashboard) {
     redirect("/pending-access")
   }
 
