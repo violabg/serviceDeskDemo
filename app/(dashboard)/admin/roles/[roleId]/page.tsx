@@ -2,8 +2,11 @@ import { adminRoleDetailTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { updateRoleAction } from "@/app/(dashboard)/admin/actions"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Field, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Textarea } from "@/components/ui/textarea"
 import {
   ACCESS_OPERATIONS,
   hasPermission,
@@ -123,19 +126,20 @@ async function RoleDetailContent({
             Details
           </h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <label className="grid gap-1.5 text-sm font-medium">
-              Name
-              <Input defaultValue={role.name} disabled />
-            </label>
-            <label className="grid gap-1.5 text-sm font-medium md:col-span-2">
-              Description
-              <textarea
+            <Field>
+              <FieldLabel htmlFor="role-name">Name</FieldLabel>
+              <Input id="role-name" defaultValue={role.name} disabled />
+            </Field>
+            <Field className="md:col-span-2">
+              <FieldLabel htmlFor="role-description">Description</FieldLabel>
+              <Textarea
+                id="role-description"
                 name="description"
                 defaultValue={role.description ?? ""}
                 disabled={!canEditRole}
-                className="min-h-24 rounded-md border border-input bg-background px-2.5 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+                className="min-h-24"
               />
-            </label>
+            </Field>
           </div>
         </section>
         <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
@@ -164,36 +168,36 @@ async function RoleDetailContent({
               }
 
               return (
-                <fieldset key={section} className="rounded-md border p-3">
-                  <legend className="px-1 text-sm font-medium">
-                    {section}
-                  </legend>
+                <FieldSet key={section} className="rounded-md border p-3">
+                  <FieldLegend variant="label">{section}</FieldLegend>
                   <div className="mt-2 grid gap-2">
                     {sectionPermissions.map((permission) => (
-                      <label
+                      <Field
                         key={permission.id}
-                        className="flex items-center gap-2 text-sm"
+                        orientation="horizontal"
+                        className="gap-2"
                       >
-                        <input
-                          type="checkbox"
+                        <Checkbox
+                          id={`role-permission-${permission.id}`}
                           name="permissionIds"
                           value={permission.id}
                           defaultChecked={assignedPermissionIds.has(
                             permission.id
                           )}
                           disabled={!canEditRole}
-                          className="size-4 rounded border-input"
                         />
-                        <span>
+                        <FieldLabel
+                          htmlFor={`role-permission-${permission.id}`}
+                        >
                           {permissionKey(
                             permission.section,
                             permission.operation
                           )}
-                        </span>
-                      </label>
+                        </FieldLabel>
+                      </Field>
                     ))}
                   </div>
-                </fieldset>
+                </FieldSet>
               )
             })}
           </div>

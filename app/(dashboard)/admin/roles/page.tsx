@@ -2,8 +2,17 @@ import { adminRolesListTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { createRoleAction } from "@/app/(dashboard)/admin/actions"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Textarea } from "@/components/ui/textarea"
 import {
   ACCESS_OPERATIONS,
   ACCESS_SECTIONS,
@@ -192,19 +201,26 @@ async function CreateRoleSection({
       </h2>
       {canWriteRoles ? (
         <form action={createRoleAction} className="mt-4 grid gap-3">
-          <label className="grid gap-1.5 text-sm font-medium">
-            Name
-            <Input name="name" required />
-          </label>
-          <label className="grid gap-1.5 text-sm font-medium">
-            Description
-            <textarea
-              name="description"
-              className="min-h-24 rounded-md border border-input bg-background px-2.5 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-            />
-          </label>
-          <fieldset className="grid gap-3 rounded-md border p-3">
-            <legend className="px-1 text-sm font-medium">Permissions</legend>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="create-role-name">
+                Name <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Input id="create-role-name" name="name" required />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="create-role-description">
+                Description
+              </FieldLabel>
+              <Textarea
+                id="create-role-description"
+                name="description"
+                className="min-h-24"
+              />
+            </Field>
+          </FieldGroup>
+          <FieldSet className="rounded-md border p-3">
+            <FieldLegend variant="label">Permissions</FieldLegend>
             {ACCESS_SECTIONS.map((section) => {
               const sectionPermissions = availablePermissions
                 .filter((permission) => permission.section === section)
@@ -227,29 +243,31 @@ async function CreateRoleSection({
                   </p>
                   <div className="grid gap-1.5">
                     {sectionPermissions.map((permission) => (
-                      <label
+                      <Field
                         key={permission.id}
-                        className="flex items-center gap-2 text-sm"
+                        orientation="horizontal"
+                        className="gap-2"
                       >
-                        <input
-                          type="checkbox"
+                        <Checkbox
+                          id={`create-role-permission-${permission.id}`}
                           name="permissionIds"
                           value={permission.id}
-                          className="size-4 rounded border-input"
                         />
-                        <span>
+                        <FieldLabel
+                          htmlFor={`create-role-permission-${permission.id}`}
+                        >
                           {permissionKey(
                             permission.section,
                             permission.operation
                           )}
-                        </span>
-                      </label>
+                        </FieldLabel>
+                      </Field>
                     ))}
                   </div>
                 </div>
               )
             })}
-          </fieldset>
+          </FieldSet>
           <Button type="submit">Create Role</Button>
         </form>
       ) : (

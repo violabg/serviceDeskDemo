@@ -5,6 +5,12 @@ import {
   createTicketAction,
 } from "@/app/(dashboard)/tickets/actions"
 import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -145,87 +151,67 @@ export function NewTicketForm({
         Nuovo Ticket
       </h2>
       <form onSubmit={submitNewTicket} className="mt-4 grid gap-3">
-        <label className="grid gap-1.5 text-sm font-medium">
-          <span>
-            Title <span className="text-destructive">*</span>
-          </span>
-          <Input
-            {...register("title", { required: "Title is required" })}
-            aria-invalid={errors.title ? true : undefined}
-          />
-        </label>
-        <label className="grid gap-1.5 text-sm font-medium">
-          <span>
-            Description <span className="text-destructive">*</span>
-          </span>
-          <Textarea
-            {...register("description", {
-              required: "Description is required",
-            })}
-            className="min-h-28"
-            aria-invalid={errors.description ? true : undefined}
-          />
-        </label>
-        <label className="grid gap-1.5 text-sm font-medium">
-          <span>
-            Requester Contact <span className="text-destructive">*</span>
-          </span>
-          <Input
-            {...register("requesterContact", {
-              required: "Requester contact is required",
-            })}
-            aria-invalid={errors.requesterContact ? true : undefined}
-          />
-        </label>
-        <label className="grid gap-1.5 text-sm font-medium">
-          <span>
-            Customer <span className="text-destructive">*</span>
-          </span>
-          <Controller
-            name="customerId"
-            control={control}
-            rules={{ required: "Customer is required" }}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger
-                  className="w-full"
-                  aria-invalid={errors.customerId ? true : undefined}
-                >
-                  <SelectValue placeholder="Select customer" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {customers.map((customer) => (
-                      <SelectItem key={customer.id} value={customer.id}>
-                        {customer.name}
-                        {customer.company ? ` (${customer.company})` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </label>
-        <div className="grid gap-3 md:grid-cols-3">
-          <label className="grid gap-1.5 text-sm font-medium">
-            <span>
-              Priority <span className="text-destructive">*</span>
-            </span>
+        <FieldGroup>
+          <Field data-invalid={errors.title ? true : undefined}>
+            <FieldLabel htmlFor="ticket-title">
+              Title <span className="text-destructive">*</span>
+            </FieldLabel>
+            <Input
+              id="ticket-title"
+              {...register("title", { required: "Title is required" })}
+              aria-invalid={errors.title ? true : undefined}
+            />
+            <FieldError errors={[errors.title]} />
+          </Field>
+          <Field data-invalid={errors.description ? true : undefined}>
+            <FieldLabel htmlFor="ticket-description">
+              Description <span className="text-destructive">*</span>
+            </FieldLabel>
+            <Textarea
+              id="ticket-description"
+              {...register("description", {
+                required: "Description is required",
+              })}
+              className="min-h-28"
+              aria-invalid={errors.description ? true : undefined}
+            />
+            <FieldError errors={[errors.description]} />
+          </Field>
+          <Field data-invalid={errors.requesterContact ? true : undefined}>
+            <FieldLabel htmlFor="ticket-requester-contact">
+              Requester Contact <span className="text-destructive">*</span>
+            </FieldLabel>
+            <Input
+              id="ticket-requester-contact"
+              {...register("requesterContact", {
+                required: "Requester contact is required",
+              })}
+              aria-invalid={errors.requesterContact ? true : undefined}
+            />
+            <FieldError errors={[errors.requesterContact]} />
+          </Field>
+          <Field data-invalid={errors.customerId ? true : undefined}>
+            <FieldLabel>
+              Customer <span className="text-destructive">*</span>
+            </FieldLabel>
             <Controller
-              name="priority"
+              name="customerId"
               control={control}
-              rules={{ required: true }}
+              rules={{ required: "Customer is required" }}
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select priority" />
+                  <SelectTrigger
+                    className="w-full"
+                    aria-invalid={errors.customerId ? true : undefined}
+                  >
+                    <SelectValue placeholder="Select customer" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {TICKET_PRIORITIES.map((priority) => (
-                        <SelectItem key={priority} value={priority}>
-                          {priority}
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} value={customer.id}>
+                          {customer.name}
+                          {customer.company ? ` (${customer.company})` : ""}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -233,113 +219,144 @@ export function NewTicketForm({
                 </Select>
               )}
             />
-          </label>
-          <label className="grid gap-1.5 text-sm font-medium">
-            <span>
-              Category <span className="text-destructive">*</span>
-            </span>
-            <Controller
-              name="category"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {TICKET_CATEGORIES.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
+            <FieldError errors={[errors.customerId]} />
+          </Field>
+          <div className="grid gap-3 md:grid-cols-3">
+            <Field>
+              <FieldLabel>
+                Priority <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Controller
+                name="priority"
+                control={control}
+                rules={{ required: "Priority is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {TICKET_PRIORITIES.map((priority) => (
+                          <SelectItem key={priority} value={priority}>
+                            {priority}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>
+                Category <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Controller
+                name="category"
+                control={control}
+                rules={{ required: "Category is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {TICKET_CATEGORIES.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>
+                Intake Channel <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Controller
+                name="intakeChannel"
+                control={control}
+                rules={{ required: "Intake channel is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select intake channel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {INTAKE_CHANNELS.map((channel) => (
+                          <SelectItem key={channel} value={channel}>
+                            {channel}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </Field>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field>
+              <FieldLabel>Asset (optional)</FieldLabel>
+              <Controller
+                name="assetId"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="No linked asset" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value={NONE_VALUE}>
+                          No linked asset
                         </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </label>
-          <label className="grid gap-1.5 text-sm font-medium">
-            <span>
-              Intake Channel <span className="text-destructive">*</span>
-            </span>
-            <Controller
-              name="intakeChannel"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select intake channel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {INTAKE_CHANNELS.map((channel) => (
-                        <SelectItem key={channel} value={channel}>
-                          {channel}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </label>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <label className="grid gap-1.5 text-sm font-medium">
-            Asset (optional)
-            <Controller
-              name="assetId"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="No linked asset" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value={NONE_VALUE}>
-                        No linked asset
-                      </SelectItem>
-                      {assets.map((asset) => (
-                        <SelectItem key={asset.id} value={asset.id}>
-                          {asset.name}
-                          {asset.serialNumber ? ` (${asset.serialNumber})` : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </label>
-          <label className="grid gap-1.5 text-sm font-medium">
-            Assign Technician (optional)
-            <Controller
-              name="assignedToId"
-              control={control}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Unassigned" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value={NONE_VALUE}>Unassigned</SelectItem>
-                      {technicians.map((technician) => (
-                        <SelectItem key={technician.id} value={technician.id}>
-                          {technician.name || technician.email}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </label>
-        </div>
+                        {assets.map((asset) => (
+                          <SelectItem key={asset.id} value={asset.id}>
+                            {asset.name}
+                            {asset.serialNumber
+                              ? ` (${asset.serialNumber})`
+                              : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Assign Technician (optional)</FieldLabel>
+              <Controller
+                name="assignedToId"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Unassigned" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value={NONE_VALUE}>Unassigned</SelectItem>
+                        {technicians.map((technician) => (
+                          <SelectItem key={technician.id} value={technician.id}>
+                            {technician.name || technician.email}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </Field>
+          </div>
+        </FieldGroup>
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"

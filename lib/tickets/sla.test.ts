@@ -28,6 +28,13 @@ describe("ticket SLA utilities", () => {
     expect(computeSlaBreachAt("Medium", createdAt).toISOString()).toBe(
       "2026-01-02T00:00:00.000Z"
     )
+    expect(computeSlaBreachAt("Low", createdAt).toISOString()).toBe(
+      "2026-01-04T00:00:00.000Z"
+    )
+  })
+
+  it("returns a Date instance", () => {
+    expect(computeSlaBreachAt("High", new Date())).toBeInstanceOf(Date)
   })
 
   it("flags SLA breach based on current time", () => {

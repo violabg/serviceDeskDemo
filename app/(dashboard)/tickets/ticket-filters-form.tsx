@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -67,49 +68,64 @@ export function TicketFiltersForm({
       onSubmit={onSubmit}
       className="grid gap-3 rounded-lg border bg-card p-4 shadow-sm md:grid-cols-[1fr_12rem_12rem_auto]"
     >
-      <Input {...register("q")} placeholder="Search title or description" />
-      <Controller
-        name="status"
-        control={control}
-        render={({ field }) => (
-          <Select value={field.value} onValueChange={field.onChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={ALL_VALUE}>All status</SelectItem>
-                {TICKET_STATUSES.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        )}
-      />
-      <Controller
-        name="priority"
-        control={control}
-        render={({ field }) => (
-          <Select value={field.value} onValueChange={field.onChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All priority" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={ALL_VALUE}>All priority</SelectItem>
-                {TICKET_PRIORITIES.map((priority) => (
-                  <SelectItem key={priority} value={priority}>
-                    {priority}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        )}
-      />
+      <FieldGroup className="md:contents">
+        <Field>
+          <FieldLabel htmlFor="tickets-filter-query">Search</FieldLabel>
+          <Input
+            id="tickets-filter-query"
+            {...register("q")}
+            placeholder="Search title or description"
+          />
+        </Field>
+        <Field>
+          <FieldLabel>Status</FieldLabel>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={ALL_VALUE}>All status</SelectItem>
+                    {TICKET_STATUSES.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </Field>
+        <Field>
+          <FieldLabel>Priority</FieldLabel>
+          <Controller
+            name="priority"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={ALL_VALUE}>All priority</SelectItem>
+                    {TICKET_PRIORITIES.map((priority) => (
+                      <SelectItem key={priority} value={priority}>
+                        {priority}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </Field>
+      </FieldGroup>
       <div className="flex items-center justify-end gap-2">
         <Button type="submit" variant="outline">
           Filter

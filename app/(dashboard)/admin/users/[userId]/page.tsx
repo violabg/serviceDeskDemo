@@ -5,6 +5,15 @@ import {
   removeUserRoleAction,
 } from "@/app/(dashboard)/admin/actions"
 import { Button } from "@/components/ui/button"
+import { Field, FieldLabel } from "@/components/ui/field"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
 import { getUserForManagement } from "@/lib/access-control/server"
@@ -31,10 +40,7 @@ export default function UserDetailPage({
 }) {
   return (
     <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">Users</p>
-      </div>
-      <Suspense fallback={<UserDetailPageSkeleton />}>
+      <Suspense fallback={<UserDetailContentSkeleton />}>
         <UserDetailPageContent params={params} />
       </Suspense>
     </main>
@@ -65,10 +71,6 @@ async function UserDetailPageContent({
       canWriteUsers={canWriteUsers}
     />
   )
-}
-
-function UserDetailPageSkeleton() {
-  return <UserDetailContentSkeleton />
 }
 
 async function UserDetailContent({
@@ -175,23 +177,36 @@ async function UserDetailContent({
           )}
         </div>
         {canWriteUsers ? (
-          <form action={assignUserRoleAction} className="mt-4 flex gap-3">
+          <form action={assignUserRoleAction} className="mt-4 grid gap-3">
             <input type="hidden" name="targetUserId" value={user.id} />
-            <select
-              name="roleId"
-              aria-label="Role to assign"
-              className="h-9 min-w-64 rounded-md border border-input bg-background px-2.5 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              disabled={assignableRoles.length === 0}
-            >
-              {assignableRoles.map((role) => (
-                <option key={role.id} value={role.id}>
-                  {role.name}
-                </option>
-              ))}
-            </select>
-            <Button type="submit" disabled={assignableRoles.length === 0}>
-              Assign Role
-            </Button>
+            <Field>
+              <FieldLabel>
+                Role <span className="text-destructive">*</span>
+              </FieldLabel>
+              <Select
+                name="roleId"
+                defaultValue={assignableRoles[0]?.id}
+                disabled={assignableRoles.length === 0}
+              >
+                <SelectTrigger className="w-full md:max-w-72">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {assignableRoles.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>
+                        {role.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+            <div>
+              <Button type="submit" disabled={assignableRoles.length === 0}>
+                Assign Role
+              </Button>
+            </div>
           </form>
         ) : null}
       </section>
@@ -203,43 +218,6 @@ function UserDetailContentSkeleton() {
   return (
     <div className="grid gap-4">
       <div className="space-y-2">
-        <Skeleton className="h-9 w-56" />
-        <Skeleton className="h-4 w-72" />
-      </div>
-      <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-        <section className="rounded-lg border bg-card p-4">
-          <div className="space-y-3">
-            <Skeleton className="h-5 w-20" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-          </div>
-        </section>
-        <section className="rounded-lg border bg-card p-4">
-          <div className="space-y-3">
-            <Skeleton className="h-5 w-44" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-6 w-full" />
-          </div>
-        </section>
-      </div>
-      <section className="rounded-lg border bg-card p-4">
-        <div className="space-y-3">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-9 w-52" />
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function UserDetailSkeleton() {
-  return (
-    <div className="grid gap-4">
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-24" />
         <Skeleton className="h-9 w-56" />
         <Skeleton className="h-4 w-72" />
       </div>

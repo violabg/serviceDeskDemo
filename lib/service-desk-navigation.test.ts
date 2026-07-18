@@ -107,5 +107,15 @@ describe("service desk navigation", () => {
         "access-management",
       ])
     })
+
+    it("uses /tickets as the Tickets item URL", () => {
+      const groups = getReadableServiceDeskNavigationGroups(
+        new Set([permissionKey("tickets", "read")])
+      )
+
+      expect(
+        groups.find((group) => group.id === "ticket-management")?.items[0]?.url
+      ).toBe("/tickets")
+    })
   })
 })

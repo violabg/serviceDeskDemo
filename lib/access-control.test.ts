@@ -48,6 +48,16 @@ describe("access-control permissions", () => {
     expect(ACCESS_SECTIONS).toContain("tickets")
   })
 
+  it("generates tickets read/write/manage permissions", () => {
+    const ticketPermissions = INITIAL_PERMISSIONS.filter(
+      (permission) => permission.section === "tickets"
+    )
+
+    expect(ticketPermissions.map((permission) => permission.operation)).toEqual(
+      expect.arrayContaining(["read", "write", "manage"])
+    )
+  })
+
   it("creates structured permissions for every initial section and operation", () => {
     expect(INITIAL_PERMISSIONS).toHaveLength(
       ACCESS_SECTIONS.length * ACCESS_OPERATIONS.length
