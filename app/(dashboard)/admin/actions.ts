@@ -1,13 +1,19 @@
 "use server"
 
+import {
+  adminRoleDetailTag,
+  adminRolesListTag,
+  adminUserDetailTag,
+  adminUsersListTag,
+} from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import {
-    assignRoleToUser,
-    createRoleForManagement,
-    removeRoleFromUser,
-    updateRoleForManagement,
+  assignRoleToUser,
+  createRoleForManagement,
+  removeRoleFromUser,
+  updateRoleForManagement,
 } from "@/lib/access-control/server"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 
 function getFormString(formData: FormData, name: string) {
@@ -27,7 +33,8 @@ export async function assignUserRoleAction(formData: FormData) {
     roleId,
   })
 
-  revalidatePath(`/admin/users/${targetUserId}`)
+  revalidateTag(adminUserDetailTag(access.user.id, targetUserId), "max")
+  revalidateTag(adminUsersListTag(access.user.id), "max")
 }
 
 export async function removeUserRoleAction(formData: FormData) {
@@ -41,7 +48,8 @@ export async function removeUserRoleAction(formData: FormData) {
     roleId,
   })
 
-  revalidatePath(`/admin/users/${targetUserId}`)
+  revalidateTag(adminUserDetailTag(access.user.id, targetUserId), "max")
+  revalidateTag(adminUsersListTag(access.user.id), "max")
 }
 
 export async function createRoleAction(formData: FormData) {
@@ -55,7 +63,7 @@ export async function createRoleAction(formData: FormData) {
       .filter((value): value is string => typeof value === "string"),
   })
 
-  revalidatePath("/admin/roles")
+  revalidateTag(adminRolesListTag(access.user.id), "max")
   redirect(`/admin/roles/${role.id}`)
 }
 
@@ -74,6 +82,6 @@ export async function updateRoleAction(formData: FormData) {
     permissionIds,
   })
 
-  revalidatePath("/admin/roles")
-  revalidatePath(`/admin/roles/${roleId}`)
+  revalidateTag(adminRolesListTag(access.user.id), "max")
+  revalidateTag(adminRoleDetailTag(access.user.id, roleId), "max")
 }

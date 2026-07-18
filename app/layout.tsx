@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Geist_Mono, IBM_Plex_Sans, Source_Sans_3 } from "next/font/google"
+import { Suspense } from "react"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
@@ -43,7 +44,9 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <Suspense fallback={children}>
+          <ThemeProvider>{children}</ThemeProvider>
+        </Suspense>
       </body>
     </html>
   )

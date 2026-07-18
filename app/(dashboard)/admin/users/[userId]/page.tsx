@@ -1,16 +1,47 @@
+import { adminUserDetailTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import {
   assignUserRoleAction,
   removeUserRoleAction,
 } from "@/app/(dashboard)/admin/actions"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
 import { getUserForManagement } from "@/lib/access-control/server"
+import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
+import { Suspense } from "react"
 
-export const dynamic = "force-dynamic"
+async function getUserDetailData(actorUserId: string, targetUserId: string) {
+  "use cache"
+
+  cacheLife("days")
+  cacheTag(adminUserDetailTag(actorUserId, targetUserId))
+
+  return getUserForManagement({
+    actorUserId,
+    targetUserId,
+  })
+}
 
 export default async function UserDetailPage({
+  params,
+}: {
+  params: Promise<{ userId: string }>
+}) {
+  return (
+    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-muted-foreground">Users</p>
+      </div>
+      <Suspense fallback={<UserDetailPageSkeleton />}>
+        <UserDetailPageContent params={params} />
+      </Suspense>
+    </main>
+  )
+}
+
+async function UserDetailPageContent({
   params,
 }: {
   params: Promise<{ userId: string }>
@@ -26,20 +57,39 @@ export default async function UserDetailPage({
   }
 
   const canWriteUsers = hasPermission(permissions, "users", "write")
+
+  return (
+    <UserDetailContent
+      actorUserId={access.user.id}
+      targetUserId={userId}
+      canWriteUsers={canWriteUsers}
+    />
+  )
+}
+
+function UserDetailPageSkeleton() {
+  return <UserDetailContentSkeleton />
+}
+
+async function UserDetailContent({
+  actorUserId,
+  targetUserId,
+  canWriteUsers,
+}: {
+  actorUserId: string
+  targetUserId: string
+  canWriteUsers: boolean
+}) {
   const { user, availableRoles, effectivePermissionKeys } =
-    await getUserForManagement({
-      actorUserId: access.user.id,
-      targetUserId: userId,
-    })
+    await getUserDetailData(actorUserId, targetUserId)
   const assignedRoleIds = new Set(user.roles.map(({ roleId }) => roleId))
   const assignableRoles = availableRoles.filter(
     (role) => !assignedRoleIds.has(role.id)
   )
 
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <>
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">Users</p>
         <h1 className="font-heading text-3xl font-semibold tracking-normal">
           {user.name || user.email}
         </h1>
@@ -145,6 +195,79 @@ export default async function UserDetailPage({
           </form>
         ) : null}
       </section>
-    </main>
+    </>
+  )
+}
+
+function UserDetailContentSkeleton() {
+  return (
+    <div className="grid gap-4">
+      <div className="space-y-2">
+        <Skeleton className="h-9 w-56" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+        <section className="rounded-lg border bg-card p-4">
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        </section>
+        <section className="rounded-lg border bg-card p-4">
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-44" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-full" />
+          </div>
+        </section>
+      </div>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-9 w-52" />
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function UserDetailSkeleton() {
+  return (
+    <div className="grid gap-4">
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-9 w-56" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+        <section className="rounded-lg border bg-card p-4">
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        </section>
+        <section className="rounded-lg border bg-card p-4">
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-44" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-full" />
+          </div>
+        </section>
+      </div>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-9 w-52" />
+        </div>
+      </section>
+    </div>
   )
 }

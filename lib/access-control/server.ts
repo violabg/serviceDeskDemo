@@ -54,6 +54,28 @@ function getApplicationUserData(sessionUser: AuthenticatedSessionUser) {
   }
 }
 
+function shouldUpdateApplicationUser(
+  user: {
+    neonAuthId: string | null
+    email: string
+    name: string | null
+    image: string | null
+  },
+  data: {
+    neonAuthId: string
+    email: string
+    name: string | null
+    image: string | null
+  },
+) {
+  return (
+    user.neonAuthId !== data.neonAuthId ||
+    user.email !== data.email ||
+    user.name !== data.name ||
+    user.image !== data.image
+  )
+}
+
 function normalizeOptionalText(value: string | null | undefined) {
   const normalized = value?.trim()
 
@@ -187,6 +209,10 @@ export async function ensureApplicationUserForSessionUser(
   })
 
   if (existingByAuthId) {
+    if (!shouldUpdateApplicationUser(existingByAuthId, data)) {
+      return existingByAuthId
+    }
+
     return prisma.user.update({
       where: { id: existingByAuthId.id },
       data,
@@ -198,6 +224,10 @@ export async function ensureApplicationUserForSessionUser(
   })
 
   if (existingByEmail) {
+    if (!shouldUpdateApplicationUser(existingByEmail, data)) {
+      return existingByEmail
+    }
+
     return prisma.user.update({
       where: { id: existingByEmail.id },
       data,

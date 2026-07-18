@@ -9,14 +9,28 @@ import {
 import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
+import { Suspense } from "react"
 
-export const dynamic = "force-dynamic"
-
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  return (
+    <Suspense fallback={null}>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </Suspense>
+  )
+}
+
+async function DashboardLayoutContent({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  await connection()
+
   const { data: session } = await auth.getSession()
   const sessionUser = session?.user
 

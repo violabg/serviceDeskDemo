@@ -1,22 +1,53 @@
+import { adminRoleDetailTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { updateRoleAction } from "@/app/(dashboard)/admin/actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   ACCESS_OPERATIONS,
   hasPermission,
   permissionKey,
 } from "@/lib/access-control"
 import { getRoleForManagement } from "@/lib/access-control/server"
+import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
-
-export const dynamic = "force-dynamic"
+import { Suspense } from "react"
 
 const operationOrder = new Map<string, number>(
   ACCESS_OPERATIONS.map((operation, index) => [operation, index])
 )
 
+async function getRoleDetailData(actorUserId: string, roleId: string) {
+  "use cache"
+
+  cacheLife("days")
+  cacheTag(adminRoleDetailTag(actorUserId, roleId))
+
+  return getRoleForManagement({
+    actorUserId,
+    roleId,
+  })
+}
+
 export default async function RoleDetailPage({
+  params,
+}: {
+  params: Promise<{ roleId: string }>
+}) {
+  return (
+    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-muted-foreground">Roles</p>
+      </div>
+      <Suspense fallback={<RoleDetailPageSkeleton />}>
+        <RoleDetailPageContent params={params} />
+      </Suspense>
+    </main>
+  )
+}
+
+async function RoleDetailPageContent({
   params,
 }: {
   params: Promise<{ roleId: string }>
@@ -32,23 +63,42 @@ export default async function RoleDetailPage({
   }
 
   const canWriteRoles = hasPermission(permissions, "roles", "write")
+
+  return (
+    <RoleDetailContent
+      actorUserId={access.user.id}
+      roleId={roleId}
+      canWriteRoles={canWriteRoles}
+    />
+  )
+}
+
+function RoleDetailPageSkeleton() {
+  return <RoleDetailContentSkeleton />
+}
+
+async function RoleDetailContent({
+  actorUserId,
+  roleId,
+  canWriteRoles,
+}: {
+  actorUserId: string
+  roleId: string
+  canWriteRoles: boolean
+}) {
   const {
     role,
     permissions: availablePermissions,
     sections,
-  } = await getRoleForManagement({
-    actorUserId: access.user.id,
-    roleId,
-  })
+  } = await getRoleDetailData(actorUserId, roleId)
   const assignedPermissionIds = new Set(
     role.permissions.map(({ permissionId }) => permissionId)
   )
   const canEditRole = canWriteRoles && !role.isSystem
 
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <>
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">Roles</p>
         <h1 className="font-heading text-3xl font-semibold tracking-normal">
           {role.name}
         </h1>
@@ -154,6 +204,59 @@ export default async function RoleDetailPage({
           </div>
         ) : null}
       </form>
-    </main>
+    </>
+  )
+}
+
+function RoleDetailContentSkeleton() {
+  return (
+    <div className="grid gap-4">
+      <div className="space-y-2">
+        <Skeleton className="h-9 w-56" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </section>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-9 w-28" />
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function RoleDetailSkeleton() {
+  return (
+    <div className="grid gap-4">
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-9 w-56" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </section>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-9 w-28" />
+        </div>
+      </section>
+    </div>
   )
 }

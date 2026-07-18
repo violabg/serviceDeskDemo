@@ -1,11 +1,22 @@
 import { LogoutButton } from "@/components/auth/logout-button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
+import { Suspense } from "react"
 
-export const dynamic = "force-dynamic"
+export default function PendingAccessPage() {
+  return (
+    <Suspense fallback={<PendingAccessPageSkeleton />}>
+      <PendingAccessPageContent />
+    </Suspense>
+  )
+}
 
-export default async function PendingAccessPage() {
+async function PendingAccessPageContent() {
+  await connection()
+
   const { data: session } = await auth.getSession()
 
   const sessionUser = session?.user
@@ -37,6 +48,19 @@ export default async function PendingAccessPage() {
           </p>
         </div>
         <LogoutButton />
+      </section>
+    </main>
+  )
+}
+
+function PendingAccessPageSkeleton() {
+  return (
+    <main className="grid min-h-svh place-items-center bg-background p-6">
+      <section className="w-full max-w-md space-y-3 rounded-lg border bg-card p-6 shadow-sm">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-7 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-9 w-28" />
       </section>
     </main>
   )

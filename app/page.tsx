@@ -1,11 +1,22 @@
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { auth } from "@/lib/auth/server"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
+import { Suspense } from "react"
 
-export const dynamic = "force-dynamic"
+export default function HomePage() {
+  return (
+    <Suspense fallback={<HomePageSkeleton />}>
+      <HomePageContent />
+    </Suspense>
+  )
+}
 
-export default async function HomePage() {
+async function HomePageContent() {
+  await connection()
+
   const { data: session } = await auth.getSession()
 
   if (session?.user) {
@@ -73,6 +84,17 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+    </main>
+  )
+}
+
+function HomePageSkeleton() {
+  return (
+    <main className="min-h-svh p-6">
+      <div className="mx-auto max-w-6xl space-y-4">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
     </main>
   )
 }

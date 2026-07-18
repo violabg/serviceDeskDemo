@@ -31,7 +31,7 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 - Use Client Components only when browser hooks or client interactivity are required.
 - Keep server mutations in dedicated action files using "use server".
 - Trigger server actions from forms using action={serverAction}.
-- After write actions, refresh affected data with revalidatePath and redirect when route transition is required.
+- After write actions, refresh affected data with `revalidateTag` (admin sections) or `revalidatePath` (simple path-based cases), and redirect when route transition is required. See `nextjs-cache-components-pattern.md` for when to use each.
 - Keep auth and permission checks on the server before protected UI is rendered.
 - Keep browser auth APIs in client-only modules and server auth APIs in server modules.
 
@@ -59,4 +59,4 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 - Do not move permission enforcement into client components.
 - Do not call server-side auth utilities from client files.
 - Do not place mutation logic directly inside client components when a server action can own it.
-- Do not forget revalidatePath after role, user, or permission changes.
+- Do not forget to revalidate (via `revalidateTag` for admin sections) after role, user, or permission changes.
