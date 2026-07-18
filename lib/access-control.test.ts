@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
-    ACCESS_OPERATIONS,
-    ACCESS_SECTIONS,
-    ADMIN_ROLE_NAME,
-    INITIAL_PERMISSIONS,
-    getDashboardAccessRedirectPath,
-    getEffectivePermissionKeys,
-    hasPermission,
-    permissionKey,
+  ACCESS_OPERATIONS,
+  ACCESS_SECTIONS,
+  ADMIN_ROLE_NAME,
+  INITIAL_PERMISSIONS,
+  getDashboardAccessRedirectPath,
+  getEffectivePermissionKeys,
+  hasPermission,
+  permissionKey,
 } from "@/lib/access-control"
 
 const prismaMock = vi.hoisted(() => ({
@@ -46,7 +46,7 @@ vi.mock("@/lib/prisma", () => ({
 describe("access-control permissions", () => {
   it("creates structured permissions for every initial section and operation", () => {
     expect(INITIAL_PERMISSIONS).toHaveLength(
-      ACCESS_SECTIONS.length * ACCESS_OPERATIONS.length,
+      ACCESS_SECTIONS.length * ACCESS_OPERATIONS.length
     )
     expect(INITIAL_PERMISSIONS).toContainEqual({
       section: "users",
@@ -85,7 +85,7 @@ describe("access-control permissions", () => {
         permissionKey("users", "read"),
         permissionKey("users", "write"),
         permissionKey("roles", "read"),
-      ]),
+      ])
     )
     expect(hasPermission(permissions, "users", "read")).toBe(true)
     expect(hasPermission(permissions, "users", "manage")).toBe(false)
@@ -93,7 +93,7 @@ describe("access-control permissions", () => {
 
   it("returns dashboard redirect paths for unauthenticated and unauthorized access", () => {
     expect(getDashboardAccessRedirectPath({ isAuthenticated: false })).toBe(
-      "/login",
+      "/login"
     )
     expect(
       getDashboardAccessRedirectPath({
@@ -105,7 +105,7 @@ describe("access-control permissions", () => {
       getDashboardAccessRedirectPath({
         isAuthenticated: true,
         canReadDashboard: true,
-      }),
+      })
     ).toBeNull()
   })
 })
@@ -134,9 +134,8 @@ describe("bootstrapAccessControl", () => {
   })
 
   it("creates base permissions, admin role, and assigns initial admin", async () => {
-    const { bootstrapAccessControl } = await import(
-      "@/lib/access-control/server"
-    )
+    const { bootstrapAccessControl } =
+      await import("@/lib/access-control/server")
 
     const result = await bootstrapAccessControl(" Admin@Example.COM ")
 
@@ -144,10 +143,10 @@ describe("bootstrapAccessControl", () => {
     expect(result.adminRole.name).toBe(ADMIN_ROLE_NAME)
     expect(result.adminUser?.email).toBe("admin@example.com")
     expect(prismaMock.permission.upsert).toHaveBeenCalledTimes(
-      INITIAL_PERMISSIONS.length,
+      INITIAL_PERMISSIONS.length
     )
     expect(prismaMock.rolePermission.upsert).toHaveBeenCalledTimes(
-      INITIAL_PERMISSIONS.length,
+      INITIAL_PERMISSIONS.length
     )
     expect(prismaMock.user.upsert).toHaveBeenCalledWith({
       where: { email: "admin@example.com" },
@@ -170,9 +169,8 @@ describe("bootstrapAccessControl", () => {
   })
 
   it("does not assign an initial admin when email is missing", async () => {
-    const { bootstrapAccessControl } = await import(
-      "@/lib/access-control/server"
-    )
+    const { bootstrapAccessControl } =
+      await import("@/lib/access-control/server")
 
     const result = await bootstrapAccessControl("")
 
@@ -198,9 +196,8 @@ describe("first-login application user access", () => {
       image: "https://example.com/avatar.png",
     })
 
-    const { ensureApplicationUserForSessionUser } = await import(
-      "@/lib/access-control/server"
-    )
+    const { ensureApplicationUserForSessionUser } =
+      await import("@/lib/access-control/server")
 
     const user = await ensureApplicationUserForSessionUser({
       id: "neon-user-1",
@@ -236,9 +233,8 @@ describe("first-login application user access", () => {
       image: null,
     })
 
-    const { ensureApplicationUserForSessionUser } = await import(
-      "@/lib/access-control/server"
-    )
+    const { ensureApplicationUserForSessionUser } =
+      await import("@/lib/access-control/server")
 
     await ensureApplicationUserForSessionUser({
       id: "neon-admin",
@@ -272,9 +268,8 @@ describe("first-login application user access", () => {
       roles: [],
     })
 
-    const { getDashboardAccessForSessionUser } = await import(
-      "@/lib/access-control/server"
-    )
+    const { getDashboardAccessForSessionUser } =
+      await import("@/lib/access-control/server")
 
     const access = await getDashboardAccessForSessionUser({
       id: "neon-user-2",
@@ -316,9 +311,8 @@ describe("first-login application user access", () => {
       ],
     })
 
-    const { getDashboardAccessForSessionUser } = await import(
-      "@/lib/access-control/server"
-    )
+    const { getDashboardAccessForSessionUser } =
+      await import("@/lib/access-control/server")
 
     const access = await getDashboardAccessForSessionUser({
       id: "neon-support",
@@ -359,9 +353,8 @@ describe("first-login application user access", () => {
       ],
     })
 
-    const { getDashboardAccessForSessionUser } = await import(
-      "@/lib/access-control/server"
-    )
+    const { getDashboardAccessForSessionUser } =
+      await import("@/lib/access-control/server")
 
     const access = await getDashboardAccessForSessionUser({
       id: "neon-admin",
@@ -391,7 +384,7 @@ describe("management mutations", () => {
         actorUserId: "actor-read-only",
         targetUserId: "target-user",
         roleId: "role-technician",
-      }),
+      })
     ).rejects.toThrow("Missing permission: users:write")
     expect(prismaMock.userRole.upsert).not.toHaveBeenCalled()
   })
@@ -436,9 +429,8 @@ describe("management mutations", () => {
   it("requires roles write permission before creating a role", async () => {
     prismaMock.user.findUnique.mockResolvedValue({ roles: [] })
 
-    const { createRoleForManagement } = await import(
-      "@/lib/access-control/server"
-    )
+    const { createRoleForManagement } =
+      await import("@/lib/access-control/server")
 
     await expect(
       createRoleForManagement({
@@ -446,7 +438,7 @@ describe("management mutations", () => {
         name: "User Manager",
         description: "Can read users",
         permissionIds: ["permission-users-read"],
-      }),
+      })
     ).rejects.toThrow("Missing permission: roles:write")
     expect(prismaMock.role.create).not.toHaveBeenCalled()
   })
@@ -469,9 +461,8 @@ describe("management mutations", () => {
     })
     prismaMock.rolePermission.createMany.mockResolvedValue({ count: 1 })
 
-    const { createRoleForManagement } = await import(
-      "@/lib/access-control/server"
-    )
+    const { createRoleForManagement } =
+      await import("@/lib/access-control/server")
 
     await createRoleForManagement({
       actorUserId: "actor-admin",
@@ -517,9 +508,8 @@ describe("management mutations", () => {
     prismaMock.rolePermission.deleteMany.mockResolvedValue({ count: 2 })
     prismaMock.rolePermission.createMany.mockResolvedValue({ count: 2 })
 
-    const { updateRoleForManagement } = await import(
-      "@/lib/access-control/server"
-    )
+    const { updateRoleForManagement } =
+      await import("@/lib/access-control/server")
 
     await updateRoleForManagement({
       actorUserId: "actor-admin",

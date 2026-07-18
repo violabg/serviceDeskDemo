@@ -1,12 +1,12 @@
 import {
-    ACCESS_SECTIONS,
-    ADMIN_ROLE_NAME,
-    INITIAL_PERMISSIONS,
-    getEffectivePermissionKeys,
-    hasPermission,
-    permissionKey,
-    type AccessOperation,
-    type AccessSection,
+  ACCESS_SECTIONS,
+  ADMIN_ROLE_NAME,
+  INITIAL_PERMISSIONS,
+  getEffectivePermissionKeys,
+  hasPermission,
+  permissionKey,
+  type AccessOperation,
+  type AccessSection,
 } from "@/lib/access-control"
 import { prisma } from "@/lib/prisma"
 
@@ -66,7 +66,7 @@ function shouldUpdateApplicationUser(
     email: string
     name: string | null
     image: string | null
-  },
+  }
 ) {
   return (
     user.neonAuthId !== data.neonAuthId ||
@@ -99,7 +99,7 @@ function getUniquePermissionIds(permissionIds: string[]) {
 async function requireUserPermission(
   userId: string,
   section: AccessSection,
-  operation: AccessOperation,
+  operation: AccessOperation
 ) {
   const allowed = await userHasPermission(userId, section, operation)
 
@@ -109,7 +109,7 @@ async function requireUserPermission(
 }
 
 export async function bootstrapAccessControl(
-  initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL,
+  initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL
 ) {
   await prisma.permission.deleteMany({
     where: {
@@ -132,8 +132,8 @@ export async function bootstrapAccessControl(
           description: permission.description,
         },
         create: permission,
-      }),
-    ),
+      })
+    )
   )
 
   const normalizedEmail = initialAdminEmail?.trim().toLowerCase()
@@ -173,8 +173,8 @@ export async function bootstrapAccessControl(
           roleId: adminRole.id,
           permissionId: permission.id,
         },
-      }),
-    ),
+      })
+    )
   )
 
   if (adminUser) {
@@ -201,7 +201,7 @@ export async function bootstrapAccessControl(
 }
 
 export async function ensureApplicationUserForSessionUser(
-  sessionUser: AuthenticatedSessionUser,
+  sessionUser: AuthenticatedSessionUser
 ) {
   const data = getApplicationUserData(sessionUser)
   const existingByAuthId = await prisma.user.findUnique({
@@ -238,17 +238,17 @@ export async function ensureApplicationUserForSessionUser(
 }
 
 export async function getDashboardAccessForSessionUser(
-  sessionUser: AuthenticatedSessionUser,
+  sessionUser: AuthenticatedSessionUser
 ) {
   const user = await ensureApplicationUserForSessionUser(sessionUser)
   const userWithRoles = await getUserRolesWithPermissions(user.id)
   const effectivePermissionKeys = getEffectivePermissionKeys(
-    userWithRoles?.roles ?? [],
+    userWithRoles?.roles ?? []
   )
   const canReadDashboard = hasPermission(
     effectivePermissionKeys,
     "dashboard",
-    "read",
+    "read"
   )
   const isAdmin =
     userWithRoles?.roles.some(({ role }) => role.name === ADMIN_ROLE_NAME) ??
@@ -298,7 +298,7 @@ export async function getUserEffectivePermissionKeys(userId: string) {
 export async function userHasPermission(
   userId: string,
   section: AccessSection,
-  operation: AccessOperation,
+  operation: AccessOperation
 ) {
   const effectivePermissions = await getUserEffectivePermissionKeys(userId)
 
@@ -379,9 +379,7 @@ export async function getUserForManagement({
   return {
     user,
     availableRoles,
-    effectivePermissionKeys: [
-      ...getEffectivePermissionKeys(user.roles),
-    ].sort(),
+    effectivePermissionKeys: [...getEffectivePermissionKeys(user.roles)].sort(),
   }
 }
 

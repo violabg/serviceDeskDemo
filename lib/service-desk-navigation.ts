@@ -1,7 +1,7 @@
 import {
-    hasPermission,
-    type AccessOperation,
-    type AccessSection,
+  hasPermission,
+  type AccessOperation,
+  type AccessSection,
 } from "@/lib/access-control"
 
 export type ServiceDeskNavigationItem = {
@@ -45,26 +45,24 @@ export type ServiceDeskNavigationId =
   (typeof SERVICE_DESK_NAVIGATION)[number]["items"][number]["id"]
 
 export function getReadableServiceDeskNavigationGroups(
-  effectivePermissions: ReadonlySet<string>,
+  effectivePermissions: ReadonlySet<string>
 ) {
-  return SERVICE_DESK_NAVIGATION
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) =>
-        hasPermission(
-          effectivePermissions,
-          item.requiredPermission.section,
-          item.requiredPermission.operation,
-        ),
-      ),
-    }))
-    .filter((group) => group.items.length > 0)
+  return SERVICE_DESK_NAVIGATION.map((group) => ({
+    ...group,
+    items: group.items.filter((item) =>
+      hasPermission(
+        effectivePermissions,
+        item.requiredPermission.section,
+        item.requiredPermission.operation
+      )
+    ),
+  })).filter((group) => group.items.length > 0)
 }
 
 export function getReadableServiceDeskNavigation(
-  effectivePermissions: ReadonlySet<string>,
+  effectivePermissions: ReadonlySet<string>
 ) {
   return getReadableServiceDeskNavigationGroups(effectivePermissions).flatMap(
-    (group) => group.items,
+    (group) => group.items
   )
 }

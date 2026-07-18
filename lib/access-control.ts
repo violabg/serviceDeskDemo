@@ -1,8 +1,4 @@
-export const ACCESS_SECTIONS = [
-  "dashboard",
-  "users",
-  "roles",
-] as const
+export const ACCESS_SECTIONS = ["dashboard", "users", "roles"] as const
 
 export const ACCESS_OPERATIONS = ["read", "write", "manage"] as const
 
@@ -37,32 +33,27 @@ export const INITIAL_PERMISSIONS = ACCESS_SECTIONS.flatMap((section) =>
     section,
     operation,
     description: `${operation} access for ${section}`,
-  })),
+  }))
 ) satisfies PermissionGrant[]
 
-export function permissionKey(
-  section: string,
-  operation: string,
-) {
+export function permissionKey(section: string, operation: string) {
   return `${section}:${operation}`
 }
 
-export function getEffectivePermissionKeys(
-  roles: UserRoleWithPermissions[],
-) {
+export function getEffectivePermissionKeys(roles: UserRoleWithPermissions[]) {
   return new Set(
     roles.flatMap(({ role }) =>
       role.permissions.map(({ permission }) =>
-        permissionKey(permission.section, permission.operation),
-      ),
-    ),
+        permissionKey(permission.section, permission.operation)
+      )
+    )
   )
 }
 
 export function hasPermission(
   effectivePermissions: ReadonlySet<string>,
   section: AccessSection,
-  operation: AccessOperation,
+  operation: AccessOperation
 ) {
   return effectivePermissions.has(permissionKey(section, operation))
 }

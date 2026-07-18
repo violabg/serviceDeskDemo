@@ -1,6 +1,6 @@
 import {
-    getDashboardAccessForSessionUser,
-    type AuthenticatedSessionUser,
+  getDashboardAccessForSessionUser,
+  type AuthenticatedSessionUser,
 } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { redirect } from "next/navigation"
