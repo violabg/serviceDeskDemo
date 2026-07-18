@@ -27,6 +27,7 @@ Do not use this file for:
 - Agent and skill behavior must follow the precedence chain defined in `AGENTS.md` and `docs/agents/governance.md`.
 - Gate-specific skill allow-lists are mandatory for reproducible runs.
 - Approved artifacts are immutable; revisions create new files rather than overwriting approved ones.
+- Knowledge files are loaded on demand. Planning and implementation agents should read the knowledge index first, then load only knowledge files whose `When to read` trigger matches the current task.
 
 ## System Evolution Principles
 

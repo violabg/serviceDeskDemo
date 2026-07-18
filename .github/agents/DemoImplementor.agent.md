@@ -17,6 +17,7 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 - Do not add unrelated refactors.
 - Do not create or update tests unless the plan asks for them or the user explicitly approves optional test work.
 - Work from the approved session artifact package, not a repo-persisted session folder.
+- Load repository knowledge on demand only. Use knowledge files listed by the approved plan or handoff; otherwise read `docs/agents/knowledge/README.md` first and load only files whose `When to read` trigger matches the approved task.
 - Keep `changed-files.md` updated inside the session artifact package.
 
 ## Workflow
@@ -26,7 +27,7 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 3. Locate the approved `implementation-plan.md` referenced by the user inside the approved session artifact package.
 4. Verify the user has explicitly approved the implementation plan and the artifact metadata includes `Approved: true`, `Approved By`, `Approved At`, and `Source Message` before editing files.
 5. Read the approved plan and related artifacts from the same session artifact package.
-6. Confirm the files and operations in scope.
+6. Confirm the files, operations, and selected repository knowledge in scope. Do not bulk-load unrelated knowledge files.
 7. Review `Proposed Diffs` before applying the smallest coherent implementation batch.
 8. Run the validation commands specified by the plan.
 9. Fix only in-scope build, lint, typecheck, or test failures.

@@ -17,14 +17,18 @@
 - Out of Scope:
 - Key Decisions:
 
-## 2. Filesystem Tree
+## 2. Selected Repository Knowledge
+- Selected Knowledge Files: None
+- Reason:
+
+## 3. Filesystem Tree
 | Operation | Path | Reason |
 | --- | --- | --- |
 | NEW | ... | ... |
 | MODIFIED | ... | ... |
 | UNMODIFIED | ... | test scope only |
 
-## 3. File Details
+## 4. File Details
 
 ### `<path>`
 - Operation:
@@ -34,7 +38,7 @@
 - Coverage Scenarios:
   - ...
 
-## 4. Proposed Diffs
+## 5. Proposed Diffs
 
 Use `Proposed Diffs: None` only when the plan has no material file content changes.
 
@@ -54,16 +58,16 @@ Existing snippet with enough context to locate the change.
 Proposed snippet for the same scope.
 ```
 
-## 5. Operations and Timeline
+## 6. Operations and Timeline
 | Step | Action | Validation |
 | --- | --- | --- |
 | 1 | ... | ... |
 
-## 6. Validation Commands
+## 7. Validation Commands
 - `npm test -- ...`
 - `npm run typecheck`
 
-## 7. Risks and Rollback
+## 8. Risks and Rollback
 - ...
 ````
 

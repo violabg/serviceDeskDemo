@@ -68,6 +68,8 @@ If screenshots or mockups are provided, use native vision capabilities from the 
 
 Identify which demo knowledge is relevant: service desk domain, Next.js architecture, Prisma/Neon data model, auth, UI conventions, testing, or accessibility.
 
+Read `docs/agents/knowledge/README.md` first when it exists. Use the `When to read` triggers to choose only knowledge files related to the current requirement. Do not bulk-load all knowledge files. Record the selected knowledge files, or `None`, in the planning artifacts so implementation can reuse the same context boundary.
+
 ### Gate 4: Requirements Analysis
 
 Use `Demo Requirements Analyst` or the `requirements-analysis` skill to produce gaps, ambiguities, assumptions, edge cases, risks, and clarification questions.
