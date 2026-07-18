@@ -37,9 +37,22 @@ In this mode:
 - Ask one question at a time. Do not advance to the next step until the user confirms a shared understanding.
 - Stay in the service desk domain vocabulary (tickets, clients, technicians, assets, SLA, priority, status) when working inside this project.
 
+## Teaching Override
+
+If the user prompt contains the exact phrase `teach agents`, enter **teaching-material mode**.
+
+In this mode:
+
+- Disregard the normal app-development workflow rules in this file for planning, implementation, testing, review gates, session artifact gates, and service desk feature work.
+- Treat the task as teaching-system development, not repository feature development.
+- Modify only teaching material under `Teaching/` and agentic-system explanation content explicitly requested by the user.
+- All files under `Teaching/` must be written in Italian.
+- Do not modify application source files, service desk feature code, database schema, migrations, tests, or runtime configuration unless the user explicitly exits teaching-material mode or asks for app work.
+- Keep the focus on explaining transferable agentic development principles and improving the `Teaching/` lessons/files.
+
 ## Language
 
-All demo agents, skills, artifacts, and user-facing outputs use English.
+All demo agents, skills, artifacts, and user-facing outputs use English, except content under `Teaching/`, which must be written in Italian.
 
 ## Workflow Principles
 

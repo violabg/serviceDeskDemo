@@ -1,0 +1,91 @@
+# Mappa Sistema Agentico
+
+Questo documento mappa sistema custom di sviluppo agentico usato come esempio didattico. Obiettivo e mostrare come pezzi si incastrano, non insegnare applicazione service desk.
+
+## Forma del Sistema
+
+```mermaid
+flowchart TD
+  User[Richiesta utente] --> Root[Contratto condiviso root: AGENTS.md]
+  Root --> Mode{Override modalita?}
+  Mode -->|customize agents| AgentMaintenance[Manutenzione sistema agent]
+  Mode -->|teach agents| Teaching[Modalita materiale didattico]
+  Mode -->|create story or bug| Intake[Modalita intake]
+  Mode -->|normal app work| Planner[Demo Planner]
+
+  Planner --> Requirements[Skill analisi requisiti]
+  Planner --> Tasks[Skill decomposizione task]
+  Planner --> Plan[Skill pianificazione implementazione]
+  Planner --> TestPlan[Skill strategia test]
+  Planner --> Artifacts[Pacchetto artifact sessione]
+
+  Artifacts --> Approval{Approvazione utente registrata?}
+  Approval -->|si| Implementor[Demo Implementor]
+  Approval -->|no| Planner
+
+  Implementor --> Tester[Demo Tester]
+  Tester --> Reviewer[Demo Reviewer]
+  Reviewer --> PRReady[Handoff pronto per PR]
+
+  Governance[docs/agents/governance.md] --> Planner
+  Knowledge[docs/agents/common-knowledge.md e file di conoscenza] --> Planner
+  Skills[.agents/skills e .github/skills] --> Planner
+  Agents[.github/agents] --> Planner
+```
+
+## Blocchi Principali
+
+| Blocco | File di esempio | Cosa insegna |
+| --- | --- | --- |
+| Contratto condiviso | [../AGENTS.md](../AGENTS.md) | Mettere regole globali workflow, switch modalita e precedenza in un solo punto visibile. |
+| Agent custom | [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md), [../.github/agents/DemoImplementor.agent.md](../.github/agents/DemoImplementor.agent.md), [../.github/agents/DemoTester.agent.md](../.github/agents/DemoTester.agent.md), [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md) | Separare pianificazione, implementazione, test e review in responsabilita diverse. |
+| Skill custom | [../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md), [../.agents/skills/requirements-analysis/SKILL.md](../.agents/skills/requirements-analysis/SKILL.md), [../.agents/skills/implementation-planning/SKILL.md](../.agents/skills/implementation-planning/SKILL.md) | Impacchettare metodi ripetibili come moduli workflow riusabili. |
+| Policy durevole | [../docs/agents/governance.md](../docs/agents/governance.md), [../docs/agents/common-knowledge.md](../docs/agents/common-knowledge.md) | Salvare regole cross-session e conoscenza in documenti del repository. |
+| Evidenza locale | `sessions/<session-id>/` | Tenere evidenza per task locale e tracciabile senza committare artifact di sessione. |
+| Pacchetto didattico | [README.md](README.md), [principles.md](principles.md), [facilitator-guide.md](facilitator-guide.md) | Spiegare sistema come pratica trasferibile invece di implementazione specifica app. |
+
+## Flusso Normale di Sviluppo
+
+```text
+Richiesta
+  -> intake e selezione sessione
+  -> analisi requisiti
+  -> specifica
+  -> decomposizione task
+  -> piano implementazione
+  -> piano test
+  -> approvazione utente esplicita e metadata
+  -> implementazione
+  -> validazione
+  -> review
+  -> handoff
+```
+
+Punto didattico non sono nomi file esatti. Punto didattico e che ogni transizione ha artifact nominato, un owner e un gate.
+
+## Modalita Materiale Didattico
+
+`AGENTS.md` ora definisce frase esatta `teach agents` come trigger di modalita materiale didattico. In quella modalita, workflow normale di sviluppo app viene bypassato cosi agent si concentra sul migliorare cartella `Teaching/`.
+
+Quella modalita esiste perche materiale didattico non e stesso tipo di lavoro di sviluppo feature applicative. Non deve richiedere artifact sessione service desk, piani di implementazione app, migrazioni o test prodotto.
+
+## Cosa Copiare in un Altro Team
+
+Copia pattern, non i nomi:
+
+1. Un contratto root per comportamento globale e precedenza.
+2. Agent specifici per ruolo nelle transizioni ad alto rischio.
+3. Skill per passi di ragionamento ripetibili.
+4. Documenti durevoli per governance e conoscenza condivisa.
+5. Artifact di sessione per evidenza e approvazione.
+6. Un numero piccolo di modalita override esplicite.
+7. Un loop di review che controlla sia qualita output sia conformita processo.
+
+## Domande di Adattamento
+
+- Quali errori sono costosi nel workflow del tuo team?
+- Quali decisioni richiedono approvazione umana?
+- Quale lavoro deve essere diviso tra ruoli?
+- Quali artifact provano che agent ha fatto lavoro corretto?
+- Quale conoscenza deve essere durevole e quale evidenza deve restare locale al task?
+- Quali switch di modalita vale la pena nominare esplicitamente?
