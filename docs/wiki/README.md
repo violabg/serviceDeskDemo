@@ -6,10 +6,12 @@ This wiki page helps new developers use the agentic workflow in this repository.
 
 The repo uses a role-based workflow for software delivery:
 
+- intake retrieves source material
 - planner plans
 - implementor implements
 - tester tests
 - reviewer reviews
+- knowledge builder maintains durable repository knowledge
 
 Policy and behavior are defined in these contract files:
 
@@ -68,13 +70,14 @@ Typical files in a session package:
 
 1. Intake work item and resolve session ID.
 2. Create or reuse `sessions/<session-id>/`.
-3. Produce planning artifacts.
-4. Request user approval for implementation plan.
-5. Record approval metadata.
-6. Implement only after approval is valid.
-7. Run validation commands from test and implementation plans.
-8. Produce handoff artifact for next role.
-9. Prepare review artifacts.
+3. Select only relevant repository knowledge from `docs/agents/knowledge/`.
+4. Produce planning artifacts.
+5. Request user approval for implementation plan.
+6. Record approval metadata.
+7. Implement only after approval is valid.
+8. Run validation commands from test and implementation plans.
+9. Produce handoff artifact for next role.
+10. Prepare review artifacts.
 
 ## Approval Gate
 
@@ -141,12 +144,24 @@ Lint modes are stage-aware and check artifact completeness and handoff quality.
 
 Use these as explicit role tools. In chat, invoke them with direct phrasing such as `Use Demo Planner to ...`.
 
-| Agent | When to use | How to invoke well |
-| --- | --- | --- |
-| `Demo Planner` | You need full planning artifacts from issue/story/screenshot/requirement. | Provide session ID, source input, constraints, and ask for spec, tasks, implementation plan, and test plan. |
-| `Demo Implementor` | You have approved plan and need code implementation only. | Provide session ID and approved artifact references; request implementation against plan only. |
-| `Demo Tester` | You need test planning or test implementation for approved work. | Provide feature scope and ask for Vitest/RTL coverage matrix plus commands and residual risks. |
-| `Demo Reviewer` | You need final quality review before merge/handoff. | Provide changed files and ask for findings by severity, regressions, gaps, and readiness verdict. |
+| Agent                    | When to use                                                                              | How to invoke well                                                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Demo Planner`           | You need full planning artifacts from issue/story/screenshot/requirement.                | Provide session ID, source input, constraints, and ask for spec, tasks, implementation plan, and test plan.         |
+| `Demo Implementor`       | You have approved plan and need code implementation only.                                | Provide session ID and approved artifact references; request implementation against plan only.                      |
+| `Demo Tester`            | You need test planning or test implementation for approved work.                         | Provide feature scope and ask for Vitest/RTL coverage matrix plus commands and residual risks.                      |
+| `Demo Reviewer`          | You need final quality review before merge/handoff.                                      | Provide changed files and ask for findings by severity, regressions, gaps, and readiness verdict.                   |
+| `Demo Knowledge Builder` | You need durable repository knowledge created or updated from verified project evidence. | Provide one focused knowledge topic and approve the proposed target before it saves under `docs/agents/knowledge/`. |
+
+## Internal-Only Agents
+
+These agents support the workflow but should be invoked by another agent, not used as the main user-facing role.
+
+| Agent                       | Used by                                        | Purpose                                                                                             |
+| --------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `Demo GitHub Issue Intake`  | GitHub planning intake skills and planner flow | Retrieve issue metadata, body, comments, labels, assignees, milestones, linked items, and images.   |
+| `Demo Requirements Analyst` | `Demo Planner`                                 | Analyze functional gaps, ambiguities, risks, edge cases, and clarification questions.               |
+| `Demo Task Builder`         | `Demo Planner`                                 | Decompose approved requirements or specs into atomic frontend, backend, data, auth, and test tasks. |
+| `Demo Vision UI`            | `Demo Planner`                                 | Fallback screenshot or mockup analysis when native vision is unavailable.                           |
 
 ## Internal Agent Subagent Flow
 
@@ -171,6 +186,22 @@ flowchart TD
   P4 -. deep requirement analysis .-> GR[Demo Requirements Analyst]
   P5 -. atomic task decomposition .-> GT[Demo Task Builder]
   P3 -. durable knowledge extraction .-> GK[Demo Knowledge Builder]
+```
+
+### Demo Knowledge Builder Flow
+
+```mermaid
+flowchart TD
+  K0[Topic Intake]
+  K1[Check Existing Knowledge]
+  K2[Focused Repository Evidence]
+  K3[Propose Title and Target Path]
+  K4[Draft Knowledge]
+  K5[Request User Approval]
+  K6[Save Durable Knowledge]
+  K7[Validate Markdown and Forbidden References]
+
+  K0 --> K1 --> K2 --> K3 --> K4 --> K5 --> K6 --> K7
 ```
 
 ### Demo Implementor Flow
@@ -222,10 +253,10 @@ This section lists only skills with `disable-model-invocation: true`.
 
 ### Custom Skills (`.agents/skills/`)
 
-| Skill | When to use | How to invoke well |
-| --- | --- | --- |
-| `plan-from-github-issue` | You want direct planning intake from a GitHub issue. | Provide issue ID/URL and ask for planning intake output format. |
-| `plan-from-github-bug` | You want bug-first planning with cause analysis from issue data. | Provide issue ID/URL and request root-cause candidates before implementation planning. |
+| Skill                    | When to use                                                      | How to invoke well                                                                     |
+| ------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `plan-from-github-issue` | You want direct planning intake from a GitHub issue.             | Provide issue ID/URL and ask for planning intake output format.                        |
+| `plan-from-github-bug`   | You want bug-first planning with cause analysis from issue data. | Provide issue ID/URL and request root-cause candidates before implementation planning. |
 
 ## Tips
 

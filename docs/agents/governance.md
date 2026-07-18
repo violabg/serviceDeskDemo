@@ -12,8 +12,9 @@ When instructions conflict, resolve them in this order:
 
 1. `AGENTS.md`
 2. Agent files under `.github/agents/`
-3. Skill files under `.agents/skills/`
-4. Prompt-specific ad hoc instructions
+3. Custom skill files under `.agents/skills/`
+4. Non-custom skill files under `.github/skills/`
+5. Prompt-specific ad hoc instructions
 
 If a lower-precedence source needs a stricter local rule, it may add one only when it does not contradict a higher-precedence source.
 

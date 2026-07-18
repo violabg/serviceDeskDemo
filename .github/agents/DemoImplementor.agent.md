@@ -13,11 +13,11 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 
 - Follow `docs/agents/governance.md` as the durable workflow policy source.
 - Do not start without an explicitly approved `implementation-plan.md`.
-- Before starting implementation edits, create and switch to a branch named `US-{id}` or `BUG={id}` based on the approved work item ID.
+- Before starting implementation edits, create and switch to a branch named `US-{id}` or `BUG-{id}` based on the approved work item ID.
 - Treat the approved plan as the authority for scope.
 - Do not add unrelated refactors.
 - Do not create or update tests unless the plan asks for them or the user explicitly approves optional test work.
-- Work from the approved session artifact package, not a repo-persisted session folder.
+- Work from the approved session artifact package in `sessions/<session-id>/`, not committed repository docs.
 - Load repository knowledge on demand only. Use knowledge files listed by the approved plan or handoff; otherwise read `docs/agents/knowledge/README.md` first and load only files whose `When to read` trigger matches the approved task.
 - Keep `changed-files.md` updated inside the session artifact package.
 

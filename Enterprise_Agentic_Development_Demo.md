@@ -1,120 +1,156 @@
 # Enterprise Agentic Development Demo
 
-## Obiettivo
+## Goal
 
-Costruire una demo enterprise che evolva durante l'anno e mostri un
-workflow AI-first.
+Build an enterprise service desk demo that shows an AI-first delivery workflow: issue intake, grooming, specification, implementation planning, approval, implementation, testing, review, and pull request readiness.
 
 ## Stack
 
-- Next.js (App Router)
-- React + TypeScript
+- Next.js App Router
+- React and TypeScript
 - Prisma
-- Neon DB
+- Neon Postgres
 - Neon Auth
-- GitHub (Repository, Issues, Projects)
+- GitHub repository, issues, and projects
 - GitHub MCP
-- AI Hero Skills
-- Vitest + React Testing Library
+- Custom agents and skills
+- Vitest and React Testing Library
 
-## Dominio
+## Domain
 
 Service Desk IT.
 
-### Moduli iniziali
+Initial application modules:
 
 - Dashboard
-- Ticket
-  - Lista
-  - Nuovo Ticket
-  - Dettaglio
-- Clienti
-- Tecnici
-- Asset
-- Report
-- Amministrazione
+- Tickets
+  - List
+  - New ticket
+  - Detail
+- Clients
+- Technicians
+- Assets
+- Reports
+- Administration
 
-## Obiettivo didattico
+Use the repository glossary in `CONTEXT.md`. In this domain, `Account`, `User`, `Customer`, `Role`, `Access Management`, and `Permission` have specific meanings.
 
-Dimostrare la differenza tra: - prompt tradizionale - workflow agentico
-enterprise
+## Teaching Goal
 
-## Architettura agentica
+Show the difference between a traditional prompt and an enterprise agentic workflow where durable policy, role boundaries, session artifacts, and validation gates carry the process.
 
-Planner - legge Issue GitHub - pone domande di grooming - carica solo la
-knowledge pertinente - genera Spec - genera Piano - genera Test Plan -
-salva gli artifact
+## Agent Architecture
 
-Implementor - carica gli artifact - implementa il piano - aggiorna i
-file
+The current workflow is role-based:
 
-Tester - implementa Unit Test - verifica copertura
-
-Reviewer - esegue review tecnica
+- `Demo GitHub Issue Intake` retrieves GitHub issue facts for intake-only flows.
+- `Demo Planner` converts source input into planning artifacts and approval handoff.
+- `Demo Requirements Analyst` identifies functional gaps, ambiguities, risks, edge cases, and clarification questions.
+- `Demo Task Builder` decomposes approved requirements into atomic frontend, backend, data, auth, and test tasks.
+- `Demo Knowledge Builder` creates or updates durable repository knowledge from verified evidence after user approval.
+- `Demo Vision UI` provides fallback screenshot or mockup analysis when native vision is unavailable.
+- `Demo Implementor` implements only explicitly approved plans.
+- `Demo Tester` creates and runs focused Vitest and React Testing Library coverage for approved work.
+- `Demo Reviewer` reviews for plan conformance, defects, regressions, missing tests, accessibility, security, data integrity, and PR readiness.
 
 ## Context Engineering
 
-La knowledge è modulare.
+Repository knowledge is modular and loaded on demand.
 
-knowledge/ - architecture.md - project-overview.md -
-coding-guidelines.md - component-guidelines.md - testing-guidelines.md -
-styling-guidelines.md - prisma-guidelines.md
+Canonical sources:
 
-Ogni agente carica solo i documenti necessari.
+- `AGENTS.md`
+- `docs/agents/governance.md`
+- `docs/agents/common-knowledge.md`
+- `docs/agents/enforcement-spec.md`
+- `docs/agents/knowledge/README.md` when present
+- focused files under `docs/agents/knowledge/`
 
-## Sessione e Artifact
+Agents should read the knowledge index first, then load only files whose `When to read` trigger matches the current task.
 
-Prima di iniziare la pianificazione, il Planner chiede di creare o
-confermare il nome della sessione da pianificare. Se l'utente accetta il
-default, il nome segue il formato `session-YYYYMMDD-slug-descrittivo`.
+## Sessions and Artifacts
 
-Tutti gli artifact generati vengono salvati sotto:
+All workflow artifacts live in local, gitignored session packages:
 
-artifacts/ session-id/ session-brief.md requirements-analysis.md
-clarification-questions.md spec.md task-breakdown.md
-implementation-plan.md test-plan.md changed-files.md review-report.md
+```text
+sessions/
+  <session-id>/
+    session-brief.md
+    requirements-analysis.md
+    clarification-questions.md
+    spec.md
+    task-breakdown.md
+    implementation-plan.md
+    test-plan.md
+    review-report.md
+    changed-files.md
+```
 
-Il file `session-brief.md` contiene metadati della sessione e stato di
-approvazione. Il file `implementation-plan.md` contiene anche una sezione
-`Proposed Diffs` con snippet before/after delle modifiche proposte sui
-file markdown, agent, skill, config o codice interessati.
+Session rules:
 
-## Roadmap (8 sessioni)
+- For GitHub-driven workflows, use the GitHub issue number as the session ID.
+- For offline workflows, ask the user to provide or confirm the session ID.
+- Create or reuse `sessions/<session-id>/` before writing artifacts.
+- Write `session-brief.md` first.
+- Keep session artifacts out of commits.
+- Export session artifacts as a zip package and attach them to the relevant issue ticket.
+- Include `Proposed Diffs` in `implementation-plan.md` for material file changes.
 
-1. Setup progetto e workflow enterprise
-2. Context Engineering e Knowledge Base
-3. GitHub Issue → Grooming → Spec
-4. Spec → Piano → Artifact con diff proposte
-5. Implementazione guidata dal piano
-6. Testing AI-assisted
-7. Bug fixing enterprise
-8. Workflow end-to-end
+## Approval Gate
 
-## Evoluzione del repository
+Implementation can start only when both conditions are true:
 
-Ogni nuova feature viene sviluppata tramite: Issue → Sessione → Planner
-→ Spec → Piano con diff proposte → Approvazione → Implementazione → Test
-→ Review → Pull Request
+1. User explicitly approves the implementation plan in chat.
+2. Approval metadata exists in both `session-brief.md` and `implementation-plan.md`:
+   - `Approved: true`
+   - `Approved By`
+   - `Approved At`
+   - `Source Message`
 
-## Tipi di User Story
+Approved artifacts are immutable. If approved scope changes, create a revision artifact instead of silently editing the approved file.
 
-- Nuova funzionalità
+## Validation
+
+Artifact lint commands:
+
+```bash
+pnpm agent:lint-artifacts --mode planning-ready --session <session-id>
+pnpm agent:lint-artifacts --mode approval-ready --session <session-id>
+pnpm agent:lint-artifacts --mode implementation-handoff --session <session-id>
+pnpm agent:lint-artifacts --mode review-ready --session <session-id>
+```
+
+Implementation and test validation commands come from the approved `implementation-plan.md` and `test-plan.md`.
+
+## Workflow Evolution
+
+Each feature or bug follows this path unless emergency mode is explicitly requested and recorded:
+
+1. Issue or offline source input
+2. Session package
+3. Planner artifacts
+4. User approval
+5. Implementor changes
+6. Tester validation
+7. Reviewer findings and PR readiness
+8. Pull request
+
+## User Story Types
+
+- New feature
 - Refactoring
-- Bug fixing
+- Bug fix
 - Performance
-- Accessibilità
-- Sicurezza
+- Accessibility
+- Security
 - UX
 
-## Prompt finali
+## Current Prompt Examples
 
-Planner: `/plan issue-123`
+- `Use Demo Planner to plan issue 123 with session ID 123.`
+- `Use Demo Implementor for approved session 123.`
+- `Use Demo Tester to add and run focused tests for session 123.`
+- `Use Demo Reviewer to review changed files for session 123.`
+- `Use Demo Knowledge Builder to create durable knowledge for the access-control permission flow.`
 
-Implementazione: `/implement session-123`
-
-Test: `/test session-123`
-
-Review: `/review session-123`
-
-L'obiettivo è ridurre il prompt al minimo e spostare l'intelligenza nel
-workflow.
+The goal is to keep prompts small while moving process intelligence into repository-owned agents, skills, knowledge, and validation gates.
