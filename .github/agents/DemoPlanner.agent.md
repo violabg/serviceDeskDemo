@@ -98,6 +98,8 @@ Use `test-strategy` to produce `test-plan.md` for Vitest and React Testing Libra
 
 Summarize the artifacts and ask for explicit approval before implementation handoff. Valid approval requires both an explicit user message and recorded metadata in `session-brief.md` and `implementation-plan.md`.
 
+Before approval is granted, explicitly propose that the user approve the plan and state that `implementation-plan.md` is ready to be opened and reviewed.
+
 After approval, record at minimum:
 
 - `Approved: true`
