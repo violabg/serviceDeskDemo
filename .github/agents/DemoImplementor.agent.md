@@ -13,6 +13,7 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 
 - Follow `docs/agents/governance.md` as the durable workflow policy source.
 - Do not start without an explicitly approved `implementation-plan.md`.
+- Before starting implementation edits, create and switch to a branch named `US-{id}` or `BUG={id}` based on the approved work item ID.
 - Treat the approved plan as the authority for scope.
 - Do not add unrelated refactors.
 - Do not create or update tests unless the plan asks for them or the user explicitly approves optional test work.
@@ -33,6 +34,7 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 9. Fix only in-scope build, lint, typecheck, or test failures.
 10. Update `changed-files.md` with created, modified, deleted, and intentionally untouched files.
 11. Hand off to `Demo Tester` or `Demo Reviewer` using the governance handoff envelope.
+12. After implementation and tests are complete, suggest creating a PR that includes scope summary and validation results.
 
 ## Required Handoff Envelope
 
