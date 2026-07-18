@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
-  ACCESS_OPERATIONS,
-  ACCESS_SECTIONS,
-  ADMIN_ROLE_NAME,
-  INITIAL_PERMISSIONS,
-  getDashboardAccessRedirectPath,
-  getEffectivePermissionKeys,
-  hasPermission,
-  permissionKey,
+    ACCESS_OPERATIONS,
+    ACCESS_SECTIONS,
+    ADMIN_ROLE_NAME,
+    INITIAL_PERMISSIONS,
+    getDashboardAccessRedirectPath,
+    getEffectivePermissionKeys,
+    hasPermission,
+    permissionKey,
 } from "@/lib/access-control"
 
 const prismaMock = vi.hoisted(() => ({
@@ -44,6 +44,10 @@ vi.mock("@/lib/prisma", () => ({
 }))
 
 describe("access-control permissions", () => {
+  it("includes tickets as a managed access section", () => {
+    expect(ACCESS_SECTIONS).toContain("tickets")
+  })
+
   it("creates structured permissions for every initial section and operation", () => {
     expect(INITIAL_PERMISSIONS).toHaveLength(
       ACCESS_SECTIONS.length * ACCESS_OPERATIONS.length
@@ -57,6 +61,11 @@ describe("access-control permissions", () => {
       section: "dashboard",
       operation: "manage",
       description: "manage access for dashboard",
+    })
+    expect(INITIAL_PERMISSIONS).toContainEqual({
+      section: "tickets",
+      operation: "read",
+      description: "read access for tickets",
     })
   })
 

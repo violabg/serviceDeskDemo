@@ -1,7 +1,7 @@
 import {
-  hasPermission,
-  type AccessOperation,
-  type AccessSection,
+    hasPermission,
+    type AccessOperation,
+    type AccessSection,
 } from "@/lib/access-control"
 
 export type ServiceDeskNavigationItem = {
@@ -21,6 +21,18 @@ export type ServiceDeskNavigationGroup = {
 }
 
 export const SERVICE_DESK_NAVIGATION = [
+  {
+    id: "ticket-management",
+    title: "Ticket Management",
+    items: [
+      {
+        id: "tickets",
+        title: "Tickets",
+        url: "/tickets",
+        requiredPermission: { section: "tickets", operation: "read" },
+      },
+    ],
+  },
   {
     id: "access-management",
     title: "Access Management",

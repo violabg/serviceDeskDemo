@@ -9,14 +9,18 @@ datasource db {
 }
 
 model User {
-  id         String     @id @default(cuid())
-  neonAuthId String?    @unique
-  email      String     @unique
-  name       String?
-  image      String?
-  roles      UserRole[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id               String           @id @default(cuid())
+  neonAuthId       String?          @unique
+  email            String           @unique
+  name             String?
+  image            String?
+  roles            UserRole[]
+  assignedTickets  Ticket[]         @relation("AssignedTickets")
+  createdTickets   Ticket[]         @relation("CreatedTickets")
+  ticketNotes      TicketNote[]     @relation("AuthoredNotes")
+  ticketActivities TicketActivity[] @relation("ActorActivities")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 model Role {
@@ -60,4 +64,113 @@ model RolePermission {
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@id([roleId, permissionId])
+}
+
+enum TicketStatus {
+  Open
+  InProgress
+  Pending
+  Resolved
+  Closed
+}
+
+enum TicketPriority {
+  Critical
+  High
+  Medium
+  Low
+}
+
+enum TicketCategory {
+  Hardware
+  Software
+  Network
+  Account
+  Other
+}
+
+enum IntakeChannel {
+  Email
+  Phone
+  Portal
+  Chat
+  WalkIn
+}
+
+enum ActivityType {
+  Created
+  StatusChanged
+  PriorityChanged
+  AssigneeChanged
+  NoteAdded
+  AssetLinked
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
+  phone     String?
+  company   String?
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Asset {
+  id           String   @id @default(cuid())
+  name         String
+  serialNumber String?  @unique
+  category     String?
+  tickets      Ticket[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Ticket {
+  id               String         @id @default(cuid())
+  title            String
+  description      String
+  status           TicketStatus   @default(Open)
+  priority         TicketPriority
+  category         TicketCategory
+  intakeChannel    IntakeChannel
+  requesterContact String
+  pendingAssetLink Boolean        @default(false)
+  slaBreachedAt    DateTime?
+  resolvedAt       DateTime?
+  customerId       String
+  customer         Customer       @relation(fields: [customerId], references: [id])
+  assetId          String?
+  asset            Asset?         @relation(fields: [assetId], references: [id])
+  assignedToId     String?
+  assignedTo       User?          @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  createdById      String
+  createdBy        User           @relation("CreatedTickets", fields: [createdById], references: [id])
+  notes            TicketNote[]
+  activities       TicketActivity[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model TicketNote {
+  id        String   @id @default(cuid())
+  content   String
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("AuthoredNotes", fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model TicketActivity {
+  id            String       @id @default(cuid())
+  type          ActivityType
+  ticketId      String
+  ticket        Ticket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  actorId       String
+  actor         User         @relation("ActorActivities", fields: [actorId], references: [id])
+  previousValue String?
+  newValue      String?
+  createdAt     DateTime     @default(now())
 }

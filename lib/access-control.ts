@@ -1,4 +1,4 @@
-export const ACCESS_SECTIONS = ["dashboard", "users", "roles"] as const
+export const ACCESS_SECTIONS = ["dashboard", "users", "roles", "tickets"] as const
 
 export const ACCESS_OPERATIONS = ["read", "write", "manage"] as const
 

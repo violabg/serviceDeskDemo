@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import { permissionKey } from "@/lib/access-control"
 import {
-  getReadableServiceDeskNavigation,
-  getReadableServiceDeskNavigationGroups,
+    getReadableServiceDeskNavigation,
+    getReadableServiceDeskNavigationGroups,
 } from "@/lib/service-desk-navigation"
 
 describe("service desk navigation", () => {
@@ -67,5 +67,45 @@ describe("service desk navigation", () => {
     const groups = getReadableServiceDeskNavigationGroups(new Set())
 
     expect(groups).toEqual([])
+  })
+
+  describe("ticket management group", () => {
+    it("includes Tickets item when tickets:read is granted", () => {
+      const groups = getReadableServiceDeskNavigationGroups(
+        new Set([permissionKey("tickets", "read")])
+      )
+
+      expect(groups.map((group) => group.id)).toContain("ticket-management")
+      expect(
+        groups
+          .find((group) => group.id === "ticket-management")
+          ?.items.map((item) => item.id)
+      ).toEqual(["tickets"])
+    })
+
+    it("excludes Ticket Management group when tickets:read is absent", () => {
+      const groups = getReadableServiceDeskNavigationGroups(
+        new Set([permissionKey("users", "read")])
+      )
+
+      expect(groups.map((group) => group.id)).not.toContain(
+        "ticket-management"
+      )
+    })
+
+    it("access management group is unaffected by tickets:read", () => {
+      const groups = getReadableServiceDeskNavigationGroups(
+        new Set([
+          permissionKey("tickets", "read"),
+          permissionKey("users", "read"),
+          permissionKey("roles", "read"),
+        ])
+      )
+
+      expect(groups.map((group) => group.id)).toEqual([
+        "ticket-management",
+        "access-management",
+      ])
+    })
   })
 })
