@@ -30,7 +30,7 @@ async function getRoleDetailData(actorUserId: string, roleId: string) {
   })
 }
 
-export default async function RoleDetailPage({
+export default function RoleDetailPage({
   params,
 }: {
   params: Promise<{ roleId: string }>
@@ -212,33 +212,6 @@ function RoleDetailContentSkeleton() {
   return (
     <div className="grid gap-4">
       <div className="space-y-2">
-        <Skeleton className="h-9 w-56" />
-        <Skeleton className="h-4 w-72" />
-      </div>
-      <section className="rounded-lg border bg-card p-4">
-        <div className="space-y-3">
-          <Skeleton className="h-5 w-24" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-24 w-full" />
-        </div>
-      </section>
-      <section className="rounded-lg border bg-card p-4">
-        <div className="space-y-3">
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-9 w-28" />
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function RoleDetailSkeleton() {
-  return (
-    <div className="grid gap-4">
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-24" />
         <Skeleton className="h-9 w-56" />
         <Skeleton className="h-4 w-72" />
       </div>

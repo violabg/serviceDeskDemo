@@ -24,7 +24,7 @@ async function getUserDetailData(actorUserId: string, targetUserId: string) {
   })
 }
 
-export default async function UserDetailPage({
+export default function UserDetailPage({
   params,
 }: {
   params: Promise<{ userId: string }>
