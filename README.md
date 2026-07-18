@@ -7,7 +7,7 @@ This folder contains a standalone agentic development demo pack for an enterpris
 The demo shows the difference between a traditional prompt and an enterprise agentic workflow:
 
 1. Intake a GitHub issue, product request, or sample user story.
-2. Create or confirm a named planning session under `artifacts/<session-id>/`.
+2. Create or reuse a named planning session under `sessions/<session-id>/`.
 3. Analyze gaps, ambiguity, risks, and missing acceptance criteria.
 4. Ask focused grooming questions.
 5. Produce a specification and task breakdown.
@@ -30,13 +30,13 @@ enterprise-agentic-demo/
 ├── .agents/
 │   ├── skills/
 │   └── templates/
-└── artifacts/
+└── sessions/
     └── <session-id>/
 ```
 
 Copilot custom agents live in `.github/agents/` because VS Code discovers them from that location. Portable skills and templates live in `.agents/` so the workflow can be reused by other agent runtimes later.
 
-Generated workflow artifacts live in `artifacts/<session-id>/`. Each planning run starts by asking for a session name or confirming the generated default, then writes `session-brief.md`, `requirements-analysis.md`, `spec.md`, `task-breakdown.md`, `implementation-plan.md`, `test-plan.md`, and later handoff artifacts into that folder.
+Generated workflow artifacts live in local, gitignored `sessions/<session-id>/` packages. GitHub-driven workflows use the issue number as the session ID. Offline workflows ask the user to provide or confirm the session ID, then write `session-brief.md`, `requirements-analysis.md`, `spec.md`, `task-breakdown.md`, `implementation-plan.md`, `test-plan.md`, and later handoff artifacts into that folder.
 
 ## Demo Stack
 
@@ -80,7 +80,7 @@ flowchart LR
     H --> I[Demo Reviewer]
 ```
 
-The planner is planning-only. It must not implement code, run project commands, or bypass approval. The implementor works only from an approved plan in `artifacts/<session-id>/`.
+The planner is planning-only. It must not implement code, run project commands, or bypass approval. The implementor works only from an approved plan in `sessions/<session-id>/`.
 
 ## GitHub Issue Intake
 
@@ -97,7 +97,7 @@ Bug planning follows an additional gate before `Demo Planner`: gather bug detail
 
 ## Session Artifacts
 
-Session IDs use `session-YYYYMMDD-<descriptive-slug>` unless the user provides a clearer name. The planner creates or reuses `artifacts/<session-id>/` before requirements analysis starts.
+For GitHub-driven workflows, the session ID is the GitHub issue number. For offline workflows, the user provides or confirms the session ID. The planner creates or reuses `sessions/<session-id>/` before requirements analysis starts.
 
 `implementation-plan.md` includes a `Proposed Diffs` section. These are concise before/after snippets for material code, markdown, configuration, schema, skill, prompt, or agent changes. They are not a replacement for review, but they make the handoff concrete before implementation begins.
 
@@ -109,9 +109,9 @@ For screenshots and mockups, the planner should use the active model's native vi
 
 1. Start from GitHub issue, product request, or user-provided story.
 2. Ask `Demo Planner` to plan the story.
-3. Provide a session name or approve the generated default.
+3. Provide or confirm the session ID.
 4. Answer any grooming questions.
-5. Review generated requirements analysis, spec, task breakdown, implementation plan, and test plan in `artifacts/<session-id>/`.
+5. Review generated requirements analysis, spec, task breakdown, implementation plan, and test plan in `sessions/<session-id>/`.
 6. Approve the plan.
 7. Ask `Demo Implementor` to implement the approved plan from the session folder.
 8. Ask `Demo Tester` to create or run the relevant tests.
@@ -119,7 +119,7 @@ For screenshots and mockups, the planner should use the active model's native vi
 
 The teaching point is that the prompt becomes small because the workflow carries the process knowledge.
 
-# Next.js template
+## Next.js template
 
 This is a Next.js template with shadcn/ui.
 
@@ -138,5 +138,5 @@ This will place the ui components in the `components` directory.
 To use the components in your app, import them as follows:
 
 ```tsx
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 ```

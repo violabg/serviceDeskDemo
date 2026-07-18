@@ -255,6 +255,8 @@ This section lists only skills with `disable-model-invocation: true`.
 
 | Skill                    | When to use                                                      | How to invoke well                                                                     |
 | ------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `create-user-story`      | You want to groom a new service desk story from a rough idea.    | Provide the feature idea and answer one intake question at a time.                     |
+| `create-bug`             | You want to groom a new service desk bug report from symptoms.   | Provide observed behaviour and answer one reproduction question at a time.             |
 | `plan-from-github-issue` | You want direct planning intake from a GitHub issue.             | Provide issue ID/URL and ask for planning intake output format.                        |
 | `plan-from-github-bug`   | You want bug-first planning with cause analysis from issue data. | Provide issue ID/URL and request root-cause candidates before implementation planning. |
 
