@@ -28,12 +28,19 @@ Do not use this file for:
 - Gate-specific skill allow-lists are mandatory for reproducible runs.
 - Approved artifacts are immutable; revisions create new files rather than overwriting approved ones.
 
-## Migration Principles
+## System Evolution Principles
 
-- Migrate from the company system with a traceability-first approach.
-- Build an explicit old-to-new mapping before broad redesign.
+- Preserve behavior intentionally when changing agent workflows.
+- Record old-to-new behavior mapping before broad redesign.
 - Redesign only where the mapping exposes a real quality, safety, or maintainability gain.
-- Import external concepts, not external wording, as canonical system behavior.
+- Express durable behavior in local service desk language and repository-owned docs.
+
+## Repository Knowledge Rules
+
+- Durable repo knowledge belongs in focused markdown files under `docs/agents/knowledge/` when one file per topic is clearer than adding to this shared note.
+- Repo knowledge must be based on read evidence from repository files, design docs, session artifacts, or user-confirmed decisions.
+- Repo knowledge should teach concepts, ownership, conventions, and examples that future agents can apply without rediscovering the same facts.
+- Topic-specific evidence that is still uncertain belongs in the session artifact package until the user approves it as durable knowledge.
 
 ## Review and Update Rules
 

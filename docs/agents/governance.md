@@ -173,11 +173,11 @@ Minimum session metrics:
 
 ## Concept Integration Policy
 
-External skill systems may influence this system at the concept level only.
+New workflow concepts become canonical only when they are rewritten as repository-owned policy.
 
-- Reuse good ideas.
-- Re-express them in local language.
-- Do not depend on external skill text as the canonical reference.
+- Reuse good ideas only when they strengthen this service desk workflow.
+- Express durable behavior in local language.
+- Do not depend on outside workflow text as the canonical reference.
 
 ## Rollout Order
 

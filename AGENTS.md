@@ -10,7 +10,7 @@ This file defines the shared behavior for agents and skills in this demo pack.
 
 ## Scope
 
-Work only inside the target application workspace and the current session artifact folder. Do not modify files in the original MoltiAgent folders unless the user explicitly asks for that in a separate task.
+Work only inside the target application workspace and the current session artifact folder.
 
 ## Agent Customization Override
 
