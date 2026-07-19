@@ -12,7 +12,7 @@ Failure mode comuni:
 - Agent legge troppo e perde contesto importante.
 - Agent mescola pianificazione, coding, test e review in una sola conversazione non tracciabile.
 - Agent tratta approvazione in chat come sufficiente, anche senza record durevole.
-- Agent segue istruzione piu recente invece di istruzione con autorita corretta.
+- Agent segue istruzione più recente invece di istruzione con autorità corretta.
 
 Esempio: [../docs/agents/governance.md](../docs/agents/governance.md) trasforma failure mode in policy esplicite per approvazione, isolamento ruoli, artifact di sessione, validazione e violazioni regole.
 
@@ -20,37 +20,37 @@ Domanda di trasferimento: quali sono i cinque errori agente principali che team 
 
 ## 2. Rendi Esplicita la Precedenza Istruzioni
 
-Gli agent hanno bisogno di modo per risolvere istruzioni in conflitto. Senza modello di precedenza, ogni nuovo prompt puo sovrascrivere per errore regola piu importante.
+Gli agent hanno bisogno di modo per risolvere istruzioni in conflitto. Senza modello di precedenza, ogni nuovo prompt può sovrascrivere per errore una regola più importante.
 
 Esempio: [../AGENTS.md](../AGENTS.md) e [../docs/agents/governance.md](../docs/agents/governance.md) definiscono ordine: istruzioni root, agent custom, skill custom, skill non custom e prompt ad hoc.
 
 Pattern riusabile:
 
 ```text
-Autorita alta: policy durevole del team
-Autorita media: file di ruolo e workflow
-Autorita bassa: testo prompt specifico del task
+Autorità alta: policy durevole del team
+Autorità media: file di ruolo e workflow
+Autorità bassa: testo prompt specifico del task
 ```
 
 Domanda di trasferimento: dove deve mettere team regole che devono sopravvivere a ogni conversazione?
 
-## 3. Usa Modalita per Cambiare Workflow in Modo Deliberato
+## 3. Usa Modalità per Cambiare Workflow in Modo Deliberato
 
-Una modalita e ramo esplicito di comportamento. Permette ad agent di dire: "questa richiesta non e lavoro applicativo normale".
+Una modalità è un ramo esplicito di comportamento. Permette ad agent di dire: "questa richiesta non è lavoro applicativo normale".
 
 Esempi in [../AGENTS.md](../AGENTS.md):
 
-- `customize agents` entra in modalita manutenzione sistema agent.
-- `/create-user-story` e `/create-bug` entrano in modalita intake.
-- `teach agents` entra in modalita materiale didattico.
+- La skill `/customize-agents` attiva la modalità di manutenzione del sistema agent.
+- Le skill `/create-user-story` e `/create-bug` attivano la modalità intake.
+- La skill `/teach-agents` attiva la modalità materiale didattico.
 
-Buone modalita sono strette. Definiscono cosa e permesso, cosa e vietato e quando modalita finisce.
+Le buone modalità sono strette. Definiscono cosa è permesso, cosa è vietato e quando la modalità finisce.
 
-Domanda di trasferimento: quali workflow nel tuo repo meritano modalita dedicata invece di condividere percorso di sviluppo predefinito?
+Domanda di trasferimento: quali workflow nel tuo repo meritano una modalità dedicata invece di condividere il percorso di sviluppo predefinito?
 
 ## 4. Separa Ruoli per Ridurre Drift
 
-Un agent puo fare molte cose, ma una conversazione non deve cambiare autorita in silenzio. Separazione ruoli da un lavoro chiaro a ogni fase.
+Un agent può fare molte cose, ma una conversazione non deve cambiare autorità in silenzio. Separazione ruoli da un lavoro chiaro a ogni fase.
 
 Ruoli di esempio:
 
@@ -80,18 +80,41 @@ sessions/<session-id>/
   changed-files.md
 ```
 
-[../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md) definisce regole artifact. Principio chiave: ogni fase ha output che fase successiva puo ispezionare.
+[../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md) definisce regole artifact. Principio chiave: ogni fase ha output che fase successiva può ispezionare.
 
 Domanda di trasferimento: quali file permettono al team di riprendere lavoro senza dipendere dalla memoria di un thread chat?
 
 ## 6. Metti Gate nelle Transizioni ad Alto Rischio
 
-Non ogni passaggio richiede approvazione. Le transizioni pericolose si.
+Un gate è un punto di controllo esplicito che blocca l'avanzamento di un agent finché una condizione non è soddisfatta. Non ogni passaggio richiede un gate. Le transizioni ad alto rischio sì.
 
-In questo sistema, implementazione non puo iniziare finche:
+### Perché i Gate Esistono
 
-- utente non approva esplicitamente piano di implementazione
-- metadata di approvazione non sono registrati nel set artifact
+Senza gate, un agent può:
+
+- implementare prima che il team concordi sul piano
+- cambiare codice senza approvazione esplicita registrata
+- attraversare confini di responsabilità senza lasciare traccia
+- ignorare evidenza mancante perché nessun controllo la richiede
+
+Il gate trasforma una conversazione informale in un impegno verificabile.
+
+### Tipi di Gate
+
+**Gate di approvazione**: richiede che un umano approvi esplicitamente un artifact prima che l'agent possa avanzare. Esempio: il piano di implementazione deve essere approvato prima che l'implementor possa iniziare.
+
+**Gate di artifact**: richiede che uno o più artifact esistano e siano completi. Esempio: spec, task-breakdown e implementation-plan devono esistere prima che il tester possa creare il test-plan.
+
+**Gate di qualità**: richiede che un controllo automatico passi. Esempio: test verdi e build pulita prima che il reviewer approvi.
+
+**Gate di handoff**: richiede che il mittente registri esplicitamente cosa ha fatto, cosa manca e cosa è il definition of done per il destinatario.
+
+### Come i Gate Sono Implementati in Questo Sistema
+
+In questo sistema, implementazione non può iniziare finché:
+
+- l'utente non approva esplicitamente il piano di implementazione
+- i metadata di approvazione non sono registrati nel set artifact
 
 Campi esempio approvazione:
 
@@ -102,13 +125,25 @@ Approved At:
 Source Message:
 ```
 
-Principio non e burocrazia. Principio e rendere durevole autorita prima che agent cambi codice.
+Il campo `Source Message` cattura il messaggio chat che ha dato l'approvazione. Questo collega il gate all'evidenza originale.
 
-Domanda di trasferimento: dove un umano deve approvare esplicitamente prima che agent possa continuare?
+### Anti-Pattern da Evitare
+
+- **Approvazione implicita**: l'agent interpreta il silenzio o un messaggio generico come approvazione. Non è un gate.
+- **Chat come unica evidenza**: la cronologia chat può essere persa o fraintesa. I gate richiedono artifact durevoli.
+- **Gate ovunque**: troppi gate rallentano il workflow senza ridurre rischio reale. Un gate serve dove il costo di un errore è alto.
+
+### Progettare i Gate Giusti
+
+Fai questa domanda per ogni transizione: se l'agent sbagliasse qui, quanto costerebbe correggerlo? Se il costo è alto, metti un gate. Se è basso, lascia l'agent procedere.
+
+Principio: un gate non è burocrazia. Un gate è rendere durevole l'autorità prima che l'agent cambi codice.
+
+Domanda di trasferimento: dove un umano deve approvare esplicitamente prima che l'agent possa continuare? Dove basta un artifact completo?
 
 ## 7. Impacchetta Ragionamento Ripetibile come Skill
 
-Una skill e modulo workflow riusabile. E piu strutturata di un prompt e piu leggera di un agent custom completo.
+Una skill è un modulo workflow riusabile. È più strutturata di un prompt e più leggera di un agent custom completo.
 
 Esempi:
 
@@ -123,7 +158,7 @@ Domanda di trasferimento: cosa ripetono i tuoi agent abbastanza spesso da merita
 
 ## 8. Carica Conoscenza Su Richiesta
 
-Contesto e risorsa scarsa. Un buon sistema aiuta agent a scegliere conoscenza rilevante invece di caricare ogni file.
+Contesto è una risorsa scarsa. Un buon sistema aiuta agent a scegliere conoscenza rilevante invece di caricare ogni file.
 
 Esempio: [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md) istruisce planner a leggere prima indice conoscenza e selezionare solo file rilevanti.
 
@@ -140,7 +175,7 @@ Domanda di trasferimento: quale conoscenza deve essere indicizzata per permetter
 
 ## 9. Usa Handoff Envelope
 
-Un handoff envelope e contratto tra fasi. Evita che un agent indovini cosa ha fatto altro agent.
+Un handoff envelope è un contratto tra fasi. Evita che un agent indovini cosa ha fatto altro agent.
 
 Campi minimi in questo sistema:
 
@@ -174,6 +209,6 @@ Usa questo ciclo quando costruisci tuo sistema:
 
 1. Nomina failure mode.
 2. Decidi se serve istruzione, separazione ruoli, evidenza artifact, una skill o enforcement.
-3. Scrivi regola piu piccola che previene failure.
+3. Scrivi regola più piccola che previene failure.
 4. Testa regola in workflow reale.
 5. Promuovi regola a documentazione durevole solo quando dimostra valore.

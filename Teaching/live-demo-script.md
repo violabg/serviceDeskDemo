@@ -1,86 +1,86 @@
 # Script Demo Live
 
-Questo script fornisce prompt esatti e comportamento atteso per sette sessioni didattiche. Usa i prompt come scritti durante demo, poi fermati per spiegare cosa ha fatto agent e perche.
+Questo script fornisce prompt esatti e comportamento atteso per sette sessioni didattiche. Usa i prompt come scritti durante demo, poi fermati per spiegare cosa ha fatto agent e perché.
 
-Tutti i prompt usano `teach agents` per mantenere agent in modalita materiale didattico. In questa modalita, agent deve migliorare o spiegare file sotto `Teaching/` ed evitare normale sviluppo applicazione service desk.
+Tutte le sessioni usano la skill `/teach-agents` per attivare la modalità materiale didattico. In questa modalità, l'agent deve migliorare o spiegare file sotto `Teaching/` ed evitare normale sviluppo applicazione service desk.
 
 ## Controllo Sicurezza Demo
 
 Prompt:
 
 ```text
-teach agents: explain what mode you are in and what files you are allowed to modify.
+/teach-agents explain what mode you are in and what files you are allowed to modify.
 ```
 
 Comportamento atteso:
 
-- Agent dice che e in modalita materiale didattico.
+- Agent dice che è in modalità materiale didattico.
 - Agent dice che lavoro deve concentrarsi su lezioni/file in `Teaching/`.
 - Agent non chiede session ID service desk.
 - Agent non pianifica cambi codice applicativo.
 
-Nota didattica: esegui questo per primo se pubblico deve vedere perche modalita esplicite contano.
+Nota didattica: esegui questo per primo se pubblico deve vedere perché le modalità esplicite contano.
 
 ## Demo Sessione 1: Da Prompt a Sistemi
 
 Prompt:
 
 ```text
-teach agents: inspect the custom agentic system at a high level and explain which failure modes it is designed to prevent. Do not inspect app feature code.
+/teach-agents inspect the custom agentic system at a high level and explain which failure modes it is designed to prevent. Do not inspect app feature code.
 ```
 
 Comportamento atteso:
 
 - Legge o cita file sistema agentico come `AGENTS.md`, `.github/agents/`, `.agents/skills/`, `docs/agents/`.
 - Nomina failure mode: approvazione saltata, caricamento contesto troppo ampio, ownership ruoli poco chiara, evidenza mancante, conflitti tra istruzioni.
-- Spiega che sistema e risposta a questi failure.
+- Spiega che sistema è risposta a questi failure.
 
 Pausa facilitatore:
 
 Chiedi ai partecipanti di nominare un failure visto nel proprio team. Mappalo a un controllo: istruzione, ruolo, artifact, skill o enforcement.
 
-## Demo Sessione 2: Gerarchia Istruzioni e Modalita
+## Demo Sessione 2: Gerarchia Istruzioni e Modalità
 
 Prompt:
 
 ```text
-teach agents: improve the explanation of mode switches in Teaching/principles.md. Keep the work inside Teaching/.
+/teach-agents improve the explanation of mode switches in Teaching/principles.md. Keep the work inside Teaching/.
 ```
 
 Comportamento atteso:
 
 - Modifica solo file `Teaching/` se richiesta implementazione.
-- Spiega `teach agents` come modalita, non come richiesta feature normale.
+- Spiega `/teach-agents` come skill che attiva una modalità, non come richiesta feature normale.
 - Non tocca cartelle applicative.
 
 Pausa facilitatore:
 
-Mostra [../AGENTS.md](../AGENTS.md). Evidenzia come modalita definisce cosa e permesso e cosa e vietato.
+Mostra [../AGENTS.md](../AGENTS.md). Evidenzia come la modalità definisce cosa è permesso e cosa è vietato.
 
 ## Demo Sessione 3: Separazione Ruoli
 
 Prompt:
 
 ```text
-teach agents: explain why the Demo Planner should not implement code and why the Demo Implementor should work from approved artifacts.
+/teach-agents explain why the Demo Planner should not implement code and why the Demo Implementor should work from approved artifacts.
 ```
 
 Comportamento atteso:
 
 - Cita [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md) e [../.github/agents/DemoImplementor.agent.md](../.github/agents/DemoImplementor.agent.md).
-- Spiega che autorita di pianificazione e autorita di implementazione sono diverse.
+- Cita che autorità di pianificazione e autorità di implementazione sono diverse.
 - Spiega che metadata di approvazione proteggono transizione verso implementazione.
 
 Pausa facilitatore:
 
-Chiedi ai partecipanti dove nel loro workflow attuale cambia autorita senza essere esplicitato.
+Chiedi ai partecipanti dove nel loro workflow attuale cambia autorità senza essere esplicitato.
 
 ## Demo Sessione 4: Artifact e Gate di Approvazione
 
 Prompt:
 
 ```text
-teach agents: show what artifacts a healthy agentic development workflow should produce before code changes begin.
+/teach-agents show what artifacts a healthy agentic development workflow should produce before code changes begin.
 ```
 
 Comportamento atteso:
@@ -98,12 +98,12 @@ Chiedi quali artifact sono essenziali nell ambiente dei partecipanti e quali sar
 Prompt:
 
 ```text
-teach agents: use the requirements-analysis skill as an example to explain the anatomy of a good skill.
+/teach-agents use the requirements-analysis skill as an example to explain the anatomy of a good skill.
 ```
 
 Comportamento atteso:
 
-- Spiega una skill come trigger piu procedura piu contratto output.
+- Spiega una skill come trigger più procedura più contratto output.
 - Cita che skill sono utili per workflow ripetuti.
 - Evita di trasformare spiegazione in analisi requisiti service desk.
 
@@ -122,14 +122,14 @@ Procedure: <short sequence of steps>.
 Prompt:
 
 ```text
-teach agents: explain bounded knowledge loading using the planner knowledge-selection gate. Do not inspect unrelated app folders.
+/teach-agents explain bounded knowledge loading using the planner knowledge-selection gate. Do not inspect unrelated app folders.
 ```
 
 Comportamento atteso:
 
 - Spiega lettura index-first.
 - Spiega selezione basata su trigger.
-- Spiega perche conoscenza selezionata va registrata.
+- Spiega perché conoscenza selezionata va registrata.
 - Evita esplorazione ampia app.
 
 Pausa facilitatore:
@@ -141,7 +141,7 @@ Chiedi ai partecipanti di identificare primi tre documenti che agent deve legger
 Prompt:
 
 ```text
-teach agents: help me draft a starter agentic system checklist for a different team, using this repo only as an example.
+/teach-agents help me draft a starter agentic system checklist for a different team, using this repo only as an example.
 ```
 
 Comportamento atteso:
@@ -159,7 +159,7 @@ Chiedi ai partecipanti di scegliere versione minima praticabile da provare pross
 Prompt:
 
 ```text
-teach agents: review Teaching/ for consistency across the seven sessions. Report mismatched session names, missing principles, and any places that drift into app implementation details.
+/teach-agents review Teaching/ for consistency across the seven sessions. Report mismatched session names, missing principles, and any places that drift into app implementation details.
 ```
 
 Comportamento atteso:
@@ -187,5 +187,5 @@ Segnali di allarme:
 Se compare un segnale di allarme, ferma e chiedi:
 
 ```text
-teach agents: reset to teaching-material mode and explain the allowed scope before continuing.
+/teach-agents reset to teaching-material mode and explain the allowed scope before continuing.
 ```

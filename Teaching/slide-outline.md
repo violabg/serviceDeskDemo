@@ -5,22 +5,22 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 ## Sessione 1: Da Prompt a Sistemi
 
 1. Titolo: Da prompt utili a workflow affidabili
-2. Problema: prompt isolati non preservano scope, autorita o evidenza
+2. Problema: prompt isolati non preservano scope, autorità o evidenza
 3. Concetto: progettare dai failure mode
 4. Artifact repo: [../docs/agents/governance.md](../docs/agents/governance.md)
 5. Pattern: rischio -> regola -> artifact -> controllo
 6. Esercizio: elenca tre failure agente che team vuole prevenire
-7. Takeaway: sistema agentico e risposta a rischio di workflow
+7. Takeaway: sistema agentico è risposta a rischio di workflow
 
-## Sessione 2: Gerarchia Istruzioni e Modalita
+## Sessione 2: Gerarchia Istruzioni e Modalità
 
 1. Titolo: Chi vince quando istruzioni confliggono?
-2. Problema: ultimo prompt non e sempre autorita corretta
+2. Problema: ultimo prompt non è sempre l'autorità corretta
 3. Concetto: precedenza esplicita
 4. Artifact repo: [../AGENTS.md](../AGENTS.md)
-5. Esempi modalita: `customize agents`, modalita intake, `teach agents`
-6. Esercizio: progetta uno switch di modalita per tuo repo
-7. Takeaway: modalita sono rami deliberati, non eccezioni accidentali
+5. Esempi modalità: skill `/customize-agents`, `/teach-agents` e skill intake
+6. Esercizio: progetta uno switch di modalità per tuo repo
+7. Takeaway: le modalità sono rami deliberati, non eccezioni accidentali
 
 ## Sessione 3: Separazione Ruoli
 
@@ -30,7 +30,7 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 4. Artifact repo: file agent planner, implementor, tester, reviewer
 5. Pattern: ogni ruolo possiede una transizione e un output
 6. Esercizio: abbozza ruoli del tuo team
-7. Takeaway: separa ruoli dove cambia autorita
+7. Takeaway: separa ruoli dove cambia autorità
 
 ## Sessione 4: Artifact e Gate di Approvazione
 
@@ -38,9 +38,9 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 2. Problema: decisioni spariscono tra sessioni
 3. Concetto: artifact durevoli e metadata di approvazione
 4. Artifact repo: [../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md)
-5. Pattern: pacchetto artifact piu campi approvazione espliciti
+5. Pattern: pacchetto artifact più campi approvazione espliciti
 6. Esercizio: scegli artifact minimi utili per un workflow
-7. Takeaway: transizioni ad alto rischio richiedono autorita registrata
+7. Takeaway: transizioni ad alto rischio richiedono autorità registrata
 
 ## Sessione 5: Skill come Moduli Workflow Riusabili
 
@@ -54,7 +54,7 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 
 ## Sessione 6: Caricamento Conoscenza Limitato
 
-1. Titolo: Piu contesto non e sempre contesto migliore
+1. Titolo: Più contesto non è sempre contesto migliore
 2. Problema: esplorazione ampia brucia attenzione e introduce rumore
 3. Concetto: caricamento conoscenza index-first e trigger-based
 4. Artifact repo: [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md)
@@ -65,10 +65,10 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 ## Sessione 7: Review, Tracciabilita e Adattamento
 
 1. Titolo: Revisiona lavoro e workflow
-2. Problema: output bello puo nascere da processo rotto
+2. Problema: output bello può nascere da processo rotto
 3. Concetto: review conformita, handoff, revisioni, enforcement
 4. Artifact repo: [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md), [../docs/agents/enforcement-spec.md](../docs/agents/enforcement-spec.md)
-5. Pattern: controlli output piu controlli processo
+5. Pattern: controlli output più controlli processo
 6. Esercizio: bozza sistema agentico minimo vitale per tuo team
 7. Takeaway: inizia piccolo, enforcement dopo, migliora da evidenza
 

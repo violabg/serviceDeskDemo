@@ -1,10 +1,10 @@
 # Guida Facilitatore
 
-Questa guida supporta sette sessioni da 45 minuti per insegnare progettazione di sistemi di sviluppo agentico. Ogni sessione usa questo repository come esempio, ma obiettivo e insegnare principi trasferibili.
+Questa guida supporta sette sessioni da 45 minuti per insegnare progettazione di sistemi di sviluppo agentico. Ogni sessione usa questo repository come esempio, ma obiettivo è insegnare principi trasferibili.
 
 ## Sessione 1: Da Prompt a Sistemi
 
-Obiettivo: aiutare partecipanti a capire perche prompt una tantum non bastano per lavoro software ripetibile.
+Obiettivo: aiutare partecipanti a capire perché prompt una tantum non bastano per lavoro software ripetibile.
 
 Principio: partire dai failure mode e trasformarli in design del workflow.
 
@@ -25,7 +25,7 @@ Tempi:
 Prompt demo live:
 
 ```text
-teach agents: inspect the custom agentic system at a high level and explain which failure modes it is designed to prevent. Do not inspect app feature code.
+/teach-agents inspect the custom agentic system at a high level and explain which failure modes it is designed to prevent. Do not inspect app feature code.
 ```
 
 Comportamento atteso:
@@ -44,9 +44,9 @@ Takeaway partecipante: sistemi agentici vanno progettati intorno al rischio real
 
 ## Sessione 2: Gerarchia Istruzioni e Modalita
 
-Obiettivo: insegnare come istruzioni competono e come modalita esplicite cambiano comportamento.
+Obiettivo: insegnare come istruzioni competono e come le modalità esplicite cambiano comportamento.
 
-Principio: rendere visibili precedenza e switch modalita.
+Principio: rendere visibili precedenza e switch modalità.
 
 Esempio repo da mostrare:
 
@@ -57,15 +57,15 @@ Tempi:
 
 - 5 min: ripassa failure mode della sessione precedente.
 - 10 min: spiega precedenza istruzioni.
-- 10 min: mostra `customize agents`, modalita intake e `teach agents` come esempi.
-- 10 min: mappa un workflow dei partecipanti in modalita default piu una modalita override.
-- 5 min: discuti rischio di troppe modalita.
+- 10 min: mostra le skill `/customize-agents`, `/teach-agents` e le skill intake come esempi di switch di modalità.
+- 10 min: mappa un workflow dei partecipanti in modalità default più una modalità override.
+- 5 min: discuti rischio di troppe modalità.
 - 5 min: riepilogo.
 
 Prompt demo live:
 
 ```text
-teach agents: improve the explanation of mode switches in Teaching/principles.md. Keep the work inside Teaching/.
+/teach-agents improve the explanation of mode switches in Teaching/principles.md. Keep the work inside Teaching/.
 ```
 
 Comportamento atteso:
@@ -76,15 +76,15 @@ Comportamento atteso:
 
 Prompt discussione:
 
-- Quali istruzioni nel tuo repo devono avere autorita massima?
-- Quali frasi esatte devono attivare workflow speciali?
-- Cosa deve vietare esplicitamente una modalita?
+- Quali istruzioni nel tuo repo devono avere autorità massima?
+- Quali skill devono attivare workflow speciali?
+- Cosa deve vietare esplicitamente una modalità?
 
-Takeaway partecipante: agent sono piu prevedibili quando rami workflow sono nominati e delimitati.
+Takeaway partecipante: agent sono più prevedibili quando rami workflow sono nominati e delimitati.
 
 ## Sessione 3: Separazione Ruoli
 
-Obiettivo: mostrare come ruoli planner, implementor, tester e reviewer riducono drift di contesto e autorita.
+Obiettivo: mostrare come ruoli planner, implementor, tester e reviewer riducono drift di contesto e autorità.
 
 Principio: separare lavoro dove cambia responsabilita o permesso.
 
@@ -97,7 +97,7 @@ Esempio repo da mostrare:
 
 Tempi:
 
-- 5 min: spiega perche un solo agent tuttofare tende al drift.
+- 5 min: spiega perché un solo agent tuttofare tende al drift.
 - 10 min: confronta responsabilita planner e implementor.
 - 10 min: confronta responsabilita tester e reviewer.
 - 10 min: partecipanti disegnano ruoli per workflow proprio.
@@ -107,12 +107,12 @@ Tempi:
 Prompt demo live:
 
 ```text
-teach agents: explain why the Demo Planner should not implement code and why the Demo Implementor should work from approved artifacts.
+/teach-agents explain why the Demo Planner should not implement code and why the Demo Implementor should work from approved artifacts.
 ```
 
 Comportamento atteso:
 
-- Agent spiega autorita dei ruoli, non dettagli app.
+- Agent spiega autorità dei ruoli, non dettagli app.
 - Agent usa file agent custom come esempi.
 - Agent evidenzia dipendenza da approvazione prima di implementare.
 
@@ -122,11 +122,11 @@ Prompt discussione:
 - Cosa deve essere vietato a planner?
 - Cosa deve rifiutare implementor senza evidenza?
 
-Takeaway partecipante: separazione ruoli e controllo su autorita, contesto e revisionabilita.
+Takeaway partecipante: separazione ruoli è controllo su autorità, contesto e revisionabilità.
 
 ## Sessione 4: Artifact e Gate di Approvazione
 
-Obiettivo: insegnare perche artifact durevoli sono piu forti della memoria chat.
+Obiettivo: insegnare perché artifact durevoli sono più forti della memoria chat.
 
 Principio: catturare decisioni prima di attraversare gate ad alto rischio.
 
@@ -147,14 +147,14 @@ Tempi:
 Prompt demo live:
 
 ```text
-teach agents: show what artifacts a healthy agentic development workflow should produce before code changes begin.
+/teach-agents show what artifacts a healthy agentic development workflow should produce before code changes begin.
 ```
 
 Comportamento atteso:
 
 - Agent descrive artifact di sessione.
 - Agent distingue materiale didattico da implementazione applicativa.
-- Agent spiega perche metadata di approvazione contano.
+- Agent spiega perché metadata di approvazione contano.
 
 Prompt discussione:
 
@@ -188,7 +188,7 @@ Tempi:
 Prompt demo live:
 
 ```text
-teach agents: use the requirements-analysis skill as an example to explain the anatomy of a good skill.
+/teach-agents use the requirements-analysis skill as an example to explain the anatomy of a good skill.
 ```
 
 Comportamento atteso:
@@ -207,9 +207,9 @@ Takeaway partecipante: skill standardizzano pensiero ripetuto senza sovra-costru
 
 ## Sessione 6: Caricamento Conoscenza Limitato
 
-Obiettivo: mostrare perche agent non devono leggere intero repo per default.
+Obiettivo: mostrare perché agent non devono leggere intero repo per default.
 
-Principio: selezionare conoscenza per trigger e registrare cosa e stato caricato.
+Principio: selezionare conoscenza per trigger e registrare cosa è stato caricato.
 
 Esempio repo da mostrare:
 
@@ -229,13 +229,13 @@ Tempi:
 Prompt demo live:
 
 ```text
-teach agents: explain bounded knowledge loading using the planner knowledge-selection gate. Do not inspect unrelated app folders.
+/teach-agents explain bounded knowledge loading using the planner knowledge-selection gate. Do not inspect unrelated app folders.
 ```
 
 Comportamento atteso:
 
 - Agent identifica caricamento index-first.
-- Agent spiega perche scoperta delimitata migliora qualita.
+- Agent spiega perché scoperta delimitata migliora qualità.
 - Agent evita esplorazione ampia dell app.
 
 Prompt discussione:
@@ -269,7 +269,7 @@ Tempi:
 Prompt demo live:
 
 ```text
-teach agents: help me draft a starter agentic system checklist for a different team, using this repo only as an example.
+/teach-agents help me draft a starter agentic system checklist for a different team, using this repo only as an example.
 ```
 
 Comportamento atteso:
@@ -280,8 +280,8 @@ Comportamento atteso:
 
 Prompt discussione:
 
-- Qual e il sistema minimo che tuo team puo provare prossima settimana?
+- Qual è il sistema minimo che tuo team può provare prossima settimana?
 - Quali regole vale la pena far rispettare dopo?
 - Come saprai che sistema sta aiutando?
 
-Takeaway partecipante: sistema migliore e il piu piccolo che previene in modo affidabile i failure reali del team.
+Takeaway partecipante: sistema migliore è il più piccolo che previene in modo affidabile i failure reali del team.
