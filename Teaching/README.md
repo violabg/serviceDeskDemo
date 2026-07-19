@@ -42,6 +42,7 @@ I file service desk possono apparire solo come esempi quando illustrano un princ
 - [facilitator-guide.md](facilitator-guide.md) fornisce sette sessioni didattiche da 45 minuti.
 - [slide-outline.md](slide-outline.md) trasforma sessioni in struttura presentazione.
 - [live-demo-script.md](live-demo-script.md) fornisce prompt esatti e comportamento atteso agente.
+- [prompt-sistema-agentico-colleghi.md](prompt-sistema-agentico-colleghi.md) offre un prompt da dare ai colleghi per progettare proprio sistema agentico.
 
 ## Come Usare Questo Pacchetto
 
