@@ -32,7 +32,7 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 ## Skills To Use
 
 - Use `requirements-analysis` for grooming analysis.
-- Use `task-decomposition` for frontend, backend, data, and test tasks.
+- Use `task-decomposition` for atomic vertical slices with dependencies and blocking edges.
 - Use `implementation-planning` for the file-level plan.
 - Use `test-strategy` for coverage scenarios and test-plan artifacts.
 - Use `artifact-workflow` for artifact naming and handoff rules.
@@ -84,7 +84,7 @@ Write `spec.md` with user goals, functional requirements, non-functional require
 
 ### Gate 7: Task Breakdown
 
-Use `Demo Task Builder` or the `task-decomposition` skill to produce atomic tasks with dependencies.
+Use `Demo Task Builder` or the `task-decomposition` skill to produce atomic vertical slices with dependencies and blocking edges. Prefer tasks that deliver independently verifiable behavior. Use layer-only tasks only when the work is truly layer-only, or when a wide refactor requires expand-contract sequencing.
 
 ### Gate 8: Implementation Plan
 
