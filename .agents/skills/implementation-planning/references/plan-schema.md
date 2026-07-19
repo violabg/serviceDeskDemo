@@ -22,13 +22,21 @@
 - Reason:
 
 ## 3. Filesystem Tree
+
+> Paths link to their File Details entry below for quick navigation.
+
 | Operation | Path | Reason |
 | --- | --- | --- |
-| NEW | ... | ... |
-| MODIFIED | ... | ... |
-| UNMODIFIED | ... | test scope only |
+| NEW | [`...`](#file-slug) | ... |
+| MODIFIED | [`...`](#file-slug) | ... |
+| UNMODIFIED | [`...`](#file-slug) | test scope only |
+
+Path slug rule: lowercase the path, replace every `/` and `.` with `-`.
+Example: `lib/tickets/service.ts` → `#file-lib-tickets-service-ts`
 
 ## 4. File Details
+
+<a id="file-slug"></a>
 
 ### `<path>`
 - Operation:

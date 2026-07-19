@@ -16,7 +16,7 @@ Follow `docs/agents/governance.md` as the durable workflow policy source.
 2. Identify the owning module and likely file boundaries.
 3. Select only repository knowledge that matches the task, using `docs/agents/knowledge/README.md` when it exists. Do not bulk-load unrelated knowledge files.
 4. Do bounded discovery only where needed to identify existing patterns.
-5. Produce a file-level plan using the plan schema.
+5. Produce a file-level plan using the plan schema. In the Filesystem Tree, render each path as a markdown link to its File Details anchor (`#file-<slug>` where slug = path lowercased with `/` and `.` replaced by `-`). Place a matching `<a id="file-<slug>"></a>` tag immediately before each `### \`<path>\`` heading in File Details.
 6. For every file with executable business logic, include coverage scenarios.
 7. Include focused validation commands.
 8. For material file changes, include concise before/after snippets in `Proposed Diffs` so the implementor can review intended edits before changing files.
