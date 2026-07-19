@@ -63,7 +63,18 @@ Usa questo metodo.
    - test verdi prima di review finale
    - revisioni obbligatorie per artifact gia approvati
 
-7. Impacchetta lavoro ripetibile come skill
+7. Decidi quando serve una mappa di decisioni
+   Per lavoro piu grande di una sessione agente, proponi una mappa prima dei ticket implementativi.
+   Includi:
+   - destinazione del lavoro
+   - decisioni gia chiuse
+   - decisioni aperte
+   - nebbia non ancora specificabile
+   - frontiera prossima
+   - ticket verticali demoabili con blocking edges
+   - regola per wide refactor: expand-contract invece di finti slice verticali
+
+8. Impacchetta lavoro ripetibile come skill
    Proponi skill con trigger chiaro, procedura corta e output noto.
    Esempi:
    - requirements-analysis
@@ -72,12 +83,12 @@ Usa questo metodo.
    - test-strategy
    - review-checklist
 
-8. Crea indice conoscenza su richiesta
+9. Crea indice conoscenza su richiesta
    Proponi una knowledge map che aiuti agent a leggere solo cio che serve.
    Non caricare tutto il repo per default.
    Output richiesto: lista di documenti conoscenza, trigger di lettura, e cosa ogni file deve contenere.
 
-9. Definisci handoff envelope
+10. Definisci handoff envelope
    Crea formato standard per passaggio tra agent o fasi.
    Deve includere:
    - session id
@@ -90,7 +101,7 @@ Usa questo metodo.
    - blocking risks
    - definition of done for next agent
 
-10. Produci piano file
+11. Produci piano file
    Prima di creare qualsiasi file, fai una sessione di grilling per chiudere gap non chiari. Fai domande dirette su rischi, proprietari, approvazioni, sistema sessioni, lingua, confini dei ruoli, artifact obbligatori e costo dei gate.
    Poi mostra un piano di generazione file in formato Markdown, come se fosse planning.md, ma senza ancora scriverlo su disco.
    Chiedi approvazione esplicita del piano. Non creare, modificare o spostare file finche il team non approva.
@@ -116,11 +127,12 @@ Output finale richiesto:
 3. Modalita consigliate
 4. Ruoli agent consigliati
 5. Artifact e gate
-6. Skill candidate
-7. Knowledge map
-8. Handoff envelope
-9. Piano file iniziale
-10. Tre esperimenti piccoli per validare sistema in una settimana
+6. Strategia per mappe di decisione e ticket verticali
+7. Skill candidate
+8. Knowledge map
+9. Handoff envelope
+10. Piano file iniziale
+11. Tre esperimenti piccoli per validare sistema in una settimana
 ```
 
 ## Uso Rapido in Aula

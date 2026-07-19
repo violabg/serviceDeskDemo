@@ -84,7 +84,37 @@ sessions/<session-id>/
 
 Domanda di trasferimento: quali file permettono al team di riprendere lavoro senza dipendere dalla memoria di un thread chat?
 
-## 6. Metti Gate nelle Transizioni ad Alto Rischio
+## 6. Scala con Mappe di Decisione e Ticket Verticali
+
+Non tutto il lavoro nasce pronto per un piano di implementazione. Quando un'idea e troppo grande per una sessione agente, prima serve trovare la strada: definisci destinazione, decisioni aperte, dipendenze e frontiera prossima.
+
+Pattern utile:
+
+```text
+Idea grande
+  -> mappa decisioni
+  -> ticket di decisione piccoli
+  -> spec con seam di test espliciti
+  -> ticket verticali demoabili
+  -> implementazione una frontiera alla volta
+```
+
+Concetti da riusare:
+
+- **Mappa decisioni**: un artifact indice che dice destinazione, note, decisioni gia chiuse, nebbia non ancora specificabile e fuori ambito.
+- **Frontiera**: prossimo ticket aperto, sbloccato e non reclamato. Evita che agent scelga lavoro comodo invece di lavoro giusto.
+- **Nebbia**: area in scope ma non ancora abbastanza chiara per diventare ticket. Non va finta come piano preciso.
+- **Ticket verticali**: ogni ticket produce comportamento verificabile end-to-end, non solo un layer tecnico isolato.
+- **Blocking edges**: ogni ticket dichiara cosa lo blocca. La dipendenza deve essere visibile nel tracker o nel file locale.
+- **Spec seam-first**: prima di scrivere la spec, nomina dove il comportamento sara testato. Preferisci seam esistenti e pochi.
+- **Grilling con documenti**: domande dure valgono di piu quando aggiornano glossary, ADR o decision log mentre chiariscono il piano.
+- **Review a due assi**: separa conformita agli standard da conformita alla spec. Codice pulito puo implementare cosa sbagliata; codice corretto puo violare convenzioni.
+
+Wide refactor sono eccezione: se nessun ticket verticale puo restare verde da solo, usa sequenza expand-contract. Prima aggiungi forma nuova accanto alla vecchia, poi migra chiamanti in batch, infine elimina forma vecchia.
+
+Domanda di trasferimento: quando tuo team deve fare mappa di decisioni invece di creare subito ticket di implementazione?
+
+## 7. Metti Gate nelle Transizioni ad Alto Rischio
 
 Un gate è un punto di controllo esplicito che blocca l'avanzamento di un agent finché una condizione non è soddisfatta. Non ogni passaggio richiede un gate. Le transizioni ad alto rischio sì.
 
@@ -141,7 +171,7 @@ Principio: un gate non è burocrazia. Un gate è rendere durevole l'autorità pr
 
 Domanda di trasferimento: dove un umano deve approvare esplicitamente prima che l'agent possa continuare? Dove basta un artifact completo?
 
-## 7. Impacchetta Ragionamento Ripetibile come Skill
+## 8. Impacchetta Ragionamento Ripetibile come Skill
 
 Una skill è un modulo workflow riusabile. È più strutturata di un prompt e più leggera di un agent custom completo.
 
@@ -156,7 +186,7 @@ Una skill utile ha trigger chiaro, procedura delimitata e output noto.
 
 Domanda di trasferimento: cosa ripetono i tuoi agent abbastanza spesso da meritare una skill?
 
-## 8. Carica Conoscenza Su Richiesta
+## 9. Carica Conoscenza Su Richiesta
 
 Contesto è una risorsa scarsa. Un buon sistema aiuta agent a scegliere conoscenza rilevante invece di caricare ogni file.
 
@@ -173,7 +203,7 @@ Non fare bulk-load per default.
 
 Domanda di trasferimento: quale conoscenza deve essere indicizzata per permettere ad agent di sceglierla in modo deliberato?
 
-## 9. Usa Handoff Envelope
+## 10. Usa Handoff Envelope
 
 Un handoff envelope è un contratto tra fasi. Evita che un agent indovini cosa ha fatto altro agent.
 
@@ -195,7 +225,7 @@ Principio semplice: ogni handoff deve dire al prossimo agent cosa e vero, cosa m
 
 Domanda di trasferimento: cosa deve sapere prossimo agent prima di poter continuare in sicurezza?
 
-## 10. Preserva Tracciabilita con Revisioni
+## 11. Preserva Tracciabilita con Revisioni
 
 Artifact approvati non devono essere riscritti in silenzio. Se cambiano, crea revisione e spiega motivo.
 
@@ -208,7 +238,8 @@ Domanda di trasferimento: quali record nel workflow devono diventare immutabili 
 Usa questo ciclo quando costruisci tuo sistema:
 
 1. Nomina failure mode.
-2. Decidi se serve istruzione, separazione ruoli, evidenza artifact, una skill o enforcement.
-3. Scrivi regola più piccola che previene failure.
-4. Testa regola in workflow reale.
-5. Promuovi regola a documentazione durevole solo quando dimostra valore.
+2. Se lavoro supera una sessione, crea mappa decisioni prima di ticket implementativi.
+3. Decidi se serve istruzione, separazione ruoli, evidenza artifact, una skill o enforcement.
+4. Scrivi regola più piccola che previene failure.
+5. Testa regola in workflow reale.
+6. Promuovi regola a documentazione durevole solo quando dimostra valore.
