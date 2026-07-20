@@ -44,6 +44,7 @@ For this GitHub-driven workflow, use the GitHub issue ID resolved during intake 
 6. Present the top 2-3 probable causes with evidence and wait for the user to select one.
 7. After selection, continue with `Demo Planner` using the selected-cause intake. The planner must use the GitHub issue ID as the session ID, then reuse `sessions/<session-id>/` when present or create it when missing before requirements analysis.
 8. Store the selected cause analysis as `bug_<owner>_<repo>_<issue>_cause_analysis.md` inside the session artifact package after the session exists.
+9. If the issue body or comments contain requirement-relevant images, preserve their URLs so `Demo Planner` can convert them through `Demo Vision UI` before requirements analysis.
 
 ## Cause Selection Format
 
@@ -99,6 +100,7 @@ Please select which cause you want to address in the plan.
 - Reuse `sessions/<session-id>/` when it already exists.
 - Create `sessions/<session-id>/` when it does not exist.
 - Store this selected cause analysis in the session artifact package after session creation.
+- Convert requirement-relevant images into `Demo Vision UI` artifacts before requirements analysis.
 - Focus on the selected root cause, not symptoms.
 - Prefer modifying existing code over adding new code unless new code is essential.
 - Clearly describe external dependency changes when required.

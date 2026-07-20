@@ -56,13 +56,19 @@ If the workflow is offline or the issue ID is unavailable, ask for a session ID 
 
 If `sessions/<session-id>/` already exists, retrieve and reuse that session artifact package. Otherwise create `sessions/<session-id>/` and use it as the session artifact package.
 
-Create or update `session-brief.md` before any other artifact. Capture session ID, creation date, source input, assumptions, links, images, target module, stakeholders when known, decisions, open questions, and initial approval status.
+Create or update `session-brief.md` before any other artifact. Capture session ID, creation date, source input, assumptions, links, images, generated visual artifacts, target module, stakeholders when known, decisions, open questions, and initial approval status.
 
 All later artifacts for this planning run must be created or updated inside the same session artifact package.
 
 ### Gate 2: Visual Intake
 
-If screenshots or mockups are provided, use native vision capabilities from the active model when vision is supported. Invoke `Demo Vision UI` only when the current model is text-only or cannot inspect images directly.
+If screenshots, mockups, browser captures, diagrams, or issue-linked images are provided, invoke `Demo Vision UI` for each requirement-relevant visual artifact.
+
+Treat `Demo Vision UI` output as the canonical visual intake contract for planning, even when the active model also supports native vision.
+
+Record the resulting `SlimUI v1` and `Planner Notes` outputs in the session artifact package, and reference them in later requirements, spec, task, and implementation-plan artifacts when visuals materially affect scope or UX.
+
+If a provided visual cannot be inspected, log the blocker explicitly and ask only for a usable local path, URL, or attachment.
 
 ### Gate 3: Knowledge Selection
 

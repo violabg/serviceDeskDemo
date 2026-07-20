@@ -82,6 +82,8 @@ sessions/<session-id>/
 
 [../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md) definisce regole artifact. Principio chiave: ogni fase ha output che fase successiva può ispezionare.
 
+Aggiornamento utile: non tutti artifact nascono come testo. Se una decisione dipende da screenshot, mockup, browser capture o diagrammi, evidenza grezza va trasformata in artifact visuale stabile prima di entrare nel piano. In questo sistema quel passaggio produce `SlimUI v1` piu `Planner Notes`, poi li collega a `session-brief.md` e agli artifact di planning successivi.
+
 Domanda di trasferimento: quali file permettono al team di riprendere lavoro senza dipendere dalla memoria di un thread chat?
 
 ## 6. Scala con Mappe di Decisione e Ticket Verticali
@@ -192,10 +194,13 @@ Contesto è una risorsa scarsa. Un buon sistema aiuta agent a scegliere conoscen
 
 Esempio: [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md) istruisce planner a leggere prima indice conoscenza e selezionare solo file rilevanti.
 
+Nuance importante: caricamento limitato non vale solo per documenti. Vale anche per input multimodali. Planner non deve spargere screenshot grezzi dentro ogni artifact; deve prima delegare conversione a [../.github/agents/DemoVisionUI.agent.md](../.github/agents/DemoVisionUI.agent.md), poi usare quel contratto visuale come input testuale riusabile.
+
 Regola riusabile:
 
 ```text
 Leggi indice.
+Normalizza input speciali in artifact dedicati.
 Seleziona per trigger.
 Registra cosa hai selezionato.
 Non fare bulk-load per default.

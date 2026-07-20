@@ -61,6 +61,9 @@ For this GitHub-driven workflow, use the GitHub issue ID resolved during intake 
 
 ## Images
 
+- Preserve image URLs from the issue and comments in the intake.
+- Instruct `Demo Planner` to run `Demo Vision UI` for each requirement-relevant image and treat the resulting `SlimUI v1` plus `Planner Notes` as canonical visual artifacts for planning.
+
 ## Comments
 
 ## Acceptance Criteria
@@ -78,6 +81,7 @@ For this GitHub-driven workflow, use the GitHub issue ID resolved during intake 
 - Reuse `sessions/<session-id>/` when it already exists.
 - Create `sessions/<session-id>/` when it does not exist.
 - Run the standard Demo Planner gates.
+- Convert requirement-relevant images into `Demo Vision UI` artifacts before requirements analysis.
 - Ask focused clarification questions only when missing details can change scope, behavior, data, UX, security, or test coverage.
 ```
 

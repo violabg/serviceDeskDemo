@@ -20,7 +20,7 @@ You turn approved requirements into implementation-ready task prompts.
 - Keep frontend, backend, data, auth, and test responsibilities inside the same slice when the behavior crosses those layers.
 - Separate by layer only when the work is truly layer-only, or when a wide refactor requires expand-contract sequencing.
 - Map dependencies and blocking edges between tasks explicitly.
-- Include mockups and screenshots as task inputs when they affect UI behavior.
+- Include visual artifacts as task inputs when UI behavior depends on them. Prefer referencing `Demo Vision UI` outputs over raw screenshots when available.
 - Avoid low-level implementation choices unless the spec already requires them.
 
 ## Output Format

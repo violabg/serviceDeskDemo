@@ -22,6 +22,13 @@ Follow `docs/agents/governance.md` as the durable workflow policy source.
 - `review-report.md`
 - `changed-files.md`
 
+## Visual Artifact Rule
+
+- When planning depends on screenshots, mockups, browser captures, diagrams, or review images, create visual intake artifacts through `Demo Vision UI`.
+- Treat `SlimUI v1` plus `Planner Notes` as the canonical reusable visual contract.
+- Record visual sources and generated visual artifact names in `session-brief.md`.
+- Reference those generated visual artifacts from `requirements-analysis.md`, `spec.md`, `task-breakdown.md`, and `implementation-plan.md` when they materially affect scope, UX, or acceptance criteria.
+
 ## Rules
 
 - Every planning session must have a unique session artifact package under `sessions/<session-id>/`.

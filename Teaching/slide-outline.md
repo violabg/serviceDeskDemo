@@ -28,7 +28,7 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 2. Problema: pianificazione, coding, test e review si confondono
 3. Concetto: isolare responsabilita e permessi
 4. Artifact repo: file agent planner, implementor, tester, reviewer
-5. Pattern: ogni ruolo possiede una transizione e un output
+5. Pattern: ogni ruolo possiede una transizione e un output; ruoli stretti come `Demo Vision UI` trasformano evidenza grezza senza invadere planning o coding
 6. Esercizio: abbozza ruoli del tuo team
 7. Takeaway: separa ruoli dove cambia autorità
 
@@ -38,7 +38,7 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 2. Problema: decisioni spariscono tra sessioni
 3. Concetto: artifact durevoli e metadata di approvazione
 4. Artifact repo: [../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md)
-5. Pattern: pacchetto artifact più campi approvazione espliciti
+5. Pattern: pacchetto artifact più campi approvazione espliciti piu artifact visuali canonici quando UX o scope dipendono da immagini
 6. Esercizio: scegli artifact minimi utili per un workflow
 7. Takeaway: transizioni ad alto rischio richiedono autorità registrata
 
@@ -58,7 +58,7 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 2. Problema: esplorazione ampia brucia attenzione e introduce rumore
 3. Concetto: caricamento conoscenza index-first e trigger-based
 4. Artifact repo: [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md)
-5. Pattern: leggi indice -> seleziona conoscenza rilevante -> registra selezione
+5. Pattern: leggi indice -> normalizza input speciali -> seleziona conoscenza rilevante -> registra selezione
 6. Esercizio: progetta mini indice conoscenza
 7. Takeaway: agent devono selezionare conoscenza in modo deliberato
 

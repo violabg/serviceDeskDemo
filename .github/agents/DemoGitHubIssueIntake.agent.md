@@ -42,6 +42,7 @@ Return Markdown with these sections:
 - Do not edit files.
 - Preserve Markdown and code blocks from the issue body and comments.
 - Include image URLs found in body or comments when available.
+- Treat images as raw intake evidence only. Do not summarize or reinterpret them as visual planning artifacts.
 - Include explicit retrieval gaps for unavailable fields or tool limitations.
 - Keep the content factual; do not infer business rules.
 - If issue data is meant for a planning run, return content in a form that can be attached to the session artifact package by the caller.
