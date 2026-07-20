@@ -31,8 +31,9 @@
 | MODIFIED | [`...`](#file-slug) | ... |
 | UNMODIFIED | [`...`](#file-slug) | test scope only |
 
-Path slug rule: lowercase the path, replace every `/` and `.` with `-`.
+Path slug rule: lowercase the path, replace every run of non-alphanumeric characters with `-`, then trim leading and trailing `-`.
 Example: `lib/tickets/service.ts` → `#file-lib-tickets-service-ts`
+Example: `app/(dashboard)/customers/[id]/page.tsx` → `#file-app-dashboard-customers-id-page-tsx`
 
 ## 4. File Details
 
@@ -71,7 +72,7 @@ export function example() {
 
 Use `Proposed Diff: None` only when this file has no material content changes.
 
-For new files, include the full planned file contents in a language-specific fenced block whenever practical so the implementor can review the intended structure, not just a tiny excerpt.
+For new files, include the full planned file contents in a language-specific fenced block whenever practical so the implementor can review the intended structure, not just a tiny excerpt. Do not replace meaningful sections with placeholder comments or omitted-line markers unless the user asks for a condensed artifact.
 
 ## 5. Operations and Timeline
 | Step | Action | Validation |
