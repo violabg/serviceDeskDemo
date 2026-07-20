@@ -91,6 +91,7 @@ Principio: separare lavoro dove cambia responsabilita o permesso.
 Esempio repo da mostrare:
 
 - [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md)
+- [../.github/agents/DemoVisionUI.agent.md](../.github/agents/DemoVisionUI.agent.md)
 - [../.github/agents/DemoImplementor.agent.md](../.github/agents/DemoImplementor.agent.md)
 - [../.github/agents/DemoTester.agent.md](../.github/agents/DemoTester.agent.md)
 - [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md)
@@ -98,7 +99,7 @@ Esempio repo da mostrare:
 Tempi:
 
 - 5 min: spiega perché un solo agent tuttofare tende al drift.
-- 10 min: confronta responsabilita planner e implementor.
+- 10 min: confronta responsabilita intake, planner visuale, planner e implementor.
 - 10 min: confronta responsabilita tester e reviewer.
 - 10 min: partecipanti disegnano ruoli per workflow proprio.
 - 5 min: identifica dove servono campi di handoff.
@@ -113,12 +114,13 @@ Prompt demo live:
 Comportamento atteso:
 
 - Agent spiega autorità dei ruoli, non dettagli app.
-- Agent usa file agent custom come esempi.
+- Agent usa file agent custom come esempi, incluso `Demo Vision UI` come ruolo stretto di estrazione visuale.
 - Agent evidenzia dipendenza da approvazione prima di implementare.
 
 Prompt discussione:
 
 - Quali ruoli nel tuo workflow richiedono permessi diversi?
+- Dove serve un ruolo stretto che traduce evidenza grezza in artifact riusabile?
 - Cosa deve essere vietato a planner?
 - Cosa deve rifiutare implementor senza evidenza?
 
@@ -133,12 +135,14 @@ Principio: catturare decisioni prima di attraversare gate ad alto rischio.
 Esempio repo da mostrare:
 
 - [../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md)
+- [../.github/agents/DemoVisionUI.agent.md](../.github/agents/DemoVisionUI.agent.md)
 - [../docs/agents/governance.md](../docs/agents/governance.md)
 
 Tempi:
 
 - 5 min: chiedi cosa si perde tra sessioni chat.
 - 10 min: mostra pacchetto artifact di sessione.
+- 10 min: mostra differenza tra immagine grezza e artifact visuale canonico.
 - 10 min: spiega metadata di approvazione.
 - 10 min: partecipanti scelgono artifact per un workflow proprio.
 - 5 min: discuti cosa resta locale e cosa committare.
@@ -147,18 +151,21 @@ Tempi:
 Prompt demo live:
 
 ```text
-/teach-agents show what artifacts a healthy agentic development workflow should produce before code changes begin.
+/teach-agents show what artifacts a healthy agentic development workflow should produce before code changes begin, including how screenshots become reusable planning artifacts.
 ```
 
 Comportamento atteso:
 
 - Agent descrive artifact di sessione.
+- Agent spiega che immagini, mockup, browser capture e diagrammi restano evidenza grezza finché `Demo Vision UI` non li converte in `SlimUI v1` piu `Planner Notes`.
+- Agent spiega che `session-brief.md` deve registrare anche artifact visuali generati quando influenzano scope o UX.
 - Agent distingue materiale didattico da implementazione applicativa.
 - Agent spiega perché metadata di approvazione contano.
 
 Prompt discussione:
 
 - Quale evidenza deve esistere prima che agent cambi codice?
+- Quando una schermata va conservata solo come evidenza e quando va trasformata in artifact riusabile?
 - Quali approvazioni devono essere registrate in file?
 - Quali artifact sono utili e quali solo cerimonia?
 
@@ -175,12 +182,13 @@ Esempio repo da mostrare:
 - [../.agents/skills/requirements-analysis/SKILL.md](../.agents/skills/requirements-analysis/SKILL.md)
 - [../.agents/skills/implementation-planning/SKILL.md](../.agents/skills/implementation-planning/SKILL.md)
 - [../.agents/skills/test-strategy/SKILL.md](../.agents/skills/test-strategy/SKILL.md)
+- [../.agents/skills/plan-from-github-issue/SKILL.md](../.agents/skills/plan-from-github-issue/SKILL.md)
 
 Tempi:
 
 - 5 min: definisci prompt, skill e agent.
 - 10 min: analizza frontmatter e procedura di una skill.
-- 10 min: mostra come skill supportano ruolo senza sostituirlo.
+- 10 min: mostra come skill supportano ruolo senza sostituirlo e come delegano immagini a un agent specializzato.
 - 10 min: partecipanti identificano workflow ripetibile nel proprio team.
 - 5 min: bozza frase trigger di skill.
 - 5 min: riepilogo.
@@ -201,6 +209,7 @@ Prompt discussione:
 
 - Quale lavoro il tuo team ripete spesso?
 - Deve essere prompt, skill o agent custom?
+- Dove una skill deve preservare input grezzi e poi delegare trasformazione a un ruolo dedicato?
 - Quale output deve produrre sempre la skill?
 
 Takeaway partecipante: skill standardizzano pensiero ripetuto senza sovra-costruire agent.
@@ -220,7 +229,7 @@ Esempio repo da mostrare:
 Tempi:
 
 - 5 min: spiega contesto come budget limitato.
-- 10 min: mostra gate di selezione conoscenza.
+- 10 min: mostra gate di selezione conoscenza e gate di intake visuale prima della lettura ampia.
 - 10 min: confronta bulk loading contro index-first loading.
 - 10 min: partecipanti progettano mini indice conoscenza per proprio repo.
 - 5 min: discuti come registrare conoscenza selezionata.
@@ -235,12 +244,14 @@ Prompt demo live:
 Comportamento atteso:
 
 - Agent identifica caricamento index-first.
+- Agent spiega che visuali requirement-relevant passano prima da `Demo Vision UI`, poi diventano input testuale stabile per planner.
 - Agent spiega perché scoperta delimitata migliora qualità.
 - Agent evita esplorazione ampia dell app.
 
 Prompt discussione:
 
 - Quali documenti agent devono leggere per primi nel tuo repo?
+- Quali input non devono essere solo letti ma prima normalizzati in un artifact dedicato?
 - Cosa deve essere caricato solo su richiesta?
 - Come agent deve registrare cio che seleziona?
 

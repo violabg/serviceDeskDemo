@@ -68,6 +68,7 @@ Prompt:
 Comportamento atteso:
 
 - Cita [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md) e [../.github/agents/DemoImplementor.agent.md](../.github/agents/DemoImplementor.agent.md).
+- Può citare [../.github/agents/DemoVisionUI.agent.md](../.github/agents/DemoVisionUI.agent.md) come ruolo stretto quando il piano dipende da evidenza visuale.
 - Cita che autorità di pianificazione e autorità di implementazione sono diverse.
 - Spiega che metadata di approvazione proteggono transizione verso implementazione.
 
@@ -80,12 +81,14 @@ Chiedi ai partecipanti dove nel loro workflow attuale cambia autorità senza ess
 Prompt:
 
 ```text
-/teach-agents show what artifacts a healthy agentic development workflow should produce before code changes begin.
+/teach-agents show what artifacts a healthy agentic development workflow should produce before code changes begin, including how screenshots become reusable planning artifacts.
 ```
 
 Comportamento atteso:
 
 - Elenca artifact come session brief, requirements analysis, specification, task breakdown, implementation plan, test plan.
+- Spiega che immagini, mockup, browser capture e diagrammi sono evidenza grezza e diventano artifact pianificabili solo dopo conversione tramite `Demo Vision UI`.
+- Nomina `SlimUI v1` e `Planner Notes` come output visuali canonici da registrare quando influenzano scope o UX.
 - Spiega metadata di approvazione.
 - Distingue artifact di sessione da documenti committati nel repository.
 
@@ -128,6 +131,7 @@ Prompt:
 Comportamento atteso:
 
 - Spiega lettura index-first.
+- Spiega che input visuali requirement-relevant vengono normalizzati prima in artifact dedicati, poi passano al planner come contesto stabile.
 - Spiega selezione basata su trigger.
 - Spiega perché conoscenza selezionata va registrata.
 - Evita esplorazione ampia app.

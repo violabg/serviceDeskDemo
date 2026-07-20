@@ -31,52 +31,60 @@
 | MODIFIED | [`...`](#file-slug) | ... |
 | UNMODIFIED | [`...`](#file-slug) | test scope only |
 
-Path slug rule: lowercase the path, replace every `/` and `.` with `-`.
+Path slug rule: lowercase the path, replace every run of non-alphanumeric characters with `-`, then trim leading and trailing `-`.
 Example: `lib/tickets/service.ts` → `#file-lib-tickets-service-ts`
+Example: `app/(dashboard)/customers/[id]/page.tsx` → `#file-app-dashboard-customers-id-page-tsx`
 
 ## 4. File Details
 
 <a id="file-slug"></a>
 
 ### `<path>`
+Back to [Filesystem Tree](#3-filesystem-tree)
+
 - Operation:
 - Purpose:
 - Planned Changes:
 - Business Logic:
 - Coverage Scenarios:
   - ...
-
-## 5. Proposed Diffs
-
-Use `Proposed Diffs: None` only when the plan has no material file content changes.
-
-### `<path>`
 - Diff Required: true
-- Rationale:
+- Diff Rationale:
 
-**Before:**
+For `MODIFIED` files:
 
-```text
-Existing snippet with enough context to locate the change.
+**Proposed Diff:**
+
+```diff
+- removed line shown in red in markdown renderers that support diff highlighting
++ added line shown in green in markdown renderers that support diff highlighting
 ```
 
-**After:**
+For `NEW` files:
 
-```text
-Proposed snippet for the same scope.
+**Proposed File:**
+
+```ts
+export function example() {
+  return "full planned file contents go here"
+}
 ```
 
-## 6. Operations and Timeline
+Use `Proposed Diff: None` only when this file has no material content changes.
+
+For new files, include the full planned file contents in a language-specific fenced block whenever practical so the implementor can review the intended structure, not just a tiny excerpt. Do not replace meaningful sections with placeholder comments or omitted-line markers unless the user asks for a condensed artifact.
+
+## 5. Operations and Timeline
 | Step | Action | Validation |
 | --- | --- | --- |
 | 1 | ... | ... |
 
-## 7. Validation Commands
+## 6. Validation Commands
 - `npm test -- ...`
 - `npm run typecheck`
 
-## 8. Risks and Rollback
+## 7. Risks and Rollback
 - ...
 ````
 
-`Proposed Diffs` are mandatory for material code, markdown, configuration, schema, prompt, skill, or agent changes. Keep snippets concise, usually 5-15 lines of context. Use full-file before/after snippets only when a file is small enough that snippet-level diffs would be ambiguous.
+`Proposed Diff` is mandatory for `MODIFIED` entries with material code, markdown, configuration, schema, prompt, skill, or agent changes. `Proposed File` is mandatory for `NEW` entries. Prefer `diff` fenced blocks for modified files so removals render in red and additions in green where supported. Keep modified snippets concise, usually 5-15 lines of context. For new files, use full language-fenced contents rather than a diff.

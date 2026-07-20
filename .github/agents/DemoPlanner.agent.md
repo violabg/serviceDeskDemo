@@ -32,7 +32,7 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 ## Skills To Use
 
 - Use `requirements-analysis` for grooming analysis.
-- Use `task-decomposition` for frontend, backend, data, and test tasks.
+- Use `task-decomposition` for atomic vertical slices with dependencies and blocking edges.
 - Use `implementation-planning` for the file-level plan.
 - Use `test-strategy` for coverage scenarios and test-plan artifacts.
 - Use `artifact-workflow` for artifact naming and handoff rules.
@@ -56,13 +56,19 @@ If the workflow is offline or the issue ID is unavailable, ask for a session ID 
 
 If `sessions/<session-id>/` already exists, retrieve and reuse that session artifact package. Otherwise create `sessions/<session-id>/` and use it as the session artifact package.
 
-Create or update `session-brief.md` before any other artifact. Capture session ID, creation date, source input, assumptions, links, images, target module, stakeholders when known, decisions, open questions, and initial approval status.
+Create or update `session-brief.md` before any other artifact. Capture session ID, creation date, source input, assumptions, links, images, generated visual artifacts, target module, stakeholders when known, decisions, open questions, and initial approval status.
 
 All later artifacts for this planning run must be created or updated inside the same session artifact package.
 
 ### Gate 2: Visual Intake
 
-If screenshots or mockups are provided, use native vision capabilities from the active model when vision is supported. Invoke `Demo Vision UI` only when the current model is text-only or cannot inspect images directly.
+If screenshots, mockups, browser captures, diagrams, or issue-linked images are provided, invoke `Demo Vision UI` for each requirement-relevant visual artifact.
+
+Treat `Demo Vision UI` output as the canonical visual intake contract for planning, even when the active model also supports native vision.
+
+Record the resulting `SlimUI v1` and `Planner Notes` outputs in the session artifact package, and reference them in later requirements, spec, task, and implementation-plan artifacts when visuals materially affect scope or UX.
+
+If a provided visual cannot be inspected, log the blocker explicitly and ask only for a usable local path, URL, or attachment.
 
 ### Gate 3: Knowledge Selection
 
@@ -84,11 +90,11 @@ Write `spec.md` with user goals, functional requirements, non-functional require
 
 ### Gate 7: Task Breakdown
 
-Use `Demo Task Builder` or the `task-decomposition` skill to produce atomic tasks with dependencies.
+Use `Demo Task Builder` or the `task-decomposition` skill to produce atomic vertical slices with dependencies and blocking edges. Prefer tasks that deliver independently verifiable behavior. Use layer-only tasks only when the work is truly layer-only, or when a wide refactor requires expand-contract sequencing.
 
 ### Gate 8: Implementation Plan
 
-Use `implementation-planning` to produce `implementation-plan.md` with filesystem tree, file details, proposed diffs, operation timeline, validation commands, and coverage scenarios.
+Use `implementation-planning` to produce `implementation-plan.md` with filesystem tree, file details, backlinks from each file section to the filesystem tree, concise proposed diffs for modified files, full language-fenced proposed contents for new files, operation timeline, validation commands, and coverage scenarios.
 
 ### Gate 9: Test Plan
 

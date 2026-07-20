@@ -14,7 +14,7 @@ _Avoid_: Account, Customer
 
 **Customer**:
 A person or organization that receives service desk support.
-_Avoid_: User, Account
+_Avoid_: User, Account, Client
 
 **Role**:
 A named collection of permissions assignable to one or more users.

@@ -101,7 +101,11 @@ Only the user may approve implementation. Approval is valid only when both an ex
 
 ## Visual Artifacts
 
-Use native model vision capability first when the active model supports images. Delegate to `Demo Vision UI` only when the model is text-only or image inspection is unavailable.
+Use `Demo Vision UI` as the default path for planning-relevant screenshots, mockups, browser captures, diagrams, and review images when deterministic visual artifacts are needed.
+
+Treat `SlimUI v1` plus `Planner Notes` as the reusable output contract for downstream planning.
+
+Use raw native model vision only for quick non-artifact inspection when no durable visual contract is needed.
 
 ## Service Desk Domain Boundary
 

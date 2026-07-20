@@ -134,6 +134,10 @@ Each gate uses a hard allow-list of skills.
 - Do not load extra skills opportunistically.
 - Do not widen the skill set because a skill seems generally useful.
 - Gate contracts should name the allowed skills explicitly.
+- `caveman` is always allowed and should be used to keep prompts concise.
+- `shadcn` is allowed when the prompt is relevant to shadcn/ui, `components.json`, registries, or component composition.
+- Any skill the user explicitly invokes is allowed and must be honored, even when it sits outside the current gate allow-list.
+- These exceptions do not permit unrelated opportunistic skill loading.
 
 ## Rule Violation Policy
 

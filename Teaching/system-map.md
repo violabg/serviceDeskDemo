@@ -13,6 +13,8 @@ flowchart TD
   Mode -->|skill /create-user-story o /create-bug| Intake[Modalità intake]
   Mode -->|normal app work| Planner[Demo Planner]
 
+  Intake --> Vision[Demo Vision UI]
+  Vision --> Planner
   Planner --> Requirements[Skill analisi requisiti]
   Planner --> Tasks[Skill decomposizione task]
   Planner --> Plan[Skill pianificazione implementazione]
@@ -38,7 +40,7 @@ flowchart TD
 | Blocco | File di esempio | Cosa insegna |
 | --- | --- | --- |
 | Contratto condiviso | [../AGENTS.md](../AGENTS.md) | Mettere regole globali workflow, switch modalità e precedenza in un solo punto visibile. |
-| Agent custom | [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md), [../.github/agents/DemoImplementor.agent.md](../.github/agents/DemoImplementor.agent.md), [../.github/agents/DemoTester.agent.md](../.github/agents/DemoTester.agent.md), [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md) | Separare pianificazione, implementazione, test e review in responsabilità diverse. |
+| Agent custom | [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md), [../.github/agents/DemoVisionUI.agent.md](../.github/agents/DemoVisionUI.agent.md), [../.github/agents/DemoImplementor.agent.md](../.github/agents/DemoImplementor.agent.md), [../.github/agents/DemoTester.agent.md](../.github/agents/DemoTester.agent.md), [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md) | Separare intake visuale, pianificazione, implementazione, test e review in responsabilità diverse. |
 | Skill custom | [../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md), [../.agents/skills/requirements-analysis/SKILL.md](../.agents/skills/requirements-analysis/SKILL.md), [../.agents/skills/implementation-planning/SKILL.md](../.agents/skills/implementation-planning/SKILL.md) | Impacchettare metodi ripetibili come moduli workflow riusabili. |
 | Policy durevole | [../docs/agents/governance.md](../docs/agents/governance.md), [../docs/agents/common-knowledge.md](../docs/agents/common-knowledge.md) | Salvare regole cross-session e conoscenza in documenti del repository. |
 | Evidenza locale | `sessions/<session-id>/` | Tenere evidenza per task locale e tracciabile senza committare artifact di sessione. |
@@ -49,6 +51,7 @@ flowchart TD
 ```text
 Richiesta
   -> intake e selezione sessione
+  -> normalizzazione input visuali requirement-relevant
   -> analisi requisiti
   -> specifica
   -> decomposizione task

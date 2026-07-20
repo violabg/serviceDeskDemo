@@ -156,12 +156,12 @@ Use these as explicit role tools. In chat, invoke them with direct phrasing such
 
 These agents support the workflow but should be invoked by another agent, not used as the main user-facing role.
 
-| Agent                       | Used by                                        | Purpose                                                                                             |
-| --------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `Demo GitHub Issue Intake`  | GitHub planning intake skills and planner flow | Retrieve issue metadata, body, comments, labels, assignees, milestones, linked items, and images.   |
-| `Demo Requirements Analyst` | `Demo Planner`                                 | Analyze functional gaps, ambiguities, risks, edge cases, and clarification questions.               |
-| `Demo Task Builder`         | `Demo Planner`                                 | Decompose approved requirements or specs into atomic frontend, backend, data, auth, and test tasks. |
-| `Demo Vision UI`            | `Demo Planner`                                 | Fallback screenshot or mockup analysis when native vision is unavailable.                           |
+| Agent                       | Used by                                        | Purpose                                                                                                    |
+| --------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `Demo GitHub Issue Intake`  | GitHub planning intake skills and planner flow | Retrieve issue metadata, body, comments, labels, assignees, milestones, linked items, and images.          |
+| `Demo Requirements Analyst` | `Demo Planner`                                 | Analyze functional gaps, ambiguities, risks, edge cases, and clarification questions.                      |
+| `Demo Task Builder`         | `Demo Planner`                                 | Decompose approved requirements or specs into atomic vertical slices with dependencies and blocking edges. |
+| `Demo Vision UI`            | `Demo Planner`                                 | Fallback screenshot or mockup analysis when native vision is unavailable.                                  |
 
 ## Internal Agent Subagent Flow
 
@@ -184,7 +184,7 @@ flowchart TD
   P0 -. GitHub-driven intake .-> GI[Demo GitHub Issue Intake]
   P2 -. fallback vision only .-> GV[Demo Vision UI]
   P4 -. deep requirement analysis .-> GR[Demo Requirements Analyst]
-  P5 -. atomic task decomposition .-> GT[Demo Task Builder]
+  P5 -. vertical slice decomposition .-> GT[Demo Task Builder]
   P3 -. durable knowledge extraction .-> GK[Demo Knowledge Builder]
 ```
 

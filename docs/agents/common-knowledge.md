@@ -28,6 +28,7 @@ Do not use this file for:
 - Gate-specific skill allow-lists are mandatory for reproducible runs.
 - Approved artifacts are immutable; revisions create new files rather than overwriting approved ones.
 - Knowledge files are loaded on demand. Planning and implementation agents should read the knowledge index first, then load only knowledge files whose `When to read` trigger matches the current task.
+- When planning depends on visuals, `Demo Vision UI` output is the canonical reusable visual contract. Prefer `SlimUI v1` plus `Planner Notes` over ad hoc image summaries.
 
 ## System Evolution Principles
 
