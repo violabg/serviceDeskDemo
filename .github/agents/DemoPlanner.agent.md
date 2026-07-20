@@ -88,7 +88,7 @@ Use `Demo Task Builder` or the `task-decomposition` skill to produce atomic vert
 
 ### Gate 8: Implementation Plan
 
-Use `implementation-planning` to produce `implementation-plan.md` with filesystem tree, file details, proposed diffs, operation timeline, validation commands, and coverage scenarios.
+Use `implementation-planning` to produce `implementation-plan.md` with filesystem tree, file details, backlinks from each file section to the filesystem tree, concise proposed diffs for modified files, full language-fenced proposed contents for new files, operation timeline, validation commands, and coverage scenarios.
 
 ### Gate 9: Test Plan
 

@@ -39,7 +39,3 @@ Required access gates:
 - `roles:write` to create roles or edit role permissions.
 
 The `manage` operation is reserved for destructive or high-impact actions, such as deleting non-system roles, when those actions are introduced.
-
-## Future Skill Candidate
-
-Create a repository skill for adding a service desk section. It should update `ACCESS_SECTIONS`, navigation, route scaffolding, tests, and seed validation together.
