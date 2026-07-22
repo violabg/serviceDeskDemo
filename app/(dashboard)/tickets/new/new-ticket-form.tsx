@@ -146,11 +146,11 @@ export function NewTicketForm({
   })
 
   return (
-    <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-      <h2 className="font-heading text-lg font-semibold tracking-normal">
+    <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+      <h2 className="font-heading font-semibold text-lg tracking-normal">
         Nuovo Ticket
       </h2>
-      <form onSubmit={submitNewTicket} className="mt-4 grid gap-3">
+      <form onSubmit={submitNewTicket} className="gap-3 grid mt-4">
         <FieldGroup>
           <Field data-invalid={errors.title ? true : undefined}>
             <FieldLabel htmlFor="ticket-title">
@@ -191,7 +191,7 @@ export function NewTicketForm({
             <FieldError errors={[errors.requesterContact]} />
           </Field>
           <Field data-invalid={errors.customerId ? true : undefined}>
-            <FieldLabel>
+            <FieldLabel htmlFor="ticket-customer">
               Customer <span className="text-destructive">*</span>
             </FieldLabel>
             <Controller
@@ -201,6 +201,7 @@ export function NewTicketForm({
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger
+                    id="ticket-customer"
                     className="w-full"
                     aria-invalid={errors.customerId ? true : undefined}
                   >
@@ -221,9 +222,9 @@ export function NewTicketForm({
             />
             <FieldError errors={[errors.customerId]} />
           </Field>
-          <div className="grid gap-3 md:grid-cols-3">
-            <Field>
-              <FieldLabel>
+          <div className="gap-3 grid md:grid-cols-3">
+            <Field data-invalid={errors.priority ? true : undefined}>
+              <FieldLabel htmlFor="ticket-priority">
                 Priority <span className="text-destructive">*</span>
               </FieldLabel>
               <Controller
@@ -232,7 +233,11 @@ export function NewTicketForm({
                 rules={{ required: "Priority is required" }}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      id="ticket-priority"
+                      className="w-full"
+                      aria-invalid={errors.priority ? true : undefined}
+                    >
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent>
@@ -247,9 +252,10 @@ export function NewTicketForm({
                   </Select>
                 )}
               />
+              <FieldError errors={[errors.priority]} />
             </Field>
-            <Field>
-              <FieldLabel>
+            <Field data-invalid={errors.category ? true : undefined}>
+              <FieldLabel htmlFor="ticket-category">
                 Category <span className="text-destructive">*</span>
               </FieldLabel>
               <Controller
@@ -258,7 +264,11 @@ export function NewTicketForm({
                 rules={{ required: "Category is required" }}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      id="ticket-category"
+                      className="w-full"
+                      aria-invalid={errors.category ? true : undefined}
+                    >
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -273,9 +283,10 @@ export function NewTicketForm({
                   </Select>
                 )}
               />
+              <FieldError errors={[errors.category]} />
             </Field>
-            <Field>
-              <FieldLabel>
+            <Field data-invalid={errors.intakeChannel ? true : undefined}>
+              <FieldLabel htmlFor="ticket-intake-channel">
                 Intake Channel <span className="text-destructive">*</span>
               </FieldLabel>
               <Controller
@@ -284,7 +295,11 @@ export function NewTicketForm({
                 rules={{ required: "Intake channel is required" }}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      id="ticket-intake-channel"
+                      className="w-full"
+                      aria-invalid={errors.intakeChannel ? true : undefined}
+                    >
                       <SelectValue placeholder="Select intake channel" />
                     </SelectTrigger>
                     <SelectContent>
@@ -299,17 +314,18 @@ export function NewTicketForm({
                   </Select>
                 )}
               />
+              <FieldError errors={[errors.intakeChannel]} />
             </Field>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="gap-3 grid md:grid-cols-2">
             <Field>
-              <FieldLabel>Asset (optional)</FieldLabel>
+              <FieldLabel htmlFor="ticket-asset">Asset (optional)</FieldLabel>
               <Controller
                 name="assetId"
                 control={control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger id="ticket-asset" className="w-full">
                       <SelectValue placeholder="No linked asset" />
                     </SelectTrigger>
                     <SelectContent>
@@ -332,13 +348,18 @@ export function NewTicketForm({
               />
             </Field>
             <Field>
-              <FieldLabel>Assign Technician (optional)</FieldLabel>
+              <FieldLabel htmlFor="ticket-assigned-technician">
+                Assign Technician (optional)
+              </FieldLabel>
               <Controller
                 name="assignedToId"
                 control={control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      id="ticket-assigned-technician"
+                      className="w-full"
+                    >
                       <SelectValue placeholder="Unassigned" />
                     </SelectTrigger>
                     <SelectContent>
@@ -373,15 +394,15 @@ export function NewTicketForm({
           </Button>
         </div>
       </form>
-      <div className="mt-4 flex items-center gap-2">
+      <div className="flex items-center gap-2 mt-4">
         {duplicateState.error ? (
-          <p className="text-sm text-red-600">{duplicateState.error}</p>
+          <p className="text-red-600 text-sm">{duplicateState.error}</p>
         ) : duplicateState.duplicate ? (
-          <p className="text-sm text-amber-700">
+          <p className="text-amber-700 text-sm">
             Similar ticket found in the last 24h. You can still create this one.
           </p>
         ) : duplicateState.success ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             No duplicate detected for this customer.
           </p>
         ) : null}
@@ -389,7 +410,7 @@ export function NewTicketForm({
         errors.description ||
         errors.requesterContact ||
         errors.customerId ? (
-          <p className="text-sm text-red-600">
+          <p className="text-red-600 text-sm">
             Fill required fields before submit.
           </p>
         ) : null}

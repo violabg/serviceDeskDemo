@@ -28,6 +28,8 @@ Do not use this file for:
 - Gate-specific skill allow-lists are mandatory for reproducible runs.
 - Approved artifacts are immutable; revisions create new files rather than overwriting approved ones.
 - Knowledge files are loaded on demand. Planning and implementation agents should read the knowledge index first, then load only knowledge files whose `When to read` trigger matches the current task.
+- Planning should use cluster-first reconnaissance in cold-start work: choose a small set of likely ownership slices before deep file reads, then keep discovery inside those slices unless a blocker forces one adjacent hop.
+- Selected knowledge acts as a planning constraint set. Plans should extract the applicable rules, use them to challenge similar existing code, and self-review the implementation plan against those rules before approval handoff.
 - When planning depends on visuals, `Demo Vision UI` output is the canonical reusable visual contract. Prefer `SlimUI v1` plus `Planner Notes` over ad hoc image summaries.
 
 ## System Evolution Principles

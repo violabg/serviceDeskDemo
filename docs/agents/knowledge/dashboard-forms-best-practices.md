@@ -8,10 +8,11 @@ Do not use this for static read-only views without user input, or for server-onl
 
 ## Last verified
 
-2026-07-18, dirty worktree. Evidence from repository files:
+2026-07-22, dirty worktree. Evidence from repository files:
 
 - components.json
 - package.json
+- components/ui/field.tsx
 - components/ui/select.tsx
 - components/ui/textarea.tsx
 - app/(dashboard)/tickets/new/new-ticket-form.tsx
@@ -25,6 +26,7 @@ Do not use this for static read-only views without user input, or for server-onl
 
 - Project is configured for shadcn Base UI style (`base-vega`) and aliases in components.json.
 - Interactive ticket forms use react-hook-form `useForm` and `Controller` for managed field state.
+- The shared `Field` family exists in `components/ui/field.tsx` and is already used by ticket forms for labels and validation states.
 - Ticket forms use shadcn Base UI controls (`Select`, `Textarea`, `Input`) instead of native select/textarea styling blocks.
 - Client forms submit to server actions and then refresh navigation state.
 - Pending submission states are managed with `useTransition` in interactive forms.
@@ -41,7 +43,7 @@ Do not use this for static read-only views without user input, or for server-onl
 ## Field composition rules
 
 - Use the `Field` family for new or refactored dashboard forms that need consistent label, helper text, and error composition.
-- Until `components/ui/field.tsx` is introduced, keep current `Input`/`Textarea`/`Select` primitives and apply these rules when `Field` wrappers are added.
+- Keep current `Input`/`Textarea`/`Select` primitives inside `Field` wrappers instead of adding custom field abstractions for the same role.
 - Single field shape: `Field -> FieldLabel -> control -> FieldDescription (optional) -> FieldError (optional)`.
 - Group related fields with `FieldGroup`.
 - Use `FieldSet` with `FieldLegend` for semantic grouped inputs (for example notification preferences and access toggles).

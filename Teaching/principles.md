@@ -196,13 +196,20 @@ Esempio: [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.
 
 Nuance importante: caricamento limitato non vale solo per documenti. Vale anche per input multimodali. Planner non deve spargere screenshot grezzi dentro ogni artifact; deve prima delegare conversione a [../.github/agents/DemoVisionUI.agent.md](../.github/agents/DemoVisionUI.agent.md), poi usare quel contratto visuale come input testuale riusabile.
 
+Altro passo utile: dopo la selezione conoscenza, planner estrae un piccolo inventario di regole applicabili e lo usa come vincolo di planning. Questo evita che un pattern trovato nel codice vinca solo per somiglianza.
+
+Poi planner non esplora repo in modo largo. Raggruppa prima 1-3 cluster probabili del codebase, legge solo dentro quei confini e allinea il piano finale contro le regole selezionate.
+
 Regola riusabile:
 
 ```text
 Leggi indice.
 Normalizza input speciali in artifact dedicati.
+Estrai regole applicabili.
+Seleziona cluster piccoli di esplorazione.
 Seleziona per trigger.
 Registra cosa hai selezionato.
+Verifica piano contro regole selezionate.
 Non fare bulk-load per default.
 ```
 

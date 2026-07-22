@@ -52,10 +52,15 @@ flowchart TD
 Richiesta
   -> intake e selezione sessione
   -> normalizzazione input visuali requirement-relevant
+  -> selezione conoscenza
+  -> inventario regole di conoscenza
   -> analisi requisiti
+  -> clusterizzazione codebase
+  -> ricognizione mirata
   -> specifica
   -> decomposizione task
   -> piano implementazione
+  -> self-review allineamento conoscenza
   -> piano test
   -> approvazione utente esplicita e metadata
   -> implementazione
@@ -65,6 +70,8 @@ Richiesta
 ```
 
 Punto didattico non sono nomi file esatti. Punto didattico è che ogni transizione ha artifact nominato, un owner e un gate.
+
+Aggiornamento utile: nel planner attuale, caricamento conoscenza limitato non basta da solo. Prima costruisce un piccolo inventario di regole applicabili dai file di conoscenza selezionati, poi usa clusterizzazione euristica del codebase per limitare letture e infine verifica il piano con una tabella di allineamento conoscenza prima della richiesta di approvazione.
 
 ## Modalità Materiale Didattico
 

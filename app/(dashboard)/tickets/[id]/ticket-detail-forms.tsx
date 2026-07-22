@@ -123,11 +123,11 @@ export function TicketDetailForms({
 
   return (
     <>
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
-        <form onSubmit={submitStatus} className="grid gap-2">
+      <div className="gap-3 grid md:grid-cols-3 mt-4">
+        <form onSubmit={submitStatus} className="gap-2 grid">
           <FieldGroup>
             <Field>
-              <FieldLabel>
+              <FieldLabel htmlFor="ticket-status">
                 Status <span className="text-destructive">*</span>
               </FieldLabel>
               <Controller
@@ -139,7 +139,7 @@ export function TicketDetailForms({
                     onValueChange={(value) => field.onChange(value)}
                     disabled={!canWrite && !canManage}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger id="ticket-status" className="w-full">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -165,10 +165,10 @@ export function TicketDetailForms({
           </Button>
         </form>
 
-        <form onSubmit={submitPriority} className="grid gap-2">
+        <form onSubmit={submitPriority} className="gap-2 grid">
           <FieldGroup>
             <Field>
-              <FieldLabel>
+              <FieldLabel htmlFor="ticket-priority">
                 Priority <span className="text-destructive">*</span>
               </FieldLabel>
               <Controller
@@ -180,7 +180,7 @@ export function TicketDetailForms({
                     onValueChange={(value) => field.onChange(value)}
                     disabled={!canWrite}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger id="ticket-priority" className="w-full">
                       <SelectValue placeholder="Priority" />
                     </SelectTrigger>
                     <SelectContent>
@@ -206,10 +206,10 @@ export function TicketDetailForms({
           </Button>
         </form>
 
-        <form onSubmit={submitTechnician} className="grid gap-2">
+        <form onSubmit={submitTechnician} className="gap-2 grid">
           <FieldGroup>
             <Field>
-              <FieldLabel>Technician</FieldLabel>
+              <FieldLabel htmlFor="ticket-technician">Technician</FieldLabel>
               <Controller
                 name="technicianId"
                 control={technicianForm.control}
@@ -219,7 +219,7 @@ export function TicketDetailForms({
                     onValueChange={(value) => field.onChange(value)}
                     disabled={!canWrite}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger id="ticket-technician" className="w-full">
                       <SelectValue placeholder="Unassigned" />
                     </SelectTrigger>
                     <SelectContent>
@@ -247,7 +247,7 @@ export function TicketDetailForms({
         </form>
       </div>
 
-      <form onSubmit={submitNote} className="mt-4 grid gap-2">
+      <form onSubmit={submitNote} className="gap-2 grid mt-4">
         <Field
           data-invalid={noteForm.formState.errors.content ? true : undefined}
         >
