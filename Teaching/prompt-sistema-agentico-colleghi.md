@@ -1,8 +1,5 @@
 # Prompt per Progettare il Tuo Sistema Agentico
 
-Usa questo prompt con un coding agent dentro il tuo repository. Obiettivo: produrre una prima versione concreta del sistema agentico del tuo team, non un documento generico.
-
-`````text
 I want to design an agentic system for this repository.
 
 Work as an agentic workflow architect. Do not modify application code. Analyze only the repository structure, existing documentation, development workflow, and operational risks. If you need to create files, create proposal documents only under a dedicated folder such as docs/agents/ or .agents/.
@@ -254,15 +251,3 @@ Required final output:
 9. Handoff envelope
 10. Initial file plan
 11. Three small experiments to validate the system in one week
-
-`````
-
-## Uso Rapido in Aula
-
-Chiedi ai colleghi di lanciare il prompt nel proprio repository e portare tre output alla sessione successiva:
-
-- i cinque failure mode principali del loro team
-- un gate che blocca un errore costoso
-- una skill che impacchetta lavoro ripetibile
-
-Poi confrontate sistemi diversi. Buon segnale: non tutti avranno stessi ruoli, gate e artifact. Vuol dire che hanno progettato dal rischio reale, non copiato struttura demo.
