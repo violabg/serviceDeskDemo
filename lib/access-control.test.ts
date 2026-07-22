@@ -19,6 +19,7 @@ const prismaMock = vi.hoisted(() => ({
   role: {
     upsert: vi.fn(),
     create: vi.fn(),
+    findMany: vi.fn(),
     findUnique: vi.fn(),
     update: vi.fn(),
   },
@@ -393,6 +394,54 @@ describe("management mutations", () => {
     vi.clearAllMocks()
   })
 
+  it("returns management detail with effective permission keys for readable users", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "users", operation: "read" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      id: "target-user",
+      email: "target@example.com",
+      roles: [
+        {
+          role: {
+            name: "Technician",
+            permissions: [
+              { permission: { section: "tickets", operation: "read" } },
+              { permission: { section: "tickets", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.role.findMany.mockResolvedValue([
+      { id: "role-technician", name: "Technician", description: "Handles tickets" },
+    ])
+
+    const { getUserForManagement } = await import("@/lib/access-control/server")
+
+    const result = await getUserForManagement({
+      actorUserId: "actor-manager",
+      targetUserId: "target-user",
+    })
+
+    expect(result.user.id).toBe("target-user")
+    expect(result.availableRoles).toEqual([
+      { id: "role-technician", name: "Technician", description: "Handles tickets" },
+    ])
+    expect(result.effectivePermissionKeys).toEqual([
+      permissionKey("tickets", "read"),
+      permissionKey("tickets", "write"),
+    ])
+  })
+
   it("requires users write permission before assigning a role", async () => {
     prismaMock.user.findUnique.mockResolvedValue({ roles: [] })
 
@@ -560,5 +609,36 @@ describe("management mutations", () => {
       ],
       skipDuplicates: true,
     })
+  })
+
+  it("blocks edits to system roles", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "roles", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.role.findUnique.mockResolvedValue({
+      id: "role-admin",
+      isSystem: true,
+    })
+
+    const { updateRoleForManagement } = await import("@/lib/access-control/server")
+
+    await expect(
+      updateRoleForManagement({
+        actorUserId: "actor-admin",
+        roleId: "role-admin",
+        name: "Administrator",
+        description: "Core role",
+        permissionIds: ["permission-dashboard-read"],
+      })
+    ).rejects.toThrow("System roles cannot be edited")
+    expect(prismaMock.role.update).not.toHaveBeenCalled()
   })
 })

@@ -33,12 +33,12 @@ async function getNewTicketReferenceData(actorUserId: string) {
 
 export default function NewTicketPage() {
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <main className="flex flex-col flex-1 gap-6 p-4 pt-0">
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="font-medium text-muted-foreground text-sm">
           Ticket Management
         </p>
-        <h1 className="font-heading text-3xl font-semibold tracking-normal">
+        <h1 className="font-heading font-semibold text-3xl tracking-normal">
           Nuovo Ticket
         </h1>
       </div>
@@ -49,7 +49,7 @@ export default function NewTicketPage() {
   )
 }
 
-async function NewTicketPageContent() {
+export async function NewTicketPageContent() {
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
@@ -59,8 +59,8 @@ async function NewTicketPageContent() {
 
   if (!hasPermission(effectivePermissions, "tickets", "write")) {
     return (
-      <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-        <p className="text-sm text-muted-foreground">
+      <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+        <p className="text-muted-foreground text-sm">
           Read-only access. You need tickets:write to create a new ticket.
         </p>
       </section>
@@ -80,13 +80,13 @@ async function NewTicketPageContent() {
 
 function NewTicketPageSkeleton() {
   return (
-    <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+    <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
       <div className="space-y-3">
-        <Skeleton className="h-5 w-32" />
-        <Skeleton className="h-9 w-full" />
-        <Skeleton className="h-28 w-full" />
-        <Skeleton className="h-9 w-full" />
-        <Skeleton className="h-9 w-full" />
+        <Skeleton className="w-32 h-5" />
+        <Skeleton className="w-full h-9" />
+        <Skeleton className="w-full h-28" />
+        <Skeleton className="w-full h-9" />
+        <Skeleton className="w-full h-9" />
       </div>
     </section>
   )

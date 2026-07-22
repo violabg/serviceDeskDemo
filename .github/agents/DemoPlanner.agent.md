@@ -40,6 +40,8 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 - Use `artifact-workflow` for artifact naming and handoff rules.
 - Use `service-desk-domain` for domain vocabulary.
 
+Load `docs/agents/knowledge/testing-flow-checklist.md` when the plan includes new or changed tests, validation commands, or test-scope decisions.
+
 ## Gate Workflow
 
 ### Gate 0: Scope Intake
@@ -171,6 +173,22 @@ Before finalizing the plan, run a self-review and revise until all of these are 
 ### Gate 12: Test Plan
 
 Use `test-strategy` to produce `test-plan.md` for Vitest and React Testing Library coverage.
+
+Always plan unit-test coverage when scope includes:
+
+- forms with meaningful validation, branching, transformation, or state transitions
+- server actions or other mutation handlers with authorization, validation, branching, side effects, or mapping logic
+- business logic that is easy to break through edge cases, derived values, status transitions, permission checks, SLA rules, filtering, sorting, or data-shaping behavior
+
+If the planner decides not to include one of these unit-test areas, `test-plan.md` must state the reason explicitly as a deliberate exception rather than omitting it silently.
+
+Planner test-flow requirements:
+
+- State the affected-test scope first. Default to only new or directly affected tests for implementor and tester validation before any broader regression run.
+- Exclude files under `components/ui/**` from planned test scope unless the user explicitly overrides that repo rule.
+- When scope includes repo-owned components that compose shared UI primitives, target the repo-owned wrapper or feature component instead of the shadcn primitive.
+- In `test-plan.md`, list validation in this order when applicable: editor or diagnostics check for affected files, narrow lint or typecheck for affected files, affected tests, then broader regression commands only after focused checks pass.
+- If no narrow lint command exists in the repo, say so explicitly and fall back to diagnostics plus typecheck before tests.
 
 ### Gate 13: Approval Request
 

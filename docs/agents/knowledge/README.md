@@ -8,3 +8,4 @@
 | [dashboard-section-permission-flow-checklist.md](./dashboard-section-permission-flow-checklist.md) | When adding a new dashboard or admin section, grouped navigation entry, and related permissions | 2026-07-19 (dirty worktree) | active |
 | [shared-component-reuse-checklist.md](./shared-component-reuse-checklist.md) | Before adding new UI components to ensure existing shared primitives are reused | 2026-07-18 (71a9195, dirty worktree) | active |
 | [nextjs-cache-components-pattern.md](./nextjs-cache-components-pattern.md) | When adding or refactoring pages that need caching, skeleton states, or the Suspense + `connection()` pattern | 2026-07-22 (dirty worktree) | active |
+| [testing-flow-checklist.md](./testing-flow-checklist.md) | Before planning, creating, changing, or running tests for approved demo work | 2026-07-22 (dirty worktree) | active |

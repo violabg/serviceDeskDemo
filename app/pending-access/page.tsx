@@ -14,7 +14,7 @@ export default function PendingAccessPage() {
   )
 }
 
-async function PendingAccessPageContent() {
+export async function PendingAccessPageContent() {
   await connection()
 
   const { data: session } = await auth.getSession()
@@ -33,16 +33,16 @@ async function PendingAccessPageContent() {
   }
 
   return (
-    <main className="grid min-h-svh place-items-center bg-background p-6">
-      <section className="w-full max-w-md space-y-6 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+    <main className="place-items-center grid bg-background p-6 min-h-svh">
+      <section className="space-y-6 bg-card shadow-sm p-6 border rounded-lg w-full max-w-md text-card-foreground">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">
+          <p className="font-medium text-muted-foreground text-sm">
             Access pending
           </p>
-          <h1 className="font-heading text-2xl font-semibold tracking-normal">
+          <h1 className="font-heading font-semibold text-2xl tracking-normal">
             Your service desk access is not ready yet
           </h1>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="text-muted-foreground text-sm leading-6">
             You are signed in, but this user has not been assigned dashboard
             access yet.
           </p>
@@ -55,12 +55,12 @@ async function PendingAccessPageContent() {
 
 function PendingAccessPageSkeleton() {
   return (
-    <main className="grid min-h-svh place-items-center bg-background p-6">
-      <section className="w-full max-w-md space-y-3 rounded-lg border bg-card p-6 shadow-sm">
-        <Skeleton className="h-4 w-28" />
-        <Skeleton className="h-7 w-full" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-9 w-28" />
+    <main className="place-items-center grid bg-background p-6 min-h-svh">
+      <section className="space-y-3 bg-card shadow-sm p-6 border rounded-lg w-full max-w-md">
+        <Skeleton className="w-28 h-4" />
+        <Skeleton className="w-full h-7" />
+        <Skeleton className="w-full h-4" />
+        <Skeleton className="w-28 h-9" />
       </section>
     </main>
   )
