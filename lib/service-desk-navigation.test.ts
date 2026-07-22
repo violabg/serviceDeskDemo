@@ -33,6 +33,7 @@ describe("service desk navigation", () => {
     )
 
     expect(items.map((item) => item.title)).toEqual(["Users", "Roles"])
+    expect(items.map((item) => item.url)).toEqual(["/users", "/roles"])
   })
 
   it("shows user management only with users read permission", () => {

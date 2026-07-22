@@ -40,13 +40,13 @@ export const SERVICE_DESK_NAVIGATION = [
       {
         id: "users",
         title: "Users",
-        url: "/admin/users",
+        url: "/users",
         requiredPermission: { section: "users", operation: "read" },
       },
       {
         id: "roles",
         title: "Roles",
-        url: "/admin/roles",
+        url: "/roles",
         requiredPermission: { section: "roles", operation: "read" },
       },
     ],

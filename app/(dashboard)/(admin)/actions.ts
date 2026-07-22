@@ -1,17 +1,17 @@
 "use server"
 
 import {
-  adminRoleDetailTag,
-  adminRolesListTag,
-  adminUserDetailTag,
-  adminUsersListTag,
+    adminRoleDetailTag,
+    adminRolesListTag,
+    adminUserDetailTag,
+    adminUsersListTag,
 } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import {
-  assignRoleToUser,
-  createRoleForManagement,
-  removeRoleFromUser,
-  updateRoleForManagement,
+    assignRoleToUser,
+    createRoleForManagement,
+    removeRoleFromUser,
+    updateRoleForManagement,
 } from "@/lib/access-control/server"
 import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
@@ -64,7 +64,7 @@ export async function createRoleAction(formData: FormData) {
   })
 
   revalidateTag(adminRolesListTag(access.user.id), "max")
-  redirect(`/admin/roles/${role.id}`)
+  redirect(`/roles/${role.id}`)
 }
 
 export async function updateRoleAction(formData: FormData) {
