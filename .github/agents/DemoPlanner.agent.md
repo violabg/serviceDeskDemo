@@ -105,6 +105,41 @@ Ask only questions that can materially change scope, behavior, data, UX, securit
 
 Carry forward unresolved knowledge conflicts or rule-application gaps as clarification items when they can change the design.
 
+Clarification questions must be easy for the user to answer quickly. Use a structured format with short context, why it matters, how the answer changes the plan, and explicit answer choices when the decision can be bounded.
+
+When a clarification item can be represented as bounded options, present choices as `A`, `B`, `C`, and include a final freeform option such as `D: Other` only when genuinely needed.
+
+Use this question format for each blocking or scope-changing clarification item:
+
+```text
+# Question <n>: <short topic>
+
+## Question
+<plain-language question>
+
+#### Context
+<brief repo or requirement context that motivated the question>
+
+#### Why I'm asking
+<why this decision matters for scope, behavior, data, UX, security, or tests>
+
+#### How I'm using the answer
+<what part of the plan changes based on the answer>
+
+## Answer choices
+
+- A: <option A>
+- B: <option B>
+- C: <option C>
+- D: Other: <only when needed>
+```
+
+Do not ask approval in the same message as unresolved blocking clarification questions.
+
+If one or more blocking clarification questions remain open, stop after sending only those questions. Do not present the implementation plan as approval-ready. Do not ask the user to approve the plan yet.
+
+Blocking clarification questions are considered resolved only when the user has answered them explicitly enough to remove the design ambiguity. Planner assumptions do not close blocking questions.
+
 ### Gate 7: Codebase Clusterization
 
 Before broad repository reading, group the likely implementation surface into 1-3 codebase clusters.
@@ -170,6 +205,10 @@ Before finalizing the plan, run a self-review and revise until all of these are 
 - no exploratory file is carried into scope without a concrete implementation reason
 - the final file list is smaller than or equal to the discovery surface unless a justified dependency expands it
 
+Do not mark the implementation plan as approval-ready while any blocking clarification item remains unanswered.
+
+If non-blocking preferences remain open, label them explicitly as non-blocking and record the default assumption used. If blocking questions remain open, the plan may be drafted for review but must be labeled `Approval Ready: false` and withheld from approval request until those questions are resolved.
+
 ### Gate 12: Test Plan
 
 Use `test-strategy` to produce `test-plan.md` for Vitest and React Testing Library coverage.
@@ -197,6 +236,19 @@ Summarize the artifacts and ask for explicit approval before implementation hand
 Before approval is granted, explicitly propose that the user approve the plan and state that `implementation-plan.md` is ready to be opened and reviewed.
 
 The approval summary must mention whether the plan passed the `Knowledge Alignment Review` and whether any rule or cluster blocker remains open.
+
+Approval may be requested only when all blocking clarification questions have been answered.
+
+If any blocking clarification question, rule blocker, cluster blocker, or scope-changing ambiguity remains open:
+
+- do not ask for approval
+- do not say the plan is approval-ready
+- do not frame the next step as implementation handoff
+- instead, summarize the current planning state briefly and ask only the remaining blocking questions using the Gate 6 format
+
+When no blocking clarification remains, the approval request must say that explicitly.
+
+The approval request should be short and operator-friendly. If choices were used during clarification, preserve those resolved decisions in a concise decision summary before the approval ask.
 
 After approval, record at minimum:
 
