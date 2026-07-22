@@ -66,7 +66,7 @@ export function TicketFiltersForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="grid gap-3 rounded-lg border bg-card p-4 shadow-sm md:grid-cols-[1fr_12rem_12rem_auto]"
+      className="gap-3 grid md:grid-cols-[1fr_12rem_12rem_auto] bg-card shadow-sm p-4 border rounded-lg"
     >
       <FieldGroup className="md:contents">
         <Field>
@@ -78,13 +78,13 @@ export function TicketFiltersForm({
           />
         </Field>
         <Field>
-          <FieldLabel>Status</FieldLabel>
+          <FieldLabel htmlFor="tickets-filter-status">Status</FieldLabel>
           <Controller
             name="status"
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="tickets-filter-status" className="w-full">
                   <SelectValue placeholder="All status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -102,13 +102,13 @@ export function TicketFiltersForm({
           />
         </Field>
         <Field>
-          <FieldLabel>Priority</FieldLabel>
+          <FieldLabel htmlFor="tickets-filter-priority">Priority</FieldLabel>
           <Controller
             name="priority"
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="tickets-filter-priority" className="w-full">
                   <SelectValue placeholder="All priority" />
                 </SelectTrigger>
                 <SelectContent>
@@ -126,7 +126,7 @@ export function TicketFiltersForm({
           />
         </Field>
       </FieldGroup>
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex justify-end items-center gap-2">
         <Button type="submit" variant="outline">
           Filter
         </Button>

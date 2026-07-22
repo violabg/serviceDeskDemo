@@ -56,9 +56,9 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 
 1. Titolo: Più contesto non è sempre contesto migliore
 2. Problema: esplorazione ampia brucia attenzione e introduce rumore
-3. Concetto: caricamento conoscenza index-first e trigger-based
+3. Concetto: caricamento conoscenza index-first, inventario regole e ricognizione cluster-first
 4. Artifact repo: [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md)
-5. Pattern: leggi indice -> normalizza input speciali -> seleziona conoscenza rilevante -> registra selezione
+5. Pattern: leggi indice -> normalizza input speciali -> estrai regole applicabili -> seleziona cluster piccoli -> registra selezione -> verifica piano contro regole
 6. Esercizio: progetta mini indice conoscenza
 7. Takeaway: agent devono selezionare conoscenza in modo deliberato
 

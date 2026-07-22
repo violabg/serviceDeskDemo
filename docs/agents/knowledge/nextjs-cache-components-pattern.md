@@ -7,14 +7,16 @@ states, or must opt out of full dynamic rendering per request.
 
 ## Last verified
 
-2026-07-18, dirty worktree. Evidence from repository files:
+2026-07-22, dirty worktree. Evidence from repository files:
 
 - `next.config.ts` — `cacheComponents: true` and custom `days` life preset
 - `app/(dashboard)/admin/_lib/cache-tags.ts` — tag factory functions
+- `app/(dashboard)/tickets/_lib/cache-tags.ts` — ticket tag factory functions
 - `app/(dashboard)/admin/roles/page.tsx` and `[roleId]/page.tsx` — full page pattern
 - `app/(dashboard)/admin/users/page.tsx` and `[userId]/page.tsx` — full page pattern
 - `app/(dashboard)/layout.tsx` — layout Suspense shell
 - `app/(dashboard)/admin/actions.ts` — `revalidateTag` after mutations
+- `app/(dashboard)/tickets/actions.ts` — `revalidateTag` after ticket mutations
 - `app/login/page.tsx`, `app/page.tsx`, `app/pending-access/page.tsx` — public page pattern
 
 ## Evidence
@@ -23,7 +25,7 @@ states, or must opt out of full dynamic rendering per request.
 - All admin and public pages replaced `export const dynamic = "force-dynamic"` with a sync Suspense shell + `connection()` inside the async content component.
 - Data-fetching functions use the `"use cache"` directive with `cacheLife("days")` and `cacheTag(...)` for tagged invalidation.
 - Server actions call `revalidateTag` (not `revalidatePath`) after writes.
-- Cache tag factories are isolated in `app/(dashboard)/admin/_lib/cache-tags.ts`.
+- Cache tag factories are feature-local under route-domain `_lib/cache-tags.ts` modules, with separate factories for admin and tickets.
 
 ## Static-First Principle
 
@@ -184,7 +186,7 @@ The server component is placed inside a Suspense boundary by the page. The clien
 
 ## Cache Tag Conventions
 
-Tag factories live in `app/(dashboard)/admin/_lib/cache-tags.ts`. Every factory takes at minimum `actorUserId` to scope cached data per actor.
+Tag factories live in feature-local `_lib/cache-tags.ts` modules under the route domain. Every factory takes at minimum `actorUserId` to scope cached data per actor.
 
 | Factory | Tag pattern | Scope |
 | --- | --- | --- |
@@ -192,6 +194,8 @@ Tag factories live in `app/(dashboard)/admin/_lib/cache-tags.ts`. Every factory 
 | `adminRoleDetailTag(actorUserId, roleId)` | `admin:roles:{uid}:{roleId}` | Single role |
 | `adminUsersListTag(actorUserId)` | `admin:users:{uid}` | All users visible to actor |
 | `adminUserDetailTag(actorUserId, targetId)` | `admin:users:{uid}:{targetId}` | Single user |
+| `ticketListTag(actorUserId)` | `tickets:list:{uid}` | Ticket list visible to actor |
+| `ticketDetailTag(actorUserId, ticketId)` | `tickets:detail:{uid}:{ticketId}` | Single ticket |
 
 ## Invalidating Cache After Mutations
 
@@ -208,10 +212,10 @@ Pass `"max"` as the second argument to revalidate across all cache layers. Inval
 
 - Do not use `export const dynamic = "force-dynamic"` on new pages; use the Suspense + `connection()` shell instead.
 - Do not put static headings, breadcrumbs, or layout chrome inside a Suspense boundary; they must render as static HTML.
-- Do not call `revalidatePath` for admin section mutations; use `revalidateTag` with the tag factory.
+- Do not call `revalidatePath` for tagged admin or ticket mutations; use `revalidateTag` with the feature-local tag factory.
 - Do not put `connection()` in the route shell; it belongs inside the async `Content` component inside the Suspense boundary.
 - Do not call service functions directly in the content component when they should be cached; wrap them in a `"use cache"` function first.
 - Do not pass pre-fetched data as props to shared server components; let the component own its `"use cache"` fetch.
 - Do not give the client donut shell any data-fetching responsibility; pass server-rendered JSX as `children` instead.
-- Do not hard-code cache tag strings; always use the factory from `cache-tags.ts`.
+- Do not hard-code cache tag strings; always use the factory from the feature-local `cache-tags.ts` module.
 - Do not use `cacheLife("days")` without `cacheComponents: true` in `next.config.ts`.

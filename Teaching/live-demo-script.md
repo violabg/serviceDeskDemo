@@ -131,7 +131,10 @@ Prompt:
 Comportamento atteso:
 
 - Spiega lettura index-first.
+- Spiega che dopo la selezione conoscenza il planner costruisce un inventario piccolo di regole applicabili.
 - Spiega che input visuali requirement-relevant vengono normalizzati prima in artifact dedicati, poi passano al planner come contesto stabile.
+- Spiega che il planner usa clusterizzazione euristica del codebase per limitare la ricognizione ai pochi slice piu probabili.
+- Spiega che il piano finale viene ricontrollato con una `Knowledge Alignment Review` prima della richiesta di approvazione.
 - Spiega selezione basata su trigger.
 - Spiega perché conoscenza selezionata va registrata.
 - Evita esplorazione ampia app.

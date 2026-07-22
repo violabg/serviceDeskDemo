@@ -216,9 +216,9 @@ Takeaway partecipante: skill standardizzano pensiero ripetuto senza sovra-costru
 
 ## Sessione 6: Caricamento Conoscenza Limitato
 
-Obiettivo: mostrare perché agent non devono leggere intero repo per default.
+Obiettivo: mostrare perché agent non devono leggere intero repo per default e perché selezione conoscenza deve guidare anche la ricognizione del codice.
 
-Principio: selezionare conoscenza per trigger e registrare cosa è stato caricato.
+Principio: selezionare conoscenza per trigger, estrarre regole applicabili e limitare esplorazione a pochi cluster rilevanti.
 
 Esempio repo da mostrare:
 
@@ -229,10 +229,10 @@ Esempio repo da mostrare:
 Tempi:
 
 - 5 min: spiega contesto come budget limitato.
-- 10 min: mostra gate di selezione conoscenza e gate di intake visuale prima della lettura ampia.
-- 10 min: confronta bulk loading contro index-first loading.
+- 10 min: mostra gate di selezione conoscenza, inventario regole e gate di intake visuale prima della lettura ampia.
+- 10 min: confronta bulk loading contro index-first loading piu clusterizzazione mirata.
 - 10 min: partecipanti progettano mini indice conoscenza per proprio repo.
-- 5 min: discuti come registrare conoscenza selezionata.
+- 5 min: discuti come registrare conoscenza selezionata e come trasformarla in vincoli di planning.
 - 5 min: riepilogo.
 
 Prompt demo live:
@@ -244,7 +244,10 @@ Prompt demo live:
 Comportamento atteso:
 
 - Agent identifica caricamento index-first.
+- Agent spiega che planner costruisce un inventario piccolo di regole applicabili dai file di conoscenza selezionati.
 - Agent spiega che visuali requirement-relevant passano prima da `Demo Vision UI`, poi diventano input testuale stabile per planner.
+- Agent spiega che planner usa clusterizzazione euristica per limitare letture a pochi slice di ownership invece di fare tour ampi del repo.
+- Agent puo citare la `Knowledge Alignment Review` come self-check prima della richiesta di approvazione.
 - Agent spiega perché scoperta delimitata migliora qualità.
 - Agent evita esplorazione ampia dell app.
 
@@ -252,6 +255,8 @@ Prompt discussione:
 
 - Quali documenti agent devono leggere per primi nel tuo repo?
 - Quali input non devono essere solo letti ma prima normalizzati in un artifact dedicato?
+- Quali regole estratte dai documenti devono diventare vincoli espliciti del planner?
+- Come raggrupperesti il tuo repo in pochi cluster utili prima di leggere file in profondita?
 - Cosa deve essere caricato solo su richiesta?
 - Come agent deve registrare cio che seleziona?
 

@@ -24,6 +24,8 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 - Do not implement application code.
 - Do not run build, test, install, migration, or deployment commands.
 - Do not skip planning gates.
+- Do not bulk-read the repository before knowledge selection and codebase clusterization are complete.
+- Treat selected repository knowledge as more authoritative than similar existing code patterns when they conflict.
 - Do not hand off implementation until the user explicitly approves the implementation plan and approval metadata is recorded in the session artifact set.
 - Keep all outputs in English.
 - Use the demo artifact names from `AGENTS.md`.
@@ -76,35 +78,107 @@ Identify which demo knowledge is relevant: service desk domain, Next.js architec
 
 Read `docs/agents/knowledge/README.md` first when it exists. Use the `When to read` triggers to choose only knowledge files related to the current requirement. Do not bulk-load all knowledge files. Record the selected knowledge files, or `None`, in the planning artifacts so implementation can reuse the same context boundary.
 
-### Gate 4: Requirements Analysis
+### Gate 4: Knowledge Rule Inventory
+
+From the selected knowledge files, extract the normative rules that materially constrain the request. Include direct rules, checklist requirements, explicit ownership boundaries, and imperative guidance such as `must`, `do not`, `prefer`, `avoid`, or equivalent wording.
+
+Also read `docs/agents/common-knowledge.md` and `docs/agents/governance.md` when they impose workflow or artifact constraints on the current request.
+
+Create a concise rule inventory in the session artifacts with:
+
+- `Rule ID`
+- source file
+- exact short rule text
+- why it applies
+
+From this gate onward, treat the rule inventory as the planning constraint set. If an existing repository pattern conflicts with the selected knowledge, follow the knowledge and record the conflict as a blocker or legacy mismatch instead of copying the pattern blindly.
+
+### Gate 5: Requirements Analysis
 
 Use `Demo Requirements Analyst` or the `requirements-analysis` skill to produce gaps, ambiguities, assumptions, edge cases, risks, and clarification questions.
 
-### Gate 5: Clarification
+### Gate 6: Clarification
 
 Ask only questions that can materially change scope, behavior, data, UX, security, or test coverage. If no blocking ambiguity remains, state that explicitly.
 
-### Gate 6: Specification
+Carry forward unresolved knowledge conflicts or rule-application gaps as clarification items when they can change the design.
+
+### Gate 7: Codebase Clusterization
+
+Before broad repository reading, group the likely implementation surface into 1-3 codebase clusters.
+
+Clusterization is heuristic in this repository. Build clusters from cheap local evidence only: requirement terms, selected knowledge, top-level ownership folders, file names, scoped text search, and one targeted semantic search only when terminology is unclear.
+
+Treat a cluster as a bounded ownership slice such as a route group, feature module, auth area, shared UI surface, data model area, or validation/test surface.
+
+For each selected cluster, record:
+
+- cluster label
+- candidate paths or files
+- why it is relevant
+- which planning question it should answer
+
+Do not deep-read files outside the selected clusters unless a blocker forces one adjacent hop to the owning component.
+
+### Gate 8: Focused Reconnaissance
+
+Use the selected clusters and rule inventory to inspect only files that answer a concrete planning question: owning component, insertion point, dependency boundary, validation surface, reusable pattern, or explicit blocker.
+
+Prefer this read order:
+
+- owning abstraction
+- nearest existing test for the behavior slice
+- direct call site
+- adjacent shared component or helper
+
+For each opened file, record why it was opened. If a file mostly wires behavior instead of deciding it, step once to the nearer file that computes, mutates, or enforces the behavior.
+
+Stop discovery as soon as you can name:
+
+- likely files to change
+- likely files to inspect but not change
+- blockers or remaining unknowns
+- narrow validation commands the implementor should run
+
+Avoid full-folder tours, broad file cataloging, and duplicate reads. If exact terms are known, prefer exact text search over semantic search.
+
+### Gate 9: Specification
 
 Write `spec.md` with user goals, functional requirements, non-functional requirements, UX expectations, data/auth implications, and acceptance criteria.
 
-### Gate 7: Task Breakdown
+### Gate 10: Task Breakdown
 
 Use `Demo Task Builder` or the `task-decomposition` skill to produce atomic vertical slices with dependencies and blocking edges. Prefer tasks that deliver independently verifiable behavior. Use layer-only tasks only when the work is truly layer-only, or when a wide refactor requires expand-contract sequencing.
 
-### Gate 8: Implementation Plan
+### Gate 11: Implementation Plan
 
 Use `implementation-planning` to produce `implementation-plan.md` with filesystem tree, file details, backlinks from each file section to the filesystem tree, concise proposed diffs for modified files, full language-fenced proposed contents for new files, operation timeline, validation commands, and coverage scenarios.
 
-### Gate 9: Test Plan
+Also include:
+
+- selected knowledge files
+- the applicable rule inventory or a concise backlink to it
+- the chosen codebase clusters and why each planned file is in scope
+- a `Knowledge Alignment Review` table that maps each applicable rule to the planned file, section, or decision that satisfies it
+
+Before finalizing the plan, run a self-review and revise until all of these are true:
+
+- every applicable rule is satisfied or explicitly blocked
+- every planned file belongs to a selected cluster or has a justified adjacent dependency
+- no exploratory file is carried into scope without a concrete implementation reason
+- the final file list is smaller than or equal to the discovery surface unless a justified dependency expands it
+
+### Gate 12: Test Plan
 
 Use `test-strategy` to produce `test-plan.md` for Vitest and React Testing Library coverage.
 
-### Gate 10: Approval Request
+### Gate 13: Approval Request
 
 Summarize the artifacts and ask for explicit approval before implementation handoff. Valid approval requires both an explicit user message and recorded metadata in `session-brief.md` and `implementation-plan.md`.
 
 Before approval is granted, explicitly propose that the user approve the plan and state that `implementation-plan.md` is ready to be opened and reviewed.
+
+The approval summary must mention whether the plan passed the `Knowledge Alignment Review` and whether any rule or cluster blocker remains open.
 
 After approval, record at minimum:
 
