@@ -19,12 +19,12 @@ async function getUsersData(actorUserId: string) {
 
 export default function UsersPage() {
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <main className="flex flex-col flex-1 gap-6 p-4 pt-0">
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="font-medium text-muted-foreground text-sm">
           Administration
         </p>
-        <h1 className="font-heading text-3xl font-semibold tracking-normal">
+        <h1 className="font-heading font-semibold text-3xl tracking-normal">
           Users
         </h1>
       </div>
@@ -46,8 +46,8 @@ async function UsersPageContent() {
   const users = await getUsersData(access.user.id)
 
   return (
-    <section className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div className="grid grid-cols-[1.4fr_1fr_0.8fr_auto] gap-4 border-b bg-muted/50 px-4 py-3 text-sm font-medium text-muted-foreground">
+    <section className="bg-card shadow-sm border rounded-lg overflow-hidden text-card-foreground">
+      <div className="gap-4 grid grid-cols-[1.4fr_1fr_0.8fr_auto] bg-muted/50 px-4 py-3 border-b font-medium text-muted-foreground text-sm">
         <span>User</span>
         <span>Roles</span>
         <span>Account</span>
@@ -57,13 +57,13 @@ async function UsersPageContent() {
         {users.map((user) => (
           <article
             key={user.id}
-            className="grid grid-cols-[1.4fr_1fr_0.8fr_auto] items-center gap-4 px-4 py-3 text-sm"
+            className="items-center gap-4 grid grid-cols-[1.4fr_1fr_0.8fr_auto] px-4 py-3 text-sm"
           >
             <div className="min-w-0">
-              <p className="truncate font-medium">{user.name || user.email}</p>
-              <p className="truncate text-muted-foreground">{user.email}</p>
+              <p className="font-medium truncate">{user.name || user.email}</p>
+              <p className="text-muted-foreground truncate">{user.email}</p>
             </div>
-            <p className="truncate text-muted-foreground">
+            <p className="text-muted-foreground truncate">
               {user.roles.length > 0
                 ? user.roles.map(({ role }) => role.name).join(", ")
                 : "No roles"}
@@ -74,7 +74,7 @@ async function UsersPageContent() {
             <Button
               variant="outline"
               size="sm"
-              render={<Link href={`/admin/users/${user.id}`} />}
+              render={<Link href={`/users/${user.id}`} />}
               nativeButton={false}
             >
               Open
@@ -88,11 +88,11 @@ async function UsersPageContent() {
 
 function UsersContentSkeleton() {
   return (
-    <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+    <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
       <div className="space-y-3">
-        <div className="h-10 rounded-md bg-muted" />
-        <div className="h-10 rounded-md bg-muted" />
-        <div className="h-10 rounded-md bg-muted" />
+        <div className="bg-muted rounded-md h-10" />
+        <div className="bg-muted rounded-md h-10" />
+        <div className="bg-muted rounded-md h-10" />
       </div>
     </section>
   )

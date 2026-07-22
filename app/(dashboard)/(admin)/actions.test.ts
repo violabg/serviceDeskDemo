@@ -5,7 +5,7 @@ import {
     createRoleAction,
     removeUserRoleAction,
     updateRoleAction,
-} from "@/app/(dashboard)/admin/actions"
+} from "@/app/(dashboard)/(admin)/actions"
 
 const accessMock = vi.hoisted(() => vi.fn())
 const adminServiceMock = vi.hoisted(() => ({
@@ -24,7 +24,10 @@ vi.mock("@/lib/access-control/server", () => adminServiceMock)
 vi.mock("next/cache", () => ({ revalidateTag: revalidateTagMock }))
 vi.mock("next/navigation", () => ({ redirect: redirectMock }))
 
-function makeFormData(values: Record<string, string>, permissionIds: string[] = []) {
+function makeFormData(
+  values: Record<string, string>,
+  permissionIds: string[] = []
+) {
   const formData = new FormData()
 
   for (const [key, value] of Object.entries(values)) {
@@ -87,7 +90,7 @@ describe("admin actions", () => {
       permissionIds: ["perm-1", "perm-2"],
     })
     expect(revalidateTagMock).toHaveBeenCalledTimes(1)
-    expect(redirectMock).toHaveBeenCalledWith("/admin/roles/role-9")
+    expect(redirectMock).toHaveBeenCalledWith("/roles/role-9")
   })
 
   it("revalidates the role list and detail after updates", async () => {

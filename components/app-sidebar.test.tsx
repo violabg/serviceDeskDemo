@@ -101,7 +101,7 @@ describe("AppSidebar", () => {
   })
 
   it("marks nested routes as active", () => {
-    usePathnameMock.mockReturnValue("/admin/users/user-1")
+    usePathnameMock.mockReturnValue("/users/user-1")
 
     render(
       <AppSidebar

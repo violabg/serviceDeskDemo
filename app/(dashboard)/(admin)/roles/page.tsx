@@ -1,6 +1,6 @@
+import { createRoleAction } from "@/app/(dashboard)/(admin)/actions"
 import { adminRolesListTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
-import { createRoleAction } from "@/app/(dashboard)/admin/actions"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -76,12 +76,12 @@ function sortPermissionsByAccessModel<
 
 export default function RolesPage() {
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <main className="flex flex-col flex-1 gap-6 p-4 pt-0">
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="font-medium text-muted-foreground text-sm">
           Administration
         </p>
-        <h1 className="font-heading text-3xl font-semibold tracking-normal">
+        <h1 className="font-heading font-semibold text-3xl tracking-normal">
           Roles
         </h1>
       </div>
@@ -103,7 +103,7 @@ async function RolesPageContent() {
   const canWriteRoles = hasPermission(permissions, "roles", "write")
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
+    <div className="gap-4 grid lg:grid-cols-[1fr_22rem]">
       <Suspense fallback={<RolesListSkeleton />}>
         <RolesListSection actorUserId={access.user.id} />
       </Suspense>
@@ -119,7 +119,7 @@ async function RolesPageContent() {
 
 function RolesContentSkeleton() {
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
+    <div className="gap-4 grid lg:grid-cols-[1fr_22rem]">
       <RolesListSkeleton />
       <CreateRoleSkeleton />
     </div>
@@ -130,8 +130,8 @@ async function RolesListSection({ actorUserId }: { actorUserId: string }) {
   const roles = await getRolesData(actorUserId)
 
   return (
-    <section className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div className="grid grid-cols-[1fr_1fr_auto] gap-4 border-b bg-muted/50 px-4 py-3 text-sm font-medium text-muted-foreground">
+    <section className="bg-card shadow-sm border rounded-lg overflow-hidden text-card-foreground">
+      <div className="gap-4 grid grid-cols-[1fr_1fr_auto] bg-muted/50 px-4 py-3 border-b font-medium text-muted-foreground text-sm">
         <span>Role</span>
         <span>Permissions</span>
         <span className="sr-only">Open</span>
@@ -140,25 +140,25 @@ async function RolesListSection({ actorUserId }: { actorUserId: string }) {
         {roles.map((role) => (
           <article
             key={role.id}
-            className="grid grid-cols-[1fr_1fr_auto] items-center gap-4 px-4 py-3 text-sm"
+            className="items-center gap-4 grid grid-cols-[1fr_1fr_auto] px-4 py-3 text-sm"
           >
             <div className="min-w-0">
-              <p className="truncate font-medium">
+              <p className="font-medium truncate">
                 {role.name}
                 {role.isSystem ? (
                   <>
                     {" "}
-                    <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                    <span className="bg-muted px-1.5 py-0.5 rounded-md text-muted-foreground text-xs">
                       System
                     </span>
                   </>
                 ) : null}
               </p>
-              <p className="truncate text-muted-foreground">
+              <p className="text-muted-foreground truncate">
                 {role.description || "No description"}
               </p>
             </div>
-            <p className="truncate text-muted-foreground">
+            <p className="text-muted-foreground truncate">
               {sortPermissionsByAccessModel(
                 role.permissions.map(({ permission }) => permission)
               )
@@ -170,7 +170,7 @@ async function RolesListSection({ actorUserId }: { actorUserId: string }) {
             <Button
               variant="outline"
               size="sm"
-              render={<Link href={`/admin/roles/${role.id}`} />}
+              render={<Link href={`/roles/${role.id}`} />}
               nativeButton={false}
             >
               Open
@@ -195,12 +195,12 @@ async function CreateRoleSection({
   )
 
   return (
-    <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-      <h2 className="font-heading text-lg font-semibold tracking-normal">
+    <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+      <h2 className="font-heading font-semibold text-lg tracking-normal">
         Create Role
       </h2>
       {canWriteRoles ? (
-        <form action={createRoleAction} className="mt-4 grid gap-3">
+        <form action={createRoleAction} className="gap-3 grid mt-4">
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="create-role-name">
@@ -219,7 +219,7 @@ async function CreateRoleSection({
               />
             </Field>
           </FieldGroup>
-          <FieldSet className="rounded-md border p-3">
+          <FieldSet className="p-3 border rounded-md">
             <FieldLegend variant="label">Permissions</FieldLegend>
             {ACCESS_SECTIONS.map((section) => {
               const sectionPermissions = availablePermissions
@@ -237,11 +237,11 @@ async function CreateRoleSection({
               }
 
               return (
-                <div key={section} className="grid gap-2">
-                  <p className="text-xs font-medium text-muted-foreground">
+                <div key={section} className="gap-2 grid">
+                  <p className="font-medium text-muted-foreground text-xs">
                     {section}
                   </p>
-                  <div className="grid gap-1.5">
+                  <div className="gap-1.5 grid">
                     {sectionPermissions.map((permission) => (
                       <Field
                         key={permission.id}
@@ -268,11 +268,13 @@ async function CreateRoleSection({
               )
             })}
           </FieldSet>
-          <Button type="submit">Create Role</Button>
+          <div>
+            <Button type="submit">Create Role</Button>
+          </div>
         </form>
       ) : (
-        <p className="mt-4 text-sm text-muted-foreground">
-          Read-only role access
+        <p className="mt-4 text-muted-foreground text-sm">
+          You have read-only role access.
         </p>
       )}
     </section>
@@ -281,12 +283,11 @@ async function CreateRoleSection({
 
 function RolesListSkeleton() {
   return (
-    <section className="overflow-hidden rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+    <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
       <div className="space-y-3">
-        <Skeleton className="h-5 w-40" />
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
+        <Skeleton className="w-full h-10" />
+        <Skeleton className="w-full h-10" />
+        <Skeleton className="w-full h-10" />
       </div>
     </section>
   )
@@ -294,13 +295,12 @@ function RolesListSkeleton() {
 
 function CreateRoleSkeleton() {
   return (
-    <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+    <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
       <div className="space-y-3">
-        <Skeleton className="h-5 w-28" />
-        <Skeleton className="h-9 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-9 w-28" />
+        <Skeleton className="w-24 h-5" />
+        <Skeleton className="w-full h-10" />
+        <Skeleton className="w-full h-24" />
+        <Skeleton className="w-full h-32" />
       </div>
     </section>
   )

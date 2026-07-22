@@ -1,6 +1,6 @@
+import { updateRoleAction } from "@/app/(dashboard)/(admin)/actions"
 import { adminRoleDetailTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
-import { updateRoleAction } from "@/app/(dashboard)/admin/actions"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
@@ -39,9 +39,9 @@ export default function RoleDetailPage({
   params: Promise<{ roleId: string }>
 }) {
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <main className="flex flex-col flex-1 gap-6 p-4 pt-0">
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">Roles</p>
+        <p className="font-medium text-muted-foreground text-sm">Roles</p>
       </div>
       <Suspense fallback={<RoleDetailPageSkeleton />}>
         <RoleDetailPageContent params={params} />
@@ -102,30 +102,30 @@ async function RoleDetailContent({
   return (
     <>
       <div className="space-y-1">
-        <h1 className="font-heading text-3xl font-semibold tracking-normal">
+        <h1 className="font-heading font-semibold text-3xl tracking-normal">
           {role.name}
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {role.description || "No description"}
         </p>
       </div>
       {role.isSystem ? (
-        <div className="rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+        <div className="bg-muted/50 px-4 py-3 border rounded-lg text-muted-foreground text-sm">
           System roles are read-only to keep bootstrap access stable.
         </div>
       ) : null}
       {!canWriteRoles ? (
-        <div className="rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+        <div className="bg-muted/50 px-4 py-3 border rounded-lg text-muted-foreground text-sm">
           You have read-only role access.
         </div>
       ) : null}
-      <form action={updateRoleAction} className="grid gap-4">
+      <form action={updateRoleAction} className="gap-4 grid">
         <input type="hidden" name="roleId" value={role.id} />
-        <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-          <h2 className="font-heading text-lg font-semibold tracking-normal">
+        <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+          <h2 className="font-heading font-semibold text-lg tracking-normal">
             Details
           </h2>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="gap-3 grid md:grid-cols-2 mt-4">
             <Field>
               <FieldLabel htmlFor="role-name">Name</FieldLabel>
               <Input id="role-name" defaultValue={role.name} disabled />
@@ -142,16 +142,16 @@ async function RoleDetailContent({
             </Field>
           </div>
         </section>
-        <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="font-heading text-lg font-semibold tracking-normal">
+        <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+          <div className="flex justify-between items-center gap-4">
+            <h2 className="font-heading font-semibold text-lg tracking-normal">
               Permissions
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {role.permissions.length} assigned
             </p>
           </div>
-          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="gap-4 grid md:grid-cols-2 xl:grid-cols-3 mt-4">
             {sections.map((section) => {
               const sectionPermissions = availablePermissions
                 .filter((permission) => permission.section === section)
@@ -168,9 +168,9 @@ async function RoleDetailContent({
               }
 
               return (
-                <FieldSet key={section} className="rounded-md border p-3">
+                <FieldSet key={section} className="p-3 border rounded-md">
                   <FieldLegend variant="label">{section}</FieldLegend>
-                  <div className="mt-2 grid gap-2">
+                  <div className="gap-2 grid mt-2">
                     {sectionPermissions.map((permission) => (
                       <Field
                         key={permission.id}
@@ -214,24 +214,24 @@ async function RoleDetailContent({
 
 function RoleDetailContentSkeleton() {
   return (
-    <div className="grid gap-4">
+    <div className="gap-4 grid">
       <div className="space-y-2">
-        <Skeleton className="h-9 w-56" />
-        <Skeleton className="h-4 w-72" />
+        <Skeleton className="w-56 h-9" />
+        <Skeleton className="w-72 h-4" />
       </div>
-      <section className="rounded-lg border bg-card p-4">
+      <section className="bg-card p-4 border rounded-lg">
         <div className="space-y-3">
-          <Skeleton className="h-5 w-24" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-24 w-full" />
+          <Skeleton className="w-24 h-5" />
+          <Skeleton className="w-full h-9" />
+          <Skeleton className="w-full h-24" />
         </div>
       </section>
-      <section className="rounded-lg border bg-card p-4">
+      <section className="bg-card p-4 border rounded-lg">
         <div className="space-y-3">
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-9 w-28" />
+          <Skeleton className="w-32 h-5" />
+          <Skeleton className="w-full h-24" />
+          <Skeleton className="w-full h-24" />
+          <Skeleton className="w-28 h-9" />
         </div>
       </section>
     </div>

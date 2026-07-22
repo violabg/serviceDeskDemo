@@ -13,7 +13,6 @@ import { usePathname } from "next/navigation"
 
 const segmentLabelMap: Record<string, string> = {
   dashboard: "Dashboard",
-  admin: "Admin",
   users: "Users",
   roles: "Roles",
 }

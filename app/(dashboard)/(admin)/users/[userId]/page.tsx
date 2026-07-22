@@ -1,9 +1,9 @@
-import { adminUserDetailTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
-import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import {
   assignUserRoleAction,
   removeUserRoleAction,
-} from "@/app/(dashboard)/admin/actions"
+} from "@/app/(dashboard)/(admin)/actions"
+import { adminUserDetailTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
+import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import {
@@ -39,7 +39,7 @@ export default function UserDetailPage({
   params: Promise<{ userId: string }>
 }) {
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <main className="flex flex-col flex-1 gap-6 p-4 pt-0">
       <Suspense fallback={<UserDetailContentSkeleton />}>
         <UserDetailPageContent params={params} />
       </Suspense>
@@ -92,66 +92,66 @@ async function UserDetailContent({
   return (
     <>
       <div className="space-y-1">
-        <h1 className="font-heading text-3xl font-semibold tracking-normal">
+        <h1 className="font-heading font-semibold text-3xl tracking-normal">
           {user.name || user.email}
         </h1>
-        <p className="text-sm text-muted-foreground">{user.email}</p>
+        <p className="text-muted-foreground text-sm">{user.email}</p>
       </div>
-      <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-        <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-          <h2 className="font-heading text-lg font-semibold tracking-normal">
+      <div className="gap-4 grid lg:grid-cols-[1fr_1fr]">
+        <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+          <h2 className="font-heading font-semibold text-lg tracking-normal">
             Identity
           </h2>
-          <dl className="mt-4 grid gap-3 text-sm">
-            <div className="grid grid-cols-[9rem_1fr] gap-3">
+          <dl className="gap-3 grid mt-4 text-sm">
+            <div className="gap-3 grid grid-cols-[9rem_1fr]">
               <dt className="text-muted-foreground">Name</dt>
               <dd>{user.name || "Not provided"}</dd>
             </div>
-            <div className="grid grid-cols-[9rem_1fr] gap-3">
+            <div className="gap-3 grid grid-cols-[9rem_1fr]">
               <dt className="text-muted-foreground">Email</dt>
               <dd>{user.email}</dd>
             </div>
-            <div className="grid grid-cols-[9rem_1fr] gap-3">
+            <div className="gap-3 grid grid-cols-[9rem_1fr]">
               <dt className="text-muted-foreground">Account</dt>
               <dd>{user.neonAuthId ? "Linked" : "Seeded user"}</dd>
             </div>
           </dl>
         </section>
-        <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-          <h2 className="font-heading text-lg font-semibold tracking-normal">
+        <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+          <h2 className="font-heading font-semibold text-lg tracking-normal">
             Effective Permissions
           </h2>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mt-4">
             {effectivePermissionKeys.length > 0 ? (
               effectivePermissionKeys.map((permission) => (
                 <span
                   key={permission}
-                  className="rounded-md bg-muted px-2 py-1 text-xs font-medium"
+                  className="bg-muted px-2 py-1 rounded-md font-medium text-xs"
                 >
                   {permission}
                 </span>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No permissions</p>
+              <p className="text-muted-foreground text-sm">No permissions</p>
             )}
           </div>
         </section>
       </div>
-      <section className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="font-heading text-lg font-semibold tracking-normal">
+      <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+        <div className="flex justify-between items-center gap-4">
+          <h2 className="font-heading font-semibold text-lg tracking-normal">
             Roles
           </h2>
           {!canWriteUsers ? (
-            <p className="text-sm text-muted-foreground">Read-only access</p>
+            <p className="text-muted-foreground text-sm">Read-only access</p>
           ) : null}
         </div>
-        <div className="mt-4 divide-y rounded-md border">
+        <div className="mt-4 border rounded-md divide-y">
           {user.roles.length > 0 ? (
             user.roles.map(({ role }) => (
               <div
                 key={role.id}
-                className="flex items-center justify-between gap-4 px-3 py-2 text-sm"
+                className="flex justify-between items-center gap-4 px-3 py-2 text-sm"
               >
                 <div>
                   <p className="font-medium">{role.name}</p>
@@ -171,13 +171,13 @@ async function UserDetailContent({
               </div>
             ))
           ) : (
-            <p className="px-3 py-2 text-sm text-muted-foreground">
+            <p className="px-3 py-2 text-muted-foreground text-sm">
               No roles assigned
             </p>
           )}
         </div>
         {canWriteUsers ? (
-          <form action={assignUserRoleAction} className="mt-4 grid gap-3">
+          <form action={assignUserRoleAction} className="gap-3 grid mt-4">
             <input type="hidden" name="targetUserId" value={user.id} />
             <Field>
               <FieldLabel>
@@ -216,34 +216,34 @@ async function UserDetailContent({
 
 function UserDetailContentSkeleton() {
   return (
-    <div className="grid gap-4">
+    <div className="gap-4 grid">
       <div className="space-y-2">
-        <Skeleton className="h-9 w-56" />
-        <Skeleton className="h-4 w-72" />
+        <Skeleton className="w-56 h-9" />
+        <Skeleton className="w-72 h-4" />
       </div>
-      <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-        <section className="rounded-lg border bg-card p-4">
+      <div className="gap-4 grid lg:grid-cols-[1fr_1fr]">
+        <section className="bg-card p-4 border rounded-lg">
           <div className="space-y-3">
-            <Skeleton className="h-5 w-20" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
+            <Skeleton className="w-20 h-5" />
+            <Skeleton className="w-full h-4" />
+            <Skeleton className="w-full h-4" />
+            <Skeleton className="w-full h-4" />
           </div>
         </section>
-        <section className="rounded-lg border bg-card p-4">
+        <section className="bg-card p-4 border rounded-lg">
           <div className="space-y-3">
-            <Skeleton className="h-5 w-44" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-6 w-full" />
+            <Skeleton className="w-44 h-5" />
+            <Skeleton className="w-full h-6" />
+            <Skeleton className="w-full h-6" />
           </div>
         </section>
       </div>
-      <section className="rounded-lg border bg-card p-4">
+      <section className="bg-card p-4 border rounded-lg">
         <div className="space-y-3">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-9 w-52" />
+          <Skeleton className="w-16 h-5" />
+          <Skeleton className="w-full h-10" />
+          <Skeleton className="w-full h-10" />
+          <Skeleton className="w-52 h-9" />
         </div>
       </section>
     </div>

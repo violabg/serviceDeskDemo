@@ -49,17 +49,13 @@ vi.mock("@/components/ui/breadcrumb", () => ({
 
 describe("DashboardBreadcrumbs", () => {
   it("renders mapped labels and humanized fallback labels", () => {
-    usePathnameMock.mockReturnValue("/admin/users/user-settings")
+    usePathnameMock.mockReturnValue("/users/user-settings")
 
     render(<DashboardBreadcrumbs />)
 
-    expect(screen.getByRole("link", { name: "Admin" })).toHaveAttribute(
-      "href",
-      "/admin"
-    )
     expect(screen.getByRole("link", { name: "Users" })).toHaveAttribute(
       "href",
-      "/admin/users"
+      "/users"
     )
     expect(screen.getByTestId("current-crumb")).toHaveTextContent(
       "User Settings"
