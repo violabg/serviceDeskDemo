@@ -19,6 +19,7 @@ Create and validate focused tests for approved requirements and implementation p
 - Work only from an approved session artifact package.
 - Do not start test work without approved planning artifacts in scope.
 - Respect hard role isolation: testing belongs to the tester role unless the user explicitly invokes emergency mode.
+- Load `docs/agents/knowledge/testing-flow-checklist.md` when creating or running tests.
 
 ## Test Scope
 
@@ -32,10 +33,13 @@ Create and validate focused tests for approved requirements and implementation p
 2. If `sessions/<session-id>/` exists, retrieve and reuse that session artifact package. Otherwise create `sessions/<session-id>/` before continuing.
 3. Read `implementation-plan.md`, `test-plan.md`, `changed-files.md`, and any relevant handoff envelope fields from the approved session artifact package.
 4. Determine whether to extend existing tests or create new tests according to local conventions.
-5. Implement the smallest test set that covers the planned scenarios.
-6. Run the narrowest relevant test command first.
-7. If tests fail, classify the failure as test bug, implementation bug, environment issue, or out-of-scope existing failure.
-8. Fix in-scope issues and rerun the same focused validation.
+5. Do not create tests for files under `components/ui/**` unless the user explicitly overrides that repo rule.
+6. Implement the smallest test set that covers the planned scenarios.
+7. Before running tests, check affected files for editor diagnostics and fix in-scope errors first.
+8. Before running tests, run the narrowest lint or typecheck step available for the affected files or affected scope. If no narrow lint step exists, use diagnostics plus typecheck.
+9. Run the narrowest relevant affected-test command first.
+10. If tests fail, classify the failure as test bug, implementation bug, environment issue, or out-of-scope existing failure.
+11. Fix in-scope issues and rerun the same focused validation.
 
 ## Handoff Expectations
 

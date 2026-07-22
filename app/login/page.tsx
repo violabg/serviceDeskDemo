@@ -15,7 +15,7 @@ export default function LoginPage() {
   )
 }
 
-async function LoginPageContent() {
+export async function LoginPageContent() {
   await connection()
 
   const { data: session } = await auth.getSession()
@@ -29,8 +29,8 @@ async function LoginPageContent() {
   }
 
   return (
-    <main className="grid min-h-svh place-items-center p-6">
-      <div className="w-full max-w-md space-y-4">
+    <main className="place-items-center grid p-6 min-h-svh">
+      <div className="space-y-4 w-full max-w-md">
         <NeonAuthUiProvider>
           <AuthView path="sign-in" />
         </NeonAuthUiProvider>
@@ -41,10 +41,10 @@ async function LoginPageContent() {
 
 function LoginPageSkeleton() {
   return (
-    <main className="grid min-h-svh place-items-center p-6">
-      <div className="w-full max-w-md space-y-3">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-72 w-full" />
+    <main className="place-items-center grid p-6 min-h-svh">
+      <div className="space-y-3 w-full max-w-md">
+        <Skeleton className="w-full h-10" />
+        <Skeleton className="w-full h-72" />
       </div>
     </main>
   )

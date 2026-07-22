@@ -7,6 +7,7 @@ This wiki page helps new developers use the agentic workflow in this repository.
 The repo uses a role-based workflow for software delivery:
 
 - intake retrieves source material
+- ask answers repository and workflow questions without implementing
 - planner plans
 - implementor implements
 - tester tests
@@ -144,12 +145,13 @@ Lint modes are stage-aware and check artifact completeness and handoff quality.
 
 Use these as explicit role tools. In chat, invoke them with direct phrasing such as `Use Demo Planner to ...`.
 
-| Agent                    | When to use                                                                              | How to invoke well                                                                                                  |
-| ------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `Demo Planner`           | You need full planning artifacts from issue/story/screenshot/requirement.                | Provide session ID, source input, constraints, and ask for spec, tasks, implementation plan, and test plan.         |
-| `Demo Implementor`       | You have approved plan and need code implementation only.                                | Provide session ID and approved artifact references; request implementation against plan only.                      |
-| `Demo Tester`            | You need test planning or test implementation for approved work.                         | Provide feature scope and ask for Vitest/RTL coverage matrix plus commands and residual risks.                      |
-| `Demo Reviewer`          | You need final quality review before merge/handoff.                                      | Provide changed files and ask for findings by severity, regressions, gaps, and readiness verdict.                   |
+| Agent | When to use | How to invoke well |
+| --- | --- | --- |
+| `Demo Ask` | You need a repo-grounded explanation about this service desk system, workflow, or codebase without making changes. | Ask a focused question about behavior, architecture, terminology, or workflow and request a repository-grounded answer. |
+| `Demo Planner` | You need full planning artifacts from issue/story/screenshot/requirement. | Provide session ID, source input, constraints, and ask for spec, tasks, implementation plan, and test plan. |
+| `Demo Implementor` | You have approved plan and need code implementation only. | Provide session ID and approved artifact references; request implementation against plan only. |
+| `Demo Tester` | You need test planning or test implementation for approved work. | Provide feature scope and ask for Vitest/RTL coverage matrix plus commands and residual risks. |
+| `Demo Reviewer` | You need final quality review before merge/handoff. | Provide changed files and ask for findings by severity, regressions, gaps, and readiness verdict. |
 | `Demo Knowledge Builder` | You need durable repository knowledge created or updated from verified project evidence. | Provide one focused knowledge topic and approve the proposed target before it saves under `docs/agents/knowledge/`. |
 
 ## Internal-Only Agents

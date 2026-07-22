@@ -20,6 +20,7 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 - Work from the approved session artifact package in `sessions/<session-id>/`, not committed repository docs.
 - Load repository knowledge on demand only. Use knowledge files listed by the approved plan or handoff; otherwise read `docs/agents/knowledge/README.md` first and load only files whose `When to read` trigger matches the approved task.
 - Keep `changed-files.md` updated inside the session artifact package.
+- When scope includes tests or validation, load `docs/agents/knowledge/testing-flow-checklist.md`.
 
 ## Workflow
 
@@ -30,11 +31,14 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 5. Read the approved plan and related artifacts from the same session artifact package.
 6. Confirm the files, operations, and selected repository knowledge in scope. Do not bulk-load unrelated knowledge files.
 7. Review `Proposed Diffs` before applying the smallest coherent implementation batch.
-8. Run the validation commands specified by the plan.
-9. Fix only in-scope build, lint, typecheck, or test failures.
-10. Update `changed-files.md` with created, modified, deleted, and intentionally untouched files.
-11. Hand off to `Demo Tester` or `Demo Reviewer` using the governance handoff envelope.
-12. After implementation and tests are complete, suggest creating a PR that includes scope summary and validation results.
+8. Before running tests, check affected files for editor diagnostics and fix in-scope errors first.
+9. Before running tests, run the narrowest lint or typecheck step the approved plan calls for on affected files or affected scope. If no narrow lint step exists, use diagnostics plus typecheck.
+10. Run only the new or directly affected tests first, as listed by the approved plan. Do not jump to broader suites until focused validation passes.
+11. Run any broader regression commands specified by the plan only after focused checks pass.
+12. Fix only in-scope build, lint, typecheck, or test failures.
+13. Update `changed-files.md` with created, modified, deleted, and intentionally untouched files.
+14. Hand off to `Demo Tester` or `Demo Reviewer` using the governance handoff envelope.
+15. After implementation and tests are complete, suggest creating a PR that includes scope summary and validation results.
 
 ## Required Handoff Envelope
 
@@ -56,3 +60,4 @@ Every handoff must include:
 - If validation reveals a scope change, stop and ask the planner/user for plan revision.
 - If unrelated existing tests fail, report them without widening the implementation.
 - If a required validation command still fails for an in-scope reason, do not hand off as complete.
+- Do not create or extend tests for files under `components/ui/**` unless the user explicitly overrides that repo rule.
