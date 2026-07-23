@@ -103,6 +103,8 @@ Use `Demo Requirements Analyst` or the `requirements-analysis` skill to produce 
 
 Ask only questions that can materially change scope, behavior, data, UX, security, or test coverage. If no blocking ambiguity remains, state that explicitly.
 
+Default to the minimum number of blocking questions needed to continue. Do not ask exploratory, nice-to-have, or preference-only questions as if they were gating decisions.
+
 Carry forward unresolved knowledge conflicts or rule-application gaps as clarification items when they can change the design.
 
 Clarification questions must be easy for the user to answer quickly. Use a structured format with short context, why it matters, how the answer changes the plan, and explicit answer choices when the decision can be bounded.
@@ -244,6 +246,7 @@ If any blocking clarification question, rule blocker, cluster blocker, or scope-
 - do not ask for approval
 - do not say the plan is approval-ready
 - do not frame the next step as implementation handoff
+- do not bundle open blocking questions together with an approval request
 - instead, summarize the current planning state briefly and ask only the remaining blocking questions using the Gate 6 format
 
 When no blocking clarification remains, the approval request must say that explicitly.
