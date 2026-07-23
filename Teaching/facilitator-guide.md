@@ -183,12 +183,14 @@ Esempio repo da mostrare:
 - [../.agents/skills/implementation-planning/SKILL.md](../.agents/skills/implementation-planning/SKILL.md)
 - [../.agents/skills/test-strategy/SKILL.md](../.agents/skills/test-strategy/SKILL.md)
 - [../.agents/skills/plan-from-github-issue/SKILL.md](../.agents/skills/plan-from-github-issue/SKILL.md)
+- [skills/bootstrap-agentic-system/SKILL.md](skills/bootstrap-agentic-system/SKILL.md)
+- [skills/bootstrap-agentic-system/templates/agent-contracts.md](skills/bootstrap-agentic-system/templates/agent-contracts.md)
 
 Tempi:
 
 - 5 min: definisci prompt, skill e agent.
 - 10 min: analizza frontmatter e procedura di una skill.
-- 10 min: mostra come skill supportano ruolo senza sostituirlo e come delegano immagini a un agent specializzato.
+- 10 min: mostra come skill supportano ruolo senza sostituirlo, come caricano template su richiesta e come richiedono gate espliciti negli agent principali.
 - 10 min: partecipanti identificano workflow ripetibile nel proprio team.
 - 5 min: bozza frase trigger di skill.
 - 5 min: riepilogo.
@@ -210,6 +212,7 @@ Prompt discussione:
 - Quale lavoro il tuo team ripete spesso?
 - Deve essere prompt, skill o agent custom?
 - Dove una skill deve preservare input grezzi e poi delegare trasformazione a un ruolo dedicato?
+- Quale gate deve comparire dentro agent principale, non solo nella documentazione?
 - Quale output deve produrre sempre la skill?
 
 Takeaway partecipante: skill standardizzano pensiero ripetuto senza sovra-costruire agent.
@@ -223,6 +226,7 @@ Principio: selezionare conoscenza per trigger, estrarre regole applicabili e lim
 Esempio repo da mostrare:
 
 - [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md)
+- [../.github/agents/DemoContextScout.agent.md](../.github/agents/DemoContextScout.agent.md)
 - [../docs/agents/common-knowledge.md](../docs/agents/common-knowledge.md)
 - [../docs/agents/knowledge/README.md](../docs/agents/knowledge/README.md)
 
@@ -230,7 +234,7 @@ Tempi:
 
 - 5 min: spiega contesto come budget limitato.
 - 10 min: mostra gate di selezione conoscenza, inventario regole e gate di intake visuale prima della lettura ampia.
-- 10 min: confronta bulk loading contro index-first loading piu clusterizzazione mirata.
+- 10 min: confronta bulk loading contro index-first loading, clusterizzazione mirata e subagent nascosto per fact-check piccolo.
 - 10 min: partecipanti progettano mini indice conoscenza per proprio repo.
 - 5 min: discuti come registrare conoscenza selezionata e come trasformarla in vincoli di planning.
 - 5 min: riepilogo.
@@ -247,6 +251,7 @@ Comportamento atteso:
 - Agent spiega che planner costruisce un inventario piccolo di regole applicabili dai file di conoscenza selezionati.
 - Agent spiega che visuali requirement-relevant passano prima da `Demo Vision UI`, poi diventano input testuale stabile per planner.
 - Agent spiega che planner usa clusterizzazione euristica per limitare letture a pochi slice di ownership invece di fare tour ampi del repo.
+- Agent spiega che `Demo Context Scout` riceve domanda precisa, path o termini candidati e budget evidenza, poi restituisce output compatto.
 - Agent puo citare la `Knowledge Alignment Review` come self-check prima della richiesta di approvazione.
 - Agent spiega perché scoperta delimitata migliora qualità.
 - Agent evita esplorazione ampia dell app.
@@ -257,6 +262,7 @@ Prompt discussione:
 - Quali input non devono essere solo letti ma prima normalizzati in un artifact dedicato?
 - Quali regole estratte dai documenti devono diventare vincoli espliciti del planner?
 - Come raggrupperesti il tuo repo in pochi cluster utili prima di leggere file in profondita?
+- Quali fact-check piccoli delegheresti a subagent nascosti?
 - Cosa deve essere caricato solo su richiesta?
 - Come agent deve registrare cio che seleziona?
 
@@ -272,6 +278,7 @@ Esempio repo da mostrare:
 
 - [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md)
 - [../docs/agents/enforcement-spec.md](../docs/agents/enforcement-spec.md)
+- [skills/bootstrap-agentic-system/SKILL.md](skills/bootstrap-agentic-system/SKILL.md)
 - [principles.md](principles.md)
 
 Tempi:
@@ -279,13 +286,13 @@ Tempi:
 - 5 min: riepiloga sei principi precedenti.
 - 10 min: spiega review di processo contro review di codice.
 - 10 min: mostra controlli handoff e revisione.
-- 15 min: partecipanti preparano sistema base: regole, ruoli, artifact, skill, controlli.
+- 15 min: partecipanti usano la skill bootstrap come checklist per sistema base: regole, ruoli, artifact, gate, subagent nascosti, skill, controlli.
 - 5 min: discussione finale.
 
 Prompt demo live:
 
 ```text
-/teach-agents help me draft a starter agentic system checklist for a different team, using this repo only as an example.
+/bootstrap-agentic-system design a starter agentic coding system for my team's repository. Do not write files yet. Include main agent gates and hidden subagents for small context delegation.
 ```
 
 Comportamento atteso:
@@ -293,10 +300,13 @@ Comportamento atteso:
 - Agent fornisce checklist portabile.
 - Agent evita copiare dettagli service desk come requisiti universali.
 - Agent separa principi da scelte di implementazione.
+- Agent produce file plan non approvato e chiede approvazione esplicita prima di scrivere.
 
 Prompt discussione:
 
 - Qual è il sistema minimo che tuo team può provare prossima settimana?
+- Quali gate devono bloccare passaggio tra planner, implementor, tester e reviewer?
+- Quali subagent devono essere nascosti perché servono solo al main agent?
 - Quali regole vale la pena far rispettare dopo?
 - Come saprai che sistema sta aiutando?
 

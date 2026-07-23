@@ -15,6 +15,7 @@ flowchart TD
 
   Intake --> Vision[Demo Vision UI]
   Vision --> Planner
+  Planner --> Scout[Demo Context Scout]
   Planner --> Requirements[Skill analisi requisiti]
   Planner --> Tasks[Skill decomposizione task]
   Planner --> Plan[Skill pianificazione implementazione]
@@ -41,7 +42,9 @@ flowchart TD
 | --- | --- | --- |
 | Contratto condiviso | [../AGENTS.md](../AGENTS.md) | Mettere regole globali workflow, switch modalità e precedenza in un solo punto visibile. |
 | Agent custom | [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md), [../.github/agents/DemoVisionUI.agent.md](../.github/agents/DemoVisionUI.agent.md), [../.github/agents/DemoImplementor.agent.md](../.github/agents/DemoImplementor.agent.md), [../.github/agents/DemoTester.agent.md](../.github/agents/DemoTester.agent.md), [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md) | Separare intake visuale, pianificazione, implementazione, test e review in responsabilità diverse. |
+| Subagent nascosto | [../.github/agents/DemoContextScout.agent.md](../.github/agents/DemoContextScout.agent.md) | Passare a uno specialista solo contesto minimo, domanda precisa e budget evidenza. |
 | Skill custom | [../.agents/skills/artifact-workflow/SKILL.md](../.agents/skills/artifact-workflow/SKILL.md), [../.agents/skills/requirements-analysis/SKILL.md](../.agents/skills/requirements-analysis/SKILL.md), [../.agents/skills/implementation-planning/SKILL.md](../.agents/skills/implementation-planning/SKILL.md) | Impacchettare metodi ripetibili come moduli workflow riusabili. |
+| Skill bootstrap | [skills/bootstrap-agentic-system/SKILL.md](skills/bootstrap-agentic-system/SKILL.md) | Dare ai colleghi uno strumento riusabile per generare il proprio sistema agentico con gate, agent e template. |
 | Policy durevole | [../docs/agents/governance.md](../docs/agents/governance.md), [../docs/agents/common-knowledge.md](../docs/agents/common-knowledge.md) | Salvare regole cross-session e conoscenza in documenti del repository. |
 | Evidenza locale | `sessions/<session-id>/` | Tenere evidenza per task locale e tracciabile senza committare artifact di sessione. |
 | Pacchetto didattico | [README.md](README.md), [principles.md](principles.md), [facilitator-guide.md](facilitator-guide.md) | Spiegare sistema come pratica trasferibile invece di implementazione specifica app. |
@@ -90,6 +93,7 @@ Copia pattern, non i nomi:
 5. Artifact di sessione per evidenza e approvazione.
 6. Un numero piccolo di modalità override esplicite.
 7. Un loop di review che controlla sia qualita output sia conformita processo.
+8. Subagent nascosti per specialisti con contesto piccolo e output compatto.
 
 ## Domande di Adattamento
 

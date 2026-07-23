@@ -47,9 +47,9 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 1. Titolo: Ragionamento ripetibile merita modulo
 2. Problema: team rispiega stesso processo in ogni prompt
 3. Concetto: skill impacchettano procedure delimitate
-4. Artifact repo: skill di requisiti, planning, task e test
-5. Pattern: trigger + procedura + forma output
-6. Esercizio: bozza descrizione di una skill per tuo team
+4. Artifact repo: skill di requisiti, planning, task, test e [skills/bootstrap-agentic-system/SKILL.md](skills/bootstrap-agentic-system/SKILL.md)
+5. Pattern: trigger + procedura + forma output + template caricati su richiesta
+6. Esercizio: converti un prompt lungo in skill con template
 7. Takeaway: usa skill per workflow ripetuti, agent per ruoli isolati
 
 ## Sessione 6: Caricamento Conoscenza Limitato
@@ -58,7 +58,7 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 2. Problema: esplorazione ampia brucia attenzione e introduce rumore
 3. Concetto: caricamento conoscenza index-first, inventario regole e ricognizione cluster-first
 4. Artifact repo: [../.github/agents/DemoPlanner.agent.md](../.github/agents/DemoPlanner.agent.md)
-5. Pattern: leggi indice -> normalizza input speciali -> estrai regole applicabili -> seleziona cluster piccoli -> registra selezione -> verifica piano contro regole
+5. Pattern: leggi indice -> normalizza input speciali -> estrai regole applicabili -> seleziona cluster piccoli -> delega fact-check a subagent nascosti -> registra selezione -> verifica piano contro regole
 6. Esercizio: progetta mini indice conoscenza
 7. Takeaway: agent devono selezionare conoscenza in modo deliberato
 
@@ -68,8 +68,8 @@ Usa questa scaletta per costruire un deck conciso per sette sessioni da 45 minut
 2. Problema: output bello può nascere da processo rotto
 3. Concetto: review conformita, handoff, revisioni, enforcement
 4. Artifact repo: [../.github/agents/DemoReviewer.agent.md](../.github/agents/DemoReviewer.agent.md), [../docs/agents/enforcement-spec.md](../docs/agents/enforcement-spec.md)
-5. Pattern: controlli output più controlli processo
-6. Esercizio: bozza sistema agentico minimo vitale per tuo team
+5. Pattern: controlli output più controlli processo, con gate dentro agent principali
+6. Esercizio: usa la skill bootstrap per bozzare sistema agentico minimo vitale del tuo team
 7. Takeaway: inizia piccolo, enforcement dopo, migliora da evidenza
 
 ## Slide di Chiusura

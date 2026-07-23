@@ -163,7 +163,8 @@ These agents support the workflow but should be invoked by another agent, not us
 | `Demo GitHub Issue Intake`  | GitHub planning intake skills and planner flow | Retrieve issue metadata, body, comments, labels, assignees, milestones, linked items, and images.          |
 | `Demo Requirements Analyst` | `Demo Planner`                                 | Analyze functional gaps, ambiguities, risks, edge cases, and clarification questions.                      |
 | `Demo Task Builder`         | `Demo Planner`                                 | Decompose approved requirements or specs into atomic vertical slices with dependencies and blocking edges. |
-| `Demo Vision UI`            | `Demo Planner`                                 | Fallback screenshot or mockup analysis when native vision is unavailable.                                  |
+| `Demo Vision UI`            | `Demo Planner`                                 | Convert screenshots, mockups, and diagrams into durable `SlimUI v1` plus `Planner Notes` artifacts.        |
+| `Demo Context Scout`        | `Demo Planner`                                 | Return a small repository evidence packet for one bounded planning question.                               |
 
 ## Internal Agent Subagent Flow
 
@@ -184,7 +185,8 @@ flowchart TD
   P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
 
   P0 -. GitHub-driven intake .-> GI[Demo GitHub Issue Intake]
-  P2 -. fallback vision only .-> GV[Demo Vision UI]
+  P2 -. canonical visual artifact .-> GV[Demo Vision UI]
+  P3 -. bounded evidence packet .-> GCS[Demo Context Scout]
   P4 -. deep requirement analysis .-> GR[Demo Requirements Analyst]
   P5 -. vertical slice decomposition .-> GT[Demo Task Builder]
   P3 -. durable knowledge extraction .-> GK[Demo Knowledge Builder]

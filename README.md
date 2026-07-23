@@ -95,6 +95,20 @@ The workspace MCP configuration is in `.vscode/mcp.json` and defines a `github` 
 
 Bug planning follows an additional gate before `Demo Planner`: gather bug details, inspect likely local causes, expand to code/config/data/external dependencies, present the top probable causes, wait for user cause selection, then create a root-cause-focused planning intake. The selected cause analysis is saved in the planner-created session folder.
 
+## Hidden Subagents
+
+Some agents are intentionally hidden from the user picker with `user-invocable: false`. They exist for main agents to call with a small, clean context packet instead of dragging the full conversation and repository context into every specialist step.
+
+Current hidden subagents:
+
+- `Demo Requirements Analyst`: requirement gaps, risks, and clarification questions.
+- `Demo Task Builder`: atomic vertical slices after requirements are known.
+- `Demo GitHub Issue Intake`: factual GitHub issue retrieval only.
+- `Demo Vision UI`: deterministic visual extraction from screenshots, mockups, and diagrams.
+- `Demo Context Scout`: bounded repository evidence packets for one planning or review question.
+
+Main agents expose hidden helpers through their `agents:` allow-list. When adding a new helper, keep it single-purpose, give it minimal tools, set `user-invocable: false`, and pass only the artifact excerpt or bounded question it needs. Add a `model:` only when the exact model name is verified in the local Copilot environment; otherwise leave model selection to the caller.
+
 ## Session Artifacts
 
 For GitHub-driven workflows, the session ID is the GitHub issue number. For offline workflows, the user provides or confirms the session ID. The planner creates or reuses `sessions/<session-id>/` before requirements analysis starts.
@@ -103,7 +117,7 @@ For GitHub-driven workflows, the session ID is the GitHub issue number. For offl
 
 ## Vision Handling
 
-For screenshots and mockups, the planner should use the active model's native vision capability when available. `Demo Vision UI` is only a fallback subagent for text-only models or environments where image inspection is unavailable.
+For screenshots and mockups, the planner should invoke the hidden `Demo Vision UI` subagent and save its `SlimUI v1` plus `Planner Notes` output as the durable visual contract. Native model vision can still help with quick inspection, but it does not replace the artifact-producing subagent path.
 
 ## Suggested Walkthrough
 

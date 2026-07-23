@@ -48,7 +48,8 @@ The current workflow is role-based:
 - `Demo Requirements Analyst` identifies functional gaps, ambiguities, risks, edge cases, and clarification questions.
 - `Demo Task Builder` decomposes approved requirements into atomic frontend, backend, data, auth, and test tasks.
 - `Demo Knowledge Builder` creates or updates durable repository knowledge from verified evidence after user approval.
-- `Demo Vision UI` provides fallback screenshot or mockup analysis when native vision is unavailable.
+- `Demo Vision UI` converts screenshots, mockups, and diagrams into durable `SlimUI v1` plus `Planner Notes` artifacts.
+- `Demo Context Scout` returns small repository evidence packets for bounded planning questions.
 - `Demo Implementor` implements only explicitly approved plans.
 - `Demo Tester` creates and runs focused Vitest and React Testing Library coverage for approved work.
 - `Demo Reviewer` reviews for plan conformance, defects, regressions, missing tests, accessibility, security, data integrity, and PR readiness.

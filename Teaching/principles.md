@@ -183,8 +183,11 @@ Esempi:
 - [../.agents/skills/task-decomposition/SKILL.md](../.agents/skills/task-decomposition/SKILL.md) per trasformare spec in task.
 - [../.agents/skills/implementation-planning/SKILL.md](../.agents/skills/implementation-planning/SKILL.md) per piani a livello file.
 - [../.agents/skills/test-strategy/SKILL.md](../.agents/skills/test-strategy/SKILL.md) per copertura validazione.
+- [skills/bootstrap-agentic-system/SKILL.md](skills/bootstrap-agentic-system/SKILL.md) per trasformare un prompt lungo di bootstrap in workflow riusabile con template.
 
 Una skill utile ha trigger chiaro, procedura delimitata e output noto.
+
+Quando un prompt diventa lungo e contiene sempre stessi step, gate e template, trasformalo in skill. Il prompt resta utile come spiegazione, ma la skill diventa strumento operativo: carica template solo quando servono e impone criteri di completamento piu stabili.
 
 Domanda di trasferimento: cosa ripetono i tuoi agent abbastanza spesso da meritare una skill?
 
@@ -200,6 +203,8 @@ Altro passo utile: dopo la selezione conoscenza, planner estrae un piccolo inven
 
 Poi planner non esplora repo in modo largo. Raggruppa prima 1-3 cluster probabili del codebase, legge solo dentro quei confini e allinea il piano finale contro le regole selezionate.
 
+Pattern nuovo: se una domanda richiede solo evidenza piccola, il planner non deve caricarsi altro contesto. Delega a un subagent nascosto come [../.github/agents/DemoContextScout.agent.md](../.github/agents/DemoContextScout.agent.md), passando domanda precisa, path o termini candidati, conoscenza gia selezionata e budget evidenza. Il subagent torna con answer, evidence, file rilevanti, confidence e gaps.
+
 Regola riusabile:
 
 ```text
@@ -207,6 +212,7 @@ Leggi indice.
 Normalizza input speciali in artifact dedicati.
 Estrai regole applicabili.
 Seleziona cluster piccoli di esplorazione.
+Delega fact-check piccoli a subagent nascosti.
 Seleziona per trigger.
 Registra cosa hai selezionato.
 Verifica piano contro regole selezionate.

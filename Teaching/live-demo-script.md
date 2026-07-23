@@ -143,19 +143,22 @@ Pausa facilitatore:
 
 Chiedi ai partecipanti di identificare primi tre documenti che agent deve leggere nel loro repo e tre documenti da caricare solo su richiesta.
 
+Poi chiedi un fact-check piccolo da delegare a subagent nascosto: una domanda, due path candidati, massimo cinque evidenze.
+
 ## Demo Sessione 7: Review, Tracciabilita e Adattamento
 
 Prompt:
 
 ```text
-/teach-agents help me draft a starter agentic system checklist for a different team, using this repo only as an example.
+/bootstrap-agentic-system design a starter agentic coding system for my team's repository. Do not write files yet. Include main agent gates and hidden subagents for small context delegation.
 ```
 
 Comportamento atteso:
 
 - Produce checklist portabile.
 - Separa principi da implementazione specifica service desk.
-- Include regole, ruoli, artifact, skill e controlli review.
+- Include regole, ruoli, artifact, gate dentro agent principali, subagent nascosti, skill e controlli review.
+- Produce un file plan non approvato prima di qualunque scrittura.
 
 Pausa facilitatore:
 

@@ -9,6 +9,7 @@ agents:
     "Demo Knowledge Builder",
     "Demo GitHub Issue Intake",
     "Demo Vision UI",
+    "Demo Context Scout",
   ]
 ---
 
@@ -41,6 +42,14 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 - Use `service-desk-domain` for domain vocabulary.
 
 Load `docs/agents/knowledge/testing-flow-checklist.md` when the plan includes new or changed tests, validation commands, or test-scope decisions.
+
+## Subagent Context Budget
+
+Use hidden subagents to keep specialist work isolated and token-efficient. Pass each subagent a small context packet containing only the artifact excerpt, selected knowledge references, candidate paths or terms, the exact question, and the expected output shape.
+
+Do not pass full conversation history, full session folders, broad repository maps, or unrelated artifacts to a hidden subagent. Prefer `Demo Context Scout` when a planning gate needs a bounded repository evidence packet before the planner reads more files directly.
+
+If a hidden helper has a verified `model:` configured in its frontmatter, rely on that helper for simpler work that does not need the main planning model. Do not invent model names; leave model selection unpinned when the available local Copilot model name is unknown.
 
 ## Gate Workflow
 
@@ -158,6 +167,8 @@ For each selected cluster, record:
 - which planning question it should answer
 
 Do not deep-read files outside the selected clusters unless a blocker forces one adjacent hop to the owning component.
+
+When a cluster needs one bounded fact check, invoke `Demo Context Scout` with the cluster label, candidate paths or terms, the single planning question, and a small evidence budget. Treat the scout output as supporting evidence, not as approval to skip later implementation review.
 
 ### Gate 8: Focused Reconnaissance
 

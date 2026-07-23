@@ -42,7 +42,7 @@ I file service desk possono apparire solo come esempi quando illustrano un princ
 - [facilitator-guide.md](facilitator-guide.md) fornisce sette sessioni didattiche da 45 minuti.
 - [slide-outline.md](slide-outline.md) trasforma sessioni in struttura presentazione.
 - [live-demo-script.md](live-demo-script.md) fornisce prompt esatti e comportamento atteso agente.
-- [prompt-sistema-agentico-colleghi.md](prompt-sistema-agentico-colleghi.md) offre un prompt da dare ai colleghi per progettare proprio sistema agentico.
+- [skills/bootstrap-agentic-system/SKILL.md](skills/bootstrap-agentic-system/SKILL.md) offre la skill da dare ai colleghi per progettare proprio sistema agentico, con template per file plan, agent contract, artifact, gate e handoff.
 
 ## Come Usare Questo Pacchetto
 
@@ -60,5 +60,7 @@ Non presentare questo sistema come unica struttura corretta. Presentalo come ese
 2. Trasforma rischi in regole esplicite di workflow.
 3. Separa ruoli agente dove contesto o autorità devono restare isolati.
 4. Cattura decisioni come artifact.
-5. Aggiungi skill riusabili per lavoro ripetibile.
-6. Aggiungi enforcement solo dopo che workflow e chiaro.
+5. Inserisci gate espliciti dentro agent principali prima delle transizioni rischiose.
+6. Usa subagent nascosti per passare contesto piccolo e pulito a compiti specialistici.
+7. Aggiungi skill riusabili per lavoro ripetibile.
+8. Aggiungi enforcement solo dopo che workflow e chiaro.
