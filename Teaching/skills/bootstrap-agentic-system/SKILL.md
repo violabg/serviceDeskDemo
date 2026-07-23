@@ -36,6 +36,15 @@ Original source templates from this repository and this teaching skill:
 - Per-question clarification format is provided directly in `templates/agent-contracts.md` and should be adapted to the target repository.
 - If your target repository already has implementation-plan or clarification templates, adapt and reference those local equivalents.
 
+### Plan-Schema.md Citation Requirement
+
+When the generated Planner produces `implementation-plan.md` or references an implementation-plan template:
+
+- The generated Planner contract must explicitly name the template file path it must use (e.g., `sessions/<id>/implementation-plan.md` or repo-local path).
+- If a local equivalent is created, the generated Planner contract must explicitly state the file is derived from `templates/plan-schema.md`.
+- Do not use generic wording such as "using repo template" without a concrete file path and source attribution.
+- Example language: "Produce `implementation-plan.md` using the repo template at `docs/templates/implementation-plan-template.md`, which is derived from `templates/plan-schema.md`."
+
 ## Bootstrap Gates
 
 ### Gate 0: Scope Boundary
@@ -91,9 +100,22 @@ Use `templates/bootstrap-file-plan.md`. Mark approval false by default. Do not w
 
 After approval, create the smallest coherent file batch. Prefer templates and short role contracts over broad narrative docs.
 
+**Plan-Schema Template Creation Requirement:**
+- If `templates/plan-schema.md` does not exist in the target repository, create it during generation using the source template from `Teaching/skills/bootstrap-agentic-system/templates/plan-schema.md` (or the equivalent in the bootstrap skill location).
+- If `templates/plan-schema.md` already exists in the target repository, verify that it contains the core sections: approval block, filesystem tree, file details, operations, validation, and risks.
+- Document the location of `templates/plan-schema.md` explicitly in the generated Planner agent contract so the Planner knows where to reference it for implementation-plan.md output.
+- Example: In the generated Planner's `.md` or `.agent.md` file, include: "Use `templates/plan-schema.md` as the source template when producing implementation-plan.md artifacts."
+
 ### Gate 6: Validation
 
 Validate frontmatter, markdown diagnostics, and internal links where tooling is available. Report any validation that could not run.
+
+**Plan-Schema Template Validation:**
+- Verify that `templates/plan-schema.md` exists at the expected path.
+- Verify that the file contains required sections: approval block, filesystem tree, file details, operations timeline, validation commands, and risks/rollback.
+- Verify that the generated Planner agent contract explicitly references `templates/plan-schema.md` by path (not generic wording like "repo template").
+- If the template exists but was not created by this bootstrap run, confirm it contains equivalent structure to the source template.
+- Report the file path and validation status in the final response.
 
 ## Generated System Requirements
 
@@ -103,7 +125,7 @@ The generated system must have these properties.
 
 Create persistent, user-invokable custom agents for role boundaries that change authority:
 
-- Planner: clarifies requirements and produces approved artifacts.
+- Planner: clarifies requirements and produces approved artifacts. **Must reference `templates/plan-schema.md` by path in its contract and produce implementation-plan.md files using that schema.**
 - Implementor: modifies code only from an approved plan.
 - Tester: creates or runs test strategy for approved work.
 - Reviewer: reviews plan/spec conformance, durable standards, defects, regressions, and gaps.
@@ -113,6 +135,11 @@ Optional user-invokable agents are useful when the work can happen outside featu
 ### Gates Inside Main Agents
 
 Main agents should include gates only where the repository's real workflow risk changes. Do not copy this gate list blindly. Evaluate each candidate, then remove, add, rename, or merge gates so the contract fits the target repo.
+
+**Gate Numbering and Labeling Requirement:**
+- Every gate must be labeled and numbered using the format `Gate <n>: <gate name>` (e.g., `Gate 0: Scope Intake`, `Gate 1: Clarification`).
+- Do not use unnumbered gates or omit the word "Gate" from the label.
+- Gates must be numbered sequentially starting from 0 or 1 depending on repo convention, but the number and label must always be explicit.
 
 Candidate gates to evaluate:
 
@@ -159,6 +186,7 @@ Generated planners must load knowledge deliberately:
 5. cluster likely codebase surface before deep reading
 6. use hidden context scouts for bounded evidence questions
 7. align the plan against selected rules before approval
+8. **load and verify `templates/plan-schema.md` exists** before producing implementation-plan.md artifacts; reference the file path explicitly in the Planner contract and in any generated implementation-plan output
 
 ## Final Response Shape
 
