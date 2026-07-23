@@ -6,8 +6,9 @@ Use these as starting shapes. Adapt names, tools, and paths to the target platfo
 
 When drafting a planner or implementor contract, use these repository originals as source material instead of inventing new shapes:
 
+- Knowledge index schema: [`knowledge-index-schema.md`](knowledge-index-schema.md)
 - Implementation plan schema: [`plan-schema.md`](plan-schema.md)
-- Clarification questions artifact shape is included directly in the "Clarification Question Shape" section below.
+- Clarification question schema: [`question-schema.md`](question-schema.md)
 
 Use the original shapes as examples, then adapt fields to the target repo.
 
@@ -33,6 +34,11 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Do not implement application code.
 - Work from a named session artifact package.
 - Do not ask for approval while blocking clarification questions remain open.
+- Read the generated knowledge index before loading repository knowledge files.
+- Load only knowledge files whose `When to read` triggers match the planning task.
+- Do not bulk-load every knowledge file before selection.
+- Use `templates/question-schema.md` as the source template when asking blocking clarification questions and recording answers.
+- Use `templates/plan-schema.md` as the source template when producing implementation-plan.md artifacts.
 - Do not bulk-read the repository before knowledge selection and clusterization.
 
 ## Gates
@@ -68,9 +74,15 @@ Artifact record:
 
 Pass condition:
 
+The Planner has read the knowledge index, selected only matching knowledge files, and recorded selected files plus skipped related candidates.
+
 Fail condition:
 
+The Planner has not read the index, selected no rationale, or bulk-loaded knowledge before selection.
+
 Artifact record:
+
+Selected Knowledge section in the session artifacts.
 
 ### Candidate Gate: Rule Inventory
 
@@ -104,9 +116,25 @@ Fail condition:
 
 Artifact record:
 
+## Knowledge Index Shape
+
+Use [`knowledge-index-schema.md`](knowledge-index-schema.md) when the generated system needs a durable index for token-efficient knowledge loading. The generated Planner contract must reference the target repo's knowledge-index path explicitly.
+
+Minimum workflow:
+
+1. Read the knowledge index first.
+2. Match the planning task against `When to read` triggers.
+3. Load only selected knowledge files.
+4. Extract a rule inventory from selected files.
+5. Record selected files, skipped related candidates, and rationale in artifacts.
+
+Rule: do not bulk-load all knowledge files before index selection.
+
 ## Clarification Question Shape
 
-Use the table artifact from `clarification-questions.md` when recording questions and answers:
+Use [`question-schema.md`](question-schema.md) when recording clarification questions and answers. The generated Planner contract must reference the target repo's local question-schema path explicitly.
+
+Minimum artifact shape:
 
 ```markdown
 # Clarification Questions
@@ -151,7 +179,7 @@ Rule: do not ask for approval while blocking clarification questions remain open
 
 ## Implementation Plan Shape
 
-Use [`plan-schema.md`](plan-schema.md) when the generated planner must hand off work to an implementor. Preserve these sections unless the target repo has a better equivalent:
+Use [`plan-schema.md`](plan-schema.md) when the generated planner must hand off work to an implementor. The generated Planner contract must reference the target repo's local plan-schema path explicitly. Preserve these sections unless the target repo has a better equivalent:
 
 1. Session ID
 2. Approval Status

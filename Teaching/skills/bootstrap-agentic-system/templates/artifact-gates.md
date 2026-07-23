@@ -42,7 +42,7 @@ This catalog is a menu, not a fixed contract. Use repository discovery and failu
 | --- | --- | --- | --- |
 | Scope Intake | Stop wrong workflow early | Planner | `session-brief.md` |
 | Clarification Resolved | Avoid planning over blocking ambiguity | Planner + user | `clarification-questions.md` |
-| Knowledge Selected | Avoid bulk context and hidden standards drift | Planner | `implementation-plan.md` |
+| Knowledge Selected | Read the knowledge index first, then load only task-matched knowledge | Planner | `implementation-plan.md` |
 | Rule Inventory | Convert docs into explicit planning constraints | Planner | `implementation-plan.md` |
 | Bounded Discovery | Avoid broad repository tours | Planner or scout | `implementation-plan.md` |
 | Plan Approval | Prevent unapproved implementation | User | `implementation-plan.md` |
