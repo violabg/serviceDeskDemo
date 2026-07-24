@@ -21,7 +21,7 @@ In this mode:
 
 ## Language
 
-All demo agents, skills, artifacts, and user-facing outputs use English, except content under `Teaching/`, which must be written in Italian.
+All demo agents, skills, artifacts, and user-facing outputs use English.
 
 ## Workflow Principles
 
