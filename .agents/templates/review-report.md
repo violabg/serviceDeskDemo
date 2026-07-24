@@ -1,5 +1,10 @@
 # Review Report
 
+## Session Information
+
+- Session ID:
+- Created At:
+
 ## Findings
 
 | Severity | File | Finding | Recommendation |

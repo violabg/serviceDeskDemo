@@ -145,12 +145,12 @@ Required files:
 - `implementation-plan.md`
 - `test-plan.md`
 - `changed-files.md`
-- review-target handoff file
+- review-ready handoff file
 
 Checks:
 
 - all required review inputs exist
-- handoff envelope targets `Demo Reviewer`
+- at least one handoff envelope is marked `Current Gate: Review Ready`
 - changed-files report is present and non-empty
 
 ## Required Artifact Checks

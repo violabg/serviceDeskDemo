@@ -1,5 +1,10 @@
 # Requirements Analysis
 
+## Session Information
+
+- Session ID:
+- Created At:
+
 ## Functional Gaps
 
 ## Ambiguities and Inconsistencies

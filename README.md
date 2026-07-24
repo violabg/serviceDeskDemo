@@ -77,10 +77,11 @@ flowchart LR
     B --> F[Implementation Plan]
     F --> G[Demo Implementor]
     G --> H[Demo Tester]
-    H --> I[Demo Reviewer]
+    H --> I[Review-Ready Handoff]
+    I --> J[Human or PR Review]
 ```
 
-The planner is planning-only. It must not implement code, run project commands, or bypass approval. The implementor works only from an approved plan in `sessions/<session-id>/`.
+The planner is planning-only. It must not implement code, run project commands, or bypass approval. The implementor works only from an approved plan in `sessions/<session-id>/`. Review remains required, but it is handled through review-ready artifacts, `review-checklist`, and human or PR review surfaces rather than a dedicated default agent.
 
 ## GitHub Issue Intake
 
@@ -129,7 +130,7 @@ For screenshots and mockups, the planner should invoke the hidden `Demo Vision U
 6. Approve the plan.
 7. Ask `Demo Implementor` to implement the approved plan from the session folder.
 8. Ask `Demo Tester` to create or run the relevant tests.
-9. Ask `Demo Reviewer` for a technical review.
+9. Run the review capability by using `review-checklist` with the session artifacts, validation output, and a handoff marked `Current Gate: Review Ready`.
 
 The teaching point is that the prompt becomes small because the workflow carries the process knowledge.
 

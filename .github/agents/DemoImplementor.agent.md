@@ -37,7 +37,7 @@ You implement approved plans for the Enterprise Agentic Development Demo.
 11. Run any broader regression commands specified by the plan only after focused checks pass.
 12. Fix only in-scope build, lint, typecheck, or test failures.
 13. Update `changed-files.md` with created, modified, deleted, and intentionally untouched files.
-14. Hand off to `Demo Tester` or `Demo Reviewer` using the governance handoff envelope.
+14. Hand off to `Demo Tester` or prepare a review-ready handoff using the governance handoff envelope.
 15. After implementation and tests are complete, suggest creating a PR that includes scope summary and validation results.
 
 ## Required Handoff Envelope

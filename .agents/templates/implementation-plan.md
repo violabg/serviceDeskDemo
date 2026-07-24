@@ -3,21 +3,36 @@
 ## Session ID
 
 - Session:
+- Created At:
 
 ## Approval Status
 
+- Approval Ready: false
 - Approved: false
 - Approved By:
-- Approval Date:
+- Approved At:
+- Source Message:
 
 ## 1. Design Overview
 
-## 2. Filesystem Tree
+## 2. Selected Knowledge Files
+
+## 3. Applicable Rule Inventory
+
+| Rule ID | Source | Rule | Why It Applies |
+| --- | --- | --- | --- |
+
+## 4. Codebase Clusters
+
+| Cluster | Candidate Paths | Planning Question | Why It Is In Scope |
+| --- | --- | --- | --- |
+
+## 5. Filesystem Tree
 
 | Operation | Path | Reason |
 | --- | --- | --- |
 
-## 3. File Details
+## 6. File Details
 
 ### `<path>`
 
@@ -27,7 +42,7 @@
 - Business Logic:
 - Coverage Scenarios:
 
-## 4. Proposed Diffs
+## 7. Proposed Diffs
 
 ### Proposed Diff: `<path>`
 
@@ -47,11 +62,21 @@ Proposed snippet for the same scope.
 
 - Explain why this change is needed.
 
-## 5. Operations and Timeline
+## 8. Knowledge Alignment Review
+
+| Rule ID | Planned File or Section | Satisfied By | Notes |
+| --- | --- | --- | --- |
+
+## 9. Coverage Scenarios
+
+| Scenario | Validation Surface | Planned Check |
+| --- | --- | --- |
+
+## 10. Operations and Timeline
 
 | Step | Action | Validation |
 | --- | --- | --- |
 
-## 6. Validation Commands
+## 11. Validation Commands
 
-## 7. Risks and Rollback
+## 12. Risks and Rollback

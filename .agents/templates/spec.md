@@ -1,5 +1,10 @@
 # Specification
 
+## Session Information
+
+- Session ID:
+- Created At:
+
 ## Goal
 
 ## In Scope

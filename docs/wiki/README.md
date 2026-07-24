@@ -151,8 +151,9 @@ Use these as explicit role tools. In chat, invoke them with direct phrasing such
 | `Demo Planner` | You need full planning artifacts from issue/story/screenshot/requirement. | Provide session ID, source input, constraints, and ask for spec, tasks, implementation plan, and test plan. |
 | `Demo Implementor` | You have approved plan and need code implementation only. | Provide session ID and approved artifact references; request implementation against plan only. |
 | `Demo Tester` | You need test planning or test implementation for approved work. | Provide feature scope and ask for Vitest/RTL coverage matrix plus commands and residual risks. |
-| `Demo Reviewer` | You need final quality review before merge/handoff. | Provide changed files and ask for findings by severity, regressions, gaps, and readiness verdict. |
 | `Demo Knowledge Builder` | You need durable repository knowledge created or updated from verified project evidence. | Provide one focused knowledge topic and approve the proposed target before it saves under `docs/agents/knowledge/`. |
+
+Review is still required before merge or handoff, but it is handled as a capability rather than a default user-invokable agent. Use `review-checklist` with `implementation-plan.md`, `test-plan.md`, `changed-files.md`, validation evidence, and a handoff marked `Current Gate: Review Ready`.
 
 ## Internal-Only Agents
 
@@ -216,7 +217,7 @@ flowchart TD
   I1[Implement Smallest Coherent Batch]
   I2[Run Plan Validation Commands]
   I3[Update changed-files.md]
-  I4[Handoff to Tester or Reviewer]
+  I4[Handoff to Tester or Mark Review Ready]
 
   I0 --> I1 --> I2 --> I3 --> I4
   I0 -. no internal subagents .-> I5[Direct Execution Path]
@@ -236,18 +237,13 @@ flowchart TD
   T0 -. no internal subagents .-> T5[Direct Execution Path]
 ```
 
-### Demo Reviewer Flow
+### Review Capability
 
-```mermaid
-flowchart TD
-  R0[Read Required Review Inputs]
-  R1[Analyze Defects and Regressions]
-  R2[Produce Severity-Ordered Findings]
-  R3[PR Readiness Recommendation]
+Review is not modeled as a default standalone agent in this repo.
 
-  R0 --> R1 --> R2 --> R3
-  R0 -. no internal subagents .-> R4[Direct Review Path]
-```
+- Require `implementation-plan.md`, `test-plan.md`, `changed-files.md`, validation evidence, and a handoff marked `Current Gate: Review Ready`.
+- Use `review-checklist` to drive severity-ordered findings, regression checks, missing-test checks, and readiness judgment.
+- Complete final review through human review or PR review surfaces.
 
 ## User-Invokable Skills
 

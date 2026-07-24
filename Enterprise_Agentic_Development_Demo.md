@@ -52,7 +52,7 @@ The current workflow is role-based:
 - `Demo Context Scout` returns small repository evidence packets for bounded planning questions.
 - `Demo Implementor` implements only explicitly approved plans.
 - `Demo Tester` creates and runs focused Vitest and React Testing Library coverage for approved work.
-- `Demo Reviewer` reviews for plan conformance, defects, regressions, missing tests, accessibility, security, data integrity, and PR readiness.
+- Review remains required through review-ready artifacts, `review-checklist`, and human or PR review surfaces for plan conformance, defects, regressions, missing tests, accessibility, security, data integrity, and PR readiness.
 
 ## Context Engineering
 
@@ -133,7 +133,7 @@ Each feature or bug follows this path unless emergency mode is explicitly reques
 4. User approval
 5. Implementor changes
 6. Tester validation
-7. Reviewer findings and PR readiness
+7. Review capability findings and PR readiness
 8. Pull request
 
 ## User Story Types
@@ -151,7 +151,7 @@ Each feature or bug follows this path unless emergency mode is explicitly reques
 - `Use Demo Planner to plan issue 123 with session ID 123.`
 - `Use Demo Implementor for approved session 123.`
 - `Use Demo Tester to add and run focused tests for session 123.`
-- `Use Demo Reviewer to review changed files for session 123.`
+- `Use review-checklist to review the review-ready artifacts for session 123.`
 - `Use Demo Knowledge Builder to create durable knowledge for the access-control permission flow.`
 
 The goal is to keep prompts small while moving process intelligence into repository-owned agents, skills, knowledge, and validation gates.

@@ -3,14 +3,15 @@
 ## Session Information
 
 - Session ID:
-- Created:
+- Created At:
 - Created By:
 
 ## Approval Status
 
 - Approved: false
 - Approved By:
-- Approval Date:
+- Approved At:
+- Source Message:
 
 ## Source Input
 

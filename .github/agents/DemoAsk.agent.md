@@ -31,7 +31,7 @@ Answer repository and workflow questions clearly, using repository knowledge fir
 - Planning requests belong to `Demo Planner`.
 - Implementation requests belong to `Demo Implementor` after approved planning.
 - Test-authoring or test-execution requests belong to `Demo Tester`.
-- Technical review requests belong to `Demo Reviewer`.
+- Technical review requests belong to the review capability path: session artifacts, `review-checklist`, validation output, and human or PR review surfaces.
 - Durable knowledge creation or updates belong to `Demo Knowledge Builder`.
 
 ## Knowledge-First Workflow

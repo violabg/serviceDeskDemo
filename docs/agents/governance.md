@@ -40,7 +40,7 @@ Default workflow uses hard role isolation:
 - Planner plans.
 - Implementor implements.
 - Tester tests.
-- Reviewer reviews.
+- Review is a required capability satisfied through review artifacts, review-checklist, validation gates, and human or PR review surfaces.
 
 Cross-role overlap is not allowed by default.
 
@@ -190,7 +190,7 @@ Use this rollout sequence when evolving the system:
 
 1. Governance and common knowledge
 2. Planner and implementor contracts
-3. Tester and reviewer contracts
+3. Tester contract and review capability surfaces
 4. Remaining agents and skills
 
 ## Enforcement Roadmap

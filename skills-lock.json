@@ -7,6 +7,12 @@
       "skillPath": "skills/engineering/ask-matt/SKILL.md",
       "computedHash": "0f843160e34a24f5bd12cdc7de7d40951e77fbdc05ce8f891b37ca32eac2c44d"
     },
+    "bootstrap-agentic-system": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "bootstrap-agentic-system/SKILL.md",
+      "computedHash": "07a70f4ec4a439d8e793ab237b83e4b71a5428578031b891c2fbf3fbce3e5c18"
+    },
     "caveman": {
       "source": "juliusbrussee/caveman",
       "sourceType": "github",
@@ -102,6 +108,12 @@
       "sourceType": "github",
       "skillPath": "skills/in-progress/loop-me/SKILL.md",
       "computedHash": "e1fcab9b531b338eb540c9d57ee089e2660e4bba1d7623ec566c6f32f77f2d26"
+    },
+    "maintain-agentic-system": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "maintain-agentic-system/SKILL.md",
+      "computedHash": "21a3ffd2751f1b20837d4edd4a0d26d4877e6580715ff13fcde085930341c919"
     },
     "migrate-radix-to-base": {
       "source": "shadcn/ui",

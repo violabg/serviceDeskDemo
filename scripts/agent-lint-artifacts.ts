@@ -282,13 +282,13 @@ function lintSession(
 
     const reviewHandoffs = findHandoffFiles(sessionRoot).filter((fileName) => {
       const content = readOptionalFile(sessionRoot, fileName)
-      return content ? /To Agent:\s*Demo Reviewer/i.test(content) : false
+      return content ? /Current Gate:\s*Review Ready/i.test(content) : false
     })
 
     if (reviewHandoffs.length === 0) {
       findings.push({
         severity: "error",
-        message: "review-ready: no handoff file targeting Demo Reviewer found",
+        message: "review-ready: no handoff file marked with Current Gate: Review Ready found",
       })
     }
 

@@ -43,6 +43,17 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 
 Load `docs/agents/knowledge/testing-flow-checklist.md` when the plan includes new or changed tests, validation commands, or test-scope decisions.
 
+## Artifact Templates
+
+- Use `.agents/templates/session-brief.md` for `session-brief.md`.
+- Use `.agents/templates/requirements-analysis.md` for `requirements-analysis.md`.
+- Use `.agents/templates/clarification-questions.md`, derived from `.agents/skills/bootstrap-agentic-system/templates/question-schema.md`, when asking blocking clarification questions and recording answers.
+- Use `.agents/templates/spec.md` for `spec.md`.
+- Use `.agents/templates/task-breakdown.md` for `task-breakdown.md`.
+- Use `.agents/templates/implementation-plan.md`, derived from `.agents/skills/bootstrap-agentic-system/templates/plan-schema.md`, when producing `implementation-plan.md`.
+- Use `.agents/templates/test-plan.md` for `test-plan.md`.
+- Use `.agents/templates/handoff-envelope.md` for handoff files.
+
 ## Subagent Context Budget
 
 Use hidden subagents to keep specialist work isolated and token-efficient. Pass each subagent a small context packet containing only the artifact excerpt, selected knowledge references, candidate paths or terms, the exact question, and the expected output shape.
@@ -87,7 +98,7 @@ If a provided visual cannot be inspected, log the blocker explicitly and ask onl
 
 Identify which demo knowledge is relevant: service desk domain, Next.js architecture, Prisma/Neon data model, auth, UI conventions, testing, or accessibility.
 
-Read `docs/agents/knowledge/README.md` first when it exists. Use the `When to read` triggers to choose only knowledge files related to the current requirement. Do not bulk-load all knowledge files. Record the selected knowledge files, or `None`, in the planning artifacts so implementation can reuse the same context boundary.
+Read `docs/agents/knowledge/README.md`, the repo-local knowledge index derived from `.agents/skills/bootstrap-agentic-system/templates/knowledge-index-schema.md`, before loading any repository knowledge files. Use the `When to read` triggers to choose only knowledge files related to the current requirement. Do not bulk-load all knowledge files. Record the selected knowledge files, or `None`, plus any skipped relevant candidates and why they were skipped, in the planning artifacts so implementation can reuse the same context boundary.
 
 ### Gate 4: Knowledge Rule Inventory
 
