@@ -33,6 +33,21 @@ Valid approval requires both:
 
 If either element is missing, implementation must not start.
 
+## Gate Contract Rule
+
+Main agents that control authority changes or execution flow must define explicit numbered gates using the form `Gate <n>: <name>`.
+
+Each accepted gate must record:
+
+- Trigger
+- Pass Condition
+- Fail Condition
+- Approver or Waiver
+- Artifact Record
+- Rollback
+
+Workflow step lists are allowed inside a gate, but they do not replace the gate contract itself.
+
 ## Role Isolation
 
 Default workflow uses hard role isolation:
