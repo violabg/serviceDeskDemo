@@ -30,6 +30,7 @@ Phase 1 must catch the cheapest, highest-value failures early:
 3. Invalid or incomplete handoff envelopes
 4. Obvious artifact revision policy violations
 5. Missing validation evidence at implementation handoff
+6. Implementation-plan schema drift that breaks review or handoff navigation
 
 ## Operating Model
 
@@ -179,6 +180,13 @@ Must contain:
 - `Proposed Diffs` for material file changes
 - validation commands
 
+Must also preserve the repo plan schema from `templates/plan-schema.md`:
+
+- Filesystem Tree paths are markdown links, not plain code spans or plain text paths
+- every Filesystem Tree path link points to a matching File Details anchor
+- every File Details entry includes a backlink to `Filesystem Tree`
+- schema-required anchors must not be removed to satisfy markdown cleanup
+
 ### `changed-files.md`
 
 Must contain:
@@ -211,6 +219,18 @@ Failure conditions:
 - key present but blank
 - `Approved` not equal to `true`
 - approval present in one artifact but not the other
+
+## Plan Schema Adherence Checks
+
+When `implementation-plan.md` is in scope for the chosen mode, Phase 1 should also flag these failures:
+
+- Filesystem Tree paths are not markdown links
+- a Filesystem Tree link target does not match any File Details anchor
+- a File Details section exists without an anchor
+- a File Details section exists without a backlink to `Filesystem Tree`
+- required schema sections such as `Filesystem Tree`, `File Details`, `Validation Commands`, or `Risks and Rollback` are missing
+
+Phase 1 should treat schema drift as blocking even when markdown cleanup would reduce diagnostics.
 
 ## Handoff Envelope Checks
 

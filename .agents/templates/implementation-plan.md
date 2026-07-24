@@ -1,82 +1,37 @@
-# Implementation Plan
+# Implementation Plan Supplement
 
-## Session ID
+Use `templates/plan-schema.md` as the canonical source when producing `implementation-plan.md`.
 
-- Session:
-- Created At:
+This file exists only for repo-specific additions that are not owned by the shared schema.
 
-## Approval Status
+## Repo-Specific Additions
 
-- Approval Ready: false
-- Approved: false
-- Approved By:
-- Approved At:
-- Source Message:
+Apply these additions on top of `templates/plan-schema.md`:
 
-## 1. Design Overview
-
-## 2. Selected Knowledge Files
-
-## 3. Applicable Rule Inventory
+- In `Session ID`, also record `Created At`.
+- In `Approval Status`, also record `Approval Ready` and `Source Message`.
+- After `Selected Repository Knowledge`, include an `Applicable Rule Inventory` table:
 
 | Rule ID | Source | Rule | Why It Applies |
 | --- | --- | --- | --- |
 
-## 4. Codebase Clusters
+- Before the Filesystem Tree or immediately after knowledge sections, include a `Codebase Clusters` table:
 
 | Cluster | Candidate Paths | Planning Question | Why It Is In Scope |
 | --- | --- | --- | --- |
 
-## 5. Filesystem Tree
-
-| Operation | Path | Reason |
-| --- | --- | --- |
-
-## 6. File Details
-
-### `<path>`
-
-- Operation:
-- Purpose:
-- Planned Changes:
-- Business Logic:
-- Coverage Scenarios:
-
-## 7. Proposed Diffs
-
-### Proposed Diff: `<path>`
-
-**Before:**
-
-```text
-Existing snippet with enough context to locate the change.
-```
-
-**After:**
-
-```text
-Proposed snippet for the same scope.
-```
-
-**Rationale:**
-
-- Explain why this change is needed.
-
-## 8. Knowledge Alignment Review
+- After file planning details, include a `Knowledge Alignment Review` table:
 
 | Rule ID | Planned File or Section | Satisfied By | Notes |
 | --- | --- | --- | --- |
 
-## 9. Coverage Scenarios
+- Include a `Coverage Scenarios` table for focused validation planning:
 
 | Scenario | Validation Surface | Planned Check |
 | --- | --- | --- |
 
-## 10. Operations and Timeline
+## Usage Rule
 
-| Step | Action | Validation |
-| --- | --- | --- |
-
-## 11. Validation Commands
-
-## 12. Risks and Rollback
+- Do not restate the shared schema here.
+- Read this file after `templates/plan-schema.md`.
+- If this file conflicts with the shared schema, the shared schema wins unless the repo contract in `.github/agents/DemoPlanner.agent.md` explicitly says otherwise.

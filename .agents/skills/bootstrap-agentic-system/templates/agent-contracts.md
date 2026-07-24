@@ -34,6 +34,8 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Do not implement application code.
 - Work from a named session artifact package.
 - Do not ask for approval while blocking clarification questions remain open.
+- If the repository has a context glossary such as `CONTEXT.md`, read it before naming roles, gates, artifacts, skills, or source-of-truth boundaries.
+- Do not treat the context glossary as a knowledge index or as permission to bulk-load repository docs.
 - Read the generated knowledge index before loading repository knowledge files.
 - Load only knowledge files whose `When to read` triggers match the planning task.
 - Do not bulk-load every knowledge file before selection.
@@ -86,6 +88,20 @@ The Planner has not read the index, selected no rationale, or bulk-loaded knowle
 Artifact record:
 
 Selected Knowledge section in the session artifacts.
+
+### Candidate Gate: Vocabulary Alignment
+
+Pass condition:
+
+The Planner has read the context glossary when present and uses its terms consistently for roles, gates, artifacts, skills, and ownership boundaries.
+
+Fail condition:
+
+The Planner invents competing names, treats the glossary as a knowledge index, or ignores source-of-truth vocabulary.
+
+Artifact record:
+
+Selected glossary path or `Context Glossary: None` in the session artifacts.
 
 ### Candidate Gate: Rule Inventory
 

@@ -1,24 +1,30 @@
 # Clarification Questions
 
+This template is derived from `templates/question-schema.md`.
+
 ## Session Information
 
 - Session ID:
 - Created At:
 
-## Blocking Status
+## Blocking Rule
 
 - Blocking Questions Open: true
 - Approval Ready: false
+- Do not request implementation-plan approval while blocking questions remain open.
+- Ask only questions that can materially change scope, behavior, data, UX, security, validation, or handoff authority.
 
-| ID | Question | Why It Matters | Blocks Planning |
-| --- | --- | --- | --- |
-| Q1 | Pending question text | Pending rationale | Yes |
+## Question Register
+
+| ID | Question | Context | Why It Matters | How The Answer Changes The Plan | Blocks Planning |
+| --- | --- | --- | --- | --- | --- |
+| Q1 | Pending question text | Pending context | Pending rationale | Pending planning impact | Yes |
 
 ## Answers
 
-| ID | Answer | Decision Impact |
-| --- | --- | --- |
-| Q1 | Pending answer | Pending decision impact |
+| ID | Answer | Decision Impact | Resolved |
+| --- | --- | --- | --- |
+| Q1 | Pending answer | Pending decision impact | No |
 
 ## Per-Question Prompt Template
 
@@ -32,7 +38,7 @@
 <brief repo or requirement context that motivated the question>
 
 #### Why I'm asking
-<why this decision matters for scope, behavior, data, UX, security, or tests>
+<why this decision matters for scope, behavior, data, UX, security, validation, or tests>
 
 #### How I'm using the answer
 <what part of the plan changes based on the answer>
@@ -44,5 +50,3 @@
 - C: <option C>
 - D: Other: <only when needed>
 ```
-
-Do not request implementation-plan approval while blocking questions remain open.

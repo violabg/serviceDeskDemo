@@ -31,6 +31,18 @@ Use this before creating or modifying agent-system files.
 - Out of Scope:
 - Key Decisions:
 
+## Context Glossary
+
+- Glossary-Worthy Terms Found: yes | no
+- Existing Glossary Path: `CONTEXT.md` | `<path>` | none
+- Proposed Glossary Operation: NEW | MODIFIED | UNMODIFIED
+- Reason:
+- Terms or Boundaries To Capture:
+- Glossary Conflicts:
+- Conflict Resolution Questions Asked:
+- User-Selected Conflict Resolutions:
+- No-Change Rationale:
+
 ## Failure Modes
 
 | Failure Mode | Why Likely Here | Damage | Prevented By | Success Signal |

@@ -11,7 +11,7 @@ Use this skill to design and optionally install a custom coding agentic system f
 
 ## Mission
 
-Create a small, durable agentic workflow that prevents the repository's likely costly failures. The output system should include persistent custom agents, explicit gates, bounded hidden subagents, reusable skills or prompts, session artifacts, handoff contracts, and a knowledge-loading strategy.
+Create a small, durable agentic workflow that prevents the repository's likely costly failures. The output system should include persistent custom agents, explicit gates, bounded hidden subagents, reusable skills or prompts, session artifacts, handoff contracts, a context-glossary strategy, and a knowledge-loading strategy.
 
 ## Bootstrap Boundary
 
@@ -20,6 +20,7 @@ Create a small, durable agentic workflow that prevents the repository's likely c
 - Generated files must live in agent-system locations such as `.github/agents/`, `.github/skills/`, `.claude/agents/`, `docs/agents/`, or the platform equivalent.
 - Separate bootstrap behavior from generated-system behavior. A rule for the future Planner is not automatically a rule for this bootstrap run.
 - Keep repository-specific recommendations separate from transferable principles.
+- Do not create a `CONTEXT.md` just because it is missing. Create or update a context glossary only when stable terms, source-of-truth boundaries, or role/artifact names have been resolved and need to persist.
 
 ## Required Reference Loads
 
@@ -31,6 +32,8 @@ Load these templates when their output is needed:
 - `templates/knowledge-index-schema.md` when designing bounded knowledge loading.
 - `templates/plan-schema.md` when drafting the generated Planner's implementation-plan artifact contract.
 - `templates/question-schema.md` when drafting the generated Planner's clarification question contract.
+
+If the target repo already has `CONTEXT.md`, read it as the context glossary for naming and boundaries before proposing agent, gate, artifact, or skill names. Do not treat `CONTEXT.md` as a knowledge index or as permission to bulk-load repository docs.
 
 Original source templates from this repository and this teaching skill:
 
@@ -84,7 +87,7 @@ Inspect only workflow evidence:
 
 - agent platform signals: `.github/agents/`, `.claude/agents/`, Cursor or Cline rules, Copilot customizations, MCP config
 - issue/session signals: GitHub Issues, Jira, Linear, Azure DevOps, Notion, local `sessions/`, issue docs
-- knowledge signals: `docs/`, architecture notes, domain docs, testing guides, contribution docs
+- knowledge signals: `CONTEXT.md`, glossaries, ADRs, `docs/`, architecture notes, domain docs, testing guides, contribution docs
 - validation signals: package scripts, CI, lint/test commands, PR templates, review docs
 
 Completion criterion: you can name the likely platform, tracker/session model, knowledge sources, and validation surface, or you can state which of those are unknown.
@@ -102,6 +105,8 @@ Ask only questions that materially change the system design:
 - mandatory artifacts
 - acceptable gate cost
 - whether the generated system should create or update a knowledge index in the first install batch
+- whether the generated system should create or update a context glossary such as `CONTEXT.md` in the first install batch
+- how to resolve glossary conflicts when a proposed term, boundary, role name, artifact name, or workflow concept conflicts with an existing glossary definition
 - whether tracker-backed planning should include optional intake skills for existing user stories and bugs
 - whether tracker-backed workflows should include optional creation skills for new user-story tickets and bug tickets
 
@@ -119,13 +124,20 @@ Produce a concise proposal with:
 6. hidden subagents and delegation rules
 7. artifacts and gates
 8. reusable skills or prompts
-9. knowledge map
-10. handoff envelope
-11. file-generation plan
-12. three one-week validation experiments
+9. context glossary rule
+10. knowledge map
+11. handoff envelope
+12. file-generation plan
+13. three one-week validation experiments
+
+The context glossary rule must explicitly tell the user whether stable terms, source-of-truth boundaries, role names, artifact names, or workflow concepts need a glossary. If they do, propose creating or editing `CONTEXT.md` or the target repo's equivalent in the file-generation plan. If they do not, state that no glossary edit is proposed and why.
+
+If proposed glossary terms conflict with an existing glossary, do not silently choose one definition. List each conflict, show the existing meaning and proposed meaning, and ask the user how to resolve it using bounded options such as keep existing, replace existing, rename proposed term, split into two terms, or mark for later. Do not request file-plan approval while glossary conflicts remain unresolved.
 
 The knowledge map must include an index-first loading strategy:
 
+- keep context glossary usage separate from knowledge-index selection
+- read an existing context glossary for stable vocabulary before naming roles, gates, artifacts, or skills
 - create or reuse one knowledge index
 - list knowledge files with `When to read` triggers
 - require generated Planners to read the index first
@@ -146,10 +158,19 @@ These tracker skills are not mandatory. Recommend them only when they reduce rep
 
 Use `templates/bootstrap-file-plan.md`. Mark approval false by default. Do not write files until the user explicitly approves the plan.
 The file plan must record the chosen custom agent prefix and show it in proposed agent file names.
+The file plan must include a Context Glossary section. If glossary-worthy terms were identified, include the proposed `CONTEXT.md` creation or edit as a proposed file operation. If no glossary-worthy terms were identified, record `Context Glossary: no change` with the reason. If glossary conflicts were found, record the user's chosen resolution for each conflict before asking for approval.
 
 ### Gate 5: Generation
 
 After approval, create the smallest coherent file batch. Prefer templates and short role contracts over broad narrative docs.
+
+**Context Glossary Creation Requirement:**
+
+- If the target repository has a `CONTEXT.md` or equivalent glossary, preserve it as the vocabulary source for generated agent, gate, artifact, and skill names.
+- If the approved file plan includes new stable terms or source-of-truth boundaries and no glossary exists, create `CONTEXT.md` as a short glossary with term definitions and terms to avoid.
+- If no stable vocabulary was resolved during bootstrap, do not create `CONTEXT.md`; record the no-op in the file plan.
+- Document the glossary path explicitly in the generated Planner contract when one exists.
+- State that the context glossary is not a knowledge index. The Planner must still use the knowledge index for bounded knowledge loading.
 
 **Knowledge-Index Template Creation Requirement:**
 
@@ -175,6 +196,13 @@ After approval, create the smallest coherent file batch. Prefer templates and sh
 ### Gate 6: Validation
 
 Validate frontmatter, markdown diagnostics, and internal links where tooling is available. Report any validation that could not run.
+
+**Context Glossary Validation:**
+
+- If the file plan includes a context glossary, verify that it exists at the expected path and defines stable terms or boundaries rather than broad narrative documentation.
+- Verify that the generated Planner contract references the glossary path before instructions that name roles, gates, artifacts, or skills.
+- Verify that the generated Planner contract keeps glossary reading separate from knowledge-index selection and forbids treating the glossary as a replacement for the knowledge index.
+- If the file plan intentionally omits a context glossary, confirm that the no-op is recorded.
 
 **Knowledge-Index Validation:**
 
@@ -219,7 +247,7 @@ Create persistent, user-invokable custom agents for role boundaries that change 
 
 - Agent naming: before generation, either ask for a custom agent prefix or propose one derived from repository language. Apply the chosen prefix consistently to generated user-invokable and hidden custom agent names so they do not collide with generic names from other repositories.
 
-- Planner: clarifies requirements and produces approved artifacts. **Must reference the generated knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md` by path in its contract; read the knowledge index before loading knowledge files; produce implementation-plan.md files using the plan schema; preserve schema-required links, anchors, and backlinks even when markdown diagnostics object; and ask blocking clarification questions using the question schema.**
+- Planner: clarifies requirements and produces approved artifacts. **Must reference the generated context-glossary path when one exists, the generated knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md` by path in its contract; read the context glossary for naming and boundaries before defining roles, gates, artifacts, or skills; read the knowledge index before loading knowledge files; produce implementation-plan.md files using the plan schema; preserve schema-required links, anchors, and backlinks even when markdown diagnostics object; and ask blocking clarification questions using the question schema.**
 - Implementor: modifies code only from an approved plan.
 - Tester: creates or runs test strategy for approved work.
 

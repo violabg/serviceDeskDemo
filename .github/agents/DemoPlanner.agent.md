@@ -31,7 +31,10 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 - Keep all outputs in English.
 - Use the demo artifact names from `AGENTS.md`.
 - Work in a named session artifact package. Do not treat the repository as the durable storage location for session evidence.
-- Load `.agents/templates/implementation-plan.md` immediately before drafting or repairing `implementation-plan.md`.
+- Read `docs/agents/knowledge/README.md`, derived from `templates/knowledge-index-schema.md`, before loading any repository knowledge files.
+- Use `templates/question-schema.md` as the source schema when asking blocking clarification questions and recording answers.
+- Load `templates/plan-schema.md` immediately before drafting or repairing `implementation-plan.md`.
+- Use `.agents/templates/implementation-plan.md`, derived from `templates/plan-schema.md`, as the local working artifact template.
 - Preserve implementation-plan schema links, File Details anchors, and backlinks. If markdown diagnostics conflict with the schema, report or waive the diagnostic instead of removing required links or anchors.
 
 ## Skills To Use
@@ -49,10 +52,10 @@ Load `docs/agents/knowledge/testing-flow-checklist.md` when the plan includes ne
 
 - Use `.agents/templates/session-brief.md` for `session-brief.md`.
 - Use `.agents/templates/requirements-analysis.md` for `requirements-analysis.md`.
-- Use `.agents/templates/clarification-questions.md`, derived from `.agents/skills/bootstrap-agentic-system/templates/question-schema.md`, when asking blocking clarification questions and recording answers.
+- Use `.agents/templates/clarification-questions.md`, derived from `templates/question-schema.md`, when asking blocking clarification questions and recording answers.
 - Use `.agents/templates/spec.md` for `spec.md`.
 - Use `.agents/templates/task-breakdown.md` for `task-breakdown.md`.
-- Use `.agents/templates/implementation-plan.md`, derived from `.agents/skills/bootstrap-agentic-system/templates/plan-schema.md`, when producing `implementation-plan.md`.
+- Use `.agents/templates/implementation-plan.md`, derived from `templates/plan-schema.md`, when producing `implementation-plan.md`.
 - Use `.agents/templates/test-plan.md` for `test-plan.md`.
 - Use `.agents/templates/handoff-envelope.md` for handoff files.
 
@@ -100,7 +103,7 @@ If a provided visual cannot be inspected, log the blocker explicitly and ask onl
 
 Identify which demo knowledge is relevant: service desk domain, Next.js architecture, Prisma/Neon data model, auth, UI conventions, testing, or accessibility.
 
-Read `docs/agents/knowledge/README.md`, the repo-local knowledge index derived from `.agents/skills/bootstrap-agentic-system/templates/knowledge-index-schema.md`, before loading any repository knowledge files. Use the `When to read` triggers to choose only knowledge files related to the current requirement. Do not bulk-load all knowledge files. Record the selected knowledge files, or `None`, plus any skipped relevant candidates and why they were skipped, in the planning artifacts so implementation can reuse the same context boundary.
+Read `docs/agents/knowledge/README.md`, the repo-local knowledge index derived from `templates/knowledge-index-schema.md`, before loading any repository knowledge files. Use the `When to read` triggers to choose only knowledge files related to the current requirement. Do not bulk-load all knowledge files. Record the selected knowledge files, or `None`, plus any skipped relevant candidates and why they were skipped, in the planning artifacts so implementation can reuse the same context boundary.
 
 ### Gate 4: Knowledge Rule Inventory
 

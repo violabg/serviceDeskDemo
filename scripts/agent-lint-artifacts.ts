@@ -187,6 +187,15 @@ function lintSession(
       "warning",
       /validation commands?/i
     )
+
+    validateImplementationPlanSchema(implementationPlan, findings)
+  }
+
+  if (
+    implementationPlan &&
+    mode !== "planning-ready"
+  ) {
+    validateImplementationPlanSchema(implementationPlan, findings)
   }
 
   const sessionBrief = readOptionalFile(sessionRoot, "session-brief.md")
@@ -392,6 +401,152 @@ function requireApprovalMetadata(
       }
     }
   }
+}
+
+function validateImplementationPlanSchema(
+  content: string,
+  findings: Finding[]
+) {
+  for (const section of [
+    "Filesystem Tree",
+    "File Details",
+    "Validation Commands",
+    "Risks and Rollback",
+  ]) {
+    requireContains(
+      "implementation-plan.md",
+      content,
+      section,
+      findings,
+      "error",
+      new RegExp(`^##\\s+.+${escapeForRegExp(section)}$`, "im")
+    )
+  }
+
+  const filesystemTreeSection = getMarkdownSection(content, "Filesystem Tree")
+  if (!filesystemTreeSection) {
+    return
+  }
+
+  const treeTargets = extractFilesystemTreeTargets(filesystemTreeSection)
+  if (treeTargets.length === 0) {
+    findings.push({
+      severity: "error",
+      message:
+        "implementation-plan.md missing Filesystem Tree markdown links to File Details anchors",
+    })
+  }
+
+  const invalidPathCells = extractFilesystemTreePathCells(filesystemTreeSection)
+    .filter((cell) => !/\[[^\]]+\]\(#[-a-z0-9]+\)/i.test(cell))
+
+  for (const cell of invalidPathCells) {
+    findings.push({
+      severity: "error",
+      message: `implementation-plan.md has non-linked Filesystem Tree path cell: ${cell}`,
+    })
+  }
+
+  const fileDetailsSection = getMarkdownSection(content, "File Details")
+  if (!fileDetailsSection) {
+    return
+  }
+
+  const anchors = extractFileDetailAnchors(fileDetailsSection)
+  if (anchors.length === 0) {
+    findings.push({
+      severity: "error",
+      message:
+        "implementation-plan.md missing File Details anchors required by the plan schema",
+    })
+  }
+
+  const anchorSet = new Set(anchors)
+  for (const target of treeTargets) {
+    if (!anchorSet.has(target)) {
+      findings.push({
+        severity: "error",
+        message: `implementation-plan.md Filesystem Tree link target has no matching File Details anchor: #${target}`,
+      })
+    }
+  }
+
+  const detailBlocks = extractFileDetailBlocks(fileDetailsSection)
+  for (const detailBlock of detailBlocks) {
+    if (!detailBlock.hasAnchor) {
+      findings.push({
+        severity: "error",
+        message: `implementation-plan.md File Details entry missing anchor: ${detailBlock.heading}`,
+      })
+    }
+
+    if (!/Back to \[Filesystem Tree\]\(#(?:3|5)-filesystem-tree\)/i.test(detailBlock.body)) {
+      findings.push({
+        severity: "error",
+        message: `implementation-plan.md File Details entry missing Filesystem Tree backlink: ${detailBlock.heading}`,
+      })
+    }
+  }
+}
+
+function getMarkdownSection(content: string, heading: string) {
+  const pattern = new RegExp(
+    `^##\\s+.+${escapeForRegExp(heading)}\\s*$([\\s\\S]*?)(?=^##\\s+|\\Z)`,
+    "im"
+  )
+  return content.match(pattern)?.[1] ?? null
+}
+
+function extractFilesystemTreeTargets(section: string) {
+  return Array.from(section.matchAll(/\[[^\]]+\]\(#([^)]+)\)/g), (match) =>
+    match[1].trim()
+  )
+}
+
+function extractFilesystemTreePathCells(section: string) {
+  return section
+    .split("\n")
+    .filter((line) => /^\|\s*(NEW|MODIFIED|UNMODIFIED)\s*\|/i.test(line))
+    .map((line) => line.split("|")[2]?.trim() ?? "")
+    .filter(Boolean)
+}
+
+function extractFileDetailAnchors(section: string) {
+  return Array.from(section.matchAll(/<a id="([^"]+)"><\/a>/g), (match) =>
+    match[1].trim()
+  )
+}
+
+function extractFileDetailBlocks(section: string) {
+  const lines = section.split("\n")
+  const blocks: Array<{ heading: string; hasAnchor: boolean; body: string }> = []
+  let index = 0
+
+  while (index < lines.length) {
+    if (!/^###\s+/.test(lines[index])) {
+      index += 1
+      continue
+    }
+
+    const heading = lines[index].replace(/^###\s+/, "").trim()
+    const previousLines = lines.slice(Math.max(0, index - 3), index)
+    const hasAnchor = previousLines.some((line) => /<a id="[^"]+"><\/a>/.test(line))
+
+    let bodyEnd = index + 1
+    while (bodyEnd < lines.length && !/^###\s+/.test(lines[bodyEnd])) {
+      bodyEnd += 1
+    }
+
+    blocks.push({
+      heading,
+      hasAnchor,
+      body: lines.slice(index + 1, bodyEnd).join("\n"),
+    })
+
+    index = bodyEnd
+  }
+
+  return blocks
 }
 
 function findHandoffFiles(sessionRoot: string) {
