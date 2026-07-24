@@ -1,6 +1,5 @@
 ---
 name: maintain-agentic-system
-version: "1.0.0"
 description: "Use when: reviewing and updating an existing repository-local Agentic System as the repository, workflow, knowledge, or kit principles evolve."
 argument-hint: "Target repo, changed workflow or pain point, and preferred agent platform"
 disable-model-invocation: true

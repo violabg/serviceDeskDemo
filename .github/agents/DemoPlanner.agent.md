@@ -31,6 +31,8 @@ Your job is to convert a Service Desk IT requirement into reviewed artifacts tha
 - Keep all outputs in English.
 - Use the demo artifact names from `AGENTS.md`.
 - Work in a named session artifact package. Do not treat the repository as the durable storage location for session evidence.
+- Load `.agents/templates/implementation-plan.md` immediately before drafting or repairing `implementation-plan.md`.
+- Preserve implementation-plan schema links, File Details anchors, and backlinks. If markdown diagnostics conflict with the schema, report or waive the diagnostic instead of removing required links or anchors.
 
 ## Skills To Use
 
@@ -228,6 +230,11 @@ Before finalizing the plan, run a self-review and revise until all of these are 
 - every planned file belongs to a selected cluster or has a justified adjacent dependency
 - no exploratory file is carried into scope without a concrete implementation reason
 - the final file list is smaller than or equal to the discovery surface unless a justified dependency expands it
+- every filesystem-tree path is a markdown link to its matching File Details anchor using the schema slug rule
+- every File Details entry has a matching anchor and a backlink to the filesystem tree
+- markdown cleanup has not replaced schema-required links with code spans or removed inline anchors
+
+Treat implementation-plan schema drift as a blocking validation failure even when the drift reduces markdown diagnostics. If markdown tooling flags schema-required inline HTML, keep the schema intact and record the diagnostic as waived or accepted after the schema self-check passes.
 
 Do not mark the implementation plan as approval-ready while any blocking clarification item remains unanswered.
 

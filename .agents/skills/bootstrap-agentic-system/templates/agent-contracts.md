@@ -39,6 +39,9 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Do not bulk-load every knowledge file before selection.
 - Use `templates/question-schema.md` as the source template when asking blocking clarification questions and recording answers.
 - Use `templates/plan-schema.md` as the source template when producing implementation-plan.md artifacts.
+- Load `templates/plan-schema.md` immediately before drafting or repairing implementation-plan.md artifacts.
+- Preserve plan-schema-required filesystem-tree links, File Details anchors, and backlinks. If markdown diagnostics conflict with the schema, report or waive the diagnostic instead of removing required links or anchors.
+- Before requesting approval or handing work to an Implementor, run a plan-schema adherence self-check and repair any schema drift.
 - Do not bulk-read the repository before knowledge selection and clusterization.
 
 ## Gates
@@ -107,6 +110,20 @@ Pass condition:
 Fail condition:
 
 Artifact record:
+
+### Candidate Gate: Plan Schema Adherence
+
+Pass condition:
+
+The implementation-plan artifact preserves the required structure from `templates/plan-schema.md`: approval metadata, linked Filesystem Tree paths, matching File Details anchors from the slug rule, backlinks to the tree, proposed diffs or files where required, operations, validation commands, and risks/rollback.
+
+Fail condition:
+
+Any required schema section is missing, filesystem-tree paths are plain code spans instead of links, File Details anchors or backlinks are missing, or markdown cleanup changed the plan away from the schema.
+
+Artifact record:
+
+Implementation-plan validation notes in `implementation-plan.md` or the session handoff.
 
 ### Candidate Gate: Plan Approval
 
@@ -192,6 +209,14 @@ Use [`plan-schema.md`](plan-schema.md) when the generated planner must hand off 
 9. Operations and Timeline
 10. Validation Commands
 11. Risks and Rollback
+
+Required self-check before approval or handoff:
+
+- Every Filesystem Tree path is a markdown link to its File Details entry.
+- Every File Details entry has the schema-required anchor and a backlink to the Filesystem Tree.
+- The slug used by each tree link matches the schema slug rule.
+- Markdown diagnostics cleanup has not removed schema-required links, anchors, or backlinks.
+- If lint tooling flags schema-required inline HTML, keep the schema intact and record the diagnostic as waived or accepted.
 
 ## Hidden Subagent Delegation
 

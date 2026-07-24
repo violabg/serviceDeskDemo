@@ -17,6 +17,13 @@ Use this before creating or modifying agent-system files.
 - Platform:
 - Reason:
 
+## Agent Naming
+
+- Prefix Status: proposed | provided | undecided
+- Prefix:
+- Reason:
+- Example Agent Names:
+
 ## Design Overview
 
 - Goal:
@@ -44,6 +51,7 @@ Use this before creating or modifying agent-system files.
 
 - Operation:
 - Purpose:
+- Naming Impact:
 - Planned Changes:
 - Who Uses It:
 - Gate or Skill Supported:

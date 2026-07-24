@@ -1,6 +1,5 @@
 ---
 name: bootstrap-agentic-system
-version: "1.0.0"
 description: "Use when: bootstrapping a repository-specific coding agentic system with custom agents, gates, hidden subagents, skills, artifacts, handoffs, bounded knowledge loading, or a prompt-to-skill conversion for agent workflows."
 argument-hint: "Target repo, preferred agent platform, and any known workflow risks"
 disable-model-invocation: true
@@ -57,6 +56,9 @@ When the generated Planner produces `implementation-plan.md` or references an im
 
 - The generated Planner contract must explicitly name the template file path it must use (e.g., `sessions/<id>/implementation-plan.md` or repo-local path).
 - If a local equivalent is created, the generated Planner contract must explicitly state the file is derived from `templates/plan-schema.md`.
+- The generated Planner must load the target repo's `templates/plan-schema.md` immediately before drafting or repairing an `implementation-plan.md` artifact.
+- The generated Planner contract must state that plan-schema compliance overrides markdown diagnostics cleanup. If a linter flags schema-required links or inline anchors, report or waive the diagnostic instead of removing linked paths, anchors, or backlinks.
+- Before requesting approval or handing work to an Implementor, the generated Planner must run a plan-schema adherence self-check: filesystem-tree path links, matching File Details anchors from the slug rule, backlinks to the tree, approval metadata, operations, validation commands, and risks/rollback must all be present.
 - Do not use generic wording such as "using repo template" without a concrete file path and source attribution.
 - Example language: "Produce `implementation-plan.md` using `templates/plan-schema.md`, or a copied local equivalent that explicitly states it is derived from `templates/plan-schema.md`."
 
@@ -92,6 +94,7 @@ Completion criterion: you can name the likely platform, tracker/session model, k
 Ask only questions that materially change the system design:
 
 - target agent platform
+- custom agent prefix name, or whether the bootstrap run should propose one
 - output language
 - issue/session system
 - approval owner
@@ -110,15 +113,16 @@ Produce a concise proposal with:
 
 1. costly failure modes
 2. instruction hierarchy
-3. recommended modes
-4. user-invokable main agents
-5. hidden subagents and delegation rules
-6. artifacts and gates
-7. reusable skills or prompts
-8. knowledge map
-9. handoff envelope
-10. file-generation plan
-11. three one-week validation experiments
+3. recommended custom agent prefix, or the requested prefix if already provided
+4. recommended modes
+5. user-invokable main agents
+6. hidden subagents and delegation rules
+7. artifacts and gates
+8. reusable skills or prompts
+9. knowledge map
+10. handoff envelope
+11. file-generation plan
+12. three one-week validation experiments
 
 The knowledge map must include an index-first loading strategy:
 
@@ -141,6 +145,7 @@ These tracker skills are not mandatory. Recommend them only when they reduce rep
 ### Gate 4: File-Plan Approval
 
 Use `templates/bootstrap-file-plan.md`. Mark approval false by default. Do not write files until the user explicitly approves the plan.
+The file plan must record the chosen custom agent prefix and show it in proposed agent file names.
 
 ### Gate 5: Generation
 
@@ -184,8 +189,17 @@ Validate frontmatter, markdown diagnostics, and internal links where tooling is 
 - Verify that `templates/plan-schema.md` exists at the expected path.
 - Verify that the file contains required sections: approval block, filesystem tree, file details, operations timeline, validation commands, and risks/rollback.
 - Verify that the generated Planner agent contract explicitly references `templates/plan-schema.md` by path (not generic wording like "repo template").
+- Verify that the generated Planner contract treats plan-schema adherence as higher priority than markdown diagnostics cleanup, especially for linked filesystem-tree paths, File Details anchors, and backlinks.
 - If the template exists but was not created by this bootstrap run, confirm it contains equivalent structure to the source template.
 - Report the file path and validation status in the final response.
+
+**Implementation-Plan Artifact Validation:**
+
+- When the bootstrap run creates a Planner example, sample, or active `implementation-plan.md`, verify the artifact itself against `templates/plan-schema.md` before approval or handoff.
+- Verify that every Filesystem Tree path is a markdown link to a matching File Details anchor generated with the schema slug rule.
+- Verify that every File Details entry includes a matching anchor and a backlink to the Filesystem Tree.
+- Verify that markdown cleanup did not replace schema-required links with code spans or remove inline anchors. Treat this drift as a blocking validation failure even when it reduces diagnostics.
+- If markdown tooling flags schema-required inline HTML, report or waive that diagnostic explicitly after schema validation passes.
 
 **Question-Schema Template Validation:**
 
@@ -203,7 +217,9 @@ The generated system must have these properties.
 
 Create persistent, user-invokable custom agents for role boundaries that change authority:
 
-- Planner: clarifies requirements and produces approved artifacts. **Must reference the generated knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md` by path in its contract; read the knowledge index before loading knowledge files; produce implementation-plan.md files using the plan schema; and ask blocking clarification questions using the question schema.**
+- Agent naming: before generation, either ask for a custom agent prefix or propose one derived from repository language. Apply the chosen prefix consistently to generated user-invokable and hidden custom agent names so they do not collide with generic names from other repositories.
+
+- Planner: clarifies requirements and produces approved artifacts. **Must reference the generated knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md` by path in its contract; read the knowledge index before loading knowledge files; produce implementation-plan.md files using the plan schema; preserve schema-required links, anchors, and backlinks even when markdown diagnostics object; and ask blocking clarification questions using the question schema.**
 - Implementor: modifies code only from an approved plan.
 - Tester: creates or runs test strategy for approved work.
 
@@ -287,7 +303,7 @@ Generated planners must load knowledge deliberately:
 8. use hidden context scouts for bounded evidence questions
 9. align the plan against selected rules before approval
 10. **load and verify `templates/knowledge-index-schema.md` exists** before creating or updating a knowledge index; reference the generated knowledge-index path explicitly in the Planner contract
-11. **load and verify `templates/plan-schema.md` exists** before producing implementation-plan.md artifacts; reference the file path explicitly in the Planner contract and in any generated implementation-plan output
+11. **load and verify `templates/plan-schema.md` exists** before producing or repairing implementation-plan.md artifacts; reference the file path explicitly in the Planner contract and in any generated implementation-plan output; run a final schema-adherence self-check before approval or handoff
 12. **load and verify `templates/question-schema.md` exists** before asking blocking clarification questions; reference the file path explicitly in the Planner contract and in clarification artifacts
 
 ## Final Response Shape
