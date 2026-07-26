@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "bootstrap-agentic-system": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "skills/agentic-system/bootstrap-agentic-system/SKILL.md",
+      "computedHash": "5ac44da1b0bfbd1f0a9e9e26201c1c729af571e4608ed302a8d176604cc1af17"
+    },
+    "caveman": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman/SKILL.md",
+      "computedHash": "d18cdf73a5f5c496d681a43a6846336b110223bdffa6817b8992529c57f1a815"
+    },
+    "create-work-item-from-description": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "skills/work-items/create-work-item-from-description/SKILL.md",
+      "computedHash": "6ce967be0871d1efbe0aa435d97f4972e23466cab0cb9e77a27b57a24e37c50d"
+    },
+    "create-work-item-planning-skills": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "skills/work-items/create-work-item-planning-skills/SKILL.md",
+      "computedHash": "b59a360a37c5774768e3c1022dcdca202e2df31164a882163f74d78b32dd90b2"
+    },
+    "maintain-agentic-system": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "skills/agentic-system/maintain-agentic-system/SKILL.md",
+      "computedHash": "0b1876cddb79ae0b68f23a849089ee76068e3eb638089e5c5bd4beaa2f571cd5"
+    }
+  }
+}
