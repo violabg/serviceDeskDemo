@@ -1,8 +1,6 @@
 # Clarification Question Schema
 
-This repo-local schema is derived from `.agents/skills/bootstrap-agentic-system/templates/question-schema.md`.
-
-Use this schema when the Planner needs user answers before implementation planning can become approval-ready.
+Use this schema for generated Planner agents when they need user answers before implementation planning can become approval-ready. It is preserved here as reusable skill reference material.
 
 ````text
 # Clarification Questions

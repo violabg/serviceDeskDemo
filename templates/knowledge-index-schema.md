@@ -1,15 +1,13 @@
 # Knowledge Index Schema
 
-This repo-local schema is derived from `.agents/skills/bootstrap-agentic-system/templates/knowledge-index-schema.md`.
-
-Use this schema for repository knowledge indexes that support token-efficient planning and implementation. The Planner must read the knowledge index before loading knowledge files.
+Use this schema for generated agentic systems that need repository knowledge without wasting context. The generated Planner must read the knowledge index before loading knowledge files.
 
 ````markdown
 # Knowledge Index
 
 ## Purpose
 
-Help planning and implementation agents choose the smallest useful knowledge set for a task.
+Help planning agents choose the smallest useful knowledge set for a task.
 
 ## Token Budget Rule
 
@@ -17,7 +15,7 @@ Help planning and implementation agents choose the smallest useful knowledge set
 - Do not bulk-load all knowledge files.
 - Load only files whose `When to read` triggers match the current task.
 - Prefer the smallest set that can constrain requirements, plan scope, validation, and handoff.
-- Record selected files and skipped candidates in planning artifacts.
+- Record selected files and skipped candidates in the planning artifacts.
 
 ## Knowledge Entries
 

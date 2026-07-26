@@ -1,8 +1,6 @@
 # Implementation Plan Schema
 
-This repo-local schema is derived from `.agents/skills/bootstrap-agentic-system/templates/plan-schema.md`.
-
-Use this schema when the Planner produces the implementation plan that gates code work.
+Use this schema for generated Planner agents when they produce the implementation plan that gates code work. It is preserved here as reusable skill reference material.
 
 Schema adherence rules:
 
