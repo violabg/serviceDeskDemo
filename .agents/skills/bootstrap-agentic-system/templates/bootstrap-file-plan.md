@@ -31,17 +31,38 @@ Use this before creating or modifying agent-system files.
 - Out of Scope:
 - Key Decisions:
 
+## Visual Artifacts
+
+- Visual Evidence Found: yes | no | unknown
+- Visual Evidence Types: screenshots | mockups | wireframes | diagrams | UI snapshots | browser screenshots | image assets | issue attachments | QA images | none
+- Proposed Visual Support: Vision agent | visual-intake skill | deferred | no change
+- Proposed Visual Artifact Format: SlimUI | structured Markdown | repo-local format | not applicable
+- Visual Artifact Path Pattern:
+- Reason:
+- User-Selected Option:
+
 ## Context Glossary
 
 - Glossary-Worthy Terms Found: yes | no
 - Existing Glossary Path: `CONTEXT.md` | `<path>` | none
 - Proposed Glossary Operation: NEW | MODIFIED | UNMODIFIED
 - Reason:
-- Terms or Boundaries To Capture:
+- Repo Code/Domain Terms or Boundaries To Capture:
+- Agentic System Terms To Capture Separately:
 - Glossary Conflicts:
 - Conflict Resolution Questions Asked:
 - User-Selected Conflict Resolutions:
 - No-Change Rationale:
+
+## Root Instructions
+
+- Root Instruction Path: `AGENTS.md` | `<platform-equivalent-path>`
+- Operation: NEW | MODIFIED | UNMODIFIED
+- Reason:
+- If Not `AGENTS.md`, Approved Equivalent And Rationale:
+- Entrypoints To Reference:
+- Context Glossary Path To Reference:
+- Knowledge Index Path To Reference:
 
 ## Failure Modes
 
@@ -91,6 +112,9 @@ For new files, include full or near-full proposed structure.
 - Markdown diagnostics:
 - Frontmatter checks:
 - Internal link checks:
+- Visual artifact support check:
+- Root instruction file check:
+- Context glossary repo-code/domain focus check:
 - Platform-specific checks:
 
 ## Risks and Rollback

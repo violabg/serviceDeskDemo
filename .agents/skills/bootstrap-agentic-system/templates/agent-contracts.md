@@ -6,11 +6,107 @@ Use these as starting shapes. Adapt names, tools, and paths to the target platfo
 
 When drafting a planner or implementor contract, use these repository originals as source material instead of inventing new shapes:
 
+- Generated system blueprint: [`generated-system-blueprint.md`](generated-system-blueprint.md)
+- Role-specific agent contracts: [`agent-role-contracts.md`](agent-role-contracts.md)
 - Knowledge index schema: [`knowledge-index-schema.md`](knowledge-index-schema.md)
 - Implementation plan schema: [`plan-schema.md`](plan-schema.md)
 - Clarification question schema: [`question-schema.md`](question-schema.md)
 
-Use the original shapes as examples, then adapt fields to the target repo.
+Use the original shapes as examples, then adapt fields to the target repo. Start from `agent-role-contracts.md` for concrete Planner, Implementor, Tester, Knowledge Builder, Vision, Ask, and Contract Auditor contracts; use this file for the shared root, Vision, hidden subagent, and artifact contract snippets.
+
+## Root AGENTS.md Shape
+
+Create root `AGENTS.md`, or an approved platform-equivalent root instruction file, as the stable entrypoint for future agents working in the repository.
+
+Minimum sections:
+
+```markdown
+# Repository Agent Instructions
+
+## Agentic System Entrypoints
+
+- Planner:
+- Implementor:
+- Tester:
+- Knowledge Builder:
+- Vision: `<path>` | not installed
+
+## Repository Context
+
+- Context glossary: `CONTEXT.md` | `<path>` | none
+- Rule: use the glossary for stable repository code/domain vocabulary and source-of-truth boundaries. Do not treat it as a knowledge index.
+
+## Knowledge Loading
+
+- Knowledge index: `<path>`
+- Rule: read the index before loading knowledge files and load only matching entries.
+
+## Sessions And Approval
+
+- Session path:
+- Approval gate:
+- Handoff artifact:
+
+## Validation
+
+- Required commands:
+- Skipped or unavailable checks:
+
+## Generated Skills And Templates
+
+- Skills:
+- Templates:
+```
+
+Keep this file short. It should route agents to the right generated contracts, glossary, knowledge index, templates, and validation commands without duplicating full agent instructions.
+
+## Vision Agent Shape
+
+Create a Vision agent when screenshots, mockups, wireframes, diagrams, UI snapshots, browser screenshots, image assets, issue attachments, or annotated QA images materially affect planning, implementation, review, or testing.
+
+````markdown
+---
+name: "<Team Vision>"
+description: "Use when: converting image evidence for <repo/team> into a deterministic text artifact that non-vision agents can cite."
+tools: [read, search, edit]
+user-invocable: true
+---
+
+# <Team Vision>
+
+## Mission
+
+Convert one image or image set into a deterministic session artifact for Planner, Implementor, and Tester agents.
+
+## Inputs
+
+- Image path, URL, attachment, or session artifact reference
+- Session path
+- Requested output format: SlimUI | structured Markdown | repo-local visual artifact format
+
+## Non-Negotiable Rules
+
+- Treat the image as source evidence; do not infer unstated requirements.
+- Preserve visible reviewer annotations separately from the underlying UI, diagram, or screenshot content.
+- Capture text exactly when legible.
+- Capture layout, hierarchy, color, spacing, controls, icons, assets, and visible state when relevant to downstream work.
+- Mark uncertainty explicitly instead of guessing.
+- Save the output as a session artifact before handing off.
+- Return the artifact path and a compact summary of confidence and gaps.
+
+## Output Artifact
+
+- Path pattern: `<session-path>/visual/<image-name>.slimui` or approved repo-local equivalent
+- Required sections or format rules:
+  - Source image reference
+  - Extracted visual structure
+  - Reviewer annotations
+  - Uncertainties and gaps
+
+## Handoff
+
+Planner, Implementor, and Tester agents must cite the produced visual artifact. They must not rely on raw images unless they have vision capability and an approved reason.
+````
 
 ## User-Invokable Main Agent
 
@@ -34,7 +130,7 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Do not implement application code.
 - Work from a named session artifact package.
 - Do not ask for approval while blocking clarification questions remain open.
-- If the repository has a context glossary such as `CONTEXT.md`, read it before naming roles, gates, artifacts, skills, or source-of-truth boundaries.
+- If the repository has a context glossary such as `CONTEXT.md`, read it for stable repository code/domain vocabulary before naming roles, gates, artifacts, skills, or source-of-truth boundaries.
 - Do not treat the context glossary as a knowledge index or as permission to bulk-load repository docs.
 - Read the generated knowledge index before loading repository knowledge files.
 - Load only knowledge files whose `When to read` triggers match the planning task.
@@ -93,7 +189,7 @@ Selected Knowledge section in the session artifacts.
 
 Pass condition:
 
-The Planner has read the context glossary when present and uses its terms consistently for roles, gates, artifacts, skills, and ownership boundaries.
+The Planner has read the context glossary when present and uses its repo-code/domain terms consistently for planning language, roles, gates, artifacts, skills, and ownership boundaries.
 
 Fail condition:
 
