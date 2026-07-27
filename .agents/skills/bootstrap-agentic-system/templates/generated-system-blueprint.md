@@ -70,6 +70,7 @@ sessions/                          # or approved external session root
 - Keep root instructions short and navigational. Put full authority rules in agent contracts.
 - Keep the context glossary focused on repository code/domain vocabulary, not broad docs or agent-system narration.
 - Keep the knowledge index separate from the glossary. It routes knowledge loading by `When to read` triggers.
+- Start every generated agent from the baseline tool surface in `agent-role-contracts.md`; add only discovered or approved MCP tools that fit the role.
 - Copy or adapt templates into the target repository so future agents can cite repo-local paths.
 - Add scripts only when they reduce repeated manual work and can be validated deterministically.
 - Record every omitted role, skill, or script with a reason in the file plan.
@@ -79,6 +80,8 @@ sessions/                          # or approved external session root
 Before asking for approval or handing off, confirm:
 
 - Root instructions name every generated agent, generated skill location, template directory, session root, glossary path when present, and knowledge-index path.
+- Every generated agent declares the baseline tool surface from `agent-role-contracts.md` or records an approved reduction.
+- Discovered MCP or platform integrations are assigned to the relevant agent or generated skill, or omitted with a reason.
 - Planner references the glossary path when present, knowledge-index path, plan-schema path, and question-schema path explicitly.
 - Implementor requires approved plan metadata before editing and validates the touched behavior after the first edit.
 - Tester cannot modify production code unless the repo explicitly uses a combined implementation/testing role and the user approved that boundary.

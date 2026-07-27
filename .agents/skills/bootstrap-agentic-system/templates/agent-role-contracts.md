@@ -18,7 +18,7 @@ Use these templates when generating role-specific agents. Adapt names, tools, pa
 
 Every generated agent contract should include:
 
-- frontmatter with `name`, `description`, tools, and whether the agent is user-invokable when the platform supports it
+- frontmatter with `name`, `description`, tools, baseline `agents` delegation when the role has delegated agents, and whether the agent is user-invokable when the platform supports it
 - mission
 - inputs
 - outputs
@@ -30,6 +30,30 @@ Every generated agent contract should include:
 - refusal or blocker behavior
 
 Use a verified model name only when the target platform and user confirm that exact model. Otherwise omit `model`.
+
+## Baseline Tool Surface
+
+Use these baseline VS Code tool and delegated-agent lists when the target platform supports frontmatter. Add discovered or approved MCP tools only when they fit the role. If the target platform cannot express `tools:` or `agents:` frontmatter, place the same information in `Required Tools` and `Delegated Agents` sections inside the agent contract.
+
+| Role | Baseline tools | Baseline agents |
+| --- | --- | --- |
+| Planner | `vscode/askQuestions`, `read/readFile`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages` | `agents: [agent]`; use `agents: [agent, "<generated Vision agent name>"]` when Vision is selected |
+| Implementor | `vscode/installExtension`, `vscode/newWorkspace`, `vscode/runCommand`, `vscode/askQuestions`, `execute/getTerminalOutput`, `execute/runInTerminal`, `read/problems`, `read/readFile`, `read/terminalSelection`, `read/terminalLastCommand`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages` | none by default |
+| Tester | `vscode/askQuestions`, `execute/getTerminalOutput`, `execute/runInTerminal`, `read/problems`, `read/readFile`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/listDirectory`, `search/usages` | `agents: [agent]` |
+| Knowledge Builder | `vscode/askQuestions`, `read/readFile`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/listDirectory`, `search/usages` | none by default |
+| Ask | `vscode/askQuestions`, `read/readFile`, `search/listDirectory`, `search/usages` | none by default |
+| Vision | `edit/createFile`, `edit/editFiles` | none by default |
+| Contract Auditor or Scout | `read/readFile`, `search/listDirectory`, `search/textSearch` | none by default |
+
+MCP assignment rules:
+
+- Issue-tracker MCPs or platform integrations belong on Planner and repository-local work-item planning skills when the workflow plans from bug or user-story IDs.
+- Documentation, context, framework, or repository-knowledge MCPs belong on Planner, Knowledge Builder, and Ask when they reduce broad repository reading or improve rule selection.
+- Design, image, or visual-inspection MCPs belong on Vision and may be referenced by Planner only for handoff orchestration.
+- Cloud, deployment, runtime, database, or test-environment MCPs belong on Implementor or Tester only when the approved workflow needs that authority.
+- Do not invent MCP tool names. Use discovered configured names or ask for approval before recommending installation.
+- Avoid wildcard MCP access unless the target repository already uses it and the user approves that broader surface.
+- Preserve baseline `agents:` delegation exactly for Planner and Tester unless the target platform lacks delegated-agent frontmatter or the user approves a reduction.
 
 ## Planner Agent Shape
 

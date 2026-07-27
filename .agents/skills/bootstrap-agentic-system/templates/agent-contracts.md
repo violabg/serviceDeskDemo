@@ -68,7 +68,7 @@ Create a Vision agent when screenshots, mockups, wireframes, diagrams, UI snapsh
 ---
 name: "<Team Vision>"
 description: "Use when: converting image evidence for <repo/team> into a deterministic text artifact that non-vision agents can cite."
-tools: [read, search, edit]
+tools: [edit/createFile, edit/editFiles]
 user-invocable: true
 ---
 
@@ -114,8 +114,8 @@ Planner, Implementor, and Tester agents must cite the produced visual artifact. 
 ---
 name: "<Team Planner>"
 description: "Use when: planning approved work for <repo/team>. Produces requirements, spec, implementation plan, test plan, and handoff artifacts."
-tools: [read, search, edit, agent]
-agents: ["<Hidden Requirements Analyst>", "<Hidden Context Scout>"]
+tools: [vscode/askQuestions, read/readFile, agent, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/fileSearch, search/listDirectory, search/textSearch, search/usages]
+agents: [agent]
 user-invocable: true
 ---
 
@@ -141,6 +141,8 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Preserve plan-schema-required filesystem-tree links, File Details anchors, and backlinks. If markdown diagnostics conflict with the schema, report or waive the diagnostic instead of removing required links or anchors.
 - Before requesting approval or handing work to an Implementor, run a plan-schema adherence self-check and repair any schema drift.
 - Do not bulk-read the repository before knowledge selection and clusterization.
+- Add discovered tracker, documentation, context, framework, or repository-knowledge MCP tools only when they fit Planner authority and are recorded in the file plan.
+- Preserve `agents: [agent]` in frontmatter. If Vision is selected, use `agents: [agent, "<generated Vision agent name>"]`.
 
 ## Gates
 

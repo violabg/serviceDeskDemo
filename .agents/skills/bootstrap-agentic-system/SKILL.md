@@ -15,6 +15,10 @@ Create a small, durable agentic workflow that prevents the repository's likely c
 
 The generated system must include a Knowledge Builder agent. It is not optional: bootstrap proposals and file plans must create it in the first generated agent batch unless the user explicitly stops the bootstrap before generation.
 
+Keep Bootstrap as one user-invokable orchestrator. Improve efficiency by splitting internal work into bounded scout lanes, decision records, templates, and audit checks; do not split the user-facing workflow into multiple public entrypoints unless a later repeatable workflow earns its own stable trigger and output.
+
+When refactoring or maintaining this skill, preserve the current contract with a preservation matrix before changing generated behavior. Map every required behavior to its new home: boundary rules, required reference loads, Gate 0 through Gate 6 behavior, generated-system requirements, root instructions, Knowledge Builder mandate, Vision decision, tool-surface rules, tracker/session contract, context-glossary rules, template citations, validation checks, and final response requirements. No required behavior may disappear silently.
+
 ## Bootstrap Boundary
 
 - Do not modify application code, database schema, migrations, runtime config, or product tests.
@@ -24,15 +28,26 @@ The generated system must include a Knowledge Builder agent. It is not optional:
 - Separate bootstrap behavior from generated-system behavior. A rule for the future Planner is not automatically a rule for this bootstrap run.
 - Keep repository-specific recommendations separate from transferable principles.
 - Do not create a `CONTEXT.md` just because it is missing. Create or update a context glossary only when stable repository code/domain terms, source-of-truth boundaries, module names, product concepts, data concepts, or role/artifact names have been resolved and need to persist. The context glossary is primarily for the target repo's code and domain vocabulary so future agents do not confuse concepts while working in the codebase. Agent-system terms may be included only as a short separate section when they clarify repo-local workflow names.
+- Generated agents must preserve a deliberate tool surface. Start from the baseline VS Code tool lists in `templates/agent-role-contracts.md`, then add only repository-relevant MCP tools or platform integrations discovered in the target repository or approved by the user.
 
 ## Bootstrap Execution Subagents
 
-For non-trivial repositories, use two bounded hidden subagents during bootstrap when the agent platform supports subagent delegation:
+For non-trivial repositories, use bounded hidden subagents during bootstrap when the agent platform supports subagent delegation. Keep Bootstrap as the orchestrator and use subagents only to reduce context load and gather auditable evidence.
 
 - Repository Workflow Scout: read-only discovery of agent platform signals, tracker/session model, repository code/domain vocabulary, knowledge sources, glossary terms, validation commands, and likely workflow risks.
 - Contract Auditor: read-only comparison of the user's bootstrap request, this skill's required gates, selected templates, and the proposed or generated files.
 
-Run these subagents in parallel when the platform supports parallel delegation. Keep both subagents read-only, give each a narrow input contract and evidence budget, and require compact findings with file paths, inferred facts, unknowns, and risks. Do not let subagents ask the user directly or write files. If subagents are unavailable, perform the same scout and auditor checks inline and report that delegation could not run.
+The Repository Workflow Scout may be one subagent with lanes or multiple parallel read-only subagents. Use these lanes:
+
+- Platform and Tooling: agent platform signals, customization folders, MCP configuration, tool allowlists, and platform constraints.
+- Tracker and Session: issue tracker, local Markdown issue model, session roots, ID patterns, retrieval rules, and current-session-only restrictions.
+- Knowledge and Glossary: `CONTEXT.md`, glossaries, ADRs, docs, source-of-truth boundaries, repeated repository code/domain vocabulary, competing terms, aliases, and near-synonyms.
+- Visual Artifacts: screenshots, mockups, wireframes, diagrams, UI snapshots, image assets, issue attachments, browser screenshots, annotated QA evidence, and whether image evidence affects planning or testing.
+- Validation Surface: package scripts, CI, lint/test commands, PR templates, review docs, and commands future agents should run.
+
+Run subagents in parallel when the platform supports parallel delegation. Keep subagents read-only, give each a narrow input contract and evidence budget, and require compact findings with file paths, inferred facts, unknowns, and risks. Do not let subagents ask the user directly or write files. If subagents are unavailable, perform the same scout and auditor checks inline and report that delegation could not run.
+
+Before Gate 4 file-plan approval for non-trivial repositories, run the Contract Auditor when subagent delegation is available. Require pass/fail findings for preservation of this skill's required behavior, template citations, role-contract baseline tools, approved MCP and platform-integration assignment reconciliation, tracker/session contract, glossary conflicts, glossary synonym normalization, Vision decision, root instruction strategy, and file-plan completeness. If subagents are unavailable, run the same checklist inline before requesting file-plan approval.
 
 ## Required Reference Loads
 
@@ -103,12 +118,26 @@ Inspect only workflow evidence:
 
 - agent platform signals: `.github/agents/`, `.claude/agents/`, Cursor or Cline rules, Copilot customizations, MCP config
 - issue/session signals: GitHub Issues, Jira, Linear, Azure DevOps, Notion, local `sessions/`, issue docs
+- tool and integration signals: MCP server config, platform tool allowlists, issue-tracker integrations, documentation/context MCPs, design/image integrations, cloud/deployment integrations, and repository-specific tool restrictions
 - knowledge signals: `CONTEXT.md`, glossaries, ADRs, `docs/`, architecture notes, domain docs, testing guides, contribution docs
 - repository code/domain signals: package names, source tree names, module boundaries, public API names, route names, domain model names, config names, and terminology repeated across code and docs
 - visual artifact signals: screenshots, mockups, wireframes, diagrams, design-review images, UI snapshots, image assets, browser screenshots, issue attachments, or QA evidence that must be interpreted before planning
 - validation signals: package scripts, CI, lint/test commands, PR templates, review docs
 
-Completion criterion: you can name the likely platform, tracker/session model, visual artifact needs, knowledge sources, and validation surface, or you can state which of those are unknown.
+Completion criterion: you can name the likely platform, baseline generated-agent tool surface, available MCP or platform integrations, tracker/session model, visual artifact needs, knowledge sources, and validation surface, or you can state which of those are unknown.
+
+Organize discovery output by scout lane: Platform and Tooling, Tracker and Session, Knowledge and Glossary, Visual Artifacts, and Validation Surface. Each lane should report compact evidence, inferred facts, unknowns, and risks instead of broad repository summaries.
+
+Before leaving this gate, produce a candidate tool and integration matrix for user review. The matrix must list:
+
+- discovered MCPs, platform integrations, and built-in tool surfaces,
+- candidate agents or skills that might receive each tool,
+- reason each tool helps that role,
+- risks from adding too much authority,
+- tools intentionally omitted and why,
+- unknown integrations that require user correction.
+
+Do not treat the candidate matrix as approved. It is discovery output only.
 
 ### Gate 2: Clarification
 
@@ -117,7 +146,8 @@ Ask only questions that materially change the system design:
 - target agent platform
 - custom agent prefix name, or whether the bootstrap run should propose one
 - output language
-- issue/session system
+- issue tracker and session system; choose either a configured external tracker such as GitHub, Jira, Linear, Azure DevOps, or Notion, or a repository-local Markdown issue tracker with stable IDs
+- available MCPs or platform integrations that should be added to generated agents, or named as adapters in generated work-item planning skills
 - approval owner
 - role boundaries
 - mandatory artifacts
@@ -129,19 +159,35 @@ Ask only questions that materially change the system design:
 - how to resolve glossary conflicts when a proposed term, boundary, role name, artifact name, or workflow concept conflicts with an existing glossary definition
 - whether tracker-backed planning should include optional intake skills for existing user stories and bugs
 - whether tracker-backed workflows should include optional creation skills for new user-story tickets and bug tickets
+- local Markdown issue root, ID format, and lookup/index file when no external tracker is configured
 - where Planner session folders should be stored
 - whether the session path is internal to the destination repository or external
 - how the generated agents will be restricted to reading only the current session folder
 
+Convert clarification into a decision register before asking the user. Each decision must include the discovery evidence, recommendation, bounded choices, default or defer option when safe, and whether it blocks Gate 3. Hard blockers include target platform, tracker/session contract when ID-based planning is selected, root instruction strategy, tool and integration confirmation, glossary conflicts, synonymous or ambiguous glossary wording, and visual-artifact decision. Preserve the full clarification list above; the register changes presentation and sequencing, not the required decisions.
+
 Always run a context-glossary intake before proposing files: scan repo wording from `CONTEXT.md`, README files, docs, contribution guides, source tree names, package names, module names, public API names, route names, domain model names, config names, tracker labels, role names, artifact names, and workflow terms. Summarize inferred repository code/domain vocabulary first, then agent-system vocabulary separately if needed. Ask the user to confirm, correct, or fill missing source-of-truth terms. If stable terms or boundaries cannot be inferred, propose candidate repo-code terms and ask bounded questions instead of silently skipping the glossary decision.
 
+When the bootstrap run will create or update a context glossary such as `CONTEXT.md`, resolve synonymous, near-synonymous, or ambiguous wording before Gate 3. For each concept that could be named more than one way, ask the user to confirm the preferred term, terms to avoid, accepted aliases when they are truly needed, and distinctions from similar terms that must not be conflated. Do not create an empty or fake glossary just to document agent-system vocabulary; if no stable repository terms, boundaries, or ambiguous synonyms need persistence, record `Context Glossary: no change` with the reason.
+
 Always ask a bounded visual-artifact question during clarification. If discovery found screenshots, mockups, diagrams, design-review images, UI snapshots, image assets, or image-based QA evidence, recommend adding a Vision agent. If no visual artifacts were found, ask whether such artifacts appear in the team's work anyway and record either the selected Vision agent, a smaller visual-intake skill, deferred support, or `Visual Artifacts: no change`.
+
+Always ask the user to confirm the candidate tool and integration matrix before Gate 3. Use bounded choices for each proposed MCP or integration assignment: `add`, `omit`, `move to another agent or skill`, `recommend only`, or `needs more discovery`. Ask whether any available MCP or platform tool is missing from the matrix. Do not enter Gate 3 until the user confirms the tool and integration choices or explicitly defers them.
+
+After confirmation, create an approved tool and integration decision register. The register must preserve each discovered or user-supplied MCP or integration by exact name, the user-selected choice, the target generated agent or skill, and the reason. Treat entries with choice `add` or `move to another agent or skill` as planned file changes, not recommendations. Later verification must compare this register to generated agent frontmatter or required-tool sections by exact tool name.
+
+Always resolve the issue tracker before Gate 3. If no external tracker is configured, require a local Markdown issue tracker choice before planning generated ID-based work-item skills. The local Markdown tracker decision must name the issue root folder, ID format, and retrieval rule, such as direct path lookup by ID or an index file that maps IDs to Markdown files.
 
 Use bounded options when possible. Do not request file-plan approval while blocking questions remain open.
 
 ### Gate 3: System Proposal
 
-Produce a concise proposal with:
+Produce a concise proposal with the required topics below. To keep review small, group them into these sections while preserving every topic:
+
+- Failure Modes and Role Model: costly failure modes, instruction hierarchy, custom agent prefix, recommended modes, main agents, hidden subagents, and delegation rules.
+- Artifacts and Gates: artifacts and gates, reusable skills or prompts, handoff envelope, and three one-week validation experiments.
+- Knowledge, Glossary, and Visual Strategy: visual artifact strategy, context glossary rule, knowledge map, and post-bootstrap Knowledge Builder recommendations.
+- File Batch and Tool Surface: generated-system blueprint, root instruction file strategy, generated tool surface and MCP assignment plan, file-generation plan, optional later batches, and post-bootstrap recommendations.
 
 1. costly failure modes
 2. instruction hierarchy
@@ -157,17 +203,35 @@ Produce a concise proposal with:
 12. knowledge map
 13. handoff envelope
 14. root instruction file strategy
-15. file-generation plan
-16. three one-week validation experiments
-17. post-bootstrap recommendations
+15. generated tool surface and MCP assignment plan
+16. file-generation plan
+17. three one-week validation experiments
+18. post-bootstrap recommendations
 
 The visual artifact strategy must explicitly state whether the repo needs a Vision agent, a visual-intake skill, deferred support, or no visual support. Recommend a Vision agent when planning or review depends on screenshots, mockups, diagrams, UI snapshots, image assets, browser screenshots, annotated images, or image-based QA evidence. The Vision agent should convert image evidence into a deterministic text artifact that non-vision Planner, Implementor, and Tester agents can cite. If a Vision agent is not proposed, state why.
 
-The context glossary rule must explicitly tell the user whether stable repository code/domain terms, source-of-truth boundaries, module names, product concepts, data concepts, role names, artifact names, or workflow concepts need a glossary. If they do, propose creating or editing `CONTEXT.md` or the target repo's equivalent in the file-generation plan. If they do not, state that no glossary edit is proposed and why. The glossary must not be mainly an agent-system explanation. If agent-system terms are needed, place them in a short separate section after the repo-code/domain vocabulary.
+The context glossary rule must explicitly tell the user whether stable repository code/domain terms, source-of-truth boundaries, module names, product concepts, data concepts, role names, artifact names, workflow concepts, or ambiguous synonymous wording need a glossary. If they do, propose creating or editing `CONTEXT.md` or the target repo's equivalent in the file-generation plan. If they do not, state that no glossary edit is proposed and why. The glossary must not be mainly an agent-system explanation. If agent-system terms are needed, place them in a short separate section after the repo-code/domain vocabulary.
+
+For each glossary-worthy concept with competing names, the proposal must include a terminology normalization decision: preferred term, terms to avoid, accepted aliases when needed, and distinctions from similar terms that future agents must not conflate. If the user has not resolved these decisions, ask bounded questions and do not request file-plan approval.
 
 The root instruction file strategy must propose `AGENTS.md` at the repository root by default. Use a platform-equivalent root instruction file only when the target platform clearly requires it and the user approves that equivalent. The root file must point to generated agents, skills, templates, session rules, the context glossary path when one exists, and the knowledge-index path. It must not duplicate full agent contracts.
 
 The generated-system blueprint must use `templates/generated-system-blueprint.md` as the source shape. It must identify the first coherent install batch and any optional later batches. The first batch should normally include root instructions, Planner, Implementor, Tester, Knowledge Builder, knowledge index, plan schema, question schema, artifact/handoff rules, and Vision when visual support was selected. Ask and tracker/work-item skills may be first-batch only when the repo workflow clearly needs them immediately.
+
+The generated tool surface and MCP assignment plan must:
+
+- start from the exact baseline tools in `templates/agent-role-contracts.md` for Planner, Implementor, Tester, Knowledge Builder, Ask, and Vision,
+- use only user-confirmed or explicitly deferred MCP and integration assignments from Gate 2,
+- carry forward every Gate 2 decision-register entry with choice `add` or `move to another agent or skill` into the named generated agent's tool surface, using the exact approved MCP or integration tool name,
+- add issue-tracker MCPs or platform integrations to Planner when the target workflow uses GitHub, Jira, Linear, Azure DevOps, Notion, or another tracker, and name the selected adapter in generated work-item planning skill bodies,
+- use a repository-local Markdown issue tracker when no external tracker is configured, with an explicit ID lookup contract shared by Planner and generated work-item planning skills,
+- add documentation, context, framework, or repository-knowledge MCPs to Planner, Knowledge Builder, and Ask when those tools help planning or knowledge selection,
+- add design or image MCPs to Vision and Planner only when visual evidence affects the workflow,
+- add cloud, deployment, test, or runtime MCPs to Implementor or Tester only when the approved repository workflow needs those capabilities,
+- recommend installing a useful MCP only when the repository workflow clearly benefits and no equivalent configured tool exists,
+- never invent MCP tool names that were not discovered or explicitly approved,
+- record omitted discovered MCPs with the reason they do not belong in the generated agents.
+- mark deferred tool choices as recommendations or open questions, not planned file changes.
 
 If proposed glossary terms conflict with an existing glossary, do not silently choose one definition. List each conflict, show the existing meaning and proposed meaning, and ask the user how to resolve it using bounded options such as keep existing, replace existing, rename proposed term, split into two terms, or mark for later. Do not request file-plan approval while glossary conflicts remain unresolved.
 
@@ -182,6 +246,8 @@ The knowledge map must include an index-first loading strategy:
 - require generated Planners to record selected knowledge in artifacts
 - forbid broad knowledge loading before task-specific selection
 
+The first install batch should create or adapt the knowledge-index shape and obvious stable entries only when evidence supports them. Deep repository knowledge population should usually be delegated to the generated Knowledge Builder agent after bootstrap so Bootstrap does not bulk-load or over-summarize the target repository.
+
 If repository discovery finds a ticketing or issue-tracking system, also propose optional tracker skills when useful:
 
 - planning intake from existing user-story tickets
@@ -191,6 +257,8 @@ If repository discovery finds a ticketing or issue-tracking system, also propose
 
 These tracker skills are not mandatory. Recommend them only when they reduce repeated manual intake, preserve tracker metadata, or prevent unclear work from entering planning.
 
+Every generated Agentic System must have an issue tracker contract for ID-based work. The contract may use an external tracker adapter or a local Markdown issue tracker, but it must define how bug and user-story IDs resolve to source evidence before any `plan-bug-from-id` or `plan-user-story-from-id` skill is created.
+
 When the target workflow plans from existing bug or user-story IDs, propose the public `create-work-item-planning-skills` skill as the final bootstrap extension. It creates the repository-local `plan-bug-from-id` and `plan-user-story-from-id` skills rather than embedding vendor-specific intake logic in the bootstrap skill.
 
 The proposal must require both generated skills to:
@@ -199,7 +267,8 @@ The proposal must require both generated skills to:
 - create or resume one session folder before evidence gathering,
 - persist source metadata, evidence, decisions, and the implementation plan in that session,
 - use a selected tracker adapter when GitHub, Jira, or another issue system is configured,
-- use a repository-local Markdown adapter when no tracker is configured,
+- use a repository-local Markdown adapter when no external tracker is configured,
+- define the local Markdown issue root, accepted ID pattern, lookup/index rule, required issue fields, and missing-ID behavior,
 - make the session path and adapter explicit in the final handoff.
 - invoke the generated planning skills only from the Planner agent; no other agent may invoke them.
 
@@ -210,8 +279,10 @@ The post-bootstrap recommendations section is always required. It must recommend
 Use `templates/bootstrap-file-plan.md`. Mark approval false by default. Do not write files until the user explicitly approves the plan.
 The file plan must record the chosen custom agent prefix and show it in proposed agent file names.
 The file plan must include a Visual Artifacts section. If visual support is selected, include the proposed Vision agent or visual-intake skill file operation and the artifact path where extracted visual evidence will be saved. If visual support is deferred or out of scope, record the reason and the user's selected option.
-The file plan must include a Context Glossary section. If glossary-worthy terms were identified, include the proposed `CONTEXT.md` creation or edit as a proposed file operation. If no glossary-worthy terms were identified, record `Context Glossary: no change` with the reason. If glossary conflicts were found, record the user's chosen resolution for each conflict before asking for approval.
+The file plan must include a Context Glossary section. If glossary-worthy terms were identified, include the proposed `CONTEXT.md` creation or edit as a proposed file operation. If no glossary-worthy terms were identified, record `Context Glossary: no change` with the reason. If glossary conflicts were found, record the user's chosen resolution for each conflict before asking for approval. If synonymous, near-synonymous, or ambiguous wording was found, record the chosen preferred term, terms to avoid, accepted aliases when needed, and distinctions from similar terms before asking for approval.
 The file plan must include a Root Instructions section. Include `AGENTS.md` as a proposed new or modified file unless the user approved a platform-equivalent root instruction file. If a platform-equivalent root file is used, record the approved path and why `AGENTS.md` is not being created.
+The file plan must include an MCP and Platform Integration Assignment section. It must copy the Gate 2 approved decision register, list the exact generated files that will receive each `add` or `move to another agent or skill` entry, and list omitted, deferred, or recommendation-only integrations with their approved reasons.
+For non-trivial repositories, the file plan must include a Contract Auditor section or inline audit result before approval. The audit must state whether required Bootstrap behavior was preserved and whether any required contract element is missing, moved, strengthened, deferred, or intentionally unchanged.
 
 ### Gate 5: Generation
 
@@ -241,10 +312,31 @@ After approval, create the smallest coherent file batch. Prefer templates and sh
 - Generated hidden subagents, including a Contract Auditor when available, must be read-only unless the approved file plan explicitly gives them a narrow write artifact.
 - Do not copy role templates blindly. Remove gates that do not prevent a target-repo failure mode, and record why high-cost gates were omitted.
 
+**Generated Tool Surface Requirement:**
+
+- Every generated agent contract must include a deliberate `tools:` frontmatter list when the target platform supports tool frontmatter. If the platform does not support tool frontmatter, create a `Required Tools` section near the top of the generated agent contract.
+- Every generated agent contract must include the baseline `agents:` frontmatter list from `templates/agent-role-contracts.md` when the target platform supports delegated-agent frontmatter and the role has baseline delegated agents. If the platform does not support `agents:` frontmatter, create a `Delegated Agents` section near the top of the generated agent contract.
+- Use the exact baseline tool lists from `templates/agent-role-contracts.md` before adding repository-specific integrations.
+- Preserve delegated-agent entries such as `agent` for Planner and Tester, and add the generated Vision agent to Planner only when Vision support is selected and named in the file plan.
+- Do not reduce the baseline tool list unless the target platform lacks the tool or the user explicitly approves a smaller authority surface. Record every reduction in the file plan.
+- Do not reduce or remove baseline delegated-agent access unless the target platform lacks delegated agents or the user explicitly approves the smaller delegation surface. Record every reduction in the file plan.
+- Do not add broad wildcard MCP access by default. Prefer named MCP tools or named integration capability groups tied to the agent's role.
+- Planner gets repository planning, session, read, ask, bounded search, artifact write, optional subagent, tracker, and context/documentation integrations.
+- Implementor gets edit, terminal, diagnostics, focused search, artifact write, and implementation-specific integrations approved by the plan.
+- Tester gets ask, terminal, diagnostics, read, focused search, artifact write, and test-specific integrations approved by the plan.
+- Knowledge Builder gets ask, read, focused search, artifact write, and knowledge/documentation/context integrations.
+- Ask gets ask, read, focused search, and optional knowledge/documentation/context integrations, but no edit tools.
+- Vision gets visual input tools when available and artifact write tools; non-vision agents must consume Vision artifacts instead of raw images.
+- Contract Auditor and scout subagents stay read-only unless the approved file plan grants a narrow artifact write.
+- Generated `plan-bug-from-id` and `plan-user-story-from-id` skills must not include skill-level `tools:` frontmatter. They must state the selected tracker adapter or local Markdown adapter in the skill body and use inline `#tool:agent/runSubagent` work-item gathering instructions.
+- `plan-bug-from-id` must include: `use #tool:agent/runSubagent to delegate work item gathering to a built-in agent subagent.`
+- `plan-user-story-from-id` must include: `use #tool:agent/runSubagent to delegate work item gathering to a default subagent (leave argument args.agentName empty).`
+
 **Context Glossary Creation Requirement:**
 
 - If the target repository has a `CONTEXT.md` or equivalent glossary, preserve it as the vocabulary source for repository code/domain terms and then generated agent, gate, artifact, and skill names.
 - If the approved file plan includes new stable repo-code terms, domain terms, module boundaries, product concepts, data concepts, or source-of-truth boundaries and no glossary exists, create `CONTEXT.md` as a short glossary with term definitions and terms to avoid.
+- If the approved file plan includes synonymous, near-synonymous, or ambiguous wording for the same concept, create or update the glossary so it records the preferred term, terms to avoid, accepted aliases when needed, and distinctions from similar terms that must not be conflated.
 - If no stable vocabulary was resolved during bootstrap, do not create `CONTEXT.md`; record the no-op in the file plan.
 - Document the glossary path explicitly in the generated Planner contract when one exists.
 - State that the context glossary is for stable repository vocabulary, not for broad docs, implementation instructions, or knowledge-file selection. The Planner must still use the knowledge index for bounded knowledge loading.
@@ -287,6 +379,7 @@ Validate frontmatter, markdown diagnostics, and internal links where tooling is 
 **Context Glossary Validation:**
 
 - If the file plan includes a context glossary, verify that it exists at the expected path and defines stable repository code/domain terms or boundaries rather than broad narrative documentation.
+- If the file plan includes synonym or ambiguity normalization, verify that the glossary records preferred terms, terms to avoid, accepted aliases when needed, and distinctions from similar terms that future agents must not conflate.
 - Verify that `CONTEXT.md` or the repo glossary is not mainly about the generated Agentic System. Agent-system terms must be secondary and clearly separated from repo code/domain terms.
 - Verify that the generated Planner contract references the glossary path before instructions that name roles, gates, artifacts, or skills.
 - Verify that the generated Planner contract keeps glossary reading separate from knowledge-index selection and forbids treating the glossary as a replacement for the knowledge index.
@@ -341,6 +434,19 @@ Validate frontmatter, markdown diagnostics, and internal links where tooling is 
 - Verify that Planner, Implementor, or Tester handoffs reference the produced visual artifact instead of requiring non-vision agents to inspect raw images.
 - If the file plan intentionally omits Vision support, confirm that the no-op is recorded.
 
+**Generated Tool Surface Validation:**
+
+- Verify every generated agent has the baseline tools required by `templates/agent-role-contracts.md`, unless the file plan records an approved reduction.
+- Verify every generated agent has the baseline `agents:` frontmatter required by `templates/agent-role-contracts.md`, unless the file plan records an approved reduction or the platform does not support delegated-agent frontmatter.
+- Verify every Gate 2 decision-register entry with choice `add` or `move to another agent or skill` appears by exact MCP or integration tool name in the approved target generated agent's frontmatter, or in its required-tool section when the platform cannot express tool frontmatter. Treat a missing approved MCP assignment as a blocking validation failure.
+- Verify every omitted, deferred, or recommendation-only MCP decision is absent from generated agent tool surfaces unless the user later approved adding it, and that the approved reason is recorded.
+- Verify discovered MCPs or platform integrations are assigned only to agents or generated skills that need them.
+- Verify tracker MCPs or tracker adapters are assigned to Planner when ID-based planning is selected, and that generated work-item planning skills name the selected adapter in their bodies.
+- Verify the issue tracker contract exists and names either the external tracker adapter or the local Markdown issue root, ID format, lookup/index rule, required fields, and missing-ID behavior.
+- Verify context, documentation, or framework MCPs are assigned to Planner, Knowledge Builder, or Ask when available and relevant.
+- Verify omitted MCPs are recorded with reasons.
+- Verify generated `plan-bug-from-id` and `plan-user-story-from-id` skills do not include `tools:` frontmatter and do include the required inline `#tool:agent/runSubagent` work-item gathering instructions.
+
 **Final Bootstrap Contract Validation:**
 
 Before final response, compare the approved file plan, the user's stated requirements, this skill's required outputs, and the generated files. Treat missing required contract elements as blocking validation failures unless the user explicitly approved their omission.
@@ -351,13 +457,16 @@ Required final checks:
 - Root `AGENTS.md` exists, or an approved platform-equivalent root instruction file exists and the approved reason for not creating `AGENTS.md` is recorded.
 - Required generated agents exist, including Planner, Implementor, Tester, and Knowledge Builder.
 - Required generated agents were drafted from `templates/agent-role-contracts.md` or an approved local equivalent, with repo-specific gate additions and removals recorded.
+- Required generated agents include the baseline tool surfaces from `templates/agent-role-contracts.md`, plus every Gate 2 approved repository-specific MCP or platform integration assigned to that agent by exact tool name.
+- Required generated agents preserve baseline `agents:` frontmatter from `templates/agent-role-contracts.md`, including delegated `agent` access for Planner and Tester when supported.
 - The generated first-install batch follows `templates/generated-system-blueprint.md` or records approved deviations.
 - The visual-artifact decision is reflected in generated files or recorded as an intentional no-op; when selected, the Vision agent or visual-intake skill exists and produces a session artifact.
 - The generated Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
 - The generated Planner contract references the context-glossary path when one exists, the knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md` by explicit path.
 - The generated Planner contract forbids bulk-loading repository knowledge before index selection.
-- The context-glossary decision from the file plan is reflected in generated files or recorded as an intentional no-op, and any generated glossary is primarily about repository code/domain vocabulary rather than the Agentic System.
+- The context-glossary decision from the file plan is reflected in generated files or recorded as an intentional no-op, any generated glossary is primarily about repository code/domain vocabulary rather than the Agentic System, and any required synonym or ambiguity normalization is present.
 - Post-bootstrap recommendations include running Knowledge Builder, `create-work-item-planning-skills`, and `create-work-item-from-description`.
+- Generated work-item planning skills include the selected tracker or local Markdown adapter, issue ID retrieval contract, no `tools:` frontmatter, and the required inline `#tool:agent/runSubagent` gathering instructions.
 - Validation commands from the proposal were run where available, or each skipped command has a reason.
 
 If the Contract Auditor subagent is available, run it after generation with the final file list and require it to report pass/fail for these checks. If not, run the checklist inline.

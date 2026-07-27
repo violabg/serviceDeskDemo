@@ -5,15 +5,16 @@ This template defines the shared session interface for `plan-bug-from-id` and `p
 ## Authority
 
 - These skills are Planner-only procedures.
-- Only `ServiceDesk Planner` may invoke them.
+- Only `Demo Planner` may invoke them.
 - Work-item creation is separate and must not create or resume a planning session.
 - Planner must continue through normal planning gates after evidence is saved.
 
 ## Session Root
 
-- Session root: `sessions/`
-- Session path pattern: `sessions/<safe-session-id>/`
-- `sessions/` is gitignored and must not be scanned broadly.
+- Session root is configured during bootstrap and must be treated as a fixed adapter input by the planning skills.
+- Current repository default session root: `sessions/`
+- Session path pattern: `<session-root>/<safe-session-id>/`
+- When the configured session root is `sessions/`, treat it as gitignored and do not scan it broadly.
 - Each skill may read and write only the current session folder.
 - Never enumerate, inspect, or summarize sibling session folders.
 
@@ -63,7 +64,7 @@ User-story planning additionally uses:
 
 Visual evidence references may be handed to `ServiceDesk Vision`, which writes under:
 
-- `visual/<image-name>.slimui.md`
+- `visual/<image-name>.md`
 
 ## Source Metadata
 
@@ -104,5 +105,6 @@ The final skill handoff must include:
 - Open Questions:
 - Retrieval Failures:
 - Next Planner Gate:
+- Resume rule: after handoff, `Demo Planner` resumes at the first normal planning gate not fully satisfied by saved evidence.
 
-After handoff, `ServiceDesk Planner` resumes at the first normal planning gate not fully satisfied by saved evidence.
+This contract ends with the final handoff requirements above.

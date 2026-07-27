@@ -33,6 +33,38 @@ Create a GitHub issue.
 
 Run `gh issue view <number> --comments`.
 
+## ID-Based Planning Adapter Contract
+
+Use this contract for `plan-bug-from-id` and `plan-user-story-from-id`.
+
+- Tracker name: GitHub Issues
+- Supported work item types: `bug`, `user-story`
+- Accepted ID format: GitHub issue number, with or without a leading `#`
+- Approved retrieval tools:
+  - `github/issue_read`
+  - `github/search_issues`
+  - `gh issue view <number> --comments`
+- Fields to retrieve when available:
+  - title
+  - body
+  - labels
+  - comments
+  - acceptance criteria embedded in the body or comments
+  - related issue or PR references embedded in the body or comments
+  - image or attachment references embedded in the body or comments
+- Missing-ID behavior:
+  - fail closed when the issue does not exist, is unreadable, or the ID is empty after normalization
+  - record the adapter failure in `work-item-source.md` and the handoff
+- Duplicate-ID behavior:
+  - GitHub issue numbers are unique in the repository; if the same source ID points at an existing session, resume that session instead of creating a new one
+- Evidence-to-session conversion rules:
+  - preserve code blocks when copying issue content into Markdown session artifacts
+  - preserve quoted source text when terminology differs from `CONTEXT.md`, then record the canonical term mapping separately
+  - do not copy secrets, tokens, or unrelated personal data into session artifacts
+- Work item type rule:
+  - the invoked skill determines whether the issue is treated as a bug or user story
+  - labels are supporting evidence, not the sole classifier
+
 ## Wayfinding operations
 
 Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.

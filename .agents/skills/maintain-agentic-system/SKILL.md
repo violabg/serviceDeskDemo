@@ -17,6 +17,7 @@ Use this skill to maintain an existing repo-local Agentic System against kit pri
 - If no existing Agentic System is found, stop and ask whether to switch to bootstrap behavior.
 - Existing systems should have root `AGENTS.md` or an approved platform-equivalent root instruction file. If missing, treat it as a Bootstrap contract gap and propose the smallest root instruction file that routes agents to the existing system.
 - Existing systems should record whether visual artifact support is needed. If screenshots, mockups, diagrams, UI snapshots, image assets, or image-based QA evidence affect planning or testing and no Vision agent or visual-intake skill exists, treat that as a Bootstrap contract gap.
+- Existing systems with a context glossary should normalize repository terminology. If stable concepts have competing, synonymous, or ambiguous names, treat missing preferred terms, terms to avoid, accepted aliases, or distinctions from similar terms as a Bootstrap contract gap.
 
 ## Maintenance Execution Subagents
 
@@ -36,6 +37,7 @@ When maintaining a system originally created by `bootstrap-agentic-system`, load
 - root `AGENTS.md` or an approved platform-equivalent root instruction file,
 - explicit visual-artifact decision, including a Vision agent or visual-intake skill when screenshots, mockups, diagrams, UI snapshots, image assets, or image-based QA evidence affect the workflow,
 - context-glossary intake from repository wording and explicit glossary/no-op decisions, with repo code/domain vocabulary primary and agent-system terms secondary,
+- context-glossary normalization for synonymous or ambiguous wording, including preferred terms, terms to avoid, accepted aliases when needed, and distinctions from similar terms that must not be conflated,
 - Planner references to the context-glossary path when one exists, the knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md`,
 - index-first knowledge loading and a prohibition on bulk-loading repository knowledge before selection,
 - final contract validation against the approved plan, user requirements, skill requirements, and changed files,
@@ -83,6 +85,7 @@ Evaluate whether the current system still follows kit principles:
 - root instruction coverage through `AGENTS.md` or an approved platform-equivalent file,
 - visual artifact coverage through a Vision agent or visual-intake skill when image evidence affects planning, implementation, review, or testing,
 - context glossary kept separate from the knowledge index and focused primarily on repository code/domain vocabulary,
+- context glossary normalizes synonymous or ambiguous repository wording when those terms affect future agent work,
 - Planner contracts that reference required glossary, knowledge-index, plan-schema, and question-schema paths,
 - final contract validation before handoff,
 - bounded maintenance subagents or inline equivalents for discovery and audit.
@@ -113,6 +116,7 @@ Required final checks:
 - The Planner contract references the context-glossary path when one exists, the knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md` by explicit path.
 - The Planner contract forbids bulk-loading repository knowledge before index selection.
 - The context-glossary decision from the maintenance plan is reflected in changed files or recorded as an intentional no-op, and any generated or modified glossary is primarily about repository code/domain vocabulary rather than the Agentic System.
+- Any maintained context glossary records preferred terms, terms to avoid, accepted aliases when needed, and distinctions from similar terms when the maintenance plan identified synonymous or ambiguous wording.
 - Post-maintenance recommendations include running Knowledge Builder and, when tracker workflows are relevant, `create-work-item-planning-skills` and `create-work-item-from-description`.
 - Validation commands from the maintenance plan were run where available, or each skipped command has a reason.
 

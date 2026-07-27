@@ -19,8 +19,7 @@ Schema adherence rules:
 ## Approval Status
 - Approved: false
 - Approved By:
-- Approved At:
-- Source Message:
+- Approval Date:
 
 ## 1. Design Overview
 - Goal:
