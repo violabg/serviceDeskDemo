@@ -14,7 +14,7 @@ This template defines the shared session interface for `plan-bug-from-id` and `p
 - Session root is configured during bootstrap and must be treated as a fixed adapter input by the planning skills.
 - Current repository default session root: `sessions/`
 - Session path pattern: `<session-root>/<safe-session-id>/`
-- When the configured session root is `sessions/`, treat it as gitignored and do not scan it broadly.
+- Do not scan the session root broadly. The repository may contain committed exemplar sessions, but each skill may read and write only the current session folder.
 - Each skill may read and write only the current session folder.
 - Never enumerate, inspect, or summarize sibling session folders.
 
@@ -62,7 +62,7 @@ User-story planning additionally uses:
 
 - `story-scope-analysis.md`
 
-Visual evidence references may be handed to `ServiceDesk Vision`, which writes under:
+Visual evidence references may be handed to `Demo Vision`, which writes under:
 
 - `visual/<image-name>.md`
 

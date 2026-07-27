@@ -19,10 +19,10 @@ Do not use this file for:
 
 - Planning, implementation, testing, and review are separate roles by default.
 - Implementation needs explicit user approval plus recorded approval metadata.
-- Session artifacts are per session, stored locally under gitignored `sessions/`, exported as zip packages, and attached to issue tickets rather than committed to the repository.
-- Older sessions can be restored locally by downloading the issue-ticket zip, extracting it under `sessions/`, and referring to the session by ID in prompts.
-- User-facing agents must ask for a session ID, then reuse `sessions/<session-id>/` when present or create it when missing.
-- For GitHub-driven workflows, session ID is the GitHub issue ID resolved during intake. Manual session IDs are fallback only for offline work.
+- Session artifacts are per session and live under the repository `sessions/` root. Some folders may be committed exemplars, while active work stays inside the current session folder only.
+- Older sessions can be resumed from an existing `sessions/` folder or restored from an exported package.
+- User-facing agents must ask for a session source ID, normalize it when required, then reuse `sessions/<safe-session-id>/` when present or create it when missing.
+- For GitHub-driven workflows, the source ID is the GitHub issue ID resolved during intake. Manual source IDs are fallback only for offline work.
 - Durable policy belongs in repository docs, not in session artifact bundles.
 - Agent and skill behavior must follow the precedence chain defined in `AGENTS.md` and `docs/agents/governance.md`.
 - Gate-specific skill allow-lists are mandatory for reproducible runs.
@@ -30,7 +30,7 @@ Do not use this file for:
 - Knowledge files are loaded on demand. Planning and implementation agents should read the knowledge index first, then load only knowledge files whose `When to read` trigger matches the current task.
 - Planning should use cluster-first reconnaissance in cold-start work: choose a small set of likely ownership slices before deep file reads, then keep discovery inside those slices unless a blocker forces one adjacent hop.
 - Selected knowledge acts as a planning constraint set. Plans should extract the applicable rules, use them to challenge similar existing code, and self-review the implementation plan against those rules before approval handoff.
-- When planning depends on visuals, `Demo Vision UI` output is the canonical reusable visual contract. Prefer `SlimUI v1` plus `Planner Notes` over ad hoc image summaries.
+- When planning depends on visuals, the `Visual Contract` produced by `Demo Vision` is the canonical reusable visual artifact. Prefer `SlimUI v1` plus `Planner Notes` over ad hoc image summaries.
 
 ## System Evolution Principles
 

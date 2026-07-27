@@ -4,9 +4,28 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `1.11.2`
+- `1.13.1`
 
 ## 2026-07-27
+
+### 1.13.1
+
+- Simplified the manifest so the repo-local Bootstrap changelog snapshot carries release history while the manifest carries only current applied-through state, paths, and maintenance history.
+
+### 1.13.0
+
+- Added an install-safe skill-local `CHANGELOG.md` inside the Bootstrap skill folder.
+- Required Bootstrap to read this file once during setup, copy it into the generated repository as a local snapshot, and record the installed changelog path plus snapshot path in the manifest.
+- Clarified that Maintainer should compare the repo-local snapshot against the current installed Bootstrap changelog, then confirm any gap against the actual repository files before proposing updates.
+
+### 1.12.0
+
+- Required generated systems to include an agentic-system manifest recording the Bootstrap skill version used, the Bootstrap contract applied-through version, changelog provenance, generated system paths, and maintenance history.
+- Added a manifest template and Version Provenance file-plan section for future maintenance.
+
+### 1.11.3
+
+- Required generated Planner contracts to present blocking clarification questions in chat using the question schema's per-question chat shape, not only record that schema in artifacts.
 
 ### 1.11.2
 

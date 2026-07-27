@@ -2,7 +2,7 @@
 
 ## When to read this
 
-Read this before creating, repairing, approving, linting, or handing off session artifacts under `sessions/<id>/`.
+Read this before creating, repairing, approving, linting, or handing off session artifacts under `sessions/<safe-session-id>/`.
 
 Read this when a task mentions implementation plans, approval metadata, clarification questions, handoff envelopes, artifact lint modes, plan-schema links, or agent workflow gates.
 
@@ -12,13 +12,13 @@ Do not use this for application behavior, UI composition, database schema, migra
 
 ## Last verified
 
-2026-07-26. Evidence from repository files:
+2026-07-27. Evidence from repository files:
 
 - `AGENTS.md`
 - `CONTEXT.md`
-- `.github/agents/servicedesk-planner.agent.md`
-- `.github/agents/servicedesk-implementor.agent.md`
-- `.github/agents/servicedesk-tester.agent.md`
+- `.github/agents/demo-planner.agent.md`
+- `.github/agents/demo-implementor.agent.md`
+- `.github/agents/demo-tester.agent.md`
 - `docs/agents/governance.md`
 - `docs/agents/enforcement-spec.md`
 - `templates/artifact-gates.md`
@@ -27,8 +27,8 @@ Do not use this for application behavior, UI composition, database schema, migra
 
 ## Evidence
 
-- Session artifacts live under local gitignored `sessions/<id>/` folders.
-- GitHub-driven workflows use the GitHub issue number as the session ID.
+- Session artifacts live under `sessions/<safe-session-id>/` folders scoped to one current workflow.
+- GitHub-driven workflows use the GitHub issue number as the source ID and normalize it into the safe session ID.
 - `CONTEXT.md` is the repository vocabulary source and is separate from the knowledge index.
 - `docs/agents/knowledge/README.md` is the knowledge-selection source and must be read before loading repository knowledge files.
 - `templates/plan-schema.md`, `templates/question-schema.md`, and `templates/artifact-gates.md` are repo-local artifact templates.
@@ -37,8 +37,8 @@ Do not use this for application behavior, UI composition, database schema, migra
 ## Core rules
 
 - Create or resume exactly one session folder before substantive planning or artifact work.
-- Use `sessions/<issue-number>/` for GitHub-driven work; ask the user for a bounded manual session ID only for offline or non-ticket work.
-- Do not commit session artifacts unless the user explicitly asks to export or attach them.
+- Use `sessions/<safe-session-id>/` for GitHub-driven work after normalizing the GitHub issue number; ask the user for a bounded manual source ID only for offline or non-ticket work.
+- Commit or export session artifacts only when the repository workflow or the user explicitly requires a durable example or handoff package.
 - Read `CONTEXT.md` before naming repository code/domain terms, agent roles, gates, artifacts, skills, or source-of-truth boundaries.
 - Read the knowledge index before loading knowledge files, select only matching entries, and record selected plus skipped related knowledge in planning artifacts.
 - Keep `CONTEXT.md` as vocabulary and source-boundary guidance; do not turn it into a knowledge index or workflow manual.
@@ -72,10 +72,10 @@ Do not use this for application behavior, UI composition, database schema, migra
 - Use `templates/artifact-gates.md` for handoff envelopes.
 - Every handoff must include Session ID, From Agent, To Agent, Current Gate, Approval State, Required Artifacts, Open Questions, Blocking Risks, and Definition of Done for Next Agent.
 - Include Selected Knowledge in handoffs when repository knowledge constrained the work.
-- Use `pnpm agent:lint-artifacts planning-ready <id>` before approval when planning artifacts should be complete.
-- Use `pnpm agent:lint-artifacts approval-ready <id>` before implementation approval handoff when approval is requested.
-- Use `pnpm agent:lint-artifacts implementation-handoff <id>` when work moves from Planner to Implementor or from Implementor onward.
-- Use `pnpm agent:lint-artifacts review-ready <id>` when review should be possible.
+- Use `pnpm agent:lint-artifacts --mode planning-ready --session <session-id>` before approval when planning artifacts should be complete.
+- Use `pnpm agent:lint-artifacts --mode approval-ready --session <session-id>` before implementation approval handoff when approval is requested.
+- Use `pnpm agent:lint-artifacts --mode implementation-handoff --session <session-id>` when work moves from Planner to Implementor or from Implementor onward.
+- Use `pnpm agent:lint-artifacts --mode review-ready --session <session-id>` when review should be possible.
 - Record skipped artifact lint commands with reasons when a mode is not applicable or commands are unavailable.
 
 ## Pitfalls to avoid

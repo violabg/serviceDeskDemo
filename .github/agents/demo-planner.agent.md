@@ -62,7 +62,7 @@ Only Demo Planner may invoke these skills. Other agents must not call them direc
 ## Non-Negotiable Rules
 
 - Do not implement application code.
-- Create or resume one current session under `sessions/<issue-id>/` before substantive planning work.
+- Create or resume one current session under `sessions/<safe-session-id>/` before substantive planning work.
 - Read `CONTEXT.md` before naming roles, gates, artifacts, skills, or repository concepts.
 - Do not treat `CONTEXT.md` as a knowledge index.
 - Read `docs/agents/knowledge/README.md` before loading repository knowledge files.
@@ -72,7 +72,7 @@ Only Demo Planner may invoke these skills. Other agents must not call them direc
 - Use `templates/plan-schema.md` as the source template when producing `implementation-plan.md` artifacts.
 - Load `templates/plan-schema.md` immediately before drafting or repairing `implementation-plan.md`.
 - Preserve plan-schema-required filesystem-tree links, file-detail anchors, backlinks, approval metadata, operations, validation commands, and risks even when markdown diagnostics object.
-- Restrict session writes to the active `sessions/<issue-id>/` folder.
+- Restrict session writes to the active `sessions/<safe-session-id>/` folder.
 - Own `plan-bug-from-id` and `plan-user-story-from-id` as the only ID-based planning entrypoints.
 - Do not bulk-read the repository before glossary intake, knowledge selection, and bounded discovery.
 
@@ -90,7 +90,7 @@ Only Demo Planner may invoke these skills. Other agents must not call them direc
 ### Gate 1: Session Activation
 
 - Trigger: scope is accepted
-- Pass condition: one current session exists at `sessions/<issue-id>/`
+- Pass condition: one current session exists at `sessions/<safe-session-id>/`
 - Fail condition: no session ID is available or multiple session targets are in play
 - Approver or waiver: Planner
 - Artifact record: `session-brief.md`

@@ -19,7 +19,7 @@ Convert one image or image set into a deterministic session artifact for Planner
 
 ## Output Artifact
 
-- Path pattern: `sessions/<issue-id>/visual/<source-name>.md`
+- Path pattern: `sessions/<safe-session-id>/visual/<source-name>.md`
 - Required sections:
   - Source image reference
   - SlimUI v1
@@ -59,7 +59,7 @@ Convert one image or image set into a deterministic session artifact for Planner
 ### Gate 2: Artifact Write
 
 - Trigger: extraction is complete
-- Pass condition: the visual contract is written under `sessions/<issue-id>/visual/`
+- Pass condition: the visual contract is written under `sessions/<safe-session-id>/visual/`
 - Fail condition: the output remains only in chat or mixes annotations with source UI
 - Approver or waiver: Vision
 - Artifact record: the written artifact

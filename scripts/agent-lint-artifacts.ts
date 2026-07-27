@@ -172,9 +172,10 @@ function lintSession(
     requireContains(
       "implementation-plan.md",
       implementationPlan,
-      "Proposed Diffs",
+      "Proposed Diff or Proposed File",
       findings,
-      "error"
+      "error",
+      /Proposed Diffs|Proposed Diff:|Proposed File:/i
     )
   }
 
@@ -452,6 +453,7 @@ function validateImplementationPlanSchema(
     return
   }
 
+  const detailBlocks = extractFileDetailBlocks(fileDetailsSection)
   const anchors = extractFileDetailAnchors(fileDetailsSection)
   if (anchors.length === 0) {
     findings.push({
@@ -461,7 +463,12 @@ function validateImplementationPlanSchema(
     })
   }
 
-  const anchorSet = new Set(anchors)
+  const anchorSet = new Set([
+    ...anchors,
+    ...detailBlocks
+      .map((detailBlock) => slugifyPlanHeading(detailBlock.heading))
+      .filter(Boolean),
+  ])
   for (const target of treeTargets) {
     if (!anchorSet.has(target)) {
       findings.push({
@@ -471,7 +478,6 @@ function validateImplementationPlanSchema(
     }
   }
 
-  const detailBlocks = extractFileDetailBlocks(fileDetailsSection)
   for (const detailBlock of detailBlocks) {
     if (!detailBlock.hasAnchor) {
       findings.push({
@@ -547,6 +553,14 @@ function extractFileDetailBlocks(section: string) {
   }
 
   return blocks
+}
+
+function slugifyPlanHeading(heading: string) {
+  return heading
+    .replace(/^`|`$/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
 }
 
 function findHandoffFiles(sessionRoot: string) {

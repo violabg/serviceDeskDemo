@@ -2,9 +2,9 @@
 
 Canonical governance for the custom agentic coding system in this repository.
 
-This file defines durable cross-session operating rules. Session artifacts are not committed to the repository. They are created per session under a local gitignored `sessions/` folder, exported as a zip package, and attached to the relevant issue ticket.
+This file defines durable cross-session operating rules. Session artifacts are created per session under the repository `sessions/` root. The repository may include committed exemplar session folders, but agents must read and write only the active session folder for the current run.
 
-Older sessions may be restored locally by downloading the zip attachment from the issue ticket, extracting it into the local `sessions/` folder, and referring to the session by ID in a prompt.
+Older sessions may be restored from an exported package or reused from an existing `sessions/` folder when the workflow resumes a prior run.
 
 ## Rule Precedence
 
@@ -100,37 +100,36 @@ Do not silently edit an approved artifact in place.
 
 Session artifacts are always per session.
 
-- They live under the local `sessions/` folder, which must stay gitignored.
-- They are not committed to this repository.
-- They are packaged and attached to the related issue ticket.
-- Repository files may reference the artifact contract, but must not act as the storage location for session evidence.
+- They live under the repository `sessions/` folder.
+- The repository may include committed exemplar or approved workflow session folders.
+- Agents must stay inside the active session folder and must not scan sibling sessions broadly.
+- Session packages may also be exported or attached to the related issue ticket when an external handoff needs them.
 
 ### Session ID Requirement
 
 Each user-facing agent must ask for a session ID before it starts substantive workflow steps.
 
-For GitHub-driven workflows, the canonical session ID is the GitHub issue ID resolved during intake.
+For GitHub-driven workflows, the canonical source ID is the GitHub issue ID resolved during intake.
 
-- Use the issue number itself as the session ID.
-- Preferred local folder shape for GitHub-driven workflows: `sessions/<issue-number>/`.
-- If `sessions/<session-id>/` already exists locally, the agent must retrieve and reuse it.
-- If `sessions/<session-id>/` does not exist, the agent must create it before writing session artifacts.
+- Normalize the issue number into the safe session ID used for filesystem paths.
+- Preferred folder shape for GitHub-driven workflows: `sessions/<safe-session-id>/`.
+- If `sessions/<safe-session-id>/` already exists, the agent must retrieve and reuse it.
+- If `sessions/<safe-session-id>/` does not exist, the agent must create it before writing session artifacts.
 - Prompts that resume prior work should refer to the session by ID.
 
 Manual session IDs are fallback only for offline or non-ticket workflows.
 
 ### Session Retrieval
 
-Older session packages may be retrieved from issue-ticket zip attachments.
+Older session packages may be retrieved from issue-ticket zip attachments or another approved export surface.
 
-- Download the zip attachment from the relevant issue ticket.
-- Extract it into the local `sessions/` folder.
+- Restore the package into the repository `sessions/` folder.
 - Refer to the restored session by session ID in the prompt when a workflow should resume from that package.
-- The restored local copy is a working retrieval surface, not a new durable source of truth.
+- The restored copy is a working retrieval surface, not a new durable source of truth unless the repository workflow explicitly records it as one.
 
 ### Session Naming
 
-For GitHub-driven workflows, the GitHub issue ID is the session identifier and should be retrieved during intake.
+For GitHub-driven workflows, the GitHub issue ID is the session source identifier and should be retrieved during intake before normalizing the safe session ID.
 
 For offline or non-ticket workflows, the user provides or confirms the session identifier.
 

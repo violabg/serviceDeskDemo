@@ -50,7 +50,7 @@ Create, run, or assess tests and validation for approved work without owning pro
 - Use Next.js DevTools MCP only for framework documentation or index lookup, not as a substitute for focused validation.
 - Run focused test commands before broader suites when possible.
 - Treat failing tests as evidence and distinguish product defects, test defects, flaky infrastructure, and plan mismatch.
-- Restrict session writes to the active `sessions/<issue-id>/` folder.
+- Restrict session writes to the active `sessions/<safe-session-id>/` folder.
 
 ## Gates
 

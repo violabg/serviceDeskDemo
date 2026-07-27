@@ -51,7 +51,7 @@ Implement only the approved plan and prove the touched behavior with focused val
 
 - Do not begin code edits unless the selected plan records `Approved: true`.
 - Treat the approved plan as the primary implementation authority.
-- Restrict session writes to the active `sessions/<issue-id>/` folder.
+- Restrict session writes to the active `sessions/<safe-session-id>/` folder.
 - Do not search the repository to gain confidence.
 - Repository exploration is allowed only for plan requirements, local diagnostics, test failures, or missing technical facts exposed by the touched slice.
 - After the first substantive edit, run the cheapest behavior-scoped validation before widening scope.

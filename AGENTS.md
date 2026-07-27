@@ -24,10 +24,16 @@ Hidden helper agents:
 - Knowledge index: `docs/agents/knowledge/README.md`
 - Rule: read the index before loading repository knowledge files and load only matching entries.
 
+## Provenance
+
+- Manifest: `docs/agents/agentic-system-manifest.md`
+- Bootstrap changelog snapshot: `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md`
+- Rule: Maintainer compares the manifest's applied-through version, the repo-local snapshot, and `.agents/skills/bootstrap-agentic-system/CHANGELOG.md` before proposing Bootstrap contract upgrades.
+
 ## Sessions And Approval
 
-- Session path: `sessions/<issue-id>/`
-- Rule: use the GitHub issue number as the session ID for GitHub-driven work. Reuse the existing session folder when present; otherwise create it before writing session artifacts.
+- Session path: `sessions/<safe-session-id>/`
+- Rule: use the GitHub issue number as the source ID for GitHub-driven work, normalize it into the safe session ID used by `templates/work-item-planning-session.md`, and reuse the existing session folder when present; otherwise create it before writing session artifacts.
 - Approval gate: implementation starts only after explicit user approval plus recorded approval metadata in the session artifacts.
 - Handoff contract: `templates/artifact-gates.md`
 
@@ -44,6 +50,9 @@ Hidden helper agents:
 - Planner-owned work-item planning skills:
   - `.agents/skills/plan-bug-from-id/SKILL.md`
   - `.agents/skills/plan-user-story-from-id/SKILL.md`
+- Post-maintenance recommendations:
+  - Run `.github/agents/demo-knowledge-builder.agent.md` when repository knowledge, glossary boundaries, or the knowledge index drift.
+  - When tracker-driven planning workflows expand, use `.agents/skills/create-work-item-planning-skills/` and `.agents/skills/create-work-item-from-description/`.
 - Planning schema: `templates/plan-schema.md`
 - Clarification schema: `templates/question-schema.md`
 - Gate and handoff contract: `templates/artifact-gates.md`
@@ -57,5 +66,5 @@ Hidden helper agents:
 - Implementor edits only from an approved implementation plan.
 - Tester validates approved work without widening production scope.
 - Knowledge Builder keeps glossary work separate from knowledge-index maintenance.
-- Vision writes deterministic visual artifacts under `sessions/<issue-id>/visual/` for non-vision agents to cite.
+- Vision writes deterministic visual artifacts under `sessions/<safe-session-id>/visual/` for non-vision agents to cite.
 - Ask answers questions without implementing code or modifying files.
