@@ -64,6 +64,22 @@ Use this before creating or modifying agent-system files.
 - Context Glossary Path To Reference:
 - Knowledge Index Path To Reference:
 
+## Version Provenance
+
+- Manifest Path: `<agentic-system-manifest-path>`
+- Operation: NEW | MODIFIED | UNMODIFIED
+- Installed Bootstrap Skill Changelog Path:
+- Repo-Local Bootstrap Changelog Snapshot Path:
+- Bootstrap Skill Version Used:
+- Bootstrap Contract Applied Through:
+- Bootstrap Snapshot Source Status: copied from installed skill changelog | inferred from repo evidence | unknown
+- Maintain Skill Version Available:
+- Installed Maintain Skill Changelog Path: none | `<path>`
+- Package Changelog Path For Context: none | `<path>`
+- Bootstrap Baseline Notes:
+- Unknown Version Or Snapshot Gaps:
+- Root Instructions Reference Manifest: yes | no
+
 ## Failure Modes
 
 | Failure Mode | Why Likely Here | Damage | Prevented By | Success Signal |

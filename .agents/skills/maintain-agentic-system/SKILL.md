@@ -16,6 +16,7 @@ Use this skill to maintain an existing repo-local Agentic System against kit pri
 - Produce a maintenance plan and wait for explicit approval before editing files.
 - If no existing Agentic System is found, stop and ask whether to switch to bootstrap behavior.
 - Existing systems should have root `AGENTS.md` or an approved platform-equivalent root instruction file. If missing, treat it as a Bootstrap contract gap and propose the smallest root instruction file that routes agents to the existing system.
+- Existing systems should have an agentic-system manifest, normally `docs/agents/agentic-system-manifest.md`, that records the Bootstrap skill version used, the Bootstrap contract version applied through, the installed Bootstrap skill changelog path, the repo-local Bootstrap changelog snapshot path, generated system paths, and maintenance history. If missing, treat it as a Bootstrap contract gap and propose the smallest manifest that can be inferred from the existing system.
 - Existing systems should record whether visual artifact support is needed. If screenshots, mockups, diagrams, UI snapshots, image assets, or image-based QA evidence affect planning or testing and no Vision agent or visual-intake skill exists, treat that as a Bootstrap contract gap.
 - Existing systems with a context glossary should normalize repository terminology. If stable concepts have competing, synonymous, or ambiguous names, treat missing preferred terms, terms to avoid, accepted aliases, or distinctions from similar terms as a Bootstrap contract gap.
 
@@ -32,6 +33,8 @@ Run these subagents in parallel when the platform supports parallel delegation. 
 
 When maintaining a system originally created by `bootstrap-agentic-system`, load the current sibling `bootstrap-agentic-system/SKILL.md` when available and check whether the existing system still matches its required contract. Treat these current Bootstrap requirements as maintenance upgrade candidates:
 
+- agentic-system manifest recording Bootstrap skill version used, Bootstrap contract applied-through version, installed Bootstrap skill changelog path, repo-local Bootstrap changelog snapshot path, generated system paths, and maintenance history,
+- changelog-delta audit from the repo-local Bootstrap changelog snapshot and manifest's recorded Bootstrap contract version through the current version in the installed Bootstrap skill `CHANGELOG.md`, with every intervening Bootstrap changelog entry classified as applied, not applicable, deferred, superseded, unknown, or requiring a proposed file operation,
 - required Planner, Implementor, Tester, and Knowledge Builder agents,
 - Knowledge Builder repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas,
 - root `AGENTS.md` or an approved platform-equivalent root instruction file,
@@ -45,6 +48,10 @@ When maintaining a system originally created by `bootstrap-agentic-system`, load
 
 Do not rewrite a working existing system just to match wording. Propose the smallest upgrade that closes real contract gaps or stale workflow assumptions.
 
+If no manifest or repo-local Bootstrap changelog snapshot exists, do not assume every changelog entry is missing. Infer the likely applied Bootstrap contract from existing files where possible, mark uncertain entries as `unknown`, and propose creating the manifest and initial snapshot as the first maintenance upgrade. When version provenance is unknown, the maintenance plan must say that the changelog-delta audit is best-effort until the manifest and snapshot are approved and written.
+
+Do not treat the manifest or repo-local Bootstrap changelog snapshot as the only evidence. If the repository files already satisfy a later Bootstrap release requirement, record that changelog entry as `applied` even when the local snapshot is missing, stale, or older than the current installed Bootstrap skill changelog.
+
 ## Existing-System Detection
 
 An existing Agentic System requires at least one root instruction file plus at least one agent-system component, such as a custom agent, skill, prompt, governance doc, knowledge doc, artifact template, or session workflow.
@@ -52,6 +59,7 @@ An existing Agentic System requires at least one root instruction file plus at l
 Look for evidence such as:
 
 - repository instruction files,
+- `docs/agents/agentic-system-manifest.md` or an equivalent repo-local agent-system provenance ledger,
 - `.github/agents/`, `.github/prompts/`, `.github/instructions/`, `.github/skills/`,
 - `.claude/agents/`, `.claude/skills/`, or equivalent platform folders,
 - `docs/agents/`, `sessions/`, governance docs, knowledge indexes, and artifact templates.
@@ -69,6 +77,8 @@ Detect whether an Agentic System exists. If not found, ask whether to switch to 
 ### Gate 2: Repository Change Scan
 
 Inspect workflow evidence that may require system updates: new domains, changed validation commands, new docs, new CI, changed issue/session workflow, new risks, stale knowledge, changed glossary vocabulary, or Bootstrap contract changes.
+
+Also inspect version provenance evidence: the agentic-system manifest when present, root instruction references to that manifest, the repo-local Bootstrap changelog snapshot when present, the installed Bootstrap skill `CHANGELOG.md` when present, any optional package changelog context, the recorded Bootstrap contract version applied through, and all Bootstrap changelog entries newer than that recorded version.
 
 ### Gate 3: Principle Review
 
@@ -88,6 +98,7 @@ Evaluate whether the current system still follows kit principles:
 - context glossary normalizes synonymous or ambiguous repository wording when those terms affect future agent work,
 - Planner contracts that reference required glossary, knowledge-index, plan-schema, and question-schema paths,
 - final contract validation before handoff,
+- version provenance through an agentic-system manifest and changelog-delta audit,
 - bounded maintenance subagents or inline equivalents for discovery and audit.
 
 ### Gate 4: Maintenance Plan
@@ -96,9 +107,13 @@ Produce a concise plan that lists files to update, why each update is needed, ex
 
 The maintenance plan must explicitly state whether the existing system already satisfies the current Bootstrap contract. If not, list each gap, the smallest proposed file operation, and whether the gap is being fixed now, deferred, or intentionally left unchanged with the user's approval.
 
+The maintenance plan must include a Bootstrap Changelog Delta section. Read the current installed Bootstrap skill `CHANGELOG.md` when available, use the repo-local Bootstrap changelog snapshot and the recorded `Bootstrap Contract Applied Through` version from the manifest as the baseline when available, and list every newer `bootstrap-agentic-system` changelog entry through the current installed version. Package `CHANGELOG.md` may be used as supporting context only when the installed skill-local changelog is unavailable. Classify each entry as `applied`, `not applicable`, `deferred`, `superseded`, `unknown`, or `requires update`. Every `requires update` or `unknown` entry must map to a proposed file operation, a bounded verification step, or an approved deferral.
+
 ### Gate 5: Approved Apply
 
 After explicit approval, apply only the approved file changes. Keep edits small and preserve repo-local conventions.
+
+When approved maintenance completes, refresh the repo-local Bootstrap changelog snapshot to the latest installed Bootstrap skill `CHANGELOG.md` when available, update the manifest's `Bootstrap Contract Applied Through` to the latest fully applied Bootstrap version, write `Maintain Skill Version Last Applied` and `Last Maintenance Date`, and append a `Maintenance History` row. If the latest installed Bootstrap skill changelog is unavailable, keep the previous snapshot, record the reason, and update the manifest with the best available inferred baseline.
 
 ### Gate 6: Validation
 
@@ -109,7 +124,11 @@ Before final response, run a final maintenance contract validation. Compare the 
 Required final checks:
 
 - Every approved file operation was completed, skipped with an approved reason, or reported as blocked.
+- The agentic-system manifest exists or the approved plan records why creating it was deferred; when it exists, it records Bootstrap skill version used, Bootstrap contract applied through, installed Bootstrap skill changelog path, repo-local Bootstrap changelog snapshot path, generated system paths, and maintenance history.
+- Every Bootstrap changelog entry newer than the manifest's previous `Bootstrap Contract Applied Through` version was classified using the repo-local Bootstrap changelog snapshot, the current installed Bootstrap skill `CHANGELOG.md`, and direct repository evidence, then either applied, verified as applied, recorded as not applicable or superseded, deferred with approval, or reported as blocked.
+- After successful approved maintenance, the repo-local Bootstrap changelog snapshot was refreshed to the latest installed Bootstrap skill `CHANGELOG.md` when available, and the manifest was updated to the new current baseline or to the best available inferred baseline with a reason.
 - Root `AGENTS.md` exists, or an approved platform-equivalent root instruction file exists and the approved reason for not creating `AGENTS.md` is recorded.
+- Root instructions reference the agentic-system manifest path, or the approved plan records why that reference was deferred.
 - The visual-artifact decision is reflected in changed files or recorded as an intentional no-op; when selected, the Vision agent or visual-intake skill exists and produces a session artifact for non-vision agents.
 - The maintained system has Planner, Implementor, Tester, and Knowledge Builder coverage, or the approved plan records why a missing role was deferred.
 - The Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
@@ -128,13 +147,14 @@ The maintenance plan must include:
 
 1. detected Agentic System components,
 2. repository changes that affect the system,
-3. principle gaps,
-4. proposed file operations,
-5. approval status,
-6. validation plan,
-7. Bootstrap contract alignment status,
-8. post-maintenance recommendations,
-9. rollback notes.
+3. version provenance and Bootstrap changelog delta,
+4. principle gaps,
+5. proposed file operations,
+6. approval status,
+7. validation plan,
+8. Bootstrap contract alignment status,
+9. post-maintenance recommendations,
+10. rollback notes.
 
 ## Final Response Shape
 

@@ -25,6 +25,8 @@ When refactoring or maintaining this skill, preserve the current contract with a
 - Before writing files, produce a file plan and wait for explicit approval.
 - Generated files must live in agent-system locations such as `.github/agents/`, `.github/skills/`, `.claude/agents/`, `docs/agents/`, or the platform equivalent.
 - Every generated system must include a root `AGENTS.md` instruction file, or an explicit platform-equivalent root instruction file approved by the user. The root file orients future agents to the repo-local system, its gates, its agent/skill locations, the context glossary, and the knowledge index.
+- Every generated system must include an agentic-system manifest, normally `docs/agents/agentic-system-manifest.md`, copied or adapted from `templates/agentic-system-manifest.md`. The manifest records the Bootstrap skill version used, the Bootstrap contract version applied through, the installed Bootstrap skill changelog path, the repo-local Bootstrap changelog snapshot path, generated system paths, and later maintenance history so Maintainer can compute future contract deltas.
+- The installed Bootstrap skill `CHANGELOG.md` is a bootstrap-time provenance input only. Read it once to create the repo-local snapshot and manifest, then treat the manifest and repo-local snapshot as the durable repository evidence until a later Maintainer run refreshes them.
 - Separate bootstrap behavior from generated-system behavior. A rule for the future Planner is not automatically a rule for this bootstrap run.
 - Keep repository-specific recommendations separate from transferable principles.
 - Do not create a `CONTEXT.md` just because it is missing. Create or update a context glossary only when stable repository code/domain terms, source-of-truth boundaries, module names, product concepts, data concepts, or role/artifact names have been resolved and need to persist. The context glossary is primarily for the target repo's code and domain vocabulary so future agents do not confuse concepts while working in the codebase. Agent-system terms may be included only as a short separate section when they clarify repo-local workflow names.
@@ -57,6 +59,7 @@ Load these templates when their output is needed:
 - `templates/bootstrap-file-plan.md` for the install proposal and approval gate.
 - `templates/agent-role-contracts.md` when drafting role-specific Planner, Implementor, Tester, Knowledge Builder, Vision, Ask, or hidden auditor contracts.
 - `templates/agent-contracts.md` when drafting custom agent contracts.
+- `templates/agentic-system-manifest.md` when drafting the generated-system provenance ledger.
 - `templates/artifact-gates.md` when designing artifacts, gates, and handoffs.
 - `templates/knowledge-index-schema.md` when designing bounded knowledge loading.
 - `templates/plan-schema.md` when drafting the generated Planner's implementation-plan artifact contract.
@@ -67,9 +70,10 @@ If the target repo already has `CONTEXT.md`, read it as the repository code/doma
 Original source templates from this repository and this teaching skill:
 
 - `templates/generated-system-blueprint.md` preserves the first-install system map for reuse in generated file plans.
+- `templates/agentic-system-manifest.md` preserves the generated-system provenance ledger used by Maintainer for changelog-delta maintenance.
 - `templates/agent-role-contracts.md` preserves role-specific contracts for the core generated agents.
 - `templates/plan-schema.md` preserves the implementation-plan block for reuse in generated agent contracts.
-- `templates/question-schema.md` preserves the clarification-question artifact and per-question chat block for reuse in generated Planner contracts.
+- `templates/question-schema.md` preserves the clarification-question artifact and per-question chat shape for reuse in generated Planner contracts.
 - `templates/knowledge-index-schema.md` preserves the knowledge-index shape for token-efficient knowledge selection before deep reading.
 - If your target repository already has implementation-plan or clarification templates, adapt and reference those local equivalents.
 
@@ -102,6 +106,7 @@ When the generated Planner asks blocking clarification questions or records clar
 
 - The generated Planner contract must explicitly name the template file path it must use for clarification questions.
 - If a local equivalent is created, the generated Planner contract must explicitly state the file is derived from `templates/question-schema.md`.
+- The generated Planner contract must state that each blocking clarification shown in chat must use the template's `Per-Question Chat Shape`, not a compressed summary or ad hoc numbered reply list.
 - The generated Planner must not request implementation-plan approval while unresolved blocking questions remain open.
 - Do not use generic wording such as "using repo question template" without a concrete file path and source attribution.
 - Example language: "Ask blocking clarification questions using `templates/question-schema.md`, or a copied local equivalent that explicitly states it is derived from `templates/question-schema.md`."
@@ -187,7 +192,7 @@ Produce a concise proposal with the required topics below. To keep review small,
 - Failure Modes and Role Model: costly failure modes, instruction hierarchy, custom agent prefix, recommended modes, main agents, hidden subagents, and delegation rules.
 - Artifacts and Gates: artifacts and gates, reusable skills or prompts, handoff envelope, and three one-week validation experiments.
 - Knowledge, Glossary, and Visual Strategy: visual artifact strategy, context glossary rule, knowledge map, and post-bootstrap Knowledge Builder recommendations.
-- File Batch and Tool Surface: generated-system blueprint, root instruction file strategy, generated tool surface and MCP assignment plan, file-generation plan, optional later batches, and post-bootstrap recommendations.
+- File Batch and Tool Surface: generated-system blueprint, root instruction file strategy, agentic-system manifest strategy, generated tool surface and MCP assignment plan, file-generation plan, optional later batches, and post-bootstrap recommendations.
 
 1. costly failure modes
 2. instruction hierarchy
@@ -203,10 +208,11 @@ Produce a concise proposal with the required topics below. To keep review small,
 12. knowledge map
 13. handoff envelope
 14. root instruction file strategy
-15. generated tool surface and MCP assignment plan
-16. file-generation plan
-17. three one-week validation experiments
-18. post-bootstrap recommendations
+15. agentic-system manifest strategy
+16. generated tool surface and MCP assignment plan
+17. file-generation plan
+18. three one-week validation experiments
+19. post-bootstrap recommendations
 
 The visual artifact strategy must explicitly state whether the repo needs a Vision agent, a visual-intake skill, deferred support, or no visual support. Recommend a Vision agent when planning or review depends on screenshots, mockups, diagrams, UI snapshots, image assets, browser screenshots, annotated images, or image-based QA evidence. The Vision agent should convert image evidence into a deterministic text artifact that non-vision Planner, Implementor, and Tester agents can cite. If a Vision agent is not proposed, state why.
 
@@ -215,6 +221,8 @@ The context glossary rule must explicitly tell the user whether stable repositor
 For each glossary-worthy concept with competing names, the proposal must include a terminology normalization decision: preferred term, terms to avoid, accepted aliases when needed, and distinctions from similar terms that future agents must not conflate. If the user has not resolved these decisions, ask bounded questions and do not request file-plan approval.
 
 The root instruction file strategy must propose `AGENTS.md` at the repository root by default. Use a platform-equivalent root instruction file only when the target platform clearly requires it and the user approves that equivalent. The root file must point to generated agents, skills, templates, session rules, the context glossary path when one exists, and the knowledge-index path. It must not duplicate full agent contracts.
+
+The agentic-system manifest strategy must propose a durable manifest path, normally `docs/agents/agentic-system-manifest.md`. It must also propose a repo-local Bootstrap changelog snapshot path, normally `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md`. The manifest must record the Bootstrap skill version used, the Bootstrap contract version applied through, the installed Bootstrap skill changelog path, the repo-local snapshot path, generated root/agent/template/knowledge/session paths, and maintenance history. Use `templates/agentic-system-manifest.md` as the source shape. If the target repository already has an equivalent manifest or snapshot path, update them instead of creating duplicates and record the equivalent paths in the file plan.
 
 The generated-system blueprint must use `templates/generated-system-blueprint.md` as the source shape. It must identify the first coherent install batch and any optional later batches. The first batch should normally include root instructions, Planner, Implementor, Tester, Knowledge Builder, knowledge index, plan schema, question schema, artifact/handoff rules, and Vision when visual support was selected. Ask and tracker/work-item skills may be first-batch only when the repo workflow clearly needs them immediately.
 
@@ -281,6 +289,7 @@ The file plan must record the chosen custom agent prefix and show it in proposed
 The file plan must include a Visual Artifacts section. If visual support is selected, include the proposed Vision agent or visual-intake skill file operation and the artifact path where extracted visual evidence will be saved. If visual support is deferred or out of scope, record the reason and the user's selected option.
 The file plan must include a Context Glossary section. If glossary-worthy terms were identified, include the proposed `CONTEXT.md` creation or edit as a proposed file operation. If no glossary-worthy terms were identified, record `Context Glossary: no change` with the reason. If glossary conflicts were found, record the user's chosen resolution for each conflict before asking for approval. If synonymous, near-synonymous, or ambiguous wording was found, record the chosen preferred term, terms to avoid, accepted aliases when needed, and distinctions from similar terms before asking for approval.
 The file plan must include a Root Instructions section. Include `AGENTS.md` as a proposed new or modified file unless the user approved a platform-equivalent root instruction file. If a platform-equivalent root file is used, record the approved path and why `AGENTS.md` is not being created.
+The file plan must include a Version Provenance section. Include a proposed agentic-system manifest file operation, a proposed repo-local Bootstrap changelog snapshot file operation, the installed Bootstrap skill changelog path, the Bootstrap skill version used, the Bootstrap contract version applied through, the Bootstrap snapshot source status, the Maintain skill version available, any installed Maintain skill changelog path, optional package changelog context, and concise bootstrap baseline notes. If the version or installed changelog source cannot be found, record the gap, state whether the baseline is being inferred from repository evidence, and ask whether to proceed before file-plan approval.
 The file plan must include an MCP and Platform Integration Assignment section. It must copy the Gate 2 approved decision register, list the exact generated files that will receive each `add` or `move to another agent or skill` entry, and list omitted, deferred, or recommendation-only integrations with their approved reasons.
 For non-trivial repositories, the file plan must include a Contract Auditor section or inline audit result before approval. The audit must state whether required Bootstrap behavior was preserved and whether any required contract element is missing, moved, strengthened, deferred, or intentionally unchanged.
 
@@ -294,12 +303,14 @@ After approval, create the smallest coherent file batch. Prefer templates and sh
 - The root instruction file must briefly explain the repo-local Agentic System entrypoints and must link or name the generated Planner, Implementor, Tester, and Knowledge Builder contracts.
 - The root instruction file must name the context-glossary path when one exists and describe it as repository code/domain vocabulary, not as a knowledge index.
 - The root instruction file must name the knowledge-index path and require agents to use index-first loading before reading knowledge files.
+- The root instruction file must name the agentic-system manifest path and state that Maintainer uses it with the repo-local Bootstrap changelog snapshot and the currently installed Bootstrap skill `CHANGELOG.md` to detect Bootstrap contract deltas.
 - The root instruction file must summarize approval gates, session storage rules, validation expectations, and where to find generated skills or templates.
 - Do not duplicate full agent contracts in `AGENTS.md`; keep it as the stable entrypoint and navigation layer.
 
 **Generated-System Blueprint Requirement:**
 
 - Before writing generated files, load `templates/generated-system-blueprint.md` and use it to decide the first install batch, optional later batches, session path strategy, generated template paths, and role file names.
+- Before writing generated files, load `templates/agentic-system-manifest.md` and use it to create or update the repo-local manifest named in the approved file plan.
 - Keep the generated structure tailored to the target repository and selected platform, but preserve the blueprint's separation between root instructions, user-invokable agents, hidden agents, skills, templates, knowledge index, context glossary, session artifacts, and validation.
 - Prefer templates over generated scripts unless the target repository already has a clear script runner and the script will perform deterministic validation or repeatable file generation that users would otherwise run manually.
 - If a script is proposed, include its command, owner, expected output, and validation in the file plan before asking for approval.
@@ -349,6 +360,15 @@ After approval, create the smallest coherent file batch. Prefer templates and sh
 - Document the knowledge-index location explicitly in the generated Planner agent contract so the Planner knows what to read before selecting knowledge files.
 - Example: In the generated Planner's `.md` or `.agent.md` file, include: "Read `<knowledge-index-path>` before loading any repository knowledge files. Load only files whose `When to read` triggers match the planning task."
 
+**Agentic-System Manifest Creation Requirement:**
+
+- Create or update the manifest path named in the approved file plan, normally `docs/agents/agentic-system-manifest.md`, using `templates/agentic-system-manifest.md` as the source shape.
+- Read the installed Bootstrap skill `CHANGELOG.md` and copy it to the repo-local Bootstrap changelog snapshot path named in the approved file plan, normally `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md`, when that installed skill changelog is available.
+- Fill `Bootstrap Skill Version Used`, `Bootstrap Contract Applied Through`, `Bootstrap Snapshot Source Status`, and `Maintain Skill Version Last Applied` from the installed skill-local changelogs when available. If the installed Bootstrap skill changelog is unavailable, infer the best available baseline from repository evidence and record `Bootstrap Snapshot Source Status` as `inferred from repo evidence` or `unknown`.
+- Record the installed changelog paths used so Maintainer knows which ledgers were the source of truth during generation.
+- Record generated root instruction, context glossary, knowledge index, schema template, agent directory, skill directory, and session-root paths.
+- Do not use the manifest or repo-local snapshot as substitutes for direct repository inspection; they are maintenance aids, and Maintainer must still verify whether the current repo files already satisfy later release requirements.
+
 **Plan-Schema Template Creation Requirement:**
 
 - If `templates/plan-schema.md` does not exist in the target repository, create it during generation using the source template from this skill's `templates/plan-schema.md`.
@@ -359,9 +379,9 @@ After approval, create the smallest coherent file batch. Prefer templates and sh
 **Question-Schema Template Creation Requirement:**
 
 - If `templates/question-schema.md` does not exist in the target repository, create it during generation using the source template from this skill's `templates/question-schema.md`.
-- If `templates/question-schema.md` already exists in the target repository, verify that it contains the core sections: clarification table, answers table, per-question chat block, answer choices, and approval-blocking rule.
+- If `templates/question-schema.md` already exists in the target repository, verify that it contains the core sections: clarification table, answers table, per-question chat shape, answer choices, and approval-blocking rule.
 - Document the location of `templates/question-schema.md` explicitly in the generated Planner agent contract so the Planner knows where to reference it for blocking clarification questions and answer records.
-- Example: In the generated Planner's `.md` or `.agent.md` file, include: "Use `templates/question-schema.md` as the source template when asking blocking clarification questions and recording answers."
+- Example: In the generated Planner's `.md` or `.agent.md` file, include: "Use `templates/question-schema.md` as the source template when asking blocking clarification questions and recording answers. Present each blocking clarification in chat using the template's `Per-Question Chat Shape`; do not collapse it into an open-question summary or an ad hoc numbered reply list."
 
 **Vision Agent Creation Requirement:**
 
@@ -391,7 +411,15 @@ Validate frontmatter, markdown diagnostics, and internal links where tooling is 
 - Verify that the root instruction file names the generated Planner, Implementor, Tester, and Knowledge Builder contracts.
 - Verify that it names the context-glossary path when one exists and describes it as repository code/domain vocabulary.
 - Verify that it names the knowledge-index path and requires index-first knowledge loading.
+- Verify that it names the agentic-system manifest path and describes it as version provenance for maintenance.
 - Verify that it summarizes approval gates, session storage rules, validation expectations, and generated skill or template locations without duplicating full contracts.
+
+**Agentic-System Manifest Validation:**
+
+- Verify that the manifest path named in the file plan exists.
+- Verify that the manifest records `Bootstrap Skill Version Used`, `Bootstrap Contract Applied Through`, the installed Bootstrap skill changelog path, the repo-local Bootstrap changelog snapshot path, generated system paths, and maintenance history.
+- Verify that the root instruction file references the manifest path.
+- Verify that `Bootstrap Contract Applied Through` is not newer than the current version recorded in the installed Bootstrap skill `CHANGELOG.md` when that file is available.
 
 **Knowledge-Index Validation:**
 
@@ -421,7 +449,7 @@ Validate frontmatter, markdown diagnostics, and internal links where tooling is 
 **Question-Schema Template Validation:**
 
 - Verify that `templates/question-schema.md` exists at the expected path.
-- Verify that the file contains required sections: clarification table, answers table, per-question chat block, answer choices, and approval-blocking rule.
+- Verify that the file contains required sections: clarification table, answers table, per-question chat shape, answer choices, and approval-blocking rule.
 - Verify that the generated Planner agent contract explicitly references `templates/question-schema.md` by path (not generic wording like "repo question template").
 - If the template exists but was not created by this bootstrap run, confirm it contains equivalent structure to the source template.
 - Report the file path and validation status in the final response.
@@ -460,6 +488,7 @@ Required final checks:
 - Required generated agents include the baseline tool surfaces from `templates/agent-role-contracts.md`, plus every Gate 2 approved repository-specific MCP or platform integration assigned to that agent by exact tool name.
 - Required generated agents preserve baseline `agents:` frontmatter from `templates/agent-role-contracts.md`, including delegated `agent` access for Planner and Tester when supported.
 - The generated first-install batch follows `templates/generated-system-blueprint.md` or records approved deviations.
+- The generated manifest follows `templates/agentic-system-manifest.md`, records the Bootstrap contract version applied through, records the repo-local Bootstrap changelog snapshot path, and is referenced by root instructions.
 - The visual-artifact decision is reflected in generated files or recorded as an intentional no-op; when selected, the Vision agent or visual-intake skill exists and produces a session artifact.
 - The generated Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
 - The generated Planner contract references the context-glossary path when one exists, the knowledge-index path, `templates/plan-schema.md`, and `templates/question-schema.md` by explicit path.

@@ -18,6 +18,8 @@ The first coherent batch should normally include:
 | `<agent-dir>/<prefix>-vision.agent.md` | When selected | Image-to-text role for screenshots, mockups, diagrams, UI snapshots, assets, or QA images. |
 | `<agent-dir>/<prefix>-ask.agent.md` | Optional | Q&A-only role for knowledge-grounded answers without implementation authority. |
 | `<agent-dir>/<prefix>-contract-auditor.agent.md` | Optional hidden | Read-only generated-file auditor for file-plan and contract adherence. |
+| `<manifest-path>` | Yes | Version provenance ledger that records the Bootstrap skill version, Bootstrap contract applied-through version, installed skill changelog source, repo-local snapshot path, and later maintenance history. |
+| `<bootstrap-changelog-snapshot-path>` | Yes | Repo-local copy of the installed Bootstrap skill `CHANGELOG.md` used as the maintenance baseline when the original installed skill path is unavailable later. |
 | `<knowledge-index-path>` | Yes | Index-first routing file with knowledge entries and `When to read` triggers. |
 | `<template-dir>/plan-schema.md` | Yes | Implementation-plan artifact schema copied or adapted from this skill. |
 | `<template-dir>/question-schema.md` | Yes | Clarification artifact schema copied or adapted from this skill. |
@@ -55,6 +57,9 @@ CONTEXT.md                         # only when glossary-worthy repo terms are re
 .github/skills/                    # or platform equivalent
   <repo-skill>/SKILL.md
 docs/agents/
+  agentic-system-manifest.md
+  skill-changelogs/
+    bootstrap-agentic-system.CHANGELOG.md
   knowledge-index.md
   templates/
     plan-schema.md
@@ -80,6 +85,8 @@ sessions/                          # or approved external session root
 Before asking for approval or handing off, confirm:
 
 - Root instructions name every generated agent, generated skill location, template directory, session root, glossary path when present, and knowledge-index path.
+- Root instructions name every generated agent, generated skill location, template directory, session root, glossary path when present, knowledge-index path, and agentic-system manifest path.
+- The agentic-system manifest records the Bootstrap skill version used, the Bootstrap contract version applied through, the installed Bootstrap skill changelog path, the repo-local Bootstrap changelog snapshot path, and the generated system paths Maintainer needs for future changelog-delta audits.
 - Every generated agent declares the baseline tool surface from `agent-role-contracts.md` or records an approved reduction.
 - Discovered MCP or platform integrations are assigned to the relevant agent or generated skill, or omitted with a reason.
 - Planner references the glossary path when present, knowledge-index path, plan-schema path, and question-schema path explicitly.

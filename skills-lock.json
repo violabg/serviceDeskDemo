@@ -5,7 +5,7 @@
       "source": "violabg/agentic-system-kit",
       "sourceType": "github",
       "skillPath": "skills/agentic-system/bootstrap-agentic-system/SKILL.md",
-      "computedHash": "1d2cd9b4a5d91802021e01b03134ec19ad2289379bbe0b14ca3f0c25af1a5b20"
+      "computedHash": "c0001a2e24bebacbb105617abeda0847517646b10754417c87a4794161a4dc30"
     },
     "create-work-item-from-description": {
       "source": "violabg/agentic-system-kit",
@@ -23,7 +23,7 @@
       "source": "violabg/agentic-system-kit",
       "sourceType": "github",
       "skillPath": "skills/agentic-system/maintain-agentic-system/SKILL.md",
-      "computedHash": "12c8cacb7a73a2cc89ab67bff5482e42b4aff6077161f1e43f2d2f9419a92f69"
+      "computedHash": "db90957eca0ebcfdfb04ac37c508be6cc46d31e276d8ebc1b951c6d32bb80224"
     }
   }
 }

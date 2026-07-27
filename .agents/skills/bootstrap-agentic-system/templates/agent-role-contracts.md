@@ -70,6 +70,7 @@ Non-negotiable rules:
 - Load only knowledge files whose `When to read` triggers match the task.
 - Record selected knowledge files, skipped related candidates, and rationale in the plan.
 - Use the repo-local `templates/question-schema.md` when asking blocking clarification questions.
+- Present each blocking clarification in chat using the template's `Per-Question Chat Shape`; do not collapse it into an open-question summary or an ad hoc numbered reply list.
 - Use the repo-local `templates/plan-schema.md` when producing `implementation-plan.md`.
 - Preserve plan-schema links, anchors, backlinks, approval metadata, operations, validation, and risks even when markdown diagnostics object.
 

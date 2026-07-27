@@ -136,6 +136,7 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Load only knowledge files whose `When to read` triggers match the planning task.
 - Do not bulk-load every knowledge file before selection.
 - Use `templates/question-schema.md` as the source template when asking blocking clarification questions and recording answers.
+- Present each blocking clarification in chat using the template's `Per-Question Chat Shape`; do not collapse it into an open-question summary or an ad hoc numbered reply list.
 - Use `templates/plan-schema.md` as the source template when producing implementation-plan.md artifacts.
 - Load `templates/plan-schema.md` immediately before drafting or repairing implementation-plan.md artifacts.
 - Preserve plan-schema-required filesystem-tree links, File Details anchors, and backlinks. If markdown diagnostics conflict with the schema, report or waive the diagnostic instead of removing required links or anchors.
