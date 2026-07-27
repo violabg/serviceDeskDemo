@@ -21,7 +21,7 @@ The Core System batch should normally include:
 | `<agent-dir>/<prefix>-knowledge-builder.agent.md` | Yes | Read-only knowledge role that creates or refines the knowledge index and suggests glossary terms. |
 | `<agent-dir>/<prefix>-ask.agent.md` | Optional | Q&A-only role for knowledge-grounded answers without implementation authority. |
 | `<agent-dir>/<prefix>-contract-auditor.agent.md` | Optional hidden | Read-only generated-file auditor for file-plan and contract adherence. |
-| `<agent-dir>/<prefix>-partials/` | Yes | Prompt-scoped instruction modules loaded only when the current request needs them, while preserving always-needed core instructions and any required cross-role dependency modules. |
+| `<agent-dir>/<prefix>-partials/` | Optional | Additive prompt-scoped instruction modules for repo-specific extensions or custom roles without Canonical Template Mirrors. They must not replace mirrored non-slot content unless the user explicitly approves that relocation. |
 | `<manifest-path>` | Yes | Version provenance ledger that records the Bootstrap skill version, Bootstrap contract applied-through version, installed skill changelog source, repo-local snapshot path, and later maintenance history. |
 | `<bootstrap-changelog-snapshot-path>` | Yes | Repo-local copy of the installed Bootstrap skill `CHANGELOG.md` used as the maintenance baseline when the original installed skill path is unavailable later. |
 | `<knowledge-index-path>` | Yes | Index-first routing file with knowledge entries and `When to read` triggers. |
@@ -128,14 +128,16 @@ sessions/                          # or approved external session root
 - Create the smallest batch that can run the workflow end to end.
 - Create only the currently approved batch.
 - Generate matching agents and skills from Canonical Template Mirrors in `templates/agents/` and `templates/skills/` when they exist.
-- Preserve non-slot canonical wording, gates, non-negotiable rules, baseline tool frontmatter, delegated-agent frontmatter, and workflow structure.
+- Preserve non-slot canonical wording, gates, non-negotiable rules, baseline tool frontmatter, delegated-agent frontmatter, and workflow structure in the main generated runtime file.
 - Fill only approved Personalization Slots. Ask before changing non-slot canonical wording.
+- Strip source-only `CANONICAL-TEMPLATE-SLOT` marker comments from final generated runtime files after applying approved slot content.
+- Record each generated mirror's source path, generated path, approved slot replacements, approved placeholder values, source-only marker stripping, and any approved non-slot wording or relocation changes in the manifest.
 - Keep root instructions short and navigational. Put full authority rules in agent contracts.
 - Keep the context glossary focused on repository code/domain vocabulary, not broad docs or agent-system narration.
 - Keep the knowledge index separate from the glossary. It routes knowledge loading by `When to read` triggers.
-- Keep each generated main agent file deliberate and stable. Put prompt-specific procedures, checklists, or mode variants into separate partial files under `<prefix>-partials/`, but keep any always-needed core rules in the main contract when they are worth loading on every request.
-- When a task depends on another role's contract fragment, shared rule, or repo-specific operating mode, load that dependent partial too. Do not split instructions so aggressively that critical cross-role constraints disappear.
-- Leave room for repo-specific roles, role extensions, or split templates when the repository has stable needs beyond the baseline Agentic System roles. Apply the same selective-loading rule to those repo-specific modules.
+- Keep mirrored agent files as the complete runtime authority for their canonical body. Use partial files only for repo-specific extensions, optional mode guidance, or custom roles without mirrors.
+- When a task depends on a shared rule or repo-specific extension partial, load that dependent partial too. Do not use selective loading to hide or omit mirrored constraints.
+- Leave room for repo-specific roles, role extensions, or split templates when the repository has stable needs beyond the baseline Agentic System roles. Apply selective loading only to those non-mirrored additions.
 - Start every generated agent from the baseline tool surface in `agent-role-contracts.md`; add only discovered or approved MCP tools that fit the role.
 - Do not remove baseline VS Code/custom-agent tools or delegated-agent access unless the user explicitly approves a reduction.
 - Copy or adapt templates into the target repository so future agents can cite repo-local paths.
@@ -149,10 +151,10 @@ Before asking for approval or handing off, confirm:
 - Root instructions name every generated agent, generated skill location, template directory, session root, glossary path when present, and knowledge-index path.
 - Root instructions name every generated agent, generated skill location, template directory, session root, glossary path when present, knowledge-index path, and agentic-system manifest path.
 - The agentic-system manifest records the Bootstrap skill version used, the Bootstrap contract version applied through, the installed Bootstrap skill changelog path, the repo-local Bootstrap changelog snapshot path, and the generated system paths Maintainer needs for future changelog-delta audits.
-- Each generated main agent file explains which instructions are always loaded, which prompt-scoped partials are loaded selectively, and which shared or cross-role dependency partials must also be loaded when relevant.
+- Each generated main agent file explains which non-mirrored extension partials, if any, are loaded selectively and which shared or cross-role dependency partials must also be loaded when relevant.
 - Every generated agent declares the baseline tool surface from `agent-role-contracts.md` or records an approved reduction.
 - Discovered MCP or platform integrations are assigned to the relevant agent or generated skill, or omitted with a reason.
-- Generated files preserve Canonical Template Mirror bodies outside approved Personalization Slots.
+- Generated files preserve Canonical Template Mirror bodies outside approved Personalization Slots, and final runtime files do not contain source-only slot marker comments.
 - Manifest records generated, skipped, and deferred Canonical Template Mirror skills with reasons.
 - Planner references the glossary path when present, knowledge-index path, plan-schema path, and question-schema path explicitly.
 - Implementor requires approved plan metadata before editing and validates the touched behavior after the first edit.

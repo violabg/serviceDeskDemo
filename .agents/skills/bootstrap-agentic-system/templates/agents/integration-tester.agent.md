@@ -36,7 +36,6 @@ Optional ticketing, planning, and session-management capabilities must be descri
 <!-- CANONICAL-TEMPLATE-SLOT: INTEGRATION_TEST_SCOPE START -->
 
 | Scope Guard | One test file per production class; integration tests only |
-
 No production implementation, refactoring, or non-test redesign.
 No unit, system, or e2e tests.
 

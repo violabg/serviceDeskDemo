@@ -15,7 +15,9 @@ Create a small, durable agentic workflow that prevents the repository's likely c
 
 The generated system must include a Knowledge Builder agent. It is not optional: bootstrap proposals and file plans must create it in the first generated agent batch unless the user explicitly stops the bootstrap before generation.
 
-Generated repo-local agents and skills should come from Canonical Template Mirrors when a matching mirror exists. A Canonical Template Mirror preserves the wording, gates, non-negotiable rules, tool frontmatter, delegated-agent frontmatter, and workflow structure of the public-safe canonical source. Bootstrap may personalize only explicit Personalization Slots from target-repository evidence or user approval. If the target repository suggests changing non-slot canonical wording, stop and ask the user before changing it.
+Generated repo-local agents and skills must come from Canonical Template Mirrors when a matching mirror exists. A Canonical Template Mirror preserves the wording, gates, non-negotiable rules, tool frontmatter, delegated-agent frontmatter, and workflow structure of the public-safe canonical source. Bootstrap must generate from the mirror in copy-first mode: preserve every non-slot line and heading order, fill only approved Personalization Slots from target-repository evidence or user approval, apply approved inline placeholder values, and add only approved tool or integration entries. Final generated runtime files must not keep `CANONICAL-TEMPLATE-SLOT` marker comments; those markers remain in the source templates only. Record every slot decision and marker-stripping decision in the manifest so Maintainer can compare generated files back to their source mirrors. If the target repository suggests changing non-slot canonical wording, stop and ask the user before changing it.
+
+Canonical Template Mirrors take precedence over older modularity, token-efficiency, and role-template guidance. Role-contract templates, partial instruction files, and repository-specific extensions may add guidance around a mirror, but they must not summarize, split, replace, reorder, weaken, or omit mirrored non-slot text unless the user explicitly approves the non-slot change.
 
 Keep Bootstrap as one user-invokable orchestrator. Improve efficiency by splitting internal work into bounded scout lanes, decision records, templates, and audit checks; do not split the user-facing workflow into multiple public entrypoints unless a later repeatable workflow earns its own stable trigger and output.
 
@@ -62,8 +64,8 @@ Load these templates when their output is needed:
 - `templates/bootstrap-file-plan.md` for the install proposal and approval gate.
 - `templates/agents/` when drafting generated agent files that match Canonical Template Mirrors.
 - `templates/skills/` when drafting generated skills that match Canonical Template Mirrors.
-- `templates/agent-role-contracts.md` when drafting role-specific Planner, Implementor, Tester, Knowledge Builder, Vision, Ask, or hidden auditor contracts.
-- `templates/agent-contracts.md` when drafting custom agent contracts.
+- `templates/agent-role-contracts.md` when confirming baseline tool surfaces, role boundaries, and generated platform conventions for mirrored agents, or when drafting role-specific Planner, Implementor, Tester, Knowledge Builder, Vision, Ask, or hidden auditor contracts that do not have a Canonical Template Mirror.
+- `templates/agent-contracts.md` when drafting custom agent contracts that do not have a Canonical Template Mirror.
 - `templates/agentic-system-manifest.md` when drafting the generated-system provenance ledger.
 - `templates/artifact-gates.md` when designing artifacts, gates, and handoffs.
 - `templates/knowledge-index-schema.md` when designing bounded knowledge loading.
@@ -244,11 +246,11 @@ The Skill Template Generation batch must present the full Canonical Template Mir
 
 The Contract Audit batch must verify preserved canonical wording outside approved slots, baseline tool surfaces plus exact approved MCP or platform tools, manifest records for generated/skipped/deferred files, and tracker/session/glossary/knowledge/visual decisions reflected in generated files.
 
-The generated agent-file strategy must avoid a single monolithic always-loaded Markdown contract per role. When the target platform uses Markdown agent files, generate a deliberate main contract per role plus prompt-scoped partial Markdown files. The main role contract must define authority, stable paths, partial-loading rules, and any always-needed core rules that are worth carrying on every request. Prompt-specific procedures, long checklists, or mode variants must live in separate partials that are loaded only when the current prompt needs them.
+The generated agent-file strategy must preserve Canonical Template Mirrors as the runtime authority when a mirror exists. Generate the mirrored agent or skill body in the main runtime file after applying approved slot replacements and stripping source-only slot marker comments. Use partial Markdown files only for repository-specific extensions, optional mode guidance, or custom roles that do not have a Canonical Template Mirror. Partial files must never replace mirrored non-slot content, and no mirrored gate or rule may move to a partial unless the user explicitly approves that non-slot relocation.
 
-Selective loading must preserve dependency completeness. If a task depends on another role's guardrails, a shared repository rule, a repo-specific role extension, or a split template, Bootstrap must require the generated contract to load that dependent partial too. The goal is relevance and token efficiency, not omission of important constraints.
+Selective loading is allowed only for non-mirrored additions. If a task depends on another role's guardrails, a shared repository rule, or a repo-specific extension partial, Bootstrap must require the generated contract to load that dependent partial too. The goal is relevance and token efficiency for additions, not omission of mirrored constraints.
 
-Leave room for repository-specific roles, role extensions, or split templates when the target repository has durable needs beyond the baseline Agentic System roles. Apply the same case-by-case rule: keep always-needed repository-specific instructions in the main role or shared module when they are worth loading every time, and keep prompt-specific repository instructions in selective partials.
+Leave room for repository-specific roles, role extensions, or split templates when the target repository has durable needs beyond the baseline Agentic System roles. Apply the same case-by-case rule only to non-mirrored additions: keep always-needed repository-specific instructions in the main role or shared module when they are worth loading every time, and keep prompt-specific repository instructions in selective partials.
 
 The generated tool surface and MCP assignment plan must:
 
@@ -313,7 +315,7 @@ The file plan must record the chosen custom agent prefix and show it in proposed
 The file plan must include a Visual Artifacts section. If visual support is selected, include the proposed Vision agent or visual-intake skill file operation and the artifact path where extracted visual evidence will be saved. If visual support is deferred or out of scope, record the reason and the user's selected option.
 The file plan must include a Context Glossary section. If glossary-worthy terms were identified, include the proposed `CONTEXT.md` creation or edit as a proposed file operation. If no glossary-worthy terms were identified, record `Context Glossary: no change` with the reason. If glossary conflicts were found, record the user's chosen resolution for each conflict before asking for approval. If synonymous, near-synonymous, or ambiguous wording was found, record the chosen preferred term, terms to avoid, accepted aliases when needed, and distinctions from similar terms before asking for approval.
 The file plan must include a Root Instructions section. Include `AGENTS.md` as a proposed new or modified file unless the user approved a platform-equivalent root instruction file. If a platform-equivalent root file is used, record the approved path and why `AGENTS.md` is not being created.
-The file plan must include an Agent Instruction Modularity section. Record which instructions stay always loaded in the main agent file, the partial-directory path, which roles use prompt-specific partials, any shared or cross-role dependency partials, any repo-specific roles or split templates, and the loading rules that prevent irrelevant instruction files from being loaded while still preserving dependency completeness.
+The file plan must include an Agent Instruction Structure section. For every Canonical Template Mirror, record the source mirror path, generated path, approved slot replacements, approved placeholder values, source-only marker stripping, and any approved non-slot wording or relocation changes. For non-mirrored additions, record any partial-directory path, roles using prompt-specific partials, shared or cross-role dependency partials, repo-specific roles or split templates, and loading rules that preserve dependency completeness.
 The file plan must include a Version Provenance section. Include a proposed agentic-system manifest file operation, a proposed repo-local Bootstrap changelog snapshot file operation, the installed Bootstrap skill changelog path, the Bootstrap skill version used, the Bootstrap contract version applied through, the Bootstrap snapshot source status, the Maintain skill version available, any installed Maintain skill changelog path, optional package changelog context, and concise bootstrap baseline notes. If the version or installed changelog source cannot be found, record the gap, state whether the baseline is being inferred from repository evidence, and ask whether to proceed before file-plan approval.
 The file plan must include an MCP and Platform Integration Assignment section. It must copy the Gate 2 approved decision register, list the exact generated files that will receive each `add` or `move to another agent or skill` entry, and list omitted, deferred, or recommendation-only integrations with their approved reasons.
 The file plan must include a Batch Approval Plan section. It must list Core System, Vision Evidence when selected, Knowledge Builder Bootstrap, Skill Template Generation, and Contract Audit as separate approval checkpoints, with proposed files, blocking decisions, and validation for each batch.
@@ -328,13 +330,15 @@ After approval, create only the currently approved batch. Prefer Canonical Templ
 **Canonical Template Mirror Requirement:**
 
 - Generate matching agents and skills from `templates/agents/` and `templates/skills/` when a mirror exists.
-- Preserve the mirror's non-slot canonical wording, gates, non-negotiable rules, baseline tool frontmatter, delegated-agent frontmatter, and workflow structure.
+- Preserve the mirror's non-slot canonical wording, gates, non-negotiable rules, baseline tool frontmatter, delegated-agent frontmatter, and workflow structure in the main generated runtime file.
 - Fill only approved Personalization Slots from target-repository evidence or explicit user approval.
-- Use inline placeholders such as `{{VISION_AGENT_NAME}}` for small values, and non-nested block markers such as `<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ACTIVATION START -->` / `<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ACTIVATION END -->` for larger repo-dependent assumptions.
+- Use inline placeholders such as `{{VISION_AGENT_NAME}}` for small values in source mirrors, and non-nested block markers such as `<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ACTIVATION START -->` / `<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ACTIVATION END -->` for larger repo-dependent assumptions in source mirrors.
+- Strip `CANONICAL-TEMPLATE-SLOT` marker comments from final generated runtime files after applying approved slot content. Do not leave template-maintenance markers in generated agents or skills.
 - Treat block-slot content as canonical fallback that may be replaced by target-repository evidence.
 - Do not silently paraphrase, reorder, or weaken the Preserved Canonical Body.
+- Do not move mirrored non-slot content into partial files unless the user explicitly approves that non-slot relocation.
 - If repository evidence requires changing non-slot wording, pause generation for that file and request explicit approval for the wording change.
-- Record generated, skipped, and deferred mirror decisions in the manifest.
+- Record generated, skipped, and deferred mirror decisions in the manifest, including source mirror path, generated path, approved slot replacements, approved placeholder values, source-only marker stripping, and any approved non-slot wording or relocation changes.
 
 **Root Instruction File Requirement:**
 
@@ -343,7 +347,7 @@ After approval, create only the currently approved batch. Prefer Canonical Templ
 - The root instruction file must name the context-glossary path when one exists and describe it as repository code/domain vocabulary, not as a knowledge index.
 - The root instruction file must name the knowledge-index path and require agents to use index-first loading before reading knowledge files.
 - The root instruction file must name the agentic-system manifest path and state that Maintainer uses it with the repo-local Bootstrap changelog snapshot and the currently installed Bootstrap skill `CHANGELOG.md` to detect Bootstrap contract deltas.
-- The root instruction file must name the generated partial-instruction directory or equivalent routing rule so future agents know which instructions are always loaded, which are prompt-selective, and which shared or cross-role dependency modules must also be loaded when relevant.
+- The root instruction file must name any generated partial-instruction directory or equivalent routing rule when non-mirrored extensions use partials. It must state that Canonical Template Mirror bodies live in the main generated runtime files, while partials are additive extensions only.
 - The root instruction file must summarize approval gates, session storage rules, validation expectations, and where to find generated skills or templates.
 - Do not duplicate full agent contracts in `AGENTS.md`; keep it as the stable entrypoint and navigation layer.
 
@@ -357,12 +361,13 @@ After approval, create only the currently approved batch. Prefer Canonical Templ
 
 **Role Contract Template Requirement:**
 
-- Before drafting generated agent contracts, load `templates/agent-role-contracts.md` and adapt its role-specific shapes.
+- Before drafting generated agent contracts, load `templates/agent-role-contracts.md` to confirm baseline tool surfaces, role boundaries, and generated platform conventions.
+- When a Canonical Template Mirror exists, use the mirror as the generated contract source of truth. Use `templates/agent-role-contracts.md` only to check baseline tools, delegated agents, and role boundaries, not to replace, summarize, rename, or remove mirrored gates or rules.
+- When no Canonical Template Mirror exists, adapt the role-specific shapes from `templates/agent-role-contracts.md`.
 - Generated Planner, Implementor, Tester, and Knowledge Builder contracts must have explicit role boundaries, non-negotiable rules, numbered gates, artifact outputs, validation expectations, and handoff obligations.
-- Generated Ask and Vision agents are optional, but when selected they must also follow the role contract template and stay within their authority boundaries.
+- Generated Ask and Vision agents are optional, but when selected they must also stay within their authority boundaries.
 - Generated hidden subagents, including a Contract Auditor when available, must be read-only unless the approved file plan explicitly gives them a narrow write artifact.
-- When the target platform uses Markdown agent files, generate separate prompt-scoped partials for optional procedures or long mode-specific instructions instead of embedding them all in the main role contract, while preserving always-needed core guidance in the main file and preserving shared or cross-role dependency modules when required.
-- Do not copy role templates blindly. Remove gates that do not prevent a target-repo failure mode, and record why high-cost gates were omitted.
+- Prompt-scoped partials are allowed only for non-mirrored additions or custom roles unless the user explicitly approves relocating mirrored non-slot content.
 
 **Generated Tool Surface Requirement:**
 
@@ -479,13 +484,14 @@ Validate frontmatter, markdown diagnostics, and internal links where tooling is 
 - Verify that the generated Planner contract forbids bulk-loading all knowledge before index selection.
 - Report the file path and validation status in the final response.
 
-**Agent Instruction Modularity Validation:**
+**Agent Instruction Structure Validation:**
 
-- Verify that each generated main agent file is a stable routing contract, not an always-loaded monolith, unless the approved plan says that role needs more always-loaded guidance.
-- Verify that prompt-specific partial files are placed in the approved partial directory or equivalent platform path.
-- Verify that the main generated agent contracts state which guidance is always loaded, when to load prompt-specific partials, and when to load shared or cross-role dependency modules.
+- Verify that every generated agent or skill with a Canonical Template Mirror preserves non-slot canonical wording, gates, non-negotiable rules, baseline tool frontmatter, delegated-agent frontmatter, and workflow structure in the main generated runtime file unless the file plan records explicit approval for a non-slot wording or relocation change.
+- Verify that final generated runtime files do not contain `CANONICAL-TEMPLATE-SLOT` marker comments.
+- Verify that the manifest records each generated mirror's source path, generated path, approved slot replacements, approved placeholder values, source-only marker stripping, and any approved non-slot wording or relocation changes.
+- Verify that prompt-specific partial files, when present, contain only non-mirrored additions or approved relocations and are placed in the approved partial directory or equivalent platform path.
+- Verify that the main generated agent contracts state when to load any shared or cross-role dependency modules used by non-mirrored additions.
 - Verify that repo-specific roles, role extensions, or split templates are included when discovery found durable repository-specific needs.
-- Report any role that intentionally remains single-file and the approved reason.
 
 **Plan-Schema Template Validation:**
 
@@ -543,12 +549,12 @@ Required final checks:
 - Every approved file operation was completed, skipped with an approved reason, or reported as blocked.
 - Root `AGENTS.md` exists, or an approved platform-equivalent root instruction file exists and the approved reason for not creating `AGENTS.md` is recorded.
 - Required generated agents exist, including Planner, Implementor, Tester, and Knowledge Builder.
-- Required generated agents were drafted from `templates/agent-role-contracts.md` or an approved local equivalent, with repo-specific gate additions and removals recorded.
+- Required generated agents with Canonical Template Mirrors were generated from those mirrors in copy-first mode; required generated agents without mirrors were drafted from `templates/agent-role-contracts.md` or an approved local equivalent, with repo-specific gate additions and removals recorded.
 - Required generated agents include the baseline tool surfaces from `templates/agent-role-contracts.md`, plus every Gate 2 approved repository-specific MCP or platform integration assigned to that agent by exact tool name.
 - Required generated agents preserve baseline `agents:` frontmatter from `templates/agent-role-contracts.md`, including delegated `agent` access for Planner and Tester when supported.
 - The generated first-install batch follows `templates/generated-system-blueprint.md` or records approved deviations.
 - Generation followed the approved staged batch plan, or the user explicitly approved any collapsed batch.
-- Every generated agent or skill with a Canonical Template Mirror preserves non-slot canonical wording unless the file plan records explicit approval for a wording change.
+- Every generated agent or skill with a Canonical Template Mirror preserves non-slot canonical wording in the main generated runtime file unless the file plan records explicit approval for a wording or relocation change, and final generated runtime files contain no `CANONICAL-TEMPLATE-SLOT` marker comments.
 - The generated manifest follows `templates/agentic-system-manifest.md`, records the Bootstrap contract version applied through, records the repo-local Bootstrap changelog snapshot path, and is referenced by root instructions.
 - The visual-artifact decision is reflected in generated files or recorded as an intentional no-op; when selected, the Vision agent or visual-intake skill exists and produces a session artifact.
 - The generated Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
@@ -578,7 +584,7 @@ Create persistent, user-invokable custom agents for role boundaries that change 
 - Knowledge Builder: scans repository knowledge surfaces, proposes or updates the knowledge index, extracts stable repository code/domain vocabulary candidates for the context glossary, and asks bounded questions when the repo does not reveal what knowledge is needed. **Must be generated in the first agent batch. Must keep `CONTEXT.md` or the repo glossary separate from the knowledge index. Must keep repo code/domain vocabulary primary and agent-system vocabulary secondary. Must recommend concrete knowledge entries with `When to read` triggers rather than bulk-loading docs.**
 - Vision: converts screenshots, mockups, wireframes, diagrams, UI snapshots, image assets, browser screenshots, issue attachments, and annotated QA images into deterministic text artifacts for non-vision agents. Generate this agent when visual evidence materially affects planning, implementation, review, or testing. If the repo does not use visual artifacts, record `Vision: no change` with the reason.
 
-Use `templates/agent-role-contracts.md` to draft these agents so the generated system preserves strong role boundaries instead of producing generic assistant personas. At minimum, adapt the Planner, Implementor, Tester, and Knowledge Builder shapes. Add the Ask shape only when the repository benefits from a Q&A-only agent that cannot implement. Add the Vision shape only when visual evidence is part of the workflow.
+Use `templates/agent-role-contracts.md` to confirm baseline tool surfaces and strong role boundaries for mirrored agents, and to draft agents only when no Canonical Template Mirror exists. Add the Ask shape only when the repository benefits from a Q&A-only agent that cannot implement. Add the Vision shape only when visual evidence is part of the workflow.
 
 When `templates/agents/` contains a matching Canonical Template Mirror, start from that mirror rather than drafting from summary shapes alone. Use `templates/agent-role-contracts.md` to confirm baseline tool surfaces, role boundaries, and generated platform conventions, not to replace preserved canonical wording.
 
@@ -599,7 +605,7 @@ Keep tracker integration optional, but treat session creation and persistence as
 
 ### Gates Inside Main Agents
 
-Main agents should include gates only where the repository's real workflow risk changes. Do not copy this gate list blindly. Evaluate each candidate, then remove, add, rename, or merge gates so the contract fits the target repo.
+For custom agents without Canonical Template Mirrors, main agents should include gates only where the repository's real workflow risk changes. Evaluate each candidate, then remove, add, rename, or merge gates so the contract fits the target repo. For generated agents with Canonical Template Mirrors, preserve mirrored gates exactly outside approved Personalization Slots or explicit user-approved non-slot changes.
 
 **Gate Numbering and Labeling Requirement:**
 

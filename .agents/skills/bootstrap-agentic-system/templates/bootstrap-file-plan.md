@@ -74,30 +74,34 @@ Use this before creating or modifying agent-system files.
 - Context Glossary Path To Reference:
 - Knowledge Index Path To Reference:
 
-## Agent Instruction Modularity
+## Agent Instruction Structure
 
-- Main Agent Files Stay Thin: yes | no
-- Always-Loaded Core Instructions:
+- Canonical Mirror Runtime Rule: generated agents and skills with mirrors keep mirrored runtime bodies in the main generated files.
+- Slot Marker Rule: final generated runtime files strip source-only `CANONICAL-TEMPLATE-SLOT` marker comments.
+- Manifest Slot Decision Record:
 - Partial Instruction Directory: `<agent-dir>/<prefix>-partials/` | `<path>` | none
-- Partial Loading Rule:
+- Partial Loading Rule For Non-Mirrored Additions:
 - Cross-Role Dependency Loading Rule:
-- Prompt-Specific Partial Groups:
+- Prompt-Specific Partial Groups For Non-Mirrored Additions:
 - Shared Or Repo-Wide Partial Groups:
-- Roles Using Partials: Planner | Implementor | Tester | Knowledge Builder | Vision | Ask
+- Roles Using Additive Partials: Planner | Implementor | Tester | Knowledge Builder | Vision | Ask | none
 - Repo-Specific Roles Or Split Templates:
+- Approved Non-Slot Relocations:
 - Reason:
 
 ## Canonical Template Mirrors
 
 - Slot Syntax: inline `{{SLOT_NAME}}` placeholders for small values; non-nested `<!-- CANONICAL-TEMPLATE-SLOT: SLOT_NAME START -->` / `<!-- CANONICAL-TEMPLATE-SLOT: SLOT_NAME END -->` blocks for larger repo-dependent assumptions.
 - Slot Fallback Rule: block content is canonical fallback and may be replaced only from target-repository evidence or explicit user approval.
+- Generated Runtime Rule: strip slot marker comments from generated runtime files after applying approved slot content.
+- Manifest Record Rule: record source mirror path, generated path, approved slot replacements, approved placeholder values, marker stripping, and any approved non-slot wording or relocation change.
 
-| Mirror | Generated Path | Personalization Slots | Non-Slot Wording Changes | Approval Status |
-| --- | --- | --- | --- | --- |
-| `templates/agents/planner.agent.md` | `<agent-dir>/<prefix>-planner.agent.md` | prefix, tracker/session paths, knowledge paths, approved tools | none | pending |
-| `templates/agents/implementor.agent.md` | `<agent-dir>/<prefix>-implementor.agent.md` | prefix, validation commands, approved tools | none | pending |
-| `templates/agents/integration-tester.agent.md` | `<agent-dir>/<prefix>-tester.agent.md` | prefix, validation commands, approved tools | none | pending |
-| `templates/agents/knowledge-builder.agent.md` | `<agent-dir>/<prefix>-knowledge-builder.agent.md` | prefix, knowledge paths, glossary path, approved tools | none | pending |
+| Mirror | Generated Path | Personalization Slots | Marker Comments In Generated Runtime | Non-Slot Wording Or Relocation Changes | Approval Status |
+| --- | --- | --- | --- | --- | --- |
+| `templates/agents/planner.agent.md` | `<agent-dir>/<prefix>-planner.agent.md` | prefix, tracker/session paths, knowledge paths, approved tools | stripped | none | pending |
+| `templates/agents/implementor.agent.md` | `<agent-dir>/<prefix>-implementor.agent.md` | prefix, validation commands, approved tools | stripped | none | pending |
+| `templates/agents/integration-tester.agent.md` | `<agent-dir>/<prefix>-tester.agent.md` | prefix, validation commands, approved tools | stripped | none | pending |
+| `templates/agents/knowledge-builder.agent.md` | `<agent-dir>/<prefix>-knowledge-builder.agent.md` | prefix, knowledge paths, glossary path, approved tools | stripped | none | pending |
 | `templates/agents/ask.agent.md` | `<agent-dir>/<prefix>-ask.agent.md` | prefix, knowledge paths, approved tools | none | pending |
 | `templates/agents/vision.agent.md` | `<agent-dir>/<prefix>-vision.agent.md` | prefix, visual evidence strategy, artifact format, approved tools | none | pending |
 
