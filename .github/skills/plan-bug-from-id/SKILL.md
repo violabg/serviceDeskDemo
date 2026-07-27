@@ -6,116 +6,83 @@ disable-model-invocation: true
 
 # Plan Bug From Id
 
-Use this skill when the user wants a bug-fix implementation plan from an existing GitHub issue.
+You need to plan a bug resolution based on the bug work item ID provided by the user.
+If the user doesn't provide an bug work item ID, ask for it.
 
-- The GitHub issue number is the bug ID.
-- The same GitHub issue number is the canonical session ID.
-- Reuse `sessions/<issue-number>/` when it already exists.
-- Create `sessions/<issue-number>/` when it does not exist yet.
-- Use Demo Planner for the actual planning workflow after the bug-specific intake below is complete.
-
-If the user does not provide a bug issue number, ask for it.
-
-Before starting plan creation, follow the gates below so the planner receives tracker facts, bug evidence, and a narrowed root-cause candidate.
+Before starting the plan creation worfklow, follow the following Gates to make sure you have all the necessary information to create a comprehensive and effective plan.
 
 # Bug Information Gathering
 
 use #tool:agent/runSubagent to delegate work item gathering to a built-in agent subagent.
-
 Use the following prompt template for the subagent:
 
-```text
-Activate agent session with id `<issue-number>`.
+```
+Activate agent session with id `<sessionId>`.
+For the bug <WORK_ITEM_BUG_ID>, you need to get the title, description, comments, acceptance criteria, and related work items, epics, features, and tasks. You can use the work item integration tools to get this information.
+Do not include related work items.
 
-For GitHub issue <BUG_ISSUE_NUMBER>, gather the issue title, body, labels, comments, linked sub-issues if visible, directly referenced related issues, and any screenshots or image attachments mentioned in the issue or comments. Use the repository GitHub issue contract and GitHub tools only.
-
-Create or update `sessions/<issue-number>/tracker-issue.md` with the following structure:
-- Issue Number
-- Title
-- Labels
-- Description
-  [convert GitHub markdown or HTML fragments into clean markdown while preserving code blocks]
+Attach to the session a new artifact contains all the information you have gathered in the following format:
+- title
+- description
+  [convert from html to markdown format, and preserve any code blocks formatting in the description]
 - Images
-  [list direct image URLs or attachment references when present]
-- Comments
-  [preserve author context when available and keep code blocks intact]
-- Related Issues
-  [list only issues directly referenced by number or explicit linkage]
+  [the url of the images attached to the description of the work item, if any]
+- comments
+  [convert from html to markdown format, and preserve any code blocks formatting in the comments]
 
-Then tell me that `sessions/<issue-number>/tracker-issue.md` is ready for planning intake.
+then tell me the name of the artifact you created, so I can read it and create the plan.
 ```
 
-# Pulling Related Knowledge
+# Pulling related knowledge
 
-After the tracker issue artifact is created, read `AGENTS.md`, `CONTEXT.md`, `docs/agents/knowledge/README.md`, and only the repository knowledge entries whose `When to read` triggers match the bug scope.
+Based on the information you have gathered about the bug, pull all the related knowledge from the knowledge catalog. This includes both MustHave as well PerContext and PerComponent knowledge. Make sure to pull all the relevant information that can help you understand the bug and its context better.
 
-Always treat `docs/agents/issue-tracker.md`, selected knowledge entries, and existing session artifacts as the source of truth for planning context.
+# Narrow to wide cause identification
 
-# Narrow to Wide Cause Identification
+Analyze the bug information you have gathered.
+Procede to a focused codebase recognition to identify the most likely root cause of the bug.
+Then, expand the investigation scope to identify all the possible causes and contributing factors to the bug, including but not limited to:
 
-Analyze the gathered bug evidence.
+- Code issues
+- Configuration issues
+- Data issues
+- External dependencies (APIs, services, etc.)
 
-Proceed with focused codebase recognition to identify the most likely root cause first.
-Then widen only enough to identify the strongest contributing factors, including when relevant:
+If the bug involves both internal issues and external dependencies, clearly report them and explain how they interact to cause the bug.
 
-- code issues
-- configuration issues
-- data issues
-- external services or dependencies
-- missing permissions, redirects, or session-state assumptions
+Expose the most 2/3 probable causes and contributing factors, and gather as much information as possible about them to prepare for the plan creation.
 
-Expose at most 3 probable causes.
-For each cause, gather the minimum evidence needed to justify planning against it.
+# Expose causes to user
 
-# Expose Causes To User
+Report the most probable causes and contributing factors to the user. Make sure to deeply explain each cause with supporting evidence and context. Then ask the user which cause they want to address in the plan and wait is selection.
+Use this format to report the causes:
 
-Report the most probable causes and contributing factors to the user with this format:
-
-```markdown
+```
 ## Cause 1:
-
 ### Explanation:
-
-[detailed explanation of the cause, how it contributes to the bug, and the supporting evidence]
-
+[detailed explanation of the cause, how it contributes to the bug, and any supporting evidence or context]
 ### Solutions:
-
-[potential solutions or approaches]
-
-#### Components involved:
-
-[symbols, routes, actions, services, or concepts involved]
-
+[list of potential solutions or approaches to address this cause, if applicable]
+#### Files/Components involved:
+[list of files, components, or modules that are involved in this cause]
 #### External dependencies involved:
-
-[external APIs, services, dependencies, or `None`]
+[list of any external APIs, services, or dependencies that are involved in this cause, if applicable]
 
 [Repeat for Cause 2 and Cause 3 if applicable]
 
 Please select which cause you want to address in the plan.
 ```
 
-# Save The Analysis
+# Save the analysis
 
-After the user selects the cause, save the selected-cause analysis to `sessions/<issue-number>/bug_<issue-number>_cause_analysis.md`.
+After the user selects the cause they want to address in the plan, save the analysis of that cause in a session artifact named `bug_<WORK_ITEM_BUG_ID>_cause_analysis`. This artifact should contain all the detailed information about the selected cause, including the explanation, files/components involved, and any external dependencies. This will be used in the next step for the plan creation.
 
-That artifact must contain:
+**RULES FOR BUG FIX PLANNING**
 
-- selected cause title
-- detailed explanation
-- supporting evidence summary
-- components involved
-- external dependencies involved
-- known risks or unknowns that still affect planning
+- Produce a single step plan. Event if the fix is complex, try to abstract it into a single step that can be executed and tested independently.
+- The plan should be focused on the root cause, not on the symptoms. Avoid including implementations that are not directly related to the root cause. The goal is to have a clear and concise plan that addresses the core issue.
+- Prefer the modification of existing code over the addition of new code, unless the new code is essential for the fix. This helps to minimize the risk of introducing new bugs and keeps the codebase cleaner.
+- If the fix requires changes to external dependencies, clearly describe the reason.
 
-# Rules For Bug Fix Planning
-
-- Produce a single-step implementation plan even when the fix is internally complex.
-- Focus on the root cause instead of symptom-only mitigation.
-- Prefer modification of existing code over new code unless new code is essential.
-- If external dependencies contribute to the bug, describe why they matter and where the plan boundary stops.
-- When screenshots or QA images are part of the bug evidence, use Demo Vision and cite `sessions/<issue-number>/visual-evidence/vision-ui.md` instead of planning from the raw image.
-
-# Planner Handoff
-
-Once the tracker artifact and selected-cause artifact exist, continue with Demo Planner using the same session ID and begin from planning Gate 1 with the bug evidence already loaded.
+After you follow the above rules, start from `Gate 0` of the planning workflow.
+The identified cause is enough to create a comprehensive and effective plan, so you can safely skip interview.

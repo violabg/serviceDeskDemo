@@ -2,6 +2,10 @@
 
 This repository uses a repo-local agentic workflow for planning, implementation, testing, knowledge building, and review readiness.
 
+Treat this file as a thin root router only.
+Do not use it as a role contract.
+Load the entrypoint agent and only the partials that the current prompt context requires.
+
 ## Rule Precedence
 
 1. This file
@@ -40,47 +44,11 @@ This repository uses a repo-local agentic workflow for planning, implementation,
 - Implementation must not start until the session artifacts record approval metadata.
 - Session artifacts stay out of commits.
 
-## Knowledge Loading
+## Root Contract
 
-- Read `CONTEXT.md` first when the task depends on stable repo vocabulary or source-of-truth boundaries.
-- Read `docs/agents/knowledge/README.md` before loading any repository knowledge files.
-- Load only the knowledge files whose `When to read` triggers match the task.
-- Do not treat `CONTEXT.md` as a knowledge index.
-
-## Instruction Modularity
-
-- Main agent files in `.github/agents/` stay thin and role-defining.
-- Prompt-scoped procedures live under `.github/agents/demo-partials/`.
-- Shared modules under `.github/agents/demo-partials/shared/` must be loaded when a role depends on session rules, glossary rules, knowledge selection rules, approval metadata, or the handoff envelope.
-- Role-specific partial groups:
-  - Planner: `planner/`
-  - Implementor: `implementor/`
-  - Tester: `tester/`
-  - Knowledge Builder: `knowledge-builder/`
-  - Ask: `ask/`
-  - Vision: `vision/`
-
-## Approval Gates
-
-- Planner owns the planning gates and produces approval-ready artifacts only.
-- Implementor edits code only from an approved implementation plan.
-- Tester stays within approved test and validation scope.
-- Knowledge Builder is read-only for application code.
-- Review remains required through artifacts, validation, and human or PR review surfaces.
-
-## Validation Expectations
-
-- Artifact lint commands:
-  - `pnpm agent:lint-artifacts --mode planning-ready --session <session-id>`
-  - `pnpm agent:lint-artifacts --mode approval-ready --session <session-id>`
-  - `pnpm agent:lint-artifacts --mode implementation-handoff --session <session-id>`
-  - `pnpm agent:lint-artifacts --mode review-ready --session <session-id>`
-- Code validation commands come from the approved implementation plan.
-- Maintainer uses `docs/agents/agentic-system-manifest.md` plus `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md` and the currently installed bootstrap changelog to compute future deltas.
-
-## Post-Bootstrap Recommendations
-
-- Run Demo Knowledge Builder to refine the knowledge index and propose glossary updates.
-- Use repo-local `plan-bug-from-id` and `plan-user-story-from-id` for GitHub issue driven planning.
-- Run the public `create-work-item-planning-skills` skill when the team wants to regenerate or refine the repo-local planning skills.
-- Run the public `create-work-item-from-description` skill when the team wants repeatable GitHub work-item creation from clarified requirements.
+- Keep global instructions here only when they are safe for every prompt.
+- Put role behavior in `.github/agents/`.
+- Put prompt-scoped procedures in `.github/agents/demo-partials/`.
+- Keep repository vocabulary in `CONTEXT.md`.
+- Keep bounded knowledge selection in `docs/agents/knowledge/README.md`.
+- Use `docs/agents/agentic-system-manifest.md` plus `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md` to track bootstrap provenance and maintenance deltas.
