@@ -40,7 +40,7 @@ Use this checklist when adding a new dashboard or admin section, wiring it into 
 
 ## Unified Add-a-Section Runbook
 
-Use this sequence when introducing a new section such as clients, assets, or technicians. Keep these steps in one change set so permissions, navigation, routes, and tests stay aligned.
+Use this sequence when introducing a new section such as customers, assets, or technicians. Keep these steps in one change set so permissions, navigation, routes, and tests stay aligned.
 
 1. Extend permission source of truth
 

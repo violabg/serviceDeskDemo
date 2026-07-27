@@ -27,7 +27,7 @@ Initial application modules:
   - List
   - New ticket
   - Detail
-- Clients
+- Customers
 - Technicians
 - Assets
 - Reports

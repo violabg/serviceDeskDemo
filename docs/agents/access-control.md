@@ -39,3 +39,28 @@ Required access gates:
 - `roles:write` to create roles or edit role permissions.
 
 The `manage` operation is reserved for destructive or high-impact actions, such as deleting non-system roles, when those actions are introduced.
+
+## Runtime Access Resolution
+
+The runtime permission model is allow-only.
+
+- Effective permissions are the union of permission grants across all assigned roles.
+- Missing permissions fail closed. Server-side management methods throw `Missing permission: <section>:<operation>` when the actor lacks the required grant.
+- Reading the dashboard requires `dashboard:read`.
+- Administrator status is not implied by `dashboard:read`; it is derived from assignment of the system `Admin` role.
+
+## Session User to Application User Linking
+
+Authenticated Neon users must map to a local application user before access checks run.
+
+- Normalize session emails by trimming and lowercasing before lookup or creation.
+- First try to match by `neonAuthId`.
+- If no auth-id match exists, fall back to email so seeded bootstrap users can be linked to the real Neon identity on first login.
+- If neither match exists, create a new local application user with no roles.
+- A newly created zero-role user remains blocked from dashboard access until an admin assigns roles.
+
+## Dashboard Entry Redirect Contract
+
+- Unauthenticated users redirect to `/login`.
+- Authenticated users without `dashboard:read` redirect to `/pending-access`.
+- Authenticated users with `dashboard:read` may enter the dashboard.
