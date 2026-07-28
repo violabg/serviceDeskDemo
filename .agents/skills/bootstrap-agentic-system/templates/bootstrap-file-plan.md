@@ -31,7 +31,20 @@ Use this before creating or modifying agent-system files.
 - Out of Scope:
 - Key Decisions:
 
+## Work-Item And Session Contract
+
+- Adapter And Exact Approved Retrieval Tools:
+- External Issue ID Format And Validation:
+- Current-Issue-Only Rule And Explicit-Reference Exception:
+- Required Retrieved Fields And Markdown Conversion:
+- Session Root:
+- Type-Aware Planning Session ID Recommendation:
+- User-Approved Prefix Override:
+- Direct Resume Rule:
+
 ## Batch Approval Plan
+
+Batch Change Choices: select | defer | skip | reorder | split | combine.
 
 | Batch | Approval Status | Proposed Files | Blocking Decisions | Validation |
 | --- | --- | --- | --- | --- |

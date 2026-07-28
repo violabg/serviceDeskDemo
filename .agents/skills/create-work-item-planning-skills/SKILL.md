@@ -80,17 +80,20 @@ Local Markdown adapters must define:
 
 ## Session Interface
 
-Before retrieving or analyzing work-item evidence, each generated skill must:
+For each ID-based planning request, each generated skill must:
 
 1. Require the source ID.
-2. Normalize it into a stable filesystem-safe session ID containing only letters, numbers, `_`, and `-`.
-3. Resolve the source ID through the configured external tracker adapter or local Markdown adapter.
+2. Treat it as an **External Issue ID**, never as a session ID.
+3. Resolve only that External Issue ID through configured external tracker adapter or local Markdown adapter.
 4. Fail closed when the ID is missing, duplicated, unreadable, or does not match the configured ID pattern.
-5. Ask during bootstrap where the session root should be stored; it may be external to the repository or an internal path that agents are explicitly forbidden to scan.
-6. Create or resume exactly one session folder under that configured root.
-7. Read and write only the current session folder. Never enumerate or read other session folders.
-8. Record the source type, source ID, adapter, retrieval timestamp, evidence, decisions, and final implementation plan in that folder.
-9. Include the session folder path and adapter in the final handoff.
+5. Retrieve another issue only when current issue explicitly references it and reference is relevant. Record its ID and retrieval reason as dependency evidence. Never recursively follow references or preload related items.
+6. Identify issue type, then recommend Planning Session ID `bug-<external-issue-id>` for bugs or `us-<external-issue-id>` for user stories. Let user replace prefix; normalize custom prefix to lowercase `[a-z0-9_-]` ending in `-`.
+7. Ask during bootstrap where session root should be stored; it may be external to repository or an internal path agents are explicitly forbidden to scan.
+8. Create or resume exactly one folder at `<session-root>/<Planning Session ID>`.
+9. Read and write only the current session folder. Never enumerate or read other session folders.
+10. Resume directly from known Planning Session ID; never discover it by scanning folders.
+11. Record External Issue ID, Planning Session ID, source type, adapter, retrieval timestamp, dependency evidence, decisions, artifacts, and final implementation plan in that folder.
+12. Include session folder path, Planning Session ID, and adapter in final handoff.
 
 The session folder is the durable seam between issue systems and planning. An external tracker adapter may read GitHub, Jira, or another configured system. If no external tracker is configured, use a local Markdown adapter. Work-item creation is a separate skill and never creates a planning session. Do not require a particular vendor, but do require one issue tracker contract.
 
@@ -98,7 +101,7 @@ The session folder is the durable seam between issue systems and planning. An ex
 
 `plan-bug-from-id` must require a bug work-item ID, gather title, description, comments, acceptance criteria, image references, and relevant discussion evidence through the configured adapter or an optional subagent handoff, then analyze probable causes before planning.
 
-Bug planning must use a narrow-to-wide cause gate: identify the most likely root cause first, expand to plausible contributing factors such as code, configuration, data, and external dependencies, present the top two or three causes with evidence, wait for the user to select the cause to plan for, and save that selected cause analysis in the session before producing the plan. The resulting implementation plan must stay focused on the selected root cause and avoid symptom-only or unrelated fixes.
+Bug planning must use a narrow-to-wide cause gate: identify the most likely root cause first, expand to plausible contributing factors such as code, configuration, data, and external dependencies, and record evidence. Ask user to select a cause only when multiple materially different causes remain viable and choice changes plan; otherwise record sufficiently established cause and continue. Resulting plan stays focused on selected or evidenced root cause and avoids symptom-only or unrelated fixes.
 
 `plan-user-story-from-id` must require a user-story work-item ID, gather title, description, comments, acceptance criteria, epics, features, related work items, image references, and relevant discussion evidence through the configured adapter or an optional subagent handoff, then save the evidence in the session before producing a plan.
 
@@ -115,7 +118,7 @@ Both skills must:
 - keep unrelated implementation work out of the plan,
 - preserve code blocks and convert rich tracker content to Markdown when possible,
 - begin the repository's normal planning workflow at its first planning gate after evidence is saved,
-- skip only those interviews or clarification steps that the saved evidence fully satisfies,
+- ask one evidence-backed clarification at a time only when genuine blocking uncertainty remains; when none remains, complete every mandatory gate, artifact, and implementation plan uninterrupted before requesting review or approval,
 - use the repository's existing context glossary and plan schema when present.
 
 ## Approval and Validation

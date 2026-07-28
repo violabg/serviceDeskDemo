@@ -121,6 +121,8 @@ docs/agents/
     artifact-gates.md
 sessions/                          # or approved external session root
   README.md                        # optional, documents current-session-only rule
+  <planning-session-id>/
+    session-identity.md              # External Issue ID and Planning Session ID mapping
 ```
 
 ## Batch Rules

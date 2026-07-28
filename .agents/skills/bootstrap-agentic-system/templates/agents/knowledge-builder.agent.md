@@ -19,6 +19,14 @@ disable-model-invocation: true
 ## Bootstrap Template Knowledge Index Target
 - Maintain knowledge-index entries in `{{KNOWLEDGE_INDEX_PATH}}` and keep `When to read` triggers specific enough to avoid bulk-loading repository knowledge.
 <!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_INDEX_PATH END -->
+<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START -->
+## Bootstrap Template Knowledge Source
+- Read selected project knowledge through `{{KNOWLEDGE_SOURCE}}` when the workflow requires repository guidance.
+<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
+<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START -->
+## Bootstrap Template Repository Search
+- Use `{{REPOSITORY_SEARCH_TOOL}}` for repository discovery when the workflow requires codebase evidence.
+<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
 
 Cleaned into canonical agent `knowledge-builder.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
@@ -30,11 +38,10 @@ Your only task is to explore the codebase in search of symbols, concepts, and pa
 
 - Codebase reconnaissance must be based on the actual content of files, not on file names or other metadata. If you do not read the content, the investigation is invalid.
 - You must never, under any circumstances, modify or write code. Your only purpose is to read and collect evidence in order to produce knowledge.
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START -->
 - Use `optional work item integration` as the only valid repository-search tool for codebase reconnaissance.
 - Search-plan batching is mandatory. Whenever multiple reconnaissance questions can be answered by one `optional work item integration` call, the agent must pack them into the same call instead of splitting them across multiple calls.
 - Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
+
 **Audience**:
 The knowledge is intended to be an effective guide for AI agents, so it must be written clearly, in detail, and in a way that is easy to interpret for an agent that wants to apply the acquired knowledge to perform a specific task.
 
@@ -54,7 +61,6 @@ The knowledge is intended to be an effective guide for AI agents, so it must be 
 
 ## Gate 0 Verify existing knowledge
 
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START -->
 Here you need to identify if there is already knowledge about the topic the user wants to explore, in order to avoid duplications and to be able to build on top of existing knowledge if it is relevant for the user's expectations.
 Base this investigation base on knowledge_catalog.
 If you find relevant knowledge, share it with the user and ask if they want to use it as a starting point for the new knowledge or if they prefer to start from scratch.
@@ -65,13 +71,11 @@ Otherwise simply state:
 Otherwise simply state:
 
 > "I have check knowledge catalog and I have found <knowledge_name> about this topic, so we update it."
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
+
 ## Gate 1.1 Understand the topic
 
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START -->
 Use `optional work item integration` to scan the codebase for symbols related to the user request and extract distinct, high-level topics. Pack into one batched search-plan call as many compatible topic-discovery searches as possible.  
 If you find no relevant topics, stop and inform the user.  
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
 Otherwise, list the topics you found, ensuring that:
 
 - **Topics are unrelated** – they must represent separate conceptual areas (e.g., “HTTP Errors”, “Exception Handling”, “Logging”).
@@ -79,9 +83,8 @@ Otherwise, list the topics you found, ensuring that:
 
 Present the list to the user and ask them to choose which topic(s) they want to focus on.
 
-<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ARTIFACT_STORAGE START -->
 Once the user selects the topic(s), save each selected topic(s) as session artifact using `#tool:optional work item integration`.
-<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ARTIFACT_STORAGE END -->
+
 ### Gate validation
 
 - [ ] I found relevant, unrelated topics related to the user request.

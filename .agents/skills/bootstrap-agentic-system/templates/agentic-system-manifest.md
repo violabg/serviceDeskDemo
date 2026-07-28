@@ -38,6 +38,8 @@ This file does not update itself. Bootstrap initializes it, and Maintainer updat
 - Skill Directory: none | `<skill-dir>`
 - Bootstrap Changelog Snapshot: `<path>`
 - Session Root: `<session-root>`
+- Work Item Adapter Contract: `<path>`
+- Planning Session Identity Artifact: `<session-root>/<planning-session-id>/session-identity.md>`
 
 ## Maintenance History
 

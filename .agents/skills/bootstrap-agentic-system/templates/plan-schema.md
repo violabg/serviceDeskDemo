@@ -13,8 +13,10 @@ Schema adherence rules:
 ````text
 # Implementation Plan
 
-## Session ID
-- Session:
+## Session Identity
+- External Issue ID:
+- Planning Session ID:
+- Session Folder:
 
 ## Approval Status
 - Approved: false

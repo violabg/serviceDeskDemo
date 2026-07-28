@@ -101,12 +101,17 @@ Before leaving this phase, produce a candidate tool and integration matrix. List
 
 Turn discovery into bounded decisions before proposing files. Ask only questions that materially change the generated system.
 
+Ask one unresolved decision at a time. Each question must state discovery evidence, Bootstrap's recommendation when one exists, the decision impact, and allow a free-form answer. A recommendation is never an approval or a user answer. Record recommendation, user answer, impact, and resolved status. Do not enter proposal or file-plan mode while any blocking decision remains unresolved.
+
 Required decisions:
 
 - target agent platform,
 - custom agent prefix,
 - root instruction strategy (`AGENTS.md` by default, or approved platform equivalent),
 - tracker/session model,
+- selected work-item adapter and exact approved retrieval tools, or local Markdown adapter name,
+- External Issue ID format, validation, required retrieved fields, and current-issue-only scope,
+- Planning Session ID prefix: recommend `bug-<external-issue-id>` and `us-<external-issue-id>` after type retrieval; record any user-approved custom prefix,
 - local Markdown issue root, ID format, and lookup/index rule when no external tracker is configured,
 - approved MCP and platform integration assignments by exact tool name,
 - context glossary action: create, update, no change, or defer,
@@ -116,7 +121,7 @@ Required decisions:
 - session root and current-session-only restriction,
 - Vision support: Vision agent, smaller visual-intake skill, defer, or no change,
 - Canonical Template Mirror skills to generate, skip, or defer,
-- approval owner and batch approval plan.
+- approval owner and batch approval plan, including each batch's composition, order, split/combine/skip/defer choices, and approval checkpoint.
 
 Use bounded choices where possible. Do not enter proposal or file-plan approval while blocking decisions remain unresolved. Tool decisions must use choices such as `add`, `omit`, `move to another agent or skill`, `recommend only`, `defer`, or `needs more discovery`.
 
@@ -166,7 +171,7 @@ Default batch order:
 4. Skill Template Generation: selected skills from `templates/skills/`.
 5. Contract Audit: final preservation, schema, manifest, tool, tracker, glossary, knowledge, and validation checks.
 
-Ask for explicit approval before any write batch. Do not write generated files while the plan is unapproved.
+Present default batches as recommendations only. Let the user select, defer, skip, reorder, split, or combine every proposed batch. Reflect approved composition and checkpoints in proposal and file plan. Ask for explicit approval before any write batch. Do not write generated files while the plan is unapproved.
 
 ### Phase E: Copy-First Generation
 
@@ -191,7 +196,10 @@ For generated work-item planning skills:
 - name the selected external tracker adapter or local Markdown adapter in the body,
 - preserve Planner-only invocation,
 - preserve inline `#tool:agent/runSubagent` gathering instructions from the mirrors,
-- record issue root, ID pattern, lookup/index rule, required fields, and missing-ID behavior.
+- define adapter name, exact approved retrieval tools when available, supported issue types, External Issue ID format, required retrieved fields, rich-content and attachment Markdown conversion, missing/duplicate/unreadable/invalid-ID behavior, and local lookup rules when applicable,
+- retrieve only requested External Issue ID by default. Retrieve a referenced issue only when current issue explicitly links it and it is relevant; record retrieval reason as dependency evidence and do not recurse,
+- distinguish External Issue ID from Planning Session ID. Determine issue type before recommending `bug-<external-issue-id>` or `us-<external-issue-id>`, allow approved custom prefix, and record resulting identity in current-session artifact,
+- create or resume only current Planning Session ID folder under approved session root; resume directly from known Planning Session ID and never enumerate other session folders.
 
 For generated runtime schema files:
 
@@ -240,12 +248,14 @@ Required checks:
 - Every omitted, deferred, or recommendation-only integration is absent from generated tool surfaces and recorded with a reason.
 - Every `tools:` frontmatter item is a string.
 - Tracker/session contract names the external adapter or local Markdown issue root, ID format, lookup/index rule, required fields, and missing-ID behavior when ID-based skills are generated.
+- Tracker/session contract distinguishes External Issue ID from Planning Session ID, limits default retrieval to current issue, records explicitly referenced dependency retrieval without recursion, and limits session access to current Planning Session ID folder with direct resume.
 - Context glossary operation or no-op matches the approved decision; any glossary is primarily repository code/domain vocabulary and records preferred terms, avoided terms, aliases, and distinctions when ambiguity was resolved.
 - Knowledge index exists when planned and includes purpose, token budget rule, knowledge entries, `When to read` triggers, selection workflow, and artifact record.
 - Plan schema and question schema exist at the approved paths, preserve the required content from `templates/plan-schema.md` and `templates/question-schema.md` or an approved stronger equivalent, and are explicitly referenced by Planner.
 - Vision decision is reflected in generated files or recorded as an intentional no-op.
 - Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
 - Generated work-item planning skills preserve tracker/local adapter, session, evidence, Planner-only, no-skill-tools-frontmatter, and `#tool:agent/runSubagent` requirements.
+- Generated Planner and work-item planning skills ask clarification only for genuine blocking uncertainty; otherwise complete mandatory gates, artifacts, and implementation plan before requesting review or approval.
 - Validation commands from the file plan were run where available, or each skipped command has a reason.
 
 Treat missing required contract elements as blocking failures unless the user explicitly approved the omission.

@@ -4,7 +4,15 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `1.18.2`
+- `1.19.0`
+
+## 2026-07-28
+
+### 1.19.0
+
+- Required Bootstrap to collect one evidence-backed decision at a time and keep recommendations separate from approvals, including user-controlled batch composition and checkpoints.
+- Required generated tracker/session contracts to distinguish External Issue ID from Planning Session ID, isolate current-issue retrieval and session access, record explicit-reference dependencies, and resume directly by known session ID.
+- Required generated Planner and work-item skills to ask clarification only for genuine blocking uncertainty and otherwise complete all mandatory artifacts and plans uninterrupted.
 
 ## 2026-07-27
 

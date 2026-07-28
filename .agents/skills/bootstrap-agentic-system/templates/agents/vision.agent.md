@@ -6,11 +6,14 @@ disable-model-invocation: true
 
 # Source Mapping
 
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE START -->
+## Bootstrap Template Visual Artifact Storage
+- Store visual evidence artifacts in `{{VISUAL_ARTIFACT_STORAGE}}`.
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE END -->
 <!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT START -->
 ## Bootstrap Template Visual Artifact Format
 - Convert visual evidence into `{{VISUAL_ARTIFACT_FORMAT}}` so non-vision agents can cite deterministic text artifacts.
 <!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT END -->
-
 Cleaned into canonical agent `vision.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 Optional ticketing, planning, and session-management capabilities must be described as generalized work item integrations unless a target repository explicitly provides a private integration.
@@ -56,9 +59,7 @@ Anything omitted from the SlimUI output is considered nonexistent.
 
 The agent accepts exactly one image provided as:
 
-<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ACTIVATION START -->
 - a valid session id (required to proceed with the analysis)
-<!-- CANONICAL-TEMPLATE-SLOT: SESSION_ACTIVATION END -->
 - local file path
 - URL
 - base64 string
@@ -89,7 +90,6 @@ No comments.
 
 No additional text.
 
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE START -->
 Create a new session artifact with `#tool:optional work item integration` and save the SlimUI as the artifact content and return the artifact name.
 Then return:
 
@@ -97,7 +97,7 @@ Then return:
 session_id: <session_id>
 artifact_name: <artifact_name>
 ```
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE END -->
+
 If the runtime doesn't support agent-session artifacts, save the SlimUI as:
 
 ```

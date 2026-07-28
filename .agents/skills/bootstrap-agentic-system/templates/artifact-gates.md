@@ -5,6 +5,8 @@
 Minimum session package:
 
 - `session-brief.md`
+- `tracker-evidence.md`
+- `session-identity.md`
 - `requirements-analysis.md`
 - `clarification-questions.md`
 - `spec.md`
@@ -57,7 +59,8 @@ For every accepted gate, record why it belongs in this repository. For every hig
 ```markdown
 ## Handoff Envelope
 
-- Session ID:
+- External Issue ID:
+- Planning Session ID:
 - From Agent:
 - To Agent:
 - Current Gate:

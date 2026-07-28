@@ -5,7 +5,7 @@
       "source": "violabg/agentic-system-kit",
       "sourceType": "github",
       "skillPath": "skills/agentic-system/bootstrap-agentic-system/SKILL.md",
-      "computedHash": "88a5cb63b301e8291456cf310790fbcec4a0a8e126a1bdeb549f874c4fbdaf96"
+      "computedHash": "b8a273c45955b82aee652f5d5d62efb91a817b2522d5b6db7f21d328ea0da0b1"
     },
     "caveman": {
       "source": "juliusbrussee/caveman",
@@ -23,7 +23,7 @@
       "source": "violabg/agentic-system-kit",
       "sourceType": "github",
       "skillPath": "skills/work-items/create-work-item-planning-skills/SKILL.md",
-      "computedHash": "f903fabd2f5524629911f1dbaeebca490f1f27112eb76f6ecd218d9a78ba6800"
+      "computedHash": "53ba5bf4afc1c0e67e5bfb510210c50e138196fbcaf6dbd2401fae4d1b489cc0"
     },
     "maintain-agentic-system": {
       "source": "violabg/agentic-system-kit",
