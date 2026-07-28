@@ -6,22 +6,23 @@ disable-model-invocation: true
 
 # Plan User Story From Id
 
-Accept work item identifiers that match `GitHub issue numbers like 123 or #123`.
-Tracker access must use `GitHub issue tracker contract in docs/agents/issue-tracker.md; issue root is the repository issue list; canonical lookup key is the GitHub issue number; session lookup rule is sessions/<issue-number>/ for tracker-backed work; required fields are title, description, comments, labels, acceptance criteria when present, and related work items when present; if the user does not provide an ID, ask for one before continuing` when an external work item integration is configured.
-Custom agent tool access set: none
+Accept work item identifiers that match GitHub issue numbers like 123 or #123.
+Tracker access must use the GitHub issue tracker contract in docs/agents/issue-tracker.md. The canonical lookup key is the GitHub issue number, and the session lookup rule is sessions/<issue-number>/ for tracker-backed work.
 
-You need to plan an implamentation based the on the work item id provided by the user.
-If user don't provide an work item id, ask for it.
+If the user does not provide an ID, ask for it before continuing.
 
-use #tool:agent/runSubagent to delegate work item gathering to a default subagent (leave argument args.agentName empty).
+Use #tool:agent/runSubagent to delegate work item gathering to a default subagent. Leave args.agentName empty.
+
+The subagent must load only the requested issue by ID. Do not load other issues unless the current issue explicitly references them or the user explicitly requests them.
+
 Use the following prompt template for the subagent:
 
 ```
-Activate agent session with id `<sessionId>`.
-For the work item <WORK_ITEM_ID>, you need to get the title, description, comments, acceptance criteria, epics, and features. You can use the work item integration tools to get this information.
-Related work items are important for the plan creation success, so make sure to get them all.
+Activate agent session with id <sessionId>.
+For the work item <WORK_ITEM_ID>, gather the title, description, comments, acceptance criteria, labels, and related work items. Use the GitHub issue tracker contract in docs/agents/issue-tracker.md.
+Only load the requested issue by ID. Do not load other issues unless the current issue explicitly references them or the user explicitly requests them.
 
-Attach to the session a new artifact contains all the information you have gathered in the following format:
+Attach to the session a new artifact containing all the information you have gathered in the following format:
 - title
 - description
   [convert from html to markdown format, and preserve any code blocks formatting in the description]
@@ -33,5 +34,7 @@ Attach to the session a new artifact contains all the information you have gathe
   [convert from html to markdown format, and preserve any code blocks formatting in the acceptance criteria]
 - related work items (with their id, title, and relation type)
 
-then tell me the name of the artifact you created, so I can read it and create the plan.
+If the requested issue cannot be resolved or the artifact is missing, ask one targeted clarification question and stop instead of silently ending the workflow.
+
+Then tell me the name of the artifact you created so I can read it and create the plan.
 ```

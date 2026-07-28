@@ -1,45 +1,36 @@
-# Issue tracker: GitHub
+# Issue Tracker: GitHub
 
-Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Issues and PRDs for this repository live as GitHub issues. Use GitHub MCP tools for issue reads and writes.
 
-## Conventions
+## Canonical contract
 
-- **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
-- **Read an issue**: `gh issue view <number> --comments`, filtering comments by `jq` and also fetching labels.
-- **List issues**: `gh issue list --state open --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with appropriate `--label` and `--state` filters.
-- **Comment on an issue**: `gh issue comment <number> --body "..."`
-- **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
-- **Close**: `gh issue close <number> --comment "..."`
+- Canonical lookup key: the GitHub issue number.
+- Canonical session rule for tracker-backed work: sessions/<issue-number>/.
+- Required fields for planning intake: title, description, comments, labels, acceptance criteria when present, and related work items when present.
+- If the user does not provide an issue ID, ask for it before continuing.
 
-Infer the repo from `git remote -v` - `gh` does this automatically when run inside a clone.
+## Issue access rules
 
-## Pull requests as a triage surface
+- Read or write the requested issue by numeric ID only.
+- Do not perform broad issue discovery as part of a normal planning or implementation intake.
+- Read additional issues only when the current issue explicitly references them or the user explicitly requests them.
 
-**PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
+## GitHub MCP workflow
 
-When set to `yes`, PRs run through the same labels and states as issues, using the `gh pr` equivalents:
+- Read an issue by number through GitHub MCP.
+- Create, update, comment on, label, and close issues through GitHub MCP.
+- Keep the issue number as the canonical identifier for planning sessions and artifact naming.
 
-- **Read a PR**: `gh pr view <number> --comments` and `gh pr diff <number>` for the diff.
-- **List external PRs for triage**: `gh pr list --state open --json number,title,body,labels,author,authorAssociation,comments` then keep only `authorAssociation` of `CONTRIBUTOR`, `FIRST_TIME_CONTRIBUTOR`, or `NONE` (drop `OWNER`/`MEMBER`/`COLLABORATOR`).
-- **Comment / label / close**: `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, `gh pr close`.
+## Planning intake conventions
 
-GitHub shares one number space across issues and PRs, so a bare `#42` may be either - resolve with `gh pr view 42` and fall back to `gh issue view 42`.
+When a skill or agent gathers issue context for planning:
 
-## When a skill says "publish to the issue tracker"
+1. Resolve the issue by numeric ID.
+2. Capture the required fields listed above.
+3. Attach the gathered information to a session artifact under sessions/<issue-number>/.
+4. Keep the scope narrow: do not load unrelated issues unless they are explicitly referenced by the current issue.
 
-Create a GitHub issue.
+## Notes
 
-## When a skill says "fetch the relevant ticket"
-
-Run `gh issue view <number> --comments`.
-
-## Wayfinding operations
-
-Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.
-
-- **Map**: a single issue labelled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body. `gh issue create --label wayfinder:map`.
-- **Child ticket**: an issue linked to the map as a GitHub sub-issue (`gh api` on the sub-issues endpoint). Where sub-issues aren't enabled, add the child to a task list in the map body and put `Part of #<map>` at the top of the child body. Labels: `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Once claimed, the ticket is assigned to the driving dev.
-- **Blocking**: GitHub's **native issue dependencies** - the canonical, UI-visible representation. Add an edge with `gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker-db-id>`, where `<blocker-db-id>` is the blocker's numeric **database id** (`gh api repos/<owner>/<repo>/issues/<n> --jq .id`, _not_ the `#number` or `node_id`). GitHub reports `issue_dependencies_summary.blocked_by` (open blockers only - the live gate). Where dependencies aren't available, fall back to a `Blocked by: #<n>, #<n>` line at the top of the child body. A ticket is unblocked when every blocker is closed.
-- **Frontier query**: list the map's open children (`gh issue list --state open`, scoped to the map's sub-issues / task list), drop any with an open blocker (`issue_dependencies_summary.blocked_by > 0`, or an open issue in the `Blocked by` line) or an assignee; first in map order wins.
-- **Claim**: `gh issue edit <n> --add-assignee @me` - the session's first write.
-- **Resolve**: `gh issue comment <n> --body "<answer>"`, then `gh issue close <n>`, then append a context pointer (gist + link) to the map's Decisions-so-far.
+- This repository does not use the older gh CLI workflow as the primary contract for agent-system planning.
+- If the issue body or comments reference another issue, treat that as an explicit follow-up dependency rather than a default discovery step.

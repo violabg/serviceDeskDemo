@@ -164,8 +164,7 @@ Do not perform any codebase search, read, command line execution in this step.
 
 ## Gate 2 - Process Request and Handle Artifacts
 
-Execute the user's instructions before starting any planning workflow.
-Resolve `PlanName` deterministically before invoking any planning tool by following this exact order:
+Execute the user's instructions before starting any planning workflow.If the request is issue-based and the issue context is missing, unresolved, or could not be gathered, ask one targeted clarification question and stop instead of silently ending the workflow.Resolve `PlanName` deterministically before invoking any planning tool by following this exact order:
 
 1. If the user explicitly provides a plan name, or a plan name is already known from context, use it.
 2. If no plans exist, generate a new plan name.

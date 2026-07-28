@@ -21,3 +21,5 @@ minimumReleaseAgeExclude:
   - '@prisma/fetch-engine@7.9.1'
   - '@prisma/get-platform@7.9.1'
   - prisma@7.9.1
+  - '@types/node@26.1.2'
+  - shadcn@4.16.0

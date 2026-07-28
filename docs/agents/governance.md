@@ -2,18 +2,16 @@
 
 Canonical governance for the custom agentic coding system in this repository.
 
-This file defines durable cross-session operating rules. Session artifacts are not committed to the repository. They are created per session under a local gitignored `sessions/` folder, exported as a zip package, and attached to the relevant issue ticket.
-
-Older sessions may be restored locally by downloading the zip attachment from the issue ticket, extracting it into the local `sessions/` folder, and referring to the session by ID in a prompt.
+This file defines durable cross-session operating rules. Session artifacts are local, gitignored, and kept under the repository session root. They are not committed to the product codebase.
 
 ## Rule Precedence
 
 When instructions conflict, resolve them in this order:
 
-1. `AGENTS.md`
-2. Agent files under `.github/agents/`
-3. Custom skill files under `.agents/skills/`
-4. Non-custom skill files under `.github/skills/`
+1. AGENTS.md
+2. Agent files under .github/agents/
+3. Custom skill files under .agents/skills/
+4. Non-custom skill files under .github/skills/
 5. Prompt-specific ad hoc instructions
 
 If a lower-precedence source needs a stricter local rule, it may add one only when it does not contradict a higher-precedence source.
@@ -26,16 +24,16 @@ Valid approval requires both:
 
 1. An explicit user message approving the implementation plan.
 2. Approval metadata recorded in the session artifact set:
-   - `Approved: true`
-   - `Approved By`
-   - `Approved At`
-   - `Source Message`
+   - Approved: true
+   - Approved By
+   - Approved At
+   - Source Message
 
 If either element is missing, implementation must not start.
 
 ## Gate Contract Rule
 
-Main agents that control authority changes or execution flow must define explicit numbered gates using the form `Gate <n>: <name>`.
+Main agents that control authority changes or execution flow must define explicit numbered gates using the form Gate <n>: <name>.
 
 Each accepted gate must record:
 
@@ -59,28 +57,19 @@ Default workflow uses hard role isolation:
 
 Cross-role overlap is not allowed by default.
 
-### Emergency Mode
-
-Emergency mode is allowed only when the user explicitly requests it. The session artifact set must log:
-
-- who invoked emergency mode
-- why it was needed
-- scope of the override
-- time of activation
-
 ## Handoff Envelope
 
 Every agent-to-agent handoff must include the same minimum envelope:
 
-- `Session ID`
-- `From Agent`
-- `To Agent`
-- `Current Gate`
-- `Approval State`
-- `Required Artifacts`
-- `Open Questions`
-- `Blocking Risks`
-- `Definition of Done for Next Agent`
+- Session ID
+- From Agent
+- To Agent
+- Current Gate
+- Approval State
+- Required Artifacts
+- Open Questions
+- Blocking Risks
+- Definition of Done for Next Agent
 
 Free-text summaries are optional, not a substitute.
 
@@ -100,39 +89,28 @@ Do not silently edit an approved artifact in place.
 
 Session artifacts are always per session.
 
-- They live under the local `sessions/` folder, which must stay gitignored.
+- They live under the local sessions/ folder, which must stay gitignored.
 - They are not committed to this repository.
-- They are packaged and attached to the related issue ticket.
+- They are packaged and attached to the related issue ticket when the workflow uses tracker-backed sessions.
 - Repository files may reference the artifact contract, but must not act as the storage location for session evidence.
 
 ### Session ID Requirement
 
 Each user-facing agent must ask for a session ID before it starts substantive workflow steps.
 
-For GitHub-driven workflows, the canonical session ID is the GitHub issue ID resolved during intake.
+For GitHub-driven workflows, the canonical session ID is the GitHub issue number resolved during intake.
 
 - Use the issue number itself as the session ID.
-- Preferred local folder shape for GitHub-driven workflows: `sessions/<issue-number>/`.
-- If `sessions/<session-id>/` already exists locally, the agent must retrieve and reuse it.
-- If `sessions/<session-id>/` does not exist, the agent must create it before writing session artifacts.
+- Preferred local folder shape for GitHub-driven workflows: sessions/<issue-number>/.
+- If sessions/<session-id>/ already exists locally, the agent must retrieve and reuse it.
+- If sessions/<session-id>/ does not exist, the agent must create it before writing session artifacts.
 - Prompts that resume prior work should refer to the session by ID.
 
 Manual session IDs are fallback only for offline or non-ticket workflows.
 
-### Session Retrieval
+### Issue Intake Rule
 
-Older session packages may be retrieved from issue-ticket zip attachments.
-
-- Download the zip attachment from the relevant issue ticket.
-- Extract it into the local `sessions/` folder.
-- Refer to the restored session by session ID in the prompt when a workflow should resume from that package.
-- The restored local copy is a working retrieval surface, not a new durable source of truth.
-
-### Session Naming
-
-For GitHub-driven workflows, the GitHub issue ID is the session identifier and should be retrieved during intake.
-
-For offline or non-ticket workflows, the user provides or confirms the session identifier.
+For issue-driven planning and implementation work, the planner or skill must load only the requested issue by numeric ID. Do not load other issues as a general discovery step. Read additional issues only when the current issue explicitly references them or the user explicitly requests them.
 
 ## Validation Before Handoff
 
@@ -149,8 +127,8 @@ Each gate uses a hard allow-list of skills.
 - Do not load extra skills opportunistically.
 - Do not widen the skill set because a skill seems generally useful.
 - Gate contracts should name the allowed skills explicitly.
-- `caveman` is always allowed and should be used to keep prompts concise.
-- `shadcn` is allowed when the prompt is relevant to shadcn/ui, `components.json`, registries, or component composition.
+- caveman is always allowed and should be used to keep prompts concise.
+- shadcn is allowed when the prompt is relevant to shadcn/ui, components.json, registries, or component composition.
 - Any skill the user explicitly invokes is allowed and must be honored, even when it sits outside the current gate allow-list.
 - These exceptions do not permit unrelated opportunistic skill loading.
 
@@ -163,20 +141,20 @@ If an agent breaks a gate rule:
 
 The violation report must include:
 
-- `Session ID`
-- `Agent Name`
-- `Violated Rule`
-- `Evidence`
-- `Safe Next Action`
+- Session ID
+- Agent Name
+- Violated Rule
+- Evidence
+- Safe Next Action
 
 ## Domain Language Sources
 
 Use both:
 
-- `CONTEXT.md`
-- `docs/agents/domain.md`
+- CONTEXT.md
+- docs/agents/domain.md
 
-If they conflict, `CONTEXT.md` wins.
+If they conflict, CONTEXT.md wins.
 
 ## Success Metrics
 
@@ -217,4 +195,4 @@ Enforcement should harden in phases:
 
 The first phase creates fast feedback. The second phase blocks illegal transitions.
 
-See `docs/agents/enforcement-spec.md` for the Phase 1 lint contract.
+See docs/agents/enforcement-spec.md for the Phase 1 lint contract.

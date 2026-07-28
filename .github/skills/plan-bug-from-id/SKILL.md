@@ -6,26 +6,27 @@ disable-model-invocation: true
 
 # Plan Bug From Id
 
-Accept work item identifiers that match `GitHub issue numbers like 123 or #123`.
-Tracker access must use `GitHub issue tracker contract in docs/agents/issue-tracker.md; issue root is the repository issue list; canonical lookup key is the GitHub issue number; session lookup rule is sessions/<issue-number>/ for tracker-backed work; required fields are title, description, comments, labels, and any available acceptance criteria; if the user does not provide an ID, ask for one before continuing` when an external work item integration is configured.
-Custom agent tool access set: none
+Accept work item identifiers that match GitHub issue numbers like 123 or #123.
+Tracker access must use the GitHub issue tracker contract in docs/agents/issue-tracker.md. The canonical lookup key is the GitHub issue number, and the session lookup rule is sessions/<issue-number>/ for tracker-backed work.
 
-You need to plan a bug resolution based on the bug work item ID provided by the user.
-If the user doesn't provide an bug work item ID, ask for it.
+If the user does not provide a bug work item ID, ask for it before continuing.
 
-Before starting the plan creation worfklow, follow the following Gates to make sure you have all the necessary information to create a comprehensive and effective plan.
+Before starting the plan creation workflow, follow the gates needed to gather the necessary information.
 
 # Bug Information Gathering
 
-use #tool:agent/runSubagent to delegate work item gathering to a built-in agent subagent.
+Use #tool:agent/runSubagent to delegate work item gathering to a default subagent. Leave args.agentName empty.
+
+The subagent must load only the requested issue by ID. Do not load other issues unless the current issue explicitly references them or the user explicitly requests them.
+
 Use the following prompt template for the subagent:
 
 ```
-Activate agent session with id `<sessionId>`.
-For the bug <WORK_ITEM_BUG_ID>, you need to get the title, description, comments, acceptance criteria, and related work items, epics, features, and tasks. You can use the work item integration tools to get this information.
-Do not include related work items.
+Activate agent session with id <sessionId>.
+For the bug <WORK_ITEM_BUG_ID>, gather the title, description, comments, acceptance criteria, labels, and related work items. Use the GitHub issue tracker contract in docs/agents/issue-tracker.md.
+Only load the requested issue by ID. Do not load other issues unless the current issue explicitly references them or the user explicitly requests them.
 
-Attach to the session a new artifact contains all the information you have gathered in the following format:
+Attach to the session a new artifact containing all the information you have gathered in the following format:
 - title
 - description
   [convert from html to markdown format, and preserve any code blocks formatting in the description]
@@ -34,7 +35,9 @@ Attach to the session a new artifact contains all the information you have gathe
 - comments
   [convert from html to markdown format, and preserve any code blocks formatting in the comments]
 
-then tell me the name of the artifact you created, so I can read it and create the plan.
+If the requested issue cannot be resolved or the artifact is missing, ask one targeted clarification question and stop instead of silently ending the workflow.
+
+Then tell me the name of the artifact you created so I can read it and create the plan.
 ```
 
 # Pulling related knowledge
