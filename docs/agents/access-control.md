@@ -16,6 +16,8 @@ When a new application section is introduced:
    - `<section>:manage`
 4. Admin users assign those permissions to roles through the role management UI.
 
+When a new protected route or section is introduced, the seed/bootstrap workflow must run before the route is treated as available. This ensures the initial permission keys exist, the Admin role receives them, and the initial admin user inherits them through the Admin role assignment.
+
 Example: adding `tickets` to `ACCESS_SECTIONS` creates `tickets:read`, `tickets:write`, and `tickets:manage`.
 
 Do not create permissions directly from UI input. This avoids typos, orphan sections, and permissions that do not map to real application surfaces.
