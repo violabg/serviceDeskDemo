@@ -15,7 +15,6 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 - Split the skill into a router plus phase contracts under `contracts/`, so a phase loads only the rules it needs instead of the whole workflow.
 - Replaced the collapsed private-tool sanitization with a capability-token substitution map, so each generated agent states which substitute a given upstream capability uses instead of hiding ten distinct capabilities behind one phrase.
 - Removed the separate clarification-question schema template. The generated Planner already defines the per-question chat format, and the duplicate had drifted from it; the question register and answers table live in the agent contracts.
-- Made the generated Planner's structured interview conditional: it runs only when a blocking clarification remains, and keeps the full question format, logging, halt protocol, and answer-validation gate when it does run.
 - Added an `agent-session-persistence` capability covering cross-gate memory, session artifacts, and the execution report, with the session-folder files as the fallback resolution.
 - Added the `author-repo-skill` mirror so the target repository can author and rework its own skills after Bootstrap, and stopped recommending the removed `create-work-item-planning-skills` kit skill.
 - Started rendering `templates/` and `registry/` at export time from the canonical sources, so every shipped template is reproducible from a single source of truth.
