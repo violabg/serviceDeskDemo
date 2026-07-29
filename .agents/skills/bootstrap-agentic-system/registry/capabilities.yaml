@@ -1,0 +1,109 @@
+# Generated from system/registry/. Do not edit by hand.
+# Capabilities the generated system needs, mapped per agent platform.
+#
+# Essential capabilities are never dropped: when a platform has no native tool,
+# Bootstrap must install the declared fallback instead of removing the behaviour
+# from the generated agent.
+#
+# Platform entries are defaults for the Bootstrap decision register, not approvals.
+# Bootstrap still confirms exact tool names against the target repository.
+
+platforms:
+  - github-copilot
+  - claude-code
+  - cursor
+  - unknown
+
+capabilities:
+  - id: repository-search
+    essential: true
+    why: Bounded discovery of code, symbols, and call sites under a search budget.
+    tools:
+      github-copilot: [semantic_search, grep_search, file_search]
+      claude-code: [Grep, Glob]
+      cursor: [codebase_search, grep_search]
+      unknown: []
+    fallback: Ask the user for the exact search tool name and record it in the manifest before generating agents.
+
+  - id: file-editing
+    essential: true
+    why: Generated agents write plans, knowledge, and implementation changes.
+    tools:
+      github-copilot: [read_file, replace_string_in_file, create_file]
+      claude-code: [Read, Edit, Write]
+      cursor: [read_file, edit_file]
+      unknown: []
+    fallback: Generated agents emit diffs in chat for the user to apply manually.
+
+  - id: terminal-execution
+    essential: true
+    why: Validation commands, builds, and tests must be runnable by the generated agents.
+    tools:
+      github-copilot: [run_in_terminal]
+      claude-code: [Bash]
+      cursor: [run_terminal_cmd]
+      unknown: []
+    fallback: Generated agents print the exact validation commands and require the user to report results before closing a gate.
+
+  - id: knowledge-retrieval
+    essential: true
+    why: Bounded knowledge loading through the generated knowledge index.
+    tools:
+      github-copilot: []
+      claude-code: []
+      cursor: []
+      unknown: []
+    fallback: Read the knowledge index and the listed knowledge documents directly from the repository with the file-editing capability.
+
+  - id: agent-session-persistence
+    essential: true
+    why: Cross-gate memory, session artifacts, and the execution report must survive between agent turns and handoffs.
+    tools:
+      github-copilot: []
+      claude-code: []
+      cursor: []
+      unknown: []
+    fallback: >-
+      Keep all three inside the current Planning Session folder under SESSION_ROOT:
+      append-only `session-memory.md`, one file per artifact in `artifacts/`, and
+      `execution-report.md`. Use the file-editing capability to read and write them.
+
+  - id: work-item-retrieval
+    essential: true
+    why: Planning skills need the External Issue ID payload from the tracker.
+    tools:
+      github-copilot: [github-pull-request_issue_fetch]
+      claude-code: []
+      cursor: []
+      unknown: []
+    fallback: Use the local Markdown tracker contract declared in LOCAL_MARKDOWN_TRACKER_CONTRACT.
+
+  - id: visual-evidence
+    essential: false
+    why: Screenshot, mockup, and UI evidence review for visual planning and testing.
+    tools:
+      github-copilot: [view_image, screenshot_page, open_browser_page]
+      claude-code: [Read]
+      cursor: []
+      unknown: []
+    fallback: Skip the visual-evidence agent and record the omission in the manifest.
+
+  - id: subagent-delegation
+    essential: false
+    why: Bounded discovery lanes without flooding the main conversation.
+    tools:
+      github-copilot: [runSubagent]
+      claude-code: [Task]
+      cursor: []
+      unknown: []
+    fallback: Run each discovery lane inline and report that subagent delegation was unavailable.
+
+  - id: web-documentation
+    essential: false
+    why: Verifying external library or API contracts cited in a plan.
+    tools:
+      github-copilot: [fetch_webpage]
+      claude-code: [WebFetch]
+      cursor: [web_search]
+      unknown: []
+    fallback: Require the user to paste the authoritative documentation excerpt before the claim enters a plan.

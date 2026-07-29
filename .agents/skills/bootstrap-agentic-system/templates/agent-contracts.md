@@ -10,7 +10,6 @@ When drafting a planner or implementor contract, use these repository originals 
 - Role-specific agent contracts: [`agent-role-contracts.md`](agent-role-contracts.md)
 - Knowledge index schema: [`knowledge-index-schema.md`](knowledge-index-schema.md)
 - Implementation plan schema: [`plan-schema.md`](plan-schema.md)
-- Clarification question schema: [`question-schema.md`](question-schema.md)
 
 Use the original shapes as examples, then adapt fields to the target repo. Start from `agent-role-contracts.md` for concrete Planner, Implementor, Tester, Knowledge Builder, Vision, Ask, and Contract Auditor contracts; use this file for the shared root, Vision, hidden subagent, and artifact contract snippets.
 
@@ -44,8 +43,7 @@ Minimum sections:
 ## Runtime Schemas
 
 - Implementation plan schema: `<template-dir>/plan-schema.md`
-- Clarification question schema: `<template-dir>/question-schema.md`
-- Rule: cite repo-local schema paths in Planner artifacts and keep schema-required links, anchors, backlinks, approval metadata, operations, validation, risks, and per-question chat shape intact.
+- Rule: cite repo-local schema paths in Planner artifacts and keep schema-required links, anchors, backlinks, approval metadata, operations, validation, and risks intact.
 
 ## Sessions And Approval
 
@@ -152,8 +150,7 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Read the generated knowledge index before loading repository knowledge files.
 - Load only knowledge files whose `When to read` triggers match the planning task.
 - Do not bulk-load every knowledge file before selection.
-- Use `templates/question-schema.md` as the source template when asking blocking clarification questions and recording answers.
-- Present each blocking clarification in chat using the template's `Per-Question Chat Shape`; do not collapse it into an open-question summary or an ad hoc numbered reply list.
+- Present each blocking clarification in chat using the per-question format the generated Planner already defines; do not collapse it into an open-question summary or an ad hoc numbered reply list.
 - Use `templates/plan-schema.md` as the source template when producing implementation-plan.md artifacts.
 - Load `templates/plan-schema.md` immediately before drafting or repairing implementation-plan.md artifacts.
 - Preserve plan-schema-required filesystem-tree links, File Details anchors, and backlinks. If markdown diagnostics conflict with the schema, report or waive the diagnostic instead of removing required links or anchors.
@@ -281,7 +278,7 @@ Rule: do not bulk-load all knowledge files before index selection.
 
 ## Clarification Question Shape
 
-Use [`question-schema.md`](question-schema.md) when recording clarification questions and answers. The generated Planner contract must reference the target repo's local question-schema path explicitly.
+The generated Planner already defines the per-question chat format. Do not restate that format anywhere else; a second copy drifts from the first. This section governs only the artifact that records the questions and their answers.
 
 Minimum artifact shape:
 

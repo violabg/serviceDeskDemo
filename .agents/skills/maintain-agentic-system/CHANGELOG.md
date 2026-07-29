@@ -4,7 +4,18 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `1.8.0`
+- `2.0.0`
+
+## 2026-07-29
+
+### 2.0.0
+
+- Replaced the ad hoc "propose the smallest upgrade" review with an explicit three-way merge per region: the pristine baseline as `BASE`, the current template re-filled from the answers file as `THEIRS`, and the repository file as `MINE`. A region only one side changed resolves without a question; a region both sides changed always asks.
+- Added `upgrade`, `evolve`, and `audit` modes to one entrypoint, with `audit` read-only.
+- Added customization register rules, so a deviation recorded once is not re-litigated at every upgrade and an `overrides-canonical` region is never overwritten silently.
+- Defined the degraded path for systems with no baseline or answers file: every difference becomes a conflict question, and reconstructing the baseline is the first proposed operation.
+- Split the skill into a router plus contracts under `contracts/`, and removed the duplicated generated-system checklist. Maintainer now cites the Bootstrap audit contract instead of carrying a copy that drifts from it.
+- Dropped the separate clarification-question schema. The generated Planner already carries the per-question chat format, and the second copy had drifted from it, so Maintainer no longer expects or reconciles that file.
 
 ## 2026-07-27
 

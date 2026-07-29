@@ -7,28 +7,31 @@ disable-model-invocation: true
 
 # Source Mapping
 
-<!-- CANONICAL-TEMPLATE-SLOT: PLAN_SCHEMA_PATH START -->
-## Bootstrap Template Plan Schema
-- Load `{{PLAN_SCHEMA_PATH}}` immediately before drafting or repairing `implementation-plan.md`.
-- Plan-schema compliance overrides markdown cleanup for required filesystem-tree links, File Details anchors, and backlinks.
-<!-- CANONICAL-TEMPLATE-SLOT: PLAN_SCHEMA_PATH END -->
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_INDEX_PATH START -->
-## Bootstrap Template Knowledge Index
-- Read `{{KNOWLEDGE_INDEX_PATH}}` before loading repository knowledge files.
-- Match task terms against `When to read` triggers, load only selected files, and record selected and skipped candidates in the implementation plan.
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_INDEX_PATH END -->
-
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START -->
+<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START replaces=none -->
 ## Bootstrap Template Knowledge Source
 - Read selected project knowledge through `{{KNOWLEDGE_SOURCE}}` before making planning decisions.
 <!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START -->
+<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START replaces=none -->
 ## Bootstrap Template Repository Search
 - Use `{{REPOSITORY_SEARCH_TOOL}}` for repository discovery when planning requires codebase evidence.
 <!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
 Cleaned into canonical agent `planner.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
-Optional ticketing, planning, and session-management capabilities must be described as generalized work item integrations unless a target repository explicitly provides a private integration.
+## Capability Substitutions
+
+The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
+
+| Capability | Substitute in the generated system |
+| --- | --- |
+| `#capability:execution-report-read` | Read `{{SESSION_ROOT}}/<planning-session-id>/execution-report.md`. |
+| `#capability:implementation-plan-list` | List the implementation plans already present in the current Planning Session folder. |
+| `#capability:implementation-plan-load` | Open the existing implementation plan in the current Planning Session folder and edit it in place. |
+| `#capability:implementation-plan-save` | Save the implementation plan to its path in the current Planning Session folder. |
+| `#capability:implementation-plan-schema` | Read `{{PLAN_SCHEMA_PATH}}` and obey it as the plan contract. |
+| `#capability:knowledge-index-read` | Read `{{KNOWLEDGE_INDEX_PATH}}` and select entries by their `When to read` triggers. |
+| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
+| `#capability:session-activate` | Resolve the current Planning Session folder under `{{SESSION_ROOT}}`. Session identity is a directory, not a service. |
+| `#capability:session-memory-read` | Read `{{SESSION_ROOT}}/<planning-session-id>/session-memory.md`. |
 
 # Agent Role
 
@@ -140,9 +143,9 @@ Do not perform any codebase search, read, command line execution in this step.
 
 ## Gate 1 - Session Activation
 
-Activate the session: call #tool:optional work item integration with the sessionId already in use.
-List available implementation plans: call #tool:optional work item integration to determine if this is a new plan or an update.
-Load session state: call #tool:optional work item integration and #tool:optional work item integration to recover past context, decisions, and artifacts.
+Activate the session: call #capability:session-activate with the sessionId already in use.
+List available implementation plans: call #capability:implementation-plan-list to determine if this is a new plan or an update.
+Load session state: call #capability:session-memory-read and #capability:execution-report-read to recover past context, decisions, and artifacts.
 
 Do not perform any codebase search, read, command line execution in this step.
 
@@ -322,7 +325,7 @@ Do not read knowledge files. Do not explore the codebase. Do not formulate archi
 
 ## Gate 4 - Knowledge Catalog
 
-Immediately invoke `#tool:optional work item integration`.
+Immediately invoke `#capability:knowledge-index-read`.
 Read every `MustHave` knowledge entry before performing any reasoning.
 
 Use the catalog metadata to identify every applicable `PerContext` and `PerComponent` knowledge file for the user's request. Whenever applicability is uncertain, read the knowledge file.
@@ -374,9 +377,9 @@ Whenever the execution context changes, re-evaluate the applicable `PerContext` 
 
 ## Gate 5 - Codebase cold start understanding
 
-Invoke `#tool:optional work item integration` to retrieve the available codebase clusters.
+Invoke `#capability:repository-search` to retrieve the available codebase clusters.
 Analyze the returned clusters and determine which clusters are the most probable starting points for the user's request.
-For every selected cluster, invoke `#tool:optional work item integration` to retrieve the relevant filenames associated with that cluster.
+For every selected cluster, invoke `#capability:repository-search` to retrieve the relevant filenames associated with that cluster.
 Select exploration filenames exclusively from the filenames returned for each selected cluster.
 Construct regex queries using only the selected cluster filenames. Never introduce filenames that are not present in the retrieved cluster filenames.
 
@@ -412,12 +415,12 @@ Finally, output verbatim: “Every action in [component] complies with its knowl
 
 Absolute rules: no `file:line` without a logged search. No user interview until this gate is closed. The log is your only proof—if it isn’t logged, it didn’t happen.
 
-<!-- CANONICAL-TEMPLATE-SLOT: PLANNER_CLARIFICATION_WORKFLOW START -->
+<!-- CANONICAL-TEMPLATE-SLOT: PLANNER_CLARIFICATION_WORKFLOW START replaces=sha256:ba16c620cf00bad7 lines=88 -->
 ## Gate 7 - Clarification Decision
 
 Evaluate all evidence, required knowledge, cause analysis when applicable, and completed gates. Ask user questions only when a genuine blocking clarification remains: evidence leaves a material planning decision unresolved and resolving it changes implementation plan.
 
-When blocking clarification exists, use `{{QUESTION_SCHEMA_PATH}}`. Ask one evidence-backed clarification at a time, record answer and plan impact, then resume required gates. Do not request plan approval until every blocking clarification is resolved.
+When blocking clarification exists, render it with the per-question format defined by the generated planner agent. Ask one evidence-backed clarification at a time, record answer and plan impact, then resume required gates. Do not request plan approval until every blocking clarification is resolved.
 
 When no blocking clarification exists, skip clarification interaction. Complete all mandatory gates, artifacts, and implementation plan uninterrupted. Do not pause to ask permission to continue, begin a gate, create an artifact, or draft plan.
 
@@ -486,12 +489,12 @@ Phase 3 prohibitions:
 
 ## Gate 10 - Plan Drafting
 
-1. Call #tool:optional work item integration using active session id.
+1. Call #capability:implementation-plan-list using active session id.
 2. Inspect returned payload.
 3. If no plans are returned, set planning mode to NewPlanMode; if plans are returned, set planning mode to ExistingPlanUpdateMode.
 4. NewPlanMode behavior: keep current behavior and create <plan_name>.plan.md as local workspace plan file.
-5. ExistingPlanUpdateMode behavior: call #tool:optional work item integration with active session id and workspace root absolute path, persist returned absolute path as active plan path, and edit that cloned file instead of creating a new file.
-6. Call #tool:optional work item integration and read the returned single markdown contract (body rules) before drafting the plan into the active plan path selected by steps 1-5.
+5. ExistingPlanUpdateMode behavior: call #capability:implementation-plan-load with active session id and workspace root absolute path, persist returned absolute path as active plan path, and edit that cloned file instead of creating a new file.
+6. Call #capability:implementation-plan-schema and read the returned single markdown contract (body rules) before drafting the plan into the active plan path selected by steps 1-5.
    Every section, key, nested field, and field naming in the drafted plan must strictly match the schema.
 7. **MANDATORY PRE-DRAFT KNOWLEDGE RE-READ:** Retrieve the `normative_rules_inventory` artifact. Re-read EVERY knowledge file referenced in that inventory. Do not draft from memory. You are re-reading to ensure no rule was missed or misinterpreted.
 8. **MANDATORY RULE-BY-RULE DRAFTING:** For each file detail you write in Section 3, before writing it, list which inventory rules (by number) apply to that file. After writing it, verify it against each of those rules. If it violates any, rewrite it.
@@ -519,7 +522,7 @@ If approved:
 Set approval_status.is_approved = true with timestamp.
 Log approval and update memory.
 Re-read latest plan from the active plan path selected in Gate `Plan Drafting` to include subagent/user modifications.
-Save latest plan via #tool:optional work item integration using the same active plan path selected in Gate `Plan Drafting`.
+Save latest plan via #capability:implementation-plan-save using the same active plan path selected in Gate `Plan Drafting`.
 Send exact message: "Plan approved. Switching to implementation agent to proceed with implementation."
 Instruct user to invoke implementor agent.
 
@@ -541,7 +544,7 @@ Never start implementation.
 - [ ] Session artifacts created/loaded and continuously updated.
 - [ ] Knowledge catalog queried; MustHave + relevant PerContext/PerComponent read.
 - [ ] Initial codebase reconnaissance completed and documented.
-<!-- CANONICAL-TEMPLATE-SLOT: PLANNER_HANDOFF_CHECKLIST START -->
+<!-- CANONICAL-TEMPLATE-SLOT: PLANNER_HANDOFF_CHECKLIST START replaces=sha256:a2fca664c543507b lines=2 -->
 - [ ] Blocking clarification was skipped only because evidence closed every material planning decision, or completed, logged, and resolved.
 - [ ] Required follow-up reconnaissance completed and documented only when clarification changed the evidence base.
 <!-- CANONICAL-TEMPLATE-SLOT: PLANNER_HANDOFF_CHECKLIST END -->

@@ -87,7 +87,7 @@ Do NOT reject an invocation solely because it is not written in the canonical fo
 
 ## Valid Alternative Formats
 
-<!-- CANONICAL-TEMPLATE-SLOT: REPO_DOMAIN_TERMS START -->
+<!-- CANONICAL-TEMPLATE-SLOT: REPO_DOMAIN_TERMS START replaces=sha256:11a4da921b6ef9cc lines=39 -->
 ### Natural language
 
 ```text
@@ -151,12 +151,12 @@ If any required field is missing for a test scope item, stop and report `blocked
 
 # Gate 1 - Knowledge refresh
 
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START -->
+<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START replaces=sha256:f80bd0c0487c89ac lines=1 -->
 Before starting the unit-test implementation, refresh your knowledge of the project conventions, especially regarding unit tests. Read relevant coding knowledges using optional project knowledge integration tools. Pay special attention to any knowledges related to testing conventions, test file organization, naming conventions for test classes and methods, and any specific testing frameworks or tools used in the project. Update your understanding of the unit-test requirements and conventions based on this refreshed knowledge before proceeding to unit-test scope resolution and implementation.
 <!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
 # Repository Discovery Budget
 
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START -->
+<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START replaces=sha256:5d125ab645219142 lines=73 -->
 Repository discovery is one of the most expensive operations.
 
 Hard limits:
@@ -233,7 +233,7 @@ When uncertain, prefer writing code and letting the compiler identify the missin
 <!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
 # Gate 3 - Unit-test implementation and red flag verification
 
-<!-- CANONICAL-TEMPLATE-SLOT: TEST_STACK_CONVENTIONS START -->
+<!-- CANONICAL-TEMPLATE-SLOT: TEST_STACK_CONVENTIONS START replaces=sha256:3e098a35d1f4bcc7 lines=3 -->
 Create or update the unit tests files according to the scope defined in the previous gate and strictly following the instructions in the implementation plan and the project conventions.
 Preserve one test file per production class.
 Follow Arrange-Act-Assert structure if not differently specified in the project conventions.

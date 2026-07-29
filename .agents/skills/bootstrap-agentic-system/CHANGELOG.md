@@ -4,7 +4,25 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `1.19.0`
+- `2.0.0`
+
+## 2026-07-29
+
+### 2.0.0
+
+- Required every install to write a maintenance baseline: `agentic-system.answers.yaml`, a pristine `.baseline/` copy of every generated file, and a customization register in the manifest. A generated system without all three is now a blocking audit failure.
+- Added `templates/agentic-system-answers.md` so the approved slot values, capability resolutions, and generated-to-baseline path pairs are recorded machine-readably and never have to be re-interviewed.
+- Split the skill into a router plus phase contracts under `contracts/`, so a phase loads only the rules it needs instead of the whole workflow.
+- Replaced the collapsed private-tool sanitization with a capability-token substitution map, so each generated agent states which substitute a given upstream capability uses instead of hiding ten distinct capabilities behind one phrase.
+- Removed the separate clarification-question schema template. The generated Planner already defines the per-question chat format, and the duplicate had drifted from it; the question register and answers table live in the agent contracts.
+- Added an `agent-session-persistence` capability covering cross-gate memory, session artifacts, and the execution report, with the session-folder files as the fallback resolution.
+- Added the `author-repo-skill` mirror so the target repository can author and rework its own skills after Bootstrap, and stopped recommending the removed `create-work-item-planning-skills` kit skill.
+- Started rendering `templates/` and `registry/` at export time from the canonical sources, so every shipped template is reproducible from a single source of truth.
+- Shipped `registry/placeholders.yaml` and `registry/capabilities.yaml` with the skill so Bootstrap runs its decision register from a declared slot list inside the target repository.
+- Required each slot decision to inspect the declared `infer_from` evidence, state the `recommend` default, and record the inferred proposal beside the user's answer.
+- Required essential capabilities to be preserved through the declared fallback when the target platform has no native tool, instead of dropping the behaviour.
+- Fixed the generated work-item planning contract, which listed an unresolved generator expression instead of the retrieval fields to collect.
+- Added `templates/instructions/`: a root instruction router plus modular knowledge-guard and planning-session instruction files, so root instructions and scoped rules are generated from mirrors instead of drafted per repository.
 
 ## 2026-07-28
 

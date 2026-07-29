@@ -74,8 +74,7 @@ Non-negotiable rules:
 - Read the knowledge index before loading repository knowledge files.
 - Load only knowledge files whose `When to read` triggers match the task.
 - Record selected knowledge files, skipped related candidates, and rationale in the plan.
-- Use the repo-local `templates/question-schema.md` when asking blocking clarification questions.
-- Present each blocking clarification in chat using the template's `Per-Question Chat Shape`; do not collapse it into an open-question summary or an ad hoc numbered reply list.
+- Present each blocking clarification in chat using the per-question format the generated Planner already defines; do not collapse it into an open-question summary or an ad hoc numbered reply list.
 - Use the repo-local `templates/plan-schema.md` when producing `implementation-plan.md`.
 - Preserve plan-schema links, anchors, backlinks, approval metadata, operations, validation, and risks even when markdown diagnostics object.
 
@@ -86,7 +85,7 @@ Recommended gates:
 3. `Gate 2: Artifact Intake` reads existing session artifacts and normalized visual artifacts when present.
 4. `Gate 3: Requirement Decomposition` derives functional capabilities, boundaries, acceptance criteria, scenarios, ambiguities, and gaps from the request without inventing missing facts.
 5. `Gate 4: Knowledge Selection` reads the knowledge index, selects matching knowledge, and extracts a normative rule inventory from selected files only.
-6. `Gate 5: Clarification` records blocking questions with the question schema and stops until answered.
+6. `Gate 5: Clarification` records blocking questions in the clarification artifact and stops until answered.
 7. `Gate 6: Bounded Codebase Discovery` reads only the code needed to test the current hypothesis or plan decision.
 8. `Gate 7: Plan Draft` writes or updates `implementation-plan.md` from the plan schema.
 9. `Gate 8: Plan Self-Check` validates tree links, anchors, backlinks, approval metadata, operations, validation commands, and risks.

@@ -87,7 +87,6 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 - Context Glossary Path To Reference:
 - Knowledge Index Path To Reference:
 - Implementation Plan Schema Path To Reference:
-- Clarification Question Schema Path To Reference:
 - Manifest Path To Reference:
 - Prompt-Sensitive Routing Rule: route the current request to relevant agents, skills, schemas, knowledge-index entries, glossary, partials, and validation commands without bulk-loading repository facts or full role contracts
 
@@ -126,6 +125,7 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 
 | Skill Mirror | Recommendation | User Choice | Personalization Slots | Manifest Record |
 | --- | --- | --- | --- | --- |
+| `templates/skills/author-repo-skill/SKILL.md` | generate | generate | skill root, repository search tool, knowledge source, validation commands | generated |
 | `templates/skills/plan-bug-from-id/SKILL.md` | generate | generate | tracker adapter or local Markdown contract, session root, Planner name | generated |
 | `templates/skills/plan-user-story-from-id/SKILL.md` | generate | generate | tracker adapter or local Markdown contract, session root, Planner name | generated |
 | `templates/skills/user-story-analysis/SKILL.md` | ask user | undecided | work item adapter, stakeholder terminology | deferred |
@@ -137,7 +137,8 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 | Source Schema | Generated Path | Operation | Required Preservation | Planner Reference | Approval Status |
 | --- | --- | --- | --- | --- | --- |
 | `templates/plan-schema.md` | `<template-dir>/plan-schema.md` | NEW | filesystem-tree links, File Details anchors, backlinks, approval metadata, operations, validation commands, risks and rollback | required | pending |
-| `templates/question-schema.md` | `<template-dir>/question-schema.md` | NEW | blocking rule, question register, answers table, per-question chat shape, answer-choice format | required | pending |
+
+The generated Planner carries the clarification-question format in its own body. Do not plan a second file for it.
 
 Record any stronger repo-local equivalent or adaptation in the manifest, including why it replaces the source schema and which required preservation points it still satisfies.
 
@@ -156,6 +157,18 @@ Record any stronger repo-local equivalent or adaptation in the manifest, includi
 - Bootstrap Baseline Notes:
 - Unknown Version Or Snapshot Gaps:
 - Root Instructions Reference Manifest: yes | no
+
+## Maintenance Baseline
+
+- Answers File Path: `<docs-agents-dir>/agentic-system.answers.yaml`
+- Baseline Directory Path: `<docs-agents-dir>/.baseline/`
+- Operation: NEW | MODIFIED | UNMODIFIED
+- Slots Recorded: `<count>` of `<slots-used-by-the-generated-system>`
+- Capabilities Recorded: `<count>`, including every fallback substitution
+- Baseline Copies Planned: one per generated file listed under Proposed Files
+- Customization Register Rows Planned: `<count>` | none for a first install
+
+Every generated file must have a pristine baseline copy and an answers-file entry. A generated file without both is a broken maintenance baseline, not an acceptable omission.
 
 ## Failure Modes
 

@@ -6,17 +6,23 @@ disable-model-invocation: true
 
 # Source Mapping
 
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE START -->
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE START replaces=none -->
 ## Bootstrap Template Visual Artifact Storage
 - Store visual evidence artifacts in `{{VISUAL_ARTIFACT_STORAGE}}`.
 <!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE END -->
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT START -->
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT START replaces=none -->
 ## Bootstrap Template Visual Artifact Format
 - Convert visual evidence into `{{VISUAL_ARTIFACT_FORMAT}}` so non-vision agents can cite deterministic text artifacts.
 <!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT END -->
 Cleaned into canonical agent `vision.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
-Optional ticketing, planning, and session-management capabilities must be described as generalized work item integrations unless a target repository explicitly provides a private integration.
+## Capability Substitutions
+
+The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
+
+| Capability | Substitute in the generated system |
+| --- | --- |
+| `#capability:session-artifact-write` | Write `{{SESSION_ROOT}}/<planning-session-id>/artifacts/<artifact-name>.md`. |
 
 ## Mission
 
@@ -90,7 +96,7 @@ No comments.
 
 No additional text.
 
-Create a new session artifact with `#tool:optional work item integration` and save the SlimUI as the artifact content and return the artifact name.
+Create a new session artifact with `#capability:session-artifact-write` and save the SlimUI as the artifact content and return the artifact name.
 Then return:
 
 ```

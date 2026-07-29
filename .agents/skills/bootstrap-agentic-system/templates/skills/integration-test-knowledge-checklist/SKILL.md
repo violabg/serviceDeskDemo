@@ -6,16 +6,15 @@ disable-model-invocation: true
 
 # Integration Test Knowledge Checklist
 
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START -->
+<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START replaces=none -->
 Read relevant integration-test knowledge through `{{KNOWLEDGE_SOURCE}}` before drafting project-specific test guidance.
 <!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
-<!-- CANONICAL-TEMPLATE-SLOT: INTEGRATION_TEST_SCOPE START -->
+<!-- CANONICAL-TEMPLATE-SLOT: INTEGRATION_TEST_SCOPE START replaces=none -->
 Document the integration-test scope and out-of-scope boundaries: `{{INTEGRATION_TEST_SCOPE}}`.
 <!-- CANONICAL-TEMPLATE-SLOT: INTEGRATION_TEST_SCOPE END -->
-<!-- CANONICAL-TEMPLATE-SLOT: VALIDATION_COMMANDS START -->
+<!-- CANONICAL-TEMPLATE-SLOT: VALIDATION_COMMANDS START replaces=none -->
 Document the target repository validation commands: `{{VALIDATION_COMMANDS}}`.
 <!-- CANONICAL-TEMPLATE-SLOT: VALIDATION_COMMANDS END -->
-
 # Integration Test Knowledge Checklist for Integration Tester
 
 Use this checklist to generate a project-specific integration-test knowledge for Integration Tester.
@@ -39,7 +38,7 @@ Use this checklist to generate a project-specific integration-test knowledge for
 
 Example snippet:
 
-<!-- CANONICAL-TEMPLATE-SLOT: TEST_STACK_CONVENTIONS START -->
+<!-- CANONICAL-TEMPLATE-SLOT: TEST_STACK_CONVENTIONS START replaces=sha256:869567a4edd0770d lines=14 -->
 ```yaml
 ---
 title: Orders API Integration Test Knowledge

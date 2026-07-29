@@ -26,7 +26,6 @@ The Core System batch should normally include:
 | `<bootstrap-changelog-snapshot-path>` | Yes | Repo-local copy of the installed Bootstrap skill `CHANGELOG.md` used as the maintenance baseline when the original installed skill path is unavailable later. |
 | `<knowledge-index-path>` | Yes | Index-first routing file with knowledge entries and `When to read` triggers. |
 | `<template-dir>/plan-schema.md` | Yes | Implementation-plan artifact schema copied or adapted from this skill. |
-| `<template-dir>/question-schema.md` | Yes | Clarification artifact schema copied or adapted from this skill. |
 | `<template-dir>/artifact-gates.md` | Usually | Gate, approval, handoff, and session artifact contract. |
 | `<context-glossary-path>` | When glossary-worthy terms are resolved | Repository code/domain vocabulary and source-of-truth boundaries. |
 
@@ -60,6 +59,7 @@ Present the full Canonical Template Mirror skill inventory and let the user choo
 
 | File or Skill | Required | Purpose |
 | --- | --- | --- |
+| `author-repo-skill` | Recommended | Author or rework a repository-local skill after Bootstrap, so later procedures do not get grafted onto agent contracts. |
 | `plan-bug-from-id` | User-selected | Plan from an existing bug work item ID. |
 | `plan-user-story-from-id` | User-selected | Plan from an existing user-story work item ID. |
 | `user-story-analysis` | User-selected | Analyze user-story completeness, ambiguity, edge cases, and risks. |
@@ -78,7 +78,7 @@ Use later batches for workflows that are valuable but not required for the first
 
 | File or Skill | When to Add |
 | --- | --- |
-| Refinement or regeneration through `create-work-item-planning-skills` | The team wants to revise repository-local `plan-bug-from-id` and `plan-user-story-from-id` after Bootstrap. |
+| Refinement of the generated `plan-bug-from-id` and `plan-user-story-from-id` through the installed `author-repo-skill` | The team wants to revise the repository-local planning skills after Bootstrap. |
 | Repository-local create-bug or create-user-story skills | The team repeatedly creates work items from clarified requirements or QA findings. Prefer `create-work-item-from-description` when available. |
 | Business-logic gap detector skill | The team wants an explicit test-first weakness-finding workflow for production logic. |
 | Integration-test knowledge checklist skill | The team needs repeatable creation or maintenance of project-specific integration-test knowledge. |
@@ -108,16 +108,20 @@ CONTEXT.md                         # only when glossary-worthy repo terms are re
     vision/                        # when selected
     ask/                           # optional
     shared/                        # cross-role or repo-wide modules
+.github/instructions/              # or .cursor/rules/, docs/agents/instructions/, platform equivalent
+  knowledge-guard.instructions.md
+  planning-sessions.instructions.md
 .github/skills/                    # or platform equivalent
   <repo-skill>/SKILL.md
 docs/agents/
   agentic-system-manifest.md
+  agentic-system.answers.yaml         # machine-readable record of every approved slot value
+  .baseline/                          # pristine copy of every generated file, mirroring its repo path
   skill-changelogs/
     bootstrap-agentic-system.CHANGELOG.md
   knowledge-index.md
   templates/
     plan-schema.md
-    question-schema.md
     artifact-gates.md
 sessions/                          # or approved external session root
   README.md                        # optional, documents current-session-only rule
@@ -150,15 +154,18 @@ sessions/                          # or approved external session root
 
 Before asking for approval or handing off, confirm:
 
-- Root instructions name every generated agent, generated skill location, template directory, session root, glossary path when present, knowledge-index path, plan-schema path, question-schema path, agentic-system manifest path, and Bootstrap changelog snapshot path.
+- Root instructions name every generated agent, generated skill location, template directory, session root, glossary path when present, knowledge-index path, plan-schema path, agentic-system manifest path, and Bootstrap changelog snapshot path.
 - Root instructions are prompt-sensitive and navigational, not a monolithic fact dump: they tell agents what to consult for the current request and avoid bulk-loading repository facts or full role contracts.
 - The agentic-system manifest records the Bootstrap skill version used, the Bootstrap contract version applied through, the installed Bootstrap skill changelog path, the repo-local Bootstrap changelog snapshot path, and the generated system paths Maintainer needs for future changelog-delta audits.
+- The answers file records every slot the generated system uses, how each value was settled, the resolved capability map, and the generated-path-to-baseline-path pairs.
+- The baseline directory holds one pristine copy per generated file, so a later maintenance run can tell a repository customization apart from an untouched baseline without guessing.
+- The manifest carries a customization register, and every deliberate deviation from the generated baseline has a row there before handoff.
 - Each generated main agent file explains which non-mirrored extension partials, if any, are loaded selectively and which shared or cross-role dependency partials must also be loaded when relevant.
 - Every generated agent declares the baseline tool surface from `agent-role-contracts.md` or records an approved reduction.
 - Discovered MCP or platform integrations are assigned to the relevant agent or generated skill, or omitted with a reason.
 - Generated files preserve Canonical Template Mirror bodies outside approved Personalization Slots, and final runtime files do not contain source-only slot marker comments.
 - Manifest records generated, skipped, and deferred Canonical Template Mirror skills with reasons.
-- Planner references the glossary path when present, knowledge-index path, plan-schema path, and question-schema path explicitly.
+- Planner references the glossary path when present, knowledge-index path, and plan-schema path explicitly, and defines the per-question clarification format itself rather than deferring to a second file.
 - Implementor requires approved plan metadata before editing and validates the touched behavior after the first edit.
 - Tester cannot modify production code unless the repo explicitly uses a combined implementation/testing role and the user approved that boundary.
 - Knowledge Builder can create or refine the knowledge index and propose glossary terms without editing application code.

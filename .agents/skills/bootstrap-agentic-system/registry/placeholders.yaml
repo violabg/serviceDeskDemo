@@ -1,0 +1,436 @@
+# Generated from system/registry/. Do not edit by hand.
+# Single source of truth for Personalization Slots.
+#
+# Consumed by scripts/render-public-templates.ts and
+# scripts/validate-canonical-template-mirrors.ts, and rendered into the
+# Bootstrap skill's registry/ folder at export time so Bootstrap can run the
+# decision register inside the target repository.
+#
+# kind:
+#   value - inline `{{NAME}}` substitution
+#   block - `<!-- CANONICAL-TEMPLATE-SLOT: NAME START ... -->` block
+#   both  - used in both forms
+#
+# recommend  - the default proposal Bootstrap states when it asks the question.
+# infer_from - target-repository evidence Bootstrap inspects before proposing.
+#
+# A recommendation is never an approval: Bootstrap asks the question, shows the
+# evidence it found, states the recommendation, and waits for the user's answer.
+
+placeholders:
+  - name: AGENT_PREFIX
+    kind: value
+    question: Which prefix should every generated custom agent name carry?
+    fill_from: user
+    recommend: A short slug derived from the repository name, for example `shop-` for `shop-api`.
+    infer_from:
+      - repository folder name
+      - existing agent file names under .github/agents/, .claude/agents/, or .cursor/rules/
+
+  - name: TARGET_PLATFORM
+    kind: value
+    question: Which agent platform hosts the generated system?
+    fill_from: user
+    recommend: The platform whose customization folder already exists; when several exist, the one with the most recent commits.
+    infer_from:
+      - .github/agents/, .github/chatmodes/, .github/copilot-instructions.md
+      - .claude/, CLAUDE.md
+      - .cursor/rules/
+
+  - name: VISION_AGENT_NAME
+    kind: value
+    question: What is the generated visual-evidence agent called on the target platform?
+    fill_from: user
+    recommend: "`{{AGENT_PREFIX}}vision`, matching the naming of the other generated agents."
+    infer_from:
+      - resolved AGENT_PREFIX
+      - existing agent naming style in the platform folder
+
+  - name: TRACKER_ADAPTER
+    kind: both
+    question: Which work-item tracker adapter should generated planning skills use?
+    fill_from: discovery
+    capability: work-item-retrieval
+    recommend: GitHub Issues when the origin remote is github.com and issue templates exist; otherwise the local Markdown adapter.
+    infer_from:
+      - git remote origin host
+      - .github/ISSUE_TEMPLATE/
+      - Jira, Linear, or Azure Boards references in CONTRIBUTING.md or PR templates
+      - existing docs/issues/ or similar Markdown issue folder
+
+  - name: LOCAL_MARKDOWN_TRACKER_CONTRACT
+    kind: both
+    question: When no external tracker exists, which local Markdown issue contract applies?
+    fill_from: user
+    recommend: "`docs/issues/<external-issue-id>.md` with front matter carrying id, type, title, and status."
+    infer_from:
+      - existing Markdown issue, story, or ticket folders
+      - front matter fields already used by those files
+
+  - name: WORK_ITEM_RETRIEVAL
+    kind: both
+    question: Which exact retrieval tools are approved for reading a work item?
+    fill_from: user
+    capability: work-item-retrieval
+    recommend: The exact issue-read tool of the selected adapter only; no search or write tools.
+    infer_from:
+      - configured MCP servers in .vscode/mcp.json, .mcp.json, or .cursor/mcp.json
+      - tracker chosen for TRACKER_ADAPTER
+
+  - name: SESSION_ACTIVATION
+    kind: block
+    question: How is a planning session activated in the target repository?
+    fill_from: user
+    recommend: A planning session starts when the user supplies an External Issue ID, and stays scoped to that ID until it is closed.
+    infer_from:
+      - existing session, worklog, or planning folders
+      - branch naming convention in recent git history
+
+  - name: SESSION_ARTIFACT_STORAGE
+    kind: block
+    question: Where are planning session artifacts stored?
+    fill_from: user
+    recommend: "`{{SESSION_ROOT}}/<planning-session-id>/`, one folder per session, artifacts never written outside it."
+    infer_from:
+      - resolved SESSION_ROOT
+      - existing artifact folders under docs/
+
+  - name: SESSION_ROOT
+    kind: value
+    question: What is the planning session root path?
+    fill_from: user
+    recommend: "`docs/sessions` when docs/ already holds project documentation; otherwise `.agent/sessions`."
+    infer_from:
+      - presence and layout of docs/
+      - existing generated or agent-owned folders
+
+  - name: KNOWLEDGE_SOURCE
+    kind: both
+    question: Where do generated agents read repository knowledge from?
+    fill_from: discovery
+    capability: knowledge-retrieval
+    recommend: The knowledge documents listed in the generated knowledge index, read through the file-reading capability.
+    infer_from:
+      - docs/, ADR folders, CONTEXT.md, architecture sections of README.md
+      - any knowledge or documentation MCP server in the platform config
+
+  - name: KNOWLEDGE_INDEX_PATH
+    kind: both
+    question: What is the generated knowledge index path?
+    fill_from: user
+    recommend: "`docs/agents/knowledge-index.md`."
+    infer_from:
+      - existing docs/agents/ or equivalent agent documentation folder
+
+  - name: CONTEXT_GLOSSARY_PATH
+    kind: both
+    question: What is the context glossary path?
+    fill_from: user
+    recommend: The existing `CONTEXT.md` or `GLOSSARY.md` when present; otherwise `docs/agents/context-glossary.md`.
+    infer_from:
+      - CONTEXT.md, GLOSSARY.md, docs/glossary.md
+
+  - name: PLAN_SCHEMA_PATH
+    kind: both
+    question: What is the implementation plan schema path?
+    fill_from: user
+    recommend: "`docs/agents/plan-schema.md`, beside the knowledge index."
+    infer_from:
+      - resolved KNOWLEDGE_INDEX_PATH folder
+
+  - name: ARTIFACT_GATES_PATH
+    kind: both
+    question: What is the artifact and gate conventions path?
+    fill_from: user
+    recommend: "`docs/agents/artifact-gates.md`, beside the other generated contracts."
+    infer_from:
+      - resolved PLAN_SCHEMA_PATH folder
+
+  - name: VALIDATION_COMMANDS
+    kind: both
+    question: Which commands validate a change in the target repository?
+    fill_from: discovery
+    capability: terminal-execution
+    recommend: The lint, typecheck, test, and build commands the CI workflow runs, in the same order.
+    infer_from:
+      - package.json scripts, Makefile targets, pyproject.toml, build.gradle, *.csproj
+      - CI workflow steps under .github/workflows/
+      - CONTRIBUTING.md validation section
+
+  - name: APPROVED_MCP_TOOLS
+    kind: value
+    question: Which exact MCP or platform tool names are approved for this agent?
+    fill_from: user
+    recommend: Only tools already configured in the repository, named exactly, and only where the agent's role needs them; leave empty when unsure.
+    infer_from:
+      - .vscode/mcp.json, .mcp.json, .cursor/mcp.json
+      - tool lists in existing agent files
+
+  - name: REPOSITORY_SEARCH_TOOL
+    kind: both
+    question: Which tool performs bounded repository search on the target platform?
+    fill_from: discovery
+    capability: repository-search
+    recommend: The platform default listed for the repository-search capability in capabilities.yaml.
+    infer_from:
+      - resolved TARGET_PLATFORM
+      - search tools referenced by existing agent files
+
+  - name: VISUAL_EVIDENCE_STRATEGY
+    kind: block
+    question: How is visual evidence captured and reviewed?
+    fill_from: user
+    capability: visual-evidence
+    recommend: Skip visual evidence unless the repository ships UI code or already stores screenshots and mockups.
+    infer_from:
+      - UI folders, component libraries, or frontend frameworks in the dependency manifest
+      - existing screenshot, mockup, or design folders
+      - Playwright, Cypress, or visual regression config
+
+  - name: VISUAL_ARTIFACT_FORMAT
+    kind: both
+    question: Which format do visual evidence artifacts use?
+    fill_from: user
+    capability: visual-evidence
+    recommend: PNG captures paired with a short Markdown note describing what the capture proves.
+    infer_from:
+      - formats of existing screenshots or design exports
+
+  - name: VISUAL_ARTIFACT_STORAGE
+    kind: both
+    question: Where are visual evidence artifacts stored?
+    fill_from: user
+    capability: visual-evidence
+    recommend: "`{{SESSION_ARTIFACT_STORAGE}}/visual/`, so visual evidence stays inside the owning session."
+    infer_from:
+      - resolved SESSION_ARTIFACT_STORAGE
+      - existing image or asset folders
+
+  - name: REPO_DOMAIN_TERMS
+    kind: block
+    question: Which repository domain terms should replace the mirror's example vocabulary?
+    fill_from: discovery
+    recommend: The recurring domain nouns of the codebase, taken from the glossary when one exists, otherwise from entity, model, and use-case names.
+    infer_from:
+      - CONTEXT.md or glossary entries
+      - entity, model, aggregate, and use-case class or folder names
+      - repeated vocabulary in README.md and ADRs
+
+  - name: REPO_KNOWLEDGE_PATHS
+    kind: both
+    question: Which paths hold repository knowledge documents?
+    fill_from: discovery
+    recommend: The documentation folders that already carry durable rules, such as docs/ and the ADR folder; exclude changelogs and generated output.
+    infer_from:
+      - docs/, adr/, rfc/, architecture/ folders
+      - documentation paths referenced from README.md
+
+  - name: TEST_STACK_CONVENTIONS
+    kind: both
+    question: Which test stack and conventions apply in the target repository?
+    fill_from: discovery
+    recommend: The test framework, assertion library, and mocking library already declared in the dependency manifest, plus the existing test file naming and folder layout.
+    infer_from:
+      - devDependencies, pytest.ini, *.csproj, build.gradle, go.mod
+      - existing test folder layout and file naming
+      - test setup helpers, fixtures, or factories
+
+  - name: INTEGRATION_TEST_SCOPE
+    kind: both
+    question: What is in and out of scope for integration tests?
+    fill_from: user
+    recommend: Cover the repository's entry points with real internal wiring and stubbed third-party boundaries; keep unit-level logic and external vendor systems out of scope.
+    infer_from:
+      - existing integration or e2e test folders
+      - test-host, fixture, or container setup helpers
+
+  - name: OUTPUT_LANGUAGE
+    kind: value
+    question: Which language do generated agents answer in?
+    fill_from: user
+    recommend: The language the repository documentation is written in; English when documentation is mixed.
+    infer_from:
+      - language of README.md and docs/
+      - language of recent commit messages and issue templates
+
+  - name: PLANNER_SCOPE_RULES
+    kind: block
+    question: Which planning scope rules apply to the target repository?
+    fill_from: user
+    recommend: Plan only the current External Issue ID, keep changes inside the touched modules, and raise anything else as a follow-up instead of expanding the plan.
+    infer_from:
+      - CONTRIBUTING.md review rules
+      - pull request template checklist
+      - module or package boundaries in the repository layout
+
+  - name: WORK_ITEM_ID_FORMAT
+    kind: both
+    question: What is the External Issue ID format and validation rule?
+    fill_from: user
+    recommend: "`#<number>` for GitHub Issues, `<PROJECT>-<number>` for Jira or Linear, and the local file stem for the Markdown adapter."
+    infer_from:
+      - resolved TRACKER_ADAPTER
+      - issue references in recent commit messages and branch names
+
+  - name: WORK_ITEM_PLANNING_CONTRACT
+    kind: block
+    question: Which work-item planning contract clauses apply to generated planning skills?
+    fill_from: generator
+    recommend: Keep the shipped contract wording; change it only with explicit user approval recorded in the manifest.
+    infer_from: []
+
+  - name: PLANNER_CLARIFICATION_WORKFLOW
+    kind: block
+    question: How does the generated Planner handle blocking clarifications?
+    fill_from: generator
+    recommend: Keep the shipped clarification workflow; change it only with explicit user approval recorded in the manifest.
+    infer_from: []
+
+  - name: PLANNER_HANDOFF_CHECKLIST
+    kind: block
+    question: What must the generated Planner hand off to Implementor?
+    fill_from: generator
+    recommend: Keep the shipped handoff checklist; change it only with explicit user approval recorded in the manifest.
+    infer_from: []
+
+  - name: REPO_NAME
+    kind: value
+    question: Which repository name should the root instructions announce?
+    fill_from: discovery
+    recommend: The name field of the package manifest; otherwise the git remote repository name.
+    infer_from:
+      - package.json, pyproject.toml, Cargo.toml, *.csproj
+      - git remote origin path
+      - repository folder name
+
+  - name: AGENT_ROSTER
+    kind: value
+    question: Which generated agents should the root instructions route to?
+    fill_from: generator
+    recommend: One line per agent approved in the generation batch, naming the agent and the request type that should reach it.
+    infer_from: []
+
+  - name: AGENT_ROOT
+    kind: value
+    question: Where do generated agent files live?
+    fill_from: user
+    recommend: The agent folder of the selected platform, for example `.github/agents/`.
+    infer_from:
+      - existing .github/agents/, .claude/agents/, or .cursor/rules/
+      - resolved TARGET_PLATFORM
+
+  - name: SKILL_ROOT
+    kind: value
+    question: Where do generated repository skills live?
+    fill_from: user
+    recommend: The skill folder of the selected platform, for example `.github/skills/`.
+    infer_from:
+      - existing skill folders in the platform customization directory
+      - resolved TARGET_PLATFORM
+
+  - name: INSTRUCTION_ROOT
+    kind: value
+    question: Where do modular instruction files live?
+    fill_from: user
+    recommend: "`.github/instructions/` on GitHub Copilot, `.cursor/rules/` on Cursor; otherwise `docs/agents/instructions/`."
+    infer_from:
+      - existing .github/instructions/ or .cursor/rules/
+      - resolved TARGET_PLATFORM
+
+  - name: MANIFEST_PATH
+    kind: value
+    question: Where is the agentic-system manifest stored?
+    fill_from: user
+    recommend: "`docs/agents/agentic-system-manifest.md`, beside the knowledge index."
+    infer_from:
+      - resolved KNOWLEDGE_INDEX_PATH folder
+
+  - name: KNOWLEDGE_FILE_GLOB
+    kind: value
+    question: Which paths does the knowledge-file guard apply to?
+    fill_from: user
+    recommend: The glob covering the knowledge files listed in the knowledge index, for example `docs/knowledge/**/*.md`.
+    infer_from:
+      - folders holding the files listed in the knowledge index
+      - existing *.knowledge.md or docs/knowledge/ conventions
+
+# Placeholders each Canonical Template Mirror must expose after overlay.
+required:
+  agents:
+    default:
+      - APPROVED_MCP_TOOLS
+      - REPOSITORY_SEARCH_TOOL
+      - KNOWLEDGE_SOURCE
+    planner.agent.md:
+      - APPROVED_MCP_TOOLS
+      - KNOWLEDGE_INDEX_PATH
+      - PLAN_SCHEMA_PATH
+      - REPOSITORY_SEARCH_TOOL
+      - KNOWLEDGE_SOURCE
+    knowledge-builder.agent.md:
+      - APPROVED_MCP_TOOLS
+      - KNOWLEDGE_INDEX_PATH
+      - CONTEXT_GLOSSARY_PATH
+      - REPO_KNOWLEDGE_PATHS
+      - REPOSITORY_SEARCH_TOOL
+      - KNOWLEDGE_SOURCE
+    vision.agent.md:
+      - APPROVED_MCP_TOOLS
+      - VISUAL_ARTIFACT_FORMAT
+      - VISUAL_ARTIFACT_STORAGE
+  skills:
+    default:
+      - KNOWLEDGE_SOURCE
+      - REPOSITORY_SEARCH_TOOL
+    author-repo-skill:
+      - SKILL_ROOT
+      - REPOSITORY_SEARCH_TOOL
+      - KNOWLEDGE_SOURCE
+      - VALIDATION_COMMANDS
+    plan-bug-from-id:
+      - TRACKER_ADAPTER
+      - LOCAL_MARKDOWN_TRACKER_CONTRACT
+      - WORK_ITEM_ID_FORMAT
+      - WORK_ITEM_RETRIEVAL
+      - SESSION_ROOT
+    plan-user-story-from-id:
+      - TRACKER_ADAPTER
+      - LOCAL_MARKDOWN_TRACKER_CONTRACT
+      - WORK_ITEM_ID_FORMAT
+      - WORK_ITEM_RETRIEVAL
+      - SESSION_ROOT
+    integration-test-knowledge-checklist:
+      - VALIDATION_COMMANDS
+      - TEST_STACK_CONVENTIONS
+      - INTEGRATION_TEST_SCOPE
+      - KNOWLEDGE_SOURCE
+  instructions:
+    default: []
+    AGENTS.md:
+      - REPO_NAME
+      - AGENT_ROSTER
+      - AGENT_ROOT
+      - SKILL_ROOT
+      - INSTRUCTION_ROOT
+      - KNOWLEDGE_INDEX_PATH
+      - CONTEXT_GLOSSARY_PATH
+      - SESSION_ROOT
+      - PLAN_SCHEMA_PATH
+      - ARTIFACT_GATES_PATH
+      - VALIDATION_COMMANDS
+      - MANIFEST_PATH
+    knowledge-guard.instructions.md:
+      - KNOWLEDGE_FILE_GLOB
+      - KNOWLEDGE_SOURCE
+      - KNOWLEDGE_INDEX_PATH
+    planning-sessions.instructions.md:
+      - SESSION_ROOT
+      - WORK_ITEM_ID_FORMAT
+      - PLAN_SCHEMA_PATH
+      - ARTIFACT_GATES_PATH
+
+# Mirrors whose tool surface must carry {{APPROVED_MCP_TOOLS}}.
+approved_tools_required:
+  agents: all
+  skills: []
+  instructions: []
