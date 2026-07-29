@@ -19,7 +19,7 @@ The Core System batch should normally include:
 | `<agent-dir>/<prefix>-implementor.agent.md` | Yes | Implementation role that edits only from an approved plan and validates the touched behavior. |
 | `<agent-dir>/<prefix>-tester.agent.md` | Yes | Test role for approved test strategy, integration tests, or repo-specific validation. |
 | `<agent-dir>/<prefix>-knowledge-builder.agent.md` | Yes | Read-only knowledge role that creates or refines the knowledge index and suggests glossary terms. |
-| `<agent-dir>/<prefix>-ask.agent.md` | Optional | Q&A-only role for knowledge-grounded answers without implementation authority. |
+| `<agent-dir>/<prefix>-ask.agent.md` | Yes | Q&A-only role for knowledge-grounded answers without implementation authority. |
 | `<agent-dir>/<prefix>-contract-auditor.agent.md` | Optional hidden | Read-only generated-file auditor for file-plan and contract adherence. |
 | `<agent-dir>/<prefix>-partials/` | Optional | Additive prompt-scoped instruction modules for repo-specific extensions or custom roles without Canonical Template Mirrors. They must not replace mirrored non-slot content unless the user explicitly approves that relocation. |
 | `<manifest-path>` | Yes | Version provenance ledger that records the Bootstrap skill version, Bootstrap contract applied-through version, installed skill changelog source, repo-local snapshot path, and later maintenance history. |
@@ -98,7 +98,7 @@ CONTEXT.md                         # only when glossary-worthy repo terms are re
   <prefix>-tester.agent.md
   <prefix>-knowledge-builder.agent.md
   <prefix>-vision.agent.md         # when selected
-  <prefix>-ask.agent.md            # optional
+  <prefix>-ask.agent.md
   <prefix>-contract-auditor.agent.md # optional hidden
   <prefix>-partials/
     planner/
@@ -165,6 +165,7 @@ Before asking for approval or handing off, confirm:
 - Discovered MCP or platform integrations are assigned to the relevant agent or generated skill, or omitted with a reason.
 - Generated files preserve Canonical Template Mirror bodies outside approved Personalization Slots, and final runtime files do not contain source-only slot marker comments.
 - Manifest records generated, skipped, and deferred Canonical Template Mirror skills with reasons.
+- Core System includes Ask alongside Planner, Implementor, Tester or Integration Tester, Knowledge Builder, and root instructions unless the user explicitly approved a narrower first install before generation.
 - Planner references the glossary path when present, knowledge-index path, and plan-schema path explicitly, and defines the per-question clarification format itself rather than deferring to a second file.
 - Implementor requires approved plan metadata before editing and validates the touched behavior after the first edit.
 - Tester cannot modify production code unless the repo explicitly uses a combined implementation/testing role and the user approved that boundary.

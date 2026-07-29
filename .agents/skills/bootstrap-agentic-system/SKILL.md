@@ -15,7 +15,7 @@ Bootstrap must not implement application features, edit product code, modify dat
 
 Create a small, durable agent workflow that prevents the repository's likely costly failures in planning, knowledge loading, implementation handoff, validation, and maintenance.
 
-The generated system must be repo-specific, approval-gated, template-backed, and maintainable. It must include Planner, Implementor, Tester or Integration Tester, Knowledge Builder, and root instructions unless the user explicitly approves a narrower system before generation. Knowledge Builder is mandatory in the first generated agent batch unless the user stops Bootstrap before generation.
+The generated system must be repo-specific, approval-gated, template-backed, and maintainable. It must include Planner, Implementor, Tester or Integration Tester, Knowledge Builder, Ask, and root instructions unless the user explicitly approves a narrower system before generation. Knowledge Builder and Ask are mandatory in the first generated agent batch unless the user stops Bootstrap before generation.
 
 Keep Bootstrap as one public orchestrator. Use internal scout lanes, decision registers, file plans, batch approvals, and audits to keep the workflow understandable; do not split the initial user-facing workflow into separate public entrypoints.
 

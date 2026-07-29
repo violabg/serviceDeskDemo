@@ -4,9 +4,14 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `2.0.0`
+- `3.0.0`
 
 ## 2026-07-29
+
+### 3.0.0
+
+- Made the Ask agent part of the required Core System batch by default, alongside Planner, Implementor, Tester or Integration Tester, Knowledge Builder, and root instructions.
+- Made Phase G treat a missing Ask agent as a blocking contract failure unless the user explicitly approved a narrower first install before generation.
 
 ### 2.0.0
 

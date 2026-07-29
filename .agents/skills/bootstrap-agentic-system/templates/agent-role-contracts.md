@@ -11,7 +11,7 @@ Use these templates when generating role-specific agents that do not have Canoni
 | Tester | Yes | Required | Test plan, tests or validation report | Redesign production code or widen beyond approved test scope. |
 | Knowledge Builder | Yes | Required | Knowledge index updates, knowledge entries, glossary candidates | Modify application code or bulk-write unsupported knowledge. |
 | Vision | Yes when selected | Conditional | Deterministic text artifact from images | Infer unstated requirements from images. |
-| Ask | Yes | Optional | Knowledge-grounded answer | Implement, refactor, or create project code. |
+| Ask | Yes | Required | Knowledge-grounded answer | Implement, refactor, or create project code. |
 | Contract Auditor | No | Optional | Contract pass/fail report | Edit files or ask the user directly. |
 
 ## Common Contract Frame
