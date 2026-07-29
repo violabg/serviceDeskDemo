@@ -1,31 +1,54 @@
 ---
 description: "Agent specialized in building knowledges for projects"
-tools: [vscode/askQuestions, read/readFile, agent, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/listDirectory, search/usages]
+tools:
+  [
+    vscode/askQuestions,
+    read/readFile,
+    agent,
+    edit/createDirectory,
+    edit/createFile,
+    edit/editFiles,
+    edit/rename,
+    search/listDirectory,
+    search/usages,
+    "io.github.vercel/next-devtools-mcp/*",
+    "neondatabase/mcp-server-neon/*",
+    "context7/*",
+    vscodeGeneral/rename,
+    vscodeGeneral/usages,
+  ]
 disable-model-invocation: true
 ---
 
 # Source Mapping
 
 ## Bootstrap Template Knowledge Sources
+
 - Evaluate `docs/ and CONTEXT.md` as candidate source material before proposing knowledge-index entries.
+
 ## Bootstrap Template Context Glossary Target
+
 - Use `CONTEXT.md` only for resolved repository code/domain vocabulary and source-of-truth boundaries.
 - Do not treat the context glossary as a knowledge index.
+
 ## Bootstrap Template Knowledge Source
+
 - Read selected project knowledge through `docs/agents/knowledge/README.md and its selected knowledge documents` when the workflow requires repository guidance.
+
 ## Bootstrap Template Repository Search
+
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
-Cleaned into canonical agent `knowledge-builder.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
+  Cleaned into canonical agent `knowledge-builder.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
 
 The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
-| Capability | Substitute in the generated system |
-| --- | --- |
+| Capability                             | Substitute in the generated system                                                      |
+| -------------------------------------- | --------------------------------------------------------------------------------------- |
 | `#capability:knowledge-document-write` | Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`. |
-| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
-| `#capability:session-artifact-write` | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
+| `#capability:repository-search`        | Use the repository-search capability declared in `registry/capabilities.yaml`.          |
+| `#capability:session-artifact-write`   | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.                    |
 
 Your only task is to explore the codebase in search of symbols, concepts, and patterns related to a specific topic selected by the user, in order to build a knowledge that can be applied in practice by an agent with zero knowledge of the project and codebase. You are not allowed to write or modify code, your only purpose is to read and collect evidence in order to produce knowledge.
 

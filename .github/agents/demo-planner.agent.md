@@ -13,7 +13,12 @@ tools:
     search/listDirectory,
     search/textSearch,
     search/usages,
-    "mcp_github_mcp_s2_issue_read",
+    "github/*",
+    "io.github.vercel/next-devtools-mcp/*",
+    "neondatabase/mcp-server-neon/*",
+    "io.github.upstash/context7/*",
+    vscodeGeneral/rename,
+    vscodeGeneral/usages,
   ]
 agents: [agent, "demo-vision"]
 disable-model-invocation: true

@@ -14,8 +14,8 @@
 - Bootstrap Skill Version Used: `2.0.0`
 - Bootstrap Contract Applied Through: `2.0.0`
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
-- Maintain Skill Version Last Applied: none
-- Last Maintenance Date: none
+- Maintain Skill Version Last Applied: `2.0.0`
+- Last Maintenance Date: 2026-07-29
 
 ## Generated System Paths
 
@@ -56,6 +56,7 @@
 - `templates/agents/implementor.agent.md` to `.github/agents/demo-implementor.agent.md`
 - `templates/agents/integration-tester.agent.md` to `.github/agents/demo-integration-tester.agent.md`
 - `templates/agents/knowledge-builder.agent.md` to `.github/agents/demo-knowledge-builder.agent.md`
+- `templates/agents/ask.agent.md` to `.github/agents/demo-ask.agent.md`
 - `templates/agents/vision.agent.md` to `.github/agents/demo-vision.agent.md`
 - `templates/skills/plan-bug-from-id/SKILL.md` to `.github/skills/plan-bug-from-id/SKILL.md`
 - `templates/skills/plan-user-story-from-id/SKILL.md` to `.github/skills/plan-user-story-from-id/SKILL.md`
@@ -64,7 +65,6 @@
 
 ### Skipped
 
-- `templates/agents/ask.agent.md`: not selected for the first install.
 - `templates/skills/author-repo-skill/SKILL.md`: not selected for the first install.
 - `templates/skills/business-logic-gap-detector/SKILL.md`: not selected for the first install.
 
@@ -81,14 +81,17 @@
 
 ## Customization Register
 
-No deliberate non-slot canonical wording changes, relocations, or tool reductions were approved during this first install. Repository-specific slot values are recorded in `docs/agents/agentic-system.answers.yaml`.
+The following deliberate deviations are repository-owned and must be preserved on future maintenance runs unless explicitly changed.
 
 | ID | Target File | Region | Kind | Reason | Upstream Relation | Survives Upgrade | Last Verified Version |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| none | n/a | n/a | n/a | First install has no non-slot deviations. | n/a | n/a | `2.0.0` |
+| `demo-planner-tools` | `.github/agents/demo-planner.agent.md` | frontmatter `tools` | `modified-rule` | User customized the planner tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `2.0.0` |
+| `demo-knowledge-builder-tools` | `.github/agents/demo-knowledge-builder.agent.md` | frontmatter `tools` | `modified-rule` | User customized the knowledge-builder tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `2.0.0` |
+| `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `2.0.0` |
 
 ## Maintenance History
 
 | Date | Maintain Skill Version | Bootstrap Contract Before | Bootstrap Contract After | Plan Or Summary Path | Notes |
 | --- | --- | --- | --- | --- | --- |
 | 2026-07-29 | none | none | `2.0.0` | This manifest | Initial Bootstrap installation. |
+| 2026-07-29 | `2.0.0` | `2.0.0` | `2.0.0` | This manifest | Evolve run added `demo-ask` and registered deliberate planner, knowledge-builder, and MCP customizations. |

@@ -200,6 +200,9 @@ generated:
   - path: .github/agents/demo-knowledge-builder.agent.md
     template: templates/agents/knowledge-builder.agent.md
     baseline: docs/agents/.baseline/.github/agents/demo-knowledge-builder.agent.md
+  - path: .github/agents/demo-ask.agent.md
+    template: templates/agents/ask.agent.md
+    baseline: docs/agents/.baseline/.github/agents/demo-ask.agent.md
   - path: .github/agents/demo-vision.agent.md
     template: templates/agents/vision.agent.md
     baseline: docs/agents/.baseline/.github/agents/demo-vision.agent.md
@@ -228,8 +231,6 @@ generated:
 deferred:
   - decision: Initial knowledge-index refinement
     reason: Preserve the existing curated index and delegate refinement to demo-knowledge-builder.
-  - decision: Ask agent mirror
-    reason: Not selected for the first install.
   - decision: author-repo-skill mirror
     reason: Not selected for the first install.
   - decision: business-logic-gap-detector mirror
