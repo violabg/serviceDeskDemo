@@ -136,7 +136,7 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 
 | Source Schema | Generated Path | Operation | Required Preservation | Planner Reference | Approval Status |
 | --- | --- | --- | --- | --- | --- |
-| `templates/plan-schema.md` | `<template-dir>/plan-schema.md` | NEW | filesystem-tree links, File Details anchors, backlinks, approval metadata, operations, validation commands, risks and rollback | required | pending |
+| `templates/plan-schema.md` | `<template-dir>/plan-schema.md` | NEW | four-section plan shape, `section-filesystem-tree` anchor, file-detail anchors and backlinks, coverage scenarios, flush-left diff blocks, operations timeline rules | required | pending |
 
 The generated Planner carries the clarification-question format in its own body. Do not plan a second file for it.
 

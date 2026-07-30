@@ -39,17 +39,17 @@ disable-model-invocation: true
 
 The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
-| Capability                               | Substitute in the generated system                                                                            |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `#capability:execution-report-read`      | Read `sessions/<planning-session-id>/execution-report.md`.                                                    |
-| `#capability:implementation-plan-list`   | List the implementation plans already present in the current Planning Session folder.                         |
-| `#capability:implementation-plan-load`   | Open the existing implementation plan in the current Planning Session folder and edit it in place.            |
-| `#capability:implementation-plan-save`   | Save the implementation plan to its path in the current Planning Session folder.                              |
-| `#capability:implementation-plan-schema` | Read `docs/agents/plan-schema.md` and obey it as the plan contract.                                           |
-| `#capability:knowledge-index-read`       | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.                   |
-| `#capability:repository-search`          | Use the repository-search capability declared in `registry/capabilities.yaml`.                                |
-| `#capability:session-activate`           | Resolve the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
-| `#capability:session-memory-read`        | Read `sessions/<planning-session-id>/session-memory.md`.                                                      |
+| Capability                               | Substitute in the generated system                                                                                     |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `#capability:execution-report-read`      | Read `sessions/<planning-session-id>/execution-report.md`.                                                             |
+| `#capability:implementation-plan-list`   | List the implementation plans already present in the current Planning Session folder.                                  |
+| `#capability:implementation-plan-load`   | Open the existing implementation plan in the current Planning Session folder and edit it in place.                     |
+| `#capability:implementation-plan-save`   | Save the implementation plan to its path in the current Planning Session folder.                                       |
+| `#capability:implementation-plan-schema` | Read `docs/agents/plan-schema.md` and obey it as the plan contract.                                                    |
+| `#capability:knowledge-index-read`       | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.                            |
+| `#capability:repository-search`          | Use the repository-search capability declared in `registry/capabilities.yaml`.                                         |
+| `#capability:session-activate`           | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
+| `#capability:session-memory-read`        | Read `sessions/<planning-session-id>/session-memory.md`.                                                               |
 
 # Agent Role
 
@@ -75,6 +75,7 @@ The source agent called a private server for these operations. Each one keeps it
 
 - Activate session once. If you have an already active session, reuse it and do not activate a new one.
 - Read execution report and agent memory once. If you have already read them, reuse that information and do not read them again.
+- **You are forbidden from auto-selecting a session.** Even when a session name appears to match the current activity, you MUST always present the list of available sessions to the user and require explicit selection. Never match, guess, or infer which session to use.
 
 ### Unit tests constraints
 
@@ -164,6 +165,9 @@ Do not perform any codebase search, read, command line execution in this step.
 ## Gate 1 - Session Activation
 
 Activate the session: call #capability:session-activate with the sessionId already in use.
+If no sessionId is already in use, determine the session-id naming proposal before any planning work begins. Reuse the user-provided sessionId when available; otherwise derive a proposed new sessionId from the External Issue ID or the user's requirement key phrase.
+When resuming existing work, always present the available sessions to the user and require explicit selection. Never infer which existing session to use.
+Create or resume `sessions/<planning-session-id>/` immediately. The session folder must exist before artifact gathering, clarification, or plan drafting.
 List available implementation plans: call #capability:implementation-plan-list to determine if this is a new plan or an update.
 Load session state: call #capability:session-memory-read and #capability:execution-report-read to recover past context, decisions, and artifacts.
 
@@ -184,6 +188,8 @@ When generating a new plan name (because no plans exist or the user chooses `Cre
 2. Otherwise, use the user's requirement key phrase, normalized to an alphanumeric underscore format.
 
 Do not start the planning workflow until the user's instructions have been executed.
+Before moving past this gate, create or load the session artifacts the request requires. The implementation plan is not the only required artifact: continuously maintain requirement or tracker evidence, clarification evidence, selected-knowledge or normative-rules evidence, bug cause analysis when a bug-planning flow identifies one, and any image-derived artifacts as soon as each one exists.
+Prefer deterministic artifact names aligned with the current upstream session package: `<issue-type>_<external-issue-id>_info` or `<issue-type>_<external-issue-id>_details` for requirement intake, `normative_rules_inventory`, `bug_<external-issue-id>_cause_analysis` for bug planning, and screenshot evidence such as `bug_<external-issue-id>_screenshot` paired with `bug_<external-issue-id>_screenshot.slimui` when image evidence drives the plan.
 Inspect the user request for image and Figma artifacts.
 For every provided image, immediately follow the `IMAGE_INTAKE_INSTRUCTION`.
 For every Figma link, ask the user exactly the following:

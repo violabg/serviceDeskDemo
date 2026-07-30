@@ -33,6 +33,9 @@ This file does not update itself. Bootstrap initializes it, and Maintainer updat
 - Knowledge Index: `<path>`
 - Plan Schema: `<template-dir>/plan-schema.md`
 - Artifact Gates: none | `<template-dir>/artifact-gates.md`
+- Session Memory: none | `<session-root>/<planning-session-id>/session-memory.md`
+- Session Log: none | `<session-root>/<planning-session-id>/session-log.md`
+- Execution Report: none | `<session-root>/<planning-session-id>/execution-report.md`
 - Agent Directory: `<agent-dir>`
 - Skill Directory: none | `<skill-dir>`
 - Bootstrap Changelog Snapshot: `<path>`

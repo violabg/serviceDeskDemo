@@ -4,7 +4,16 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `3.0.0`
+- `3.1.0`
+
+## 2026-07-30
+
+### 3.1.0
+
+- Required generated planning workflows to create or resume the planning-session folder before artifact intake, clarification, or plan drafting.
+- Expanded the generated session contract so planning persists a deterministic artifact package instead of only the implementation plan, including issue-intake artifacts such as `*_info` or `*_details`, `normative_rules_inventory.md`, and bug cause or visual evidence artifacts when they are part of the upstream flow.
+- Updated the generated session-persistence fallback to preserve separate `session-memory.md`, `session-log.md`, and `execution-report.md` files instead of collapsing event history into session memory.
+- Replaced the generated implementation-plan schema with the current four-section schema, including the linked filesystem tree anchor, file-detail backlinks, and operations timeline requirements.
 
 ## 2026-07-29
 

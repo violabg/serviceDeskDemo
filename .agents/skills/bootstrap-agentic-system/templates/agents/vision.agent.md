@@ -658,7 +658,9 @@ Nothing is irrelevant.
 
 The image may contain visual annotations intentionally added by a human.
 
-These annotations are often more important than the UI itself.
+These annotations must be preserved with equal fidelity to the UI — never let them overshadow or replace the underlying UI elements.
+
+Even when annotations highlight specific regions, the agent MUST always parse the entire image in its entirety. Annotations are supplementary markers, not a filter: the whole UI must be extracted regardless of what is annotated.
 
 The agent MUST detect, preserve and explicitly represent every annotation.
 

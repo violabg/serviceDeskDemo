@@ -127,6 +127,9 @@ sessions/                          # or approved external session root
   README.md                        # optional, documents current-session-only rule
   <planning-session-id>/
     session-identity.md              # External Issue ID and Planning Session ID mapping
+    session-memory.md                # durable summaries and carried-forward decisions
+    session-log.md                   # chronological event log
+    execution-report.md              # execution and validation progress snapshots
 ```
 
 ## Batch Rules

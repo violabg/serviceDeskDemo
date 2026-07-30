@@ -11,11 +11,11 @@
 
 ## Installed Contract Versions
 
-- Bootstrap Skill Version Used: `2.0.0`
-- Bootstrap Contract Applied Through: `2.0.0`
+- Bootstrap Skill Version Used: `3.1.0`
+- Bootstrap Contract Applied Through: `3.1.0`
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Last Applied: `2.0.0`
-- Last Maintenance Date: 2026-07-29
+- Last Maintenance Date: 2026-07-30
 
 ## Generated System Paths
 
@@ -85,9 +85,9 @@ The following deliberate deviations are repository-owned and must be preserved o
 
 | ID | Target File | Region | Kind | Reason | Upstream Relation | Survives Upgrade | Last Verified Version |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `demo-planner-tools` | `.github/agents/demo-planner.agent.md` | frontmatter `tools` | `modified-rule` | User customized the planner tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `2.0.0` |
-| `demo-knowledge-builder-tools` | `.github/agents/demo-knowledge-builder.agent.md` | frontmatter `tools` | `modified-rule` | User customized the knowledge-builder tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `2.0.0` |
-| `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `2.0.0` |
+| `demo-planner-tools` | `.github/agents/demo-planner.agent.md` | frontmatter `tools` | `modified-rule` | User customized the planner tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.1.0` |
+| `demo-knowledge-builder-tools` | `.github/agents/demo-knowledge-builder.agent.md` | frontmatter `tools` | `modified-rule` | User customized the knowledge-builder tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.1.0` |
+| `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `3.1.0` |
 
 ## Maintenance History
 
@@ -95,3 +95,4 @@ The following deliberate deviations are repository-owned and must be preserved o
 | --- | --- | --- | --- | --- | --- |
 | 2026-07-29 | none | none | `2.0.0` | This manifest | Initial Bootstrap installation. |
 | 2026-07-29 | `2.0.0` | `2.0.0` | `2.0.0` | This manifest | Evolve run added `demo-ask` and registered deliberate planner, knowledge-builder, and MCP customizations. |
+| 2026-07-30 | `2.0.0` | `2.0.0` | `3.1.0` | This manifest | Upgrade run refreshed planning-session rules, planner session-artifact workflow, plan schema, changelog snapshot, and baseline provenance. |

@@ -4,9 +4,23 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `2.0.0`
+- `3.1.0`
+
+## 2026-07-30
+
+### 3.1.0
+
+- Required generated planning workflows to create or resume the planning-session folder before artifact intake, clarification, or plan drafting.
+- Expanded the generated session contract so planning persists a deterministic artifact package instead of only the implementation plan, including issue-intake artifacts such as `*_info` or `*_details`, `normative_rules_inventory.md`, and bug cause or visual evidence artifacts when they are part of the upstream flow.
+- Updated the generated session-persistence fallback to preserve separate `session-memory.md`, `session-log.md`, and `execution-report.md` files instead of collapsing event history into session memory.
+- Replaced the generated implementation-plan schema with the current four-section schema, including the linked filesystem tree anchor, file-detail backlinks, and operations timeline requirements.
 
 ## 2026-07-29
+
+### 3.0.0
+
+- Made the Ask agent part of the required Core System batch by default, alongside Planner, Implementor, Tester or Integration Tester, Knowledge Builder, and root instructions.
+- Made Phase G treat a missing Ask agent as a blocking contract failure unless the user explicitly approved a narrower first install before generation.
 
 ### 2.0.0
 
@@ -15,6 +29,7 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 - Split the skill into a router plus phase contracts under `contracts/`, so a phase loads only the rules it needs instead of the whole workflow.
 - Replaced the collapsed private-tool sanitization with a capability-token substitution map, so each generated agent states which substitute a given upstream capability uses instead of hiding ten distinct capabilities behind one phrase.
 - Removed the separate clarification-question schema template. The generated Planner already defines the per-question chat format, and the duplicate had drifted from it; the question register and answers table live in the agent contracts.
+- Made the generated Planner's structured interview conditional: it runs only when a blocking clarification remains, and keeps the full question format, logging, halt protocol, and answer-validation gate when it does run.
 - Added an `agent-session-persistence` capability covering cross-gate memory, session artifacts, and the execution report, with the session-folder files as the fallback resolution.
 - Added the `author-repo-skill` mirror so the target repository can author and rework its own skills after Bootstrap, and stopped recommending the removed `create-work-item-planning-skills` kit skill.
 - Started rendering `templates/` and `registry/` at export time from the canonical sources, so every shipped template is reproducible from a single source of truth.

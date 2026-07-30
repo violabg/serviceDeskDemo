@@ -41,7 +41,8 @@ If the plan marks a production file as `UNMODIFIED`, that file is in test scope 
 
 Except where explicitly permitted by Gates 5, 10, and 11, repository exploration is prohibited.
 
-You need a `${session_id}` to start working on the implementation. If you do not have a session id yet, list available sessions and ask the user to select one or let you create a new session. Once you have the session id, activate it, read the execution report, read agent memory, inspect session artifacts, and log the execution start.
+You need a `${session_id}` to start working on the implementation. If you do not have a session id yet, list available sessions and ask the user to select one or let you create a new session.
+**You are forbidden from auto-selecting a session.** Even when a session name appears to match the current activity, you MUST always present the list of available sessions to the user and require explicit selection. Never match, guess, or infer which session to use. Once you have the session id, activate it, read the execution report, read agent memory, inspect session artifacts, and log the execution start.
 
 # Anti-Research Rule
 

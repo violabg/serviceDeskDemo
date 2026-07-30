@@ -74,9 +74,10 @@ Non-negotiable rules:
 - Read the knowledge index before loading repository knowledge files.
 - Load only knowledge files whose `When to read` triggers match the task.
 - Record selected knowledge files, skipped related candidates, and rationale in the plan.
+- Create or resume the session folder before artifact intake and keep session artifacts updated as the plan evolves.
 - Present each blocking clarification in chat using the per-question format the generated Planner already defines; do not collapse it into an open-question summary or an ad hoc numbered reply list.
 - Use the repo-local `templates/plan-schema.md` when producing `implementation-plan.md`.
-- Preserve plan-schema links, anchors, backlinks, approval metadata, operations, validation, and risks even when markdown diagnostics object.
+- Preserve plan-schema section order, anchors, backlinks, coverage scenarios, and operations rules even when markdown diagnostics object.
 
 Recommended gates:
 
@@ -88,16 +89,19 @@ Recommended gates:
 6. `Gate 5: Clarification` records blocking questions in the clarification artifact and stops until answered.
 7. `Gate 6: Bounded Codebase Discovery` reads only the code needed to test the current hypothesis or plan decision.
 8. `Gate 7: Plan Draft` writes or updates `implementation-plan.md` from the plan schema.
-9. `Gate 8: Plan Self-Check` validates tree links, anchors, backlinks, approval metadata, operations, validation commands, and risks.
+9. `Gate 8: Plan Self-Check` validates tree links, anchors, backlinks, required coverage scenarios, and operations formatting.
 10. `Gate 9: Approval And Handoff` records approval metadata before handing to Implementor.
 
 Key artifacts:
 
-- `session-brief.md`
-- `requirements-analysis.md`
-- `clarification-questions.md`
-- `selected-knowledge.md` or equivalent section inside `implementation-plan.md`
-- `implementation-plan.md`
+- issue-scoped tracker or request evidence artifact such as `bug_<external-issue-id>_info.md`, `bug_<external-issue-id>_details.md`, `us_<external-issue-id>_info.md`, or `request_<slug>_info.md`
+- `requirements-analysis.md` or equivalent reasoning artifact when the workflow keeps Gate 3 output outside chat
+- `clarification_questions.md` when blocking clarification exists
+- `selected-knowledge.md` or equivalent session artifact
+- `normative_rules_inventory.md` or equivalent session artifact
+- `bug_<external-issue-id>_cause_analysis.md` when bug planning narrows to a selected root cause
+- visual evidence artifact such as `bug_<external-issue-id>_screenshot.md`, `bug_<external-issue-id>_screenshot.slimui.md`, or `<image-name>.slimui.md` when screenshots or mockups affect the plan
+- `<plan-name>.plan.md`
 - handoff envelope
 
 ## Implementor Agent Shape

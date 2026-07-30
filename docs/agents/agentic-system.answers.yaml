@@ -3,8 +3,8 @@
 version: 1
 
 bootstrap:
-  skill_version: 2.0.0
-  contract_applied_through: 2.0.0
+  skill_version: 3.1.0
+  contract_applied_through: 3.1.0
   generated_on: 2026-07-29
 
 platform:
@@ -151,7 +151,7 @@ capabilities:
   agent-session-persistence:
     resolution: fallback
     tool: read/readFile and edit/createFile
-    note: Persist session memory, artifacts, and execution reports under sessions/<planning-session-id>/.
+    note: Persist session memory, session log, execution report, and derived planning artifacts under sessions/<planning-session-id>/.
   work-item-retrieval:
     resolution: user-supplied
     tool: mcp_github_mcp_s2_issue_read

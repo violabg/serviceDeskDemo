@@ -43,7 +43,7 @@ Minimum sections:
 ## Runtime Schemas
 
 - Implementation plan schema: `<template-dir>/plan-schema.md`
-- Rule: cite repo-local schema paths in Planner artifacts and keep schema-required links, anchors, backlinks, approval metadata, operations, validation, and risks intact.
+- Rule: cite repo-local schema paths in Planner artifacts and keep schema-required section order, anchors, linked file references, coverage scenarios, and operations intact.
 
 ## Sessions And Approval
 
@@ -184,9 +184,15 @@ Artifact record:
 
 Pass condition:
 
+The Planner has determined the active Planning Session ID, created or resumed only that session folder, and established the initial session artifacts before any planning interview or plan drafting begins.
+
 Fail condition:
 
+The Planner delays session-folder creation until approval, drafts the plan before artifact intake, or scans unrelated session folders instead of resuming directly from the known session id.
+
 Artifact record:
+
+Session identity artifact plus the initial evidence artifacts required by the request.
 
 ### Candidate Gate: Knowledge Selection
 
@@ -244,11 +250,11 @@ Artifact record:
 
 Pass condition:
 
-The implementation-plan artifact preserves the required structure from `templates/plan-schema.md`: approval metadata, linked Filesystem Tree paths, matching File Details anchors from the slug rule, backlinks to the tree, proposed diffs or files where required, operations, validation commands, and risks/rollback.
+The implementation-plan artifact preserves the required structure from `templates/plan-schema.md`: Section 1 through Section 4 in order, the `section-filesystem-tree` anchor, matching file-detail anchors, backlinks to the tree, flush-left diff blocks for modified files, required coverage scenarios, and the operations table or the unit-test-only no-op sentence.
 
 Fail condition:
 
-Any required schema section is missing, filesystem-tree paths are plain code spans instead of links, File Details anchors or backlinks are missing, or markdown cleanup changed the plan away from the schema.
+Any required schema section is missing, filesystem-tree paths are plain text instead of links, file-detail anchors or backlinks are missing, diff blocks are indented or incomplete, coverage scenarios are missing where business logic exists, or markdown cleanup changed the plan away from the schema.
 
 Artifact record:
 
@@ -327,23 +333,19 @@ Rule: do not ask for approval while blocking clarification questions remain open
 
 Use [`plan-schema.md`](plan-schema.md) when the generated planner must hand off work to an implementor. The generated Planner contract must reference the target repo's local plan-schema path explicitly. Preserve these sections unless the target repo has a better equivalent:
 
-1. Session ID
-2. Approval Status
-3. Design Overview
-4. Selected Repository Knowledge
-5. Filesystem Tree with linked paths
-6. File Details with backlinks
-7. Proposed Diff for material modified files
-8. Proposed File for new files
-9. Operations and Timeline
-10. Validation Commands
-11. Risks and Rollback
+1. `SECTION 1 - Design Overview`
+2. `SECTION 2 - Filesystem Tree` with the `section-filesystem-tree` anchor
+3. `SECTION 3 - File Details` with matching per-file anchors and backlinks
+4. `SECTION 4 - Operations and Timeline`
+5. Required `Coverage Scenarios` blocks for executable business logic
+6. Flush-left `diff` blocks for modified files and full-file code blocks for new files
 
 Required self-check before approval or handoff:
 
 - Every Filesystem Tree path is a markdown link to its File Details entry.
 - Every File Details entry has the schema-required anchor and a backlink to the Filesystem Tree.
-- The slug used by each tree link matches the schema slug rule.
+- Every Section 3 file with executable business logic contains a `Coverage Scenarios` table derived from the shown code.
+- Modified-file code sections use flush-left `diff` blocks with complete changed regions.
 - Markdown diagnostics cleanup has not removed schema-required links, anchors, or backlinks.
 - If lint tooling flags schema-required inline HTML, keep the schema intact and record the diagnostic as waived or accepted.
 
