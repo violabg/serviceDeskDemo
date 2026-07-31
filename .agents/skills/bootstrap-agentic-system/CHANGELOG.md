@@ -4,7 +4,21 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `3.1.0`
+- `3.1.2`
+
+## 2026-07-31
+
+### 3.1.2
+
+- Reduced repeated work-item planning instructions by keeping retrieval semantics in the subagent prompt instead of restating them in the generated planning-contract preamble.
+- Kept the required tracker, session, dependency-evidence, and clarification constraints while moving the generated planning mirrors closer to their canonical skill wording.
+
+## 2026-07-31
+
+### 3.1.1
+
+- Replaced additive work-item planning overlay insertion with full conflicting-body replacement for the generated `plan-bug-from-id` and `plan-user-story-from-id` mirrors.
+- Removed contradictory duplicate planning instructions so generated work-item skills stay close to canonical wording while keeping only the required tracker, session, and clarification contract additions.
 
 ## 2026-07-30
 

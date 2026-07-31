@@ -6,22 +6,18 @@ disable-model-invocation: true
 
 # Plan Bug From Id
 
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=none -->
+<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:fc670b130ca8a631 lines=80 -->
 ## Work-Item Planning Contract
 
 Require one External Issue ID matching `{{WORK_ITEM_ID_FORMAT}}`. External Issue ID identifies tracker ticket; it is never Planning Session ID.
 Use `{{TRACKER_ADAPTER}}` with only exact retrieval tools approved in `{{WORK_ITEM_RETRIEVAL}}`. When no approved external adapter exists, use local Markdown contract `{{LOCAL_MARKDOWN_TRACKER_CONTRACT}}`.
-
-Use #tool:agent/runSubagent to retrieve current issue only. Convert rich text and attachments to Markdown while preserving code blocks. Retrieve title, description, comments, acceptance criteria, image references, and relevant discussion evidence.
-Read another issue only when current issue explicitly references it and reference is relevant to planning. Record that issue and retrieval reason as dependency evidence. Do not recursively follow references, list, search, preload, or retrieve unrelated issues.
-Fail closed for missing, duplicate, unreadable, or invalid IDs.
 
 After retrieval identifies issue type, recommend Planning Session ID `bug-<external-issue-id>` for bugs or `us-<external-issue-id>` for user stories. User may approve a different prefix. Normalize approved custom prefix to lowercase filesystem-safe characters `[a-z0-9_-]`, require a trailing `-`, and record prefix plus resulting Planning Session ID in current session identity artifact.
 Create or resume only `{{SESSION_ROOT}}/<Planning Session ID>`. Store evidence, dependency evidence, decisions, gate evidence, and final plan only in current Planning Session ID folder. Resume directly from the known Planning Session ID; never scan or enumerate session folders.
 
 Identify probable root cause and contributing factors. Ask a cause-selection question only when multiple materially different causes remain viable and choosing one changes the plan; otherwise record the evidenced cause and continue.
 Run normal Planner gates after evidence is stored. Ask one evidence-backed blocking clarification at a time only when required evidence leaves a material planning decision unresolved. When no blocking clarification remains, complete all mandatory gates, artifacts, and implementation plan uninterrupted, then ask only for plan review or approval. Never present incomplete artifacts as approval-ready plan.
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT END -->
+
 You need to plan a bug resolution based on the bug work item ID provided by the user.
 If the user doesn't provide an bug work item ID, ask for it.
 
@@ -29,13 +25,12 @@ Before starting the plan creation worfklow, follow the following Gates to make s
 
 # Bug Information Gathering
 
-use #tool:agent/runSubagent to delegate work item gathering to a built-in agent subagent.
+Use #tool:agent/runSubagent to delegate work item gathering to a built-in agent subagent.
 Use the following prompt template for the subagent:
 
-```
+```text
 Activate agent session with id `<sessionId>`.
-For the bug <WORK_ITEM_BUG_ID>, you need to get the title, description, comments, acceptance criteria, and related work items, epics, features, and tasks. You can use the work item integration tools to get this information.
-Do not include related work items.
+For the bug <WORK_ITEM_BUG_ID>, retrieve the title, description, comments, acceptance criteria, image references, and relevant discussion evidence from the current issue only. Read another issue only when the current issue explicitly references it and the reference is relevant to planning. Record that issue and retrieval reason as dependency evidence. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
 
 Attach to the session a new artifact contains all the information you have gathered in the following format:
 - title
@@ -45,6 +40,9 @@ Attach to the session a new artifact contains all the information you have gathe
   [the url of the images attached to the description of the work item, if any]
 - comments
   [convert from html to markdown format, and preserve any code blocks formatting in the comments]
+- acceptance criteria
+  [convert from html to markdown format, and preserve any code blocks formatting in the acceptance criteria]
+- related work items (with their id, title, relation type, and retrieval reason) only when the current issue explicitly references them and they are relevant to planning
 
 then tell me the name of the artifact you created, so I can read it and create the plan.
 ```
@@ -70,10 +68,11 @@ Expose the most 2/3 probable causes and contributing factors, and gather as much
 
 # Expose causes to user
 
-Report the most probable causes and contributing factors to the user. Make sure to deeply explain each cause with supporting evidence and context. Then ask the user which cause they want to address in the plan and wait is selection.
-Use this format to report the causes:
+Report the most probable causes and contributing factors to the user. Make sure to deeply explain each cause with supporting evidence and context.
+Ask the user to choose a cause only when multiple materially different causes remain viable and choosing one changes the plan. Otherwise record the evidenced cause and continue to the planning workflow.
+Use this format to report the causes when a cause-selection question is required:
 
-```
+```text
 ## Cause 1:
 ### Explanation:
 [detailed explanation of the cause, how it contributes to the bug, and any supporting evidence or context]
@@ -91,9 +90,9 @@ Please select which cause you want to address in the plan.
 
 # Save the analysis
 
-After the user selects the cause they want to address in the plan, save the analysis of that cause in a session artifact named `bug_<WORK_ITEM_BUG_ID>_cause_analysis`. This artifact should contain all the detailed information about the selected cause, including the explanation, files/components involved, and any external dependencies. This will be used in the next step for the plan creation.
+After the user selects the cause they want to address in the plan, or after you record the evidenced cause directly, save the analysis of that cause in a session artifact named `bug_<WORK_ITEM_BUG_ID>_cause_analysis`. This artifact should contain all the detailed information about the selected or evidenced cause, including the explanation, files/components involved, and any external dependencies. This will be used in the next step for the plan creation.
 
-**RULES FOR BUG FIX PLANNING**
+## Rules For Bug Fix Planning
 
 - Produce a single step plan. Event if the fix is complex, try to abstract it into a single step that can be executed and tested independently.
 - The plan should be focused on the root cause, not on the symptoms. Avoid including implementations that are not directly related to the root cause. The goal is to have a clear and concise plan that addresses the core issue.
@@ -101,4 +100,5 @@ After the user selects the cause they want to address in the plan, save the anal
 - If the fix requires changes to external dependencies, clearly describe the reason.
 
 After you follow the above rules, start from `Gate 0` of the planning workflow.
-The identified cause is enough to create a comprehensive and effective plan, so you can safely skip interview.
+When the evidenced cause resolves material planning uncertainty, you can safely skip interview.
+<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT END -->
