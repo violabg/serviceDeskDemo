@@ -40,4 +40,4 @@ next-env.d.ts
 
 tmp/
 sessions/
-.github/skills
+.opencode/
