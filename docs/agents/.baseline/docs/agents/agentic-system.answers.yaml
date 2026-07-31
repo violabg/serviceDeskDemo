@@ -3,9 +3,9 @@
 version: 1
 
 bootstrap:
-  skill_version: 3.1.0
-  contract_applied_through: 3.1.0
-  generated_on: 2026-07-29
+  skill_version: 3.1.2
+  contract_applied_through: 3.1.2
+  generated_on: 2026-07-31
 
 platform:
   target: github-copilot

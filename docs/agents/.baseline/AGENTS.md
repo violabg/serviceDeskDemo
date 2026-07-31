@@ -8,6 +8,7 @@ Route the current request through this file, then load only what that request ne
 - `demo-implementor`: implementation from an approved plan.
 - `demo-integration-tester`: integration-test planning and execution.
 - `demo-knowledge-builder`: repository knowledge and glossary refinement.
+- `demo-ask`: project-specific Q&A without code changes.
 - `demo-vision`: deterministic extraction from visual evidence.
 
 Full role contracts live in `.github/agents`. Do not restate them here.
