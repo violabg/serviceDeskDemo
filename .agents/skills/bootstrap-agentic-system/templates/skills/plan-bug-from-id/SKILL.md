@@ -30,7 +30,7 @@ Use the following prompt template for the subagent:
 
 ```text
 Activate agent session with id `<sessionId>`.
-For the bug <WORK_ITEM_BUG_ID>, retrieve the title, description, comments, acceptance criteria, image references, and relevant discussion evidence from the current issue only. Read another issue only when the current issue explicitly references it and the reference is relevant to planning. Record that issue and retrieval reason as dependency evidence. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
+For the bug <WORK_ITEM_BUG_ID>, retrieve the title, description, comments, acceptance criteria, image references, and relevant discussion evidence from the current issue only. Read every issue explicitly referenced or linked by the current issue through the approved tracker adapter, and record each issue plus its retrieval reason as dependency evidence. Do not decide whether a referenced issue is relevant before retrieving it. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
 
 Attach to the session a new artifact contains all the information you have gathered in the following format:
 - title
@@ -42,7 +42,7 @@ Attach to the session a new artifact contains all the information you have gathe
   [convert from html to markdown format, and preserve any code blocks formatting in the comments]
 - acceptance criteria
   [convert from html to markdown format, and preserve any code blocks formatting in the acceptance criteria]
-- related work items (with their id, title, relation type, and retrieval reason) only when the current issue explicitly references them and they are relevant to planning
+- related work items (with their id, title, relation type, and retrieval reason) only when the current issue explicitly references or links to them
 
 then tell me the name of the artifact you created, so I can read it and create the plan.
 ```
