@@ -88,6 +88,7 @@ The following deliberate deviations are repository-owned and must be preserved o
 | `demo-planner-tools` | `.github/agents/demo-planner.agent.md` | frontmatter `tools` | `modified-rule` | User customized the planner tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.1.2` |
 | `demo-knowledge-builder-tools` | `.github/agents/demo-knowledge-builder.agent.md` | frontmatter `tools` | `modified-rule` | User customized the knowledge-builder tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.1.2` |
 | `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `3.1.2` |
+| `customer-terminology` | `CONTEXT.md` | Customer glossary row | `modified-rule` | User established Customer as the canonical application and label term; client is explanatory only. | `independent` | `always` | `3.1.2` |
 
 ## Maintenance History
 
@@ -97,3 +98,4 @@ The following deliberate deviations are repository-owned and must be preserved o
 | 2026-07-29 | `2.0.0` | `2.0.0` | `2.0.0` | This manifest | Evolve run added `demo-ask` and registered deliberate planner, knowledge-builder, and MCP customizations. |
 | 2026-07-30 | `2.0.0` | `2.0.0` | `3.1.0` | This manifest | Upgrade run refreshed planning-session rules, planner session-artifact workflow, plan schema, changelog snapshot, and baseline provenance. |
 | 2026-07-31 | `2.0.0` | `3.1.0` | `3.1.2` | This manifest | Upgrade run restored missing generated skill mirrors, re-added `demo-ask` to the root router, refreshed the Bootstrap changelog snapshot, and refreshed baseline provenance. |
+| 2026-08-02 | `2.0.0` | `3.1.2` | `3.1.2` | This manifest | Evolve run clarified Customer terminology, synchronized three generated mirrors with current Bootstrap templates, and refreshed baseline provenance. |
