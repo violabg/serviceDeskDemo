@@ -28,10 +28,11 @@ Discovery lanes:
 - Knowledge and Glossary: `CONTEXT.md`, glossaries, ADRs, docs, source-of-truth boundaries, repeated repository vocabulary, aliases, and ambiguous terms.
 - Visual Artifacts: screenshots, mockups, diagrams, UI snapshots, image assets, issue attachments, browser screenshots, annotated QA evidence, and whether image evidence affects planning or testing.
 - Validation Surface: package scripts, CI, lint/test commands, PR templates, contribution docs, and commands generated agents should run.
+- Role Capability Scope: read each selected agent mirror's `## Role Tooling Intent` profile, then audit its `## Capability Substitutions` table. For every profile category and token, record source role, supported operation, whether that role needs it for its selected workflow, and target-repository evidence for candidate tools or services. Profiles and tokens describe capability needs, not names of MCP servers to install.
 
-Each lane reports compact evidence, inferred facts, unknowns, and risks. Do not produce a broad repository tour.
+For every role capability need, search target MCP configuration, existing agent tool lists, tracker and knowledge sources, package manifests, lockfiles, and project documentation before proposing a candidate. A framework, vendor, library, or API dependency may justify a documentation capability for the role that needs current external contracts. Do not infer a specific provider from the source mirror; prefer an already configured target-repository service, then a platform-native tool, then a documented fallback.
 
-Before leaving this phase, produce a candidate tool and integration matrix. List discovered MCPs, platform tools, built-in tool surfaces, candidate generated agents or skills that might receive each tool, why each tool helps, risks from adding authority, intentionally omitted tools, and unknown integrations. This matrix is discovery output only, not approval.
+Before leaving this phase, produce a candidate tool and integration matrix. List role, source capability token, discovered MCPs, platform tools, built-in tool surfaces, candidate generated agents or skills that might receive each tool, why each tool helps, risks from adding authority, intentionally omitted tools, and unknown integrations. This matrix is discovery output only, not approval.
 
 ## Phase C: Decision Register
 
@@ -63,6 +64,8 @@ Required decisions:
 Use bounded choices where possible. Do not enter proposal or file-plan approval while blocking decisions remain unresolved. Tool decisions must use choices such as `add`, `omit`, `move to another agent or skill`, `recommend only`, `defer`, or `needs more discovery`.
 
 Drive slot decisions from `registry/placeholders.yaml`. For every slot the selected mirrors actually use, inspect the entry's `infer_from` evidence in the target repository first, then ask the entry's `question` while stating the evidence found, the entry's `recommend` default adjusted to that evidence, and what changes if the user answers differently. Ask only for slots that materially change the generated system; record the inferred default, the user's answer, and the evidence in the decision register.
+
+Resolve `APPROVED_MCP_TOOLS` role by role. Start from that role's Role Tooling Intent profile, using Capability Substitutions tokens as the audit trail, and use Phase B evidence to recommend only a least-privilege candidate that satisfies the needed operation. A token may resolve to a configured MCP, a platform tool, a repository-local contract, or its declared capability fallback. A framework, vendor, library, or API dependency can add a documentation need only when it helps that role verify current external contracts. Never assign a tool to a role solely because another role uses it, never turn a source private service name into a target requirement, and never add an unapproved candidate to frontmatter.
 
 Resolve capability coverage from `registry/capabilities.yaml` in the same phase. For the selected platform, propose the listed tool defaults for confirmation; when the platform entry is empty or the user rejects a tool, install the capability's `fallback` instead of removing the behaviour, and record that substitution.
 

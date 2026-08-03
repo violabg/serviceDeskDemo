@@ -22,7 +22,20 @@ The source agent called a private server for these operations. Each one keeps it
 
 | Capability | Substitute in the generated system |
 | --- | --- |
+| `#capability:session-activate` | Create or resume the current Planning Session folder under `{{SESSION_ROOT}}`. Session identity is a directory, not a service. |
+| `#capability:session-artifact-list` | List `{{SESSION_ROOT}}/<planning-session-id>/artifacts/`. |
+| `#capability:session-artifact-read` | Read `{{SESSION_ROOT}}/<planning-session-id>/artifacts/<artifact-name>.md`. |
 | `#capability:session-artifact-write` | Write `{{SESSION_ROOT}}/<planning-session-id>/artifacts/<artifact-name>.md`. |
+| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
+
+## Role Tooling Intent
+
+Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
+
+| Target capability category | Source capability evidence | Bootstrap discovery guidance |
+| --- | --- | --- |
+| Planning-session persistence | `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
+| Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. Prefer platform image or browser tools; add a visual service only when selected workflow needs it. |
 
 ## Mission
 

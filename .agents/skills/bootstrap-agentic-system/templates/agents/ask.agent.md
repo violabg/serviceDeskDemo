@@ -22,7 +22,17 @@ The source agent called a private server for these operations. Each one keeps it
 
 | Capability | Substitute in the generated system |
 | --- | --- |
+| `#capability:agent-workflow-service` | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
 | `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
+
+## Role Tooling Intent
+
+Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
+
+| Target capability category | Source capability evidence | Bootstrap discovery guidance |
+| --- | --- | --- |
+| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service. |
+| Broad workflow-service grant | `#capability:agent-workflow-service` | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool. |
 
 <critical>
 
@@ -54,6 +64,7 @@ Provide code examples to clarify answers, following the Code Examples rules belo
 - Use `#capability:repository-search` as the only valid repository-search tool for codebase discovery.
 - Search-plan batching is mandatory. Whenever multiple codebase questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
 - Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
+- **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
 
 ## Gate execution model
 

@@ -159,12 +159,15 @@ placeholders:
 
   - name: APPROVED_MCP_TOOLS
     kind: value
-    question: Which exact MCP or platform tool names are approved for this agent?
+    question: Which exact MCP or platform tool names are approved for this generated role?
     fill_from: user
-    recommend: Only tools already configured in the repository, named exactly, and only where the agent's role needs them; leave empty when unsure.
+    recommend: Start with this role's Role Tooling Intent profile and audit its Capability Substitutions tokens. Match each target capability category to tools or services already configured for the target repository, its tracker and knowledge sources, and its dependency stack; add only exact, least-privilege names approved for this role. Leave empty when no candidate is approved.
     infer_from:
+      - Role Tooling Intent profile in the selected templates/agents/<role>.agent.md mirror
+      - Capability Substitutions table in the selected templates/agents/<role>.agent.md mirror
       - .vscode/mcp.json, .mcp.json, .cursor/mcp.json
       - tool lists in existing agent files
+      - package manifests and lockfiles that identify framework, library, cloud, or API documentation needs
 
   - name: REPOSITORY_SEARCH_TOOL
     kind: both
