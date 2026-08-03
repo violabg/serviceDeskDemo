@@ -1,0 +1,101 @@
+# Agentic System Manifest
+
+## Source Package
+
+- Package: `agentic-system-kit`
+- Installed Bootstrap Skill Path: `.agents/skills/bootstrap-agentic-system/SKILL.md`
+- Installed Bootstrap Skill Changelog Path: `.agents/skills/bootstrap-agentic-system/CHANGELOG.md`
+- Installed Maintain Skill Path: `.agents/skills/maintain-agentic-system/SKILL.md`
+- Installed Maintain Skill Changelog Path: `.agents/skills/maintain-agentic-system/CHANGELOG.md`
+- Package Changelog Path For Context: `.agents/skills/bootstrap-agentic-system/CHANGELOG.md`
+
+## Installed Contract Versions
+
+- Bootstrap Skill Version Used: `3.1.2`
+- Bootstrap Contract Applied Through: `3.1.2`
+- Bootstrap Snapshot Source Status: copied from installed skill changelog
+- Maintain Skill Version Last Applied: `2.0.0`
+- Last Maintenance Date: 2026-07-31
+
+## Generated System Paths
+
+- Root Instructions: `AGENTS.md`
+- Context Glossary: `CONTEXT.md`
+- Knowledge Index: `docs/agents/knowledge/README.md`
+- Plan Schema: `docs/agents/plan-schema.md`
+- Artifact Gates: `docs/agents/artifact-gates.md`
+- Agent Directory: `.github/agents`
+- Skill Directory: `.github/skills`
+- Bootstrap Changelog Snapshot: `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md`
+- Answers File: `docs/agents/agentic-system.answers.yaml`
+- Baseline Directory: `docs/agents/.baseline/`
+- Session Root: `sessions/`
+- Work Item Adapter Contract: `.github/skills/plan-bug-from-id/SKILL.md` and `.github/skills/plan-user-story-from-id/SKILL.md`
+- Planning Session Identity Artifact: `sessions/<planning-session-id>/session-identity.md`
+
+## Bootstrap Decisions
+
+- Platform: GitHub Copilot.
+- Agent prefix: `demo-`.
+- Work-item adapter: GitHub Issues using `violabg/serviceDeskDemo#<number>` and planner-only `mcp_github_mcp_s2_issue_read`.
+- Session contract: `sessions/us-<issue-number>/` and `sessions/bug-<issue-number>/`; direct resume by known ID only.
+- Knowledge: preserve `docs/agents/knowledge/README.md` as the index and use `CONTEXT.md` as the glossary.
+- Visual evidence: `demo-vision`; store source PNG captures and a short Markdown note under `sessions/<planning-session-id>/visual/`.
+- Validation: artifact gate linting, then lint, typecheck, test, and build for buildable app changes.
+
+## Mirror Inventory
+
+### Generated
+
+- `templates/instructions/AGENTS.md` to `AGENTS.md`
+- `templates/instructions/knowledge-guard.instructions.md` to `.github/instructions/knowledge-guard.instructions.md`
+- `templates/instructions/planning-sessions.instructions.md` to `.github/instructions/planning-sessions.instructions.md`
+- `templates/plan-schema.md` to `docs/agents/plan-schema.md`
+- `templates/artifact-gates.md` to `docs/agents/artifact-gates.md`
+- `templates/agents/planner.agent.md` to `.github/agents/demo-planner.agent.md`
+- `templates/agents/implementor.agent.md` to `.github/agents/demo-implementor.agent.md`
+- `templates/agents/integration-tester.agent.md` to `.github/agents/demo-integration-tester.agent.md`
+- `templates/agents/knowledge-builder.agent.md` to `.github/agents/demo-knowledge-builder.agent.md`
+- `templates/agents/ask.agent.md` to `.github/agents/demo-ask.agent.md`
+- `templates/agents/vision.agent.md` to `.github/agents/demo-vision.agent.md`
+- `templates/skills/plan-bug-from-id/SKILL.md` to `.github/skills/plan-bug-from-id/SKILL.md`
+- `templates/skills/plan-user-story-from-id/SKILL.md` to `.github/skills/plan-user-story-from-id/SKILL.md`
+- `templates/skills/user-story-analysis/SKILL.md` to `.github/skills/user-story-analysis/SKILL.md`
+- `templates/skills/integration-test-knowledge-checklist/SKILL.md` to `.github/skills/integration-test-knowledge-checklist/SKILL.md`
+
+### Skipped
+
+- `templates/skills/author-repo-skill/SKILL.md`: not selected for the first install.
+- `templates/skills/business-logic-gap-detector/SKILL.md`: not selected for the first install.
+
+### Deferred
+
+- Initial knowledge-index refinement: preserve the existing index; run `demo-knowledge-builder` after Bootstrap.
+
+## Marker And Tool Decisions
+
+- Source-only `CANONICAL-TEMPLATE-SLOT` comments were stripped from all generated runtime mirror files.
+- Canonical non-slot wording and baseline frontmatter were preserved.
+- `mcp_github_mcp_s2_issue_read` is assigned only to `demo-planner`.
+- Neon, Next.js, GitHub search, and GitHub write MCP tools are omitted from generated agent tool surfaces.
+
+## Customization Register
+
+The following deliberate deviations are repository-owned and must be preserved on future maintenance runs unless explicitly changed.
+
+| ID | Target File | Region | Kind | Reason | Upstream Relation | Survives Upgrade | Last Verified Version |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `demo-planner-tools` | `.github/agents/demo-planner.agent.md` | frontmatter `tools` | `modified-rule` | User customized the planner tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.1.2` |
+| `demo-knowledge-builder-tools` | `.github/agents/demo-knowledge-builder.agent.md` | frontmatter `tools` | `modified-rule` | User customized the knowledge-builder tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.1.2` |
+| `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `3.1.2` |
+| `customer-terminology` | `CONTEXT.md` | Customer glossary row | `modified-rule` | User established Customer as the canonical application and label term; client is explanatory only. | `independent` | `always` | `3.1.2` |
+
+## Maintenance History
+
+| Date | Maintain Skill Version | Bootstrap Contract Before | Bootstrap Contract After | Plan Or Summary Path | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 2026-07-29 | none | none | `2.0.0` | This manifest | Initial Bootstrap installation. |
+| 2026-07-29 | `2.0.0` | `2.0.0` | `2.0.0` | This manifest | Evolve run added `demo-ask` and registered deliberate planner, knowledge-builder, and MCP customizations. |
+| 2026-07-30 | `2.0.0` | `2.0.0` | `3.1.0` | This manifest | Upgrade run refreshed planning-session rules, planner session-artifact workflow, plan schema, changelog snapshot, and baseline provenance. |
+| 2026-07-31 | `2.0.0` | `3.1.0` | `3.1.2` | This manifest | Upgrade run restored missing generated skill mirrors, re-added `demo-ask` to the root router, refreshed the Bootstrap changelog snapshot, and refreshed baseline provenance. |
+| 2026-08-02 | `2.0.0` | `3.1.2` | `3.1.2` | This manifest | Evolve run clarified Customer terminology, synchronized three generated mirrors with current Bootstrap templates, and refreshed baseline provenance. |

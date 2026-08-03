@@ -1,14 +1,41 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# serviceDeskDemo Agentic System
 
-# This is NOT the Next.js you know
+Route the current request through this file, then load only what that request needs. Keep this file under 80 lines: it is a router, not a knowledge base.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## Agents
 
-## Instruction Router
+- `demo-planner`: implementation planning from a validated work item.
+- `demo-implementor`: implementation from an approved plan.
+- `demo-integration-tester`: integration-test planning and execution.
+- `demo-knowledge-builder`: repository knowledge and glossary refinement.
+- `demo-ask`: project-specific Q&A without code changes.
+- `demo-vision`: deterministic extraction from visual evidence.
 
-- Default mode is the baseline: load `.github/agents/default-instructions.md` unless explicitly overridden by a mode skill.
-- Only `customize-agents` can override mode.
-- Any other invoked skill does not change mode selection.
-- Customization mode: if `customize-agents` is the active mode skill, load `.github/agents/modes/customize-agents.md` and disregard `.github/agents/default-instructions.md`.
-- In all instruction files and all modes, use caveman communication to save tokens.
+Full role contracts live in `.github/agents`. Do not restate them here.
+
+## Skills
+
+Repository skills live in `.github/skills`. Read a skill's `SKILL.md` before running its workflow.
+
+## Instructions
+
+Modular rules live in `.github/instructions`. Each file declares the paths it applies to; load one only when the current request touches those paths.
+
+## Knowledge
+
+- Select knowledge through `docs/agents/knowledge/README.md`. Match the request against the `When to read` triggers and load only the entries that match.
+- Resolve repository vocabulary in `CONTEXT.md`.
+- Never bulk-load knowledge files.
+
+## Planning Sessions
+
+- Planning work happens in `sessions/<planning-session-id>/`.
+- Implementation plans follow `docs/agents/plan-schema.md`, artifacts and gates follow `docs/agents/artifact-gates.md`. Blocking clarifications follow the per-question format defined by the planner agent.
+
+## Validation
+
+Validate every change with `pnpm agent:lint-artifacts --mode <gate> --session <id>` for planning artifacts, then `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` for buildable app changes before handing work back.
+
+## Provenance
+
+`docs/agents/agentic-system-manifest.md` records what was generated, which slots were filled, and which decisions were approved. Update it whenever this system changes.

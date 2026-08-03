@@ -1,0 +1,237 @@
+# Machine-readable record of the approved Bootstrap decisions. Do not hand-edit
+# without also refreshing docs/agents/.baseline/ and the manifest.
+version: 1
+
+bootstrap:
+  skill_version: 3.1.2
+  contract_applied_through: 3.1.2
+  generated_on: 2026-07-31
+
+platform:
+  target: github-copilot
+  agent_root: .github/agents
+  skill_root: .github/skills
+  instruction_root: .github/instructions
+
+slots:
+  AGENT_PREFIX:
+    value: demo-
+    source: user
+    evidence: User supplied demo during Bootstrap intake.
+  TARGET_PLATFORM:
+    value: github-copilot
+    source: user
+    evidence: User selected GitHub Copilot; .vscode/mcp.json supports the choice.
+  VISION_AGENT_NAME:
+    value: demo-vision
+    source: recommend-accepted
+    evidence: User selected visual support with the approved demo- prefix.
+  TRACKER_ADAPTER:
+    value: GitHub Issues
+    source: user
+    evidence: User selected GitHub issue read only; origin is github.com.
+  WORK_ITEM_RETRIEVAL:
+    value: mcp_github_mcp_s2_issue_read
+    source: user
+    evidence: User approved planner issue read only.
+  LOCAL_MARKDOWN_TRACKER_CONTRACT:
+    value: no fallback; block when GitHub retrieval is unavailable
+    source: user
+    evidence: User selected no fallback.
+  WORK_ITEM_ID_FORMAT:
+    value: violabg/serviceDeskDemo#<number>
+    source: user
+    evidence: User selected repository-qualified GitHub IDs.
+  SESSION_ROOT:
+    value: sessions
+    source: user
+    evidence: User approved the existing sessions model.
+  SESSION_ACTIVATION:
+    value: Start from a supplied External Issue ID and stay scoped to it until closed.
+    source: recommend-accepted
+    evidence: GitHub issue planning contract.
+  SESSION_ARTIFACT_STORAGE:
+    value: sessions/<planning-session-id>/
+    source: user
+    evidence: User approved isolated session folders.
+  KNOWLEDGE_SOURCE:
+    value: docs/agents/knowledge/README.md and selected knowledge documents
+    source: discovery
+    evidence: Existing curated knowledge index.
+  KNOWLEDGE_INDEX_PATH:
+    value: docs/agents/knowledge/README.md
+    source: user
+    evidence: User selected the existing index.
+  CONTEXT_GLOSSARY_PATH:
+    value: CONTEXT.md
+    source: user
+    evidence: User approved a root glossary.
+  PLAN_SCHEMA_PATH:
+    value: docs/agents/plan-schema.md
+    source: user
+    evidence: User selected docs/agents.
+  ARTIFACT_GATES_PATH:
+    value: docs/agents/artifact-gates.md
+    source: user
+    evidence: User selected docs/agents.
+  VALIDATION_COMMANDS:
+    value: pnpm agent:lint-artifacts, pnpm lint, pnpm typecheck, pnpm test, pnpm build
+    source: user
+    evidence: User approved repository validation set from package.json.
+  REPOSITORY_SEARCH_TOOL:
+    value: built-in bounded Copilot search tools
+    source: user
+    evidence: User approved text search, file search, and usages.
+  VISUAL_EVIDENCE_STRATEGY:
+    value: demo-vision with session-local PNG evidence and Markdown notes
+    source: user
+    evidence: User selected demo-vision for this UI repository.
+  VISUAL_ARTIFACT_FORMAT:
+    value: PNG capture paired with a short Markdown note
+    source: user
+    evidence: User approved visual evidence strategy.
+  VISUAL_ARTIFACT_STORAGE:
+    value: sessions/<planning-session-id>/visual/
+    source: recommend-accepted
+    evidence: User selected session-local visual support.
+  REPO_KNOWLEDGE_PATHS:
+    value: docs/ and CONTEXT.md
+    source: discovery
+    evidence: Existing docs and generated glossary.
+  TEST_STACK_CONVENTIONS:
+    value: Vitest, Testing Library, jest-dom, Node environment, cleanup after each test
+    source: discovery
+    evidence: package.json, vitest.config.ts, and test/setup.ts.
+  INTEGRATION_TEST_SCOPE:
+    value: Internal wiring with third-party boundaries stubbed; exclude unit-only, browser E2E, and live vendor services.
+    source: user
+    evidence: User selected internal wiring scope.
+  OUTPUT_LANGUAGE:
+    value: English
+    source: user
+    evidence: User selected English.
+  AGENT_ROOT:
+    value: .github/agents
+    source: user
+    evidence: User approved standard GitHub Copilot locations.
+  SKILL_ROOT:
+    value: .github/skills
+    source: user
+    evidence: User approved standard GitHub Copilot locations.
+  INSTRUCTION_ROOT:
+    value: .github/instructions
+    source: user
+    evidence: User approved standard GitHub Copilot locations.
+  MANIFEST_PATH:
+    value: docs/agents/agentic-system-manifest.md
+    source: user
+    evidence: User approved docs/agents maintenance root.
+  KNOWLEDGE_FILE_GLOB:
+    value: docs/agents/knowledge/**/*.md
+    source: discovery
+    evidence: Existing knowledge index directory.
+
+capabilities:
+  repository-search:
+    resolution: native-tool
+    tool: search/textSearch, search/fileSearch, search/usages
+    note: Built-in Copilot search is approved.
+  file-editing:
+    resolution: native-tool
+    tool: read/readFile, edit/createFile, edit/editFiles
+    note: Canonical role tool surfaces preserved.
+  terminal-execution:
+    resolution: native-tool
+    tool: execute/runInTerminal
+    note: Required validation commands are available to execution roles.
+  knowledge-retrieval:
+    resolution: fallback
+    tool: read/readFile
+    note: Read the curated repository knowledge index and selected documents.
+  agent-session-persistence:
+    resolution: fallback
+    tool: read/readFile and edit/createFile
+    note: Persist session memory, session log, execution report, and derived planning artifacts under sessions/<planning-session-id>/.
+  work-item-retrieval:
+    resolution: user-supplied
+    tool: mcp_github_mcp_s2_issue_read
+    note: Planner-only read access for the current GitHub issue.
+  visual-evidence:
+    resolution: native-tool
+    tool: view_image, screenshot_page, open_browser_page
+    note: demo-vision captures deterministic session-local evidence.
+  subagent-delegation:
+    resolution: native-tool
+    tool: agent
+    note: Canonical agent delegation surface preserved.
+  web-documentation:
+    resolution: fallback
+    tool: none
+    note: Require authoritative excerpts when external documentation is needed.
+
+generated:
+  - path: AGENTS.md
+    template: templates/instructions/AGENTS.md
+    baseline: docs/agents/.baseline/AGENTS.md
+  - path: CONTEXT.md
+    template: authored
+    baseline: docs/agents/.baseline/CONTEXT.md
+  - path: .github/instructions/knowledge-guard.instructions.md
+    template: templates/instructions/knowledge-guard.instructions.md
+    baseline: docs/agents/.baseline/.github/instructions/knowledge-guard.instructions.md
+  - path: .github/instructions/planning-sessions.instructions.md
+    template: templates/instructions/planning-sessions.instructions.md
+    baseline: docs/agents/.baseline/.github/instructions/planning-sessions.instructions.md
+  - path: docs/agents/plan-schema.md
+    template: templates/plan-schema.md
+    baseline: docs/agents/.baseline/docs/agents/plan-schema.md
+  - path: docs/agents/artifact-gates.md
+    template: templates/artifact-gates.md
+    baseline: docs/agents/.baseline/docs/agents/artifact-gates.md
+  - path: .github/agents/demo-planner.agent.md
+    template: templates/agents/planner.agent.md
+    baseline: docs/agents/.baseline/.github/agents/demo-planner.agent.md
+  - path: .github/agents/demo-implementor.agent.md
+    template: templates/agents/implementor.agent.md
+    baseline: docs/agents/.baseline/.github/agents/demo-implementor.agent.md
+  - path: .github/agents/demo-integration-tester.agent.md
+    template: templates/agents/integration-tester.agent.md
+    baseline: docs/agents/.baseline/.github/agents/demo-integration-tester.agent.md
+  - path: .github/agents/demo-knowledge-builder.agent.md
+    template: templates/agents/knowledge-builder.agent.md
+    baseline: docs/agents/.baseline/.github/agents/demo-knowledge-builder.agent.md
+  - path: .github/agents/demo-ask.agent.md
+    template: templates/agents/ask.agent.md
+    baseline: docs/agents/.baseline/.github/agents/demo-ask.agent.md
+  - path: .github/agents/demo-vision.agent.md
+    template: templates/agents/vision.agent.md
+    baseline: docs/agents/.baseline/.github/agents/demo-vision.agent.md
+  - path: .github/skills/plan-bug-from-id/SKILL.md
+    template: templates/skills/plan-bug-from-id/SKILL.md
+    baseline: docs/agents/.baseline/.github/skills/plan-bug-from-id/SKILL.md
+  - path: .github/skills/plan-user-story-from-id/SKILL.md
+    template: templates/skills/plan-user-story-from-id/SKILL.md
+    baseline: docs/agents/.baseline/.github/skills/plan-user-story-from-id/SKILL.md
+  - path: .github/skills/user-story-analysis/SKILL.md
+    template: templates/skills/user-story-analysis/SKILL.md
+    baseline: docs/agents/.baseline/.github/skills/user-story-analysis/SKILL.md
+  - path: .github/skills/integration-test-knowledge-checklist/SKILL.md
+    template: templates/skills/integration-test-knowledge-checklist/SKILL.md
+    baseline: docs/agents/.baseline/.github/skills/integration-test-knowledge-checklist/SKILL.md
+  - path: docs/agents/agentic-system-manifest.md
+    template: templates/agentic-system-manifest.md
+    baseline: docs/agents/.baseline/docs/agents/agentic-system-manifest.md
+  - path: docs/agents/agentic-system.answers.yaml
+    template: templates/agentic-system-answers.md
+    baseline: docs/agents/.baseline/docs/agents/agentic-system.answers.yaml
+  - path: docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md
+    template: .agents/skills/bootstrap-agentic-system/CHANGELOG.md
+    baseline: docs/agents/.baseline/docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md
+
+deferred:
+  - decision: Initial knowledge-index refinement
+    reason: Preserve the existing curated index and delegate refinement to demo-knowledge-builder.
+  - decision: author-repo-skill mirror
+    reason: Not selected for the first install.
+  - decision: business-logic-gap-detector mirror
+    reason: Not selected for the first install.

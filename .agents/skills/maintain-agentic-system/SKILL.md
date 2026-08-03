@@ -1,78 +1,57 @@
 ---
 name: maintain-agentic-system
-description: "Use when: reviewing and updating an existing repository-local Agentic System as the repository, workflow, knowledge, or kit principles evolve."
-argument-hint: "Target repo, changed workflow or pain point, and preferred agent platform"
+description: "Use when: upgrading a repository-local Agentic System to a newer Bootstrap contract, evolving it as the repository changes, or auditing its current state."
+argument-hint: "Target repo, mode (upgrade, evolve, or audit), and the changed workflow or pain point"
 disable-model-invocation: true
 ---
 
 # Maintain Agentic System
 
-Use this skill to maintain an existing repo-local Agentic System against kit principles and the target repository's current workflow.
+Use this skill to upgrade, evolve, or audit an existing repository-local Agentic System.
 
-## Scope Boundary
+## Mission
 
-- Maintain agent-system files only: instructions, agents, skills, prompts, governance docs, knowledge docs, artifact templates, and session workflows.
-- Do not modify application code, database schema, migrations, runtime config, or product tests.
-- Produce a maintenance plan and wait for explicit approval before editing files.
-- If no existing Agentic System is found, stop and ask whether to switch to bootstrap behavior.
+Move a generated system forward without losing what the repository deliberately changed. Every proposal is a three-way merge against the maintenance baseline Bootstrap wrote, so an upgrade never overwrites a customization by accident and a customization never silently blocks an upgrade.
 
-## Existing-System Detection
+## Non-Negotiable Principles
 
-An existing Agentic System requires at least one root instruction file plus at least one agent-system component, such as a custom agent, skill, prompt, governance doc, knowledge doc, artifact template, or session workflow.
+- Maintain agent-system files only. Never touch application code, schema, migrations, runtime config, or product tests.
+- Never read, enumerate, or modify session-folder contents. The session root is a configured path, not a source of evidence.
+- Produce a maintenance plan and wait for explicit approval before editing files. Approval is false by default.
+- Compare per region against the baseline. A region that only upstream changed is taken; a region that only the repository changed is kept; a region both changed is a question.
+- Never declare a Bootstrap delta missing from changelog text alone. Check the repository files first.
+- Do not restate the generated-system checklist. It lives in the sibling Bootstrap skill's audit contract; cite the checks that fail.
+- Refresh the baseline, the answers file, and the customization register only after the user approves the changes, never before.
+- Do not rewrite a working system to match wording. Propose the smallest change that closes a real gap.
 
-Look for evidence such as:
+## Contract Files
 
-- repository instruction files,
-- `.github/agents/`, `.github/prompts/`, `.github/instructions/`, `.github/skills/`,
-- `.claude/agents/`, `.claude/skills/`, or equivalent platform folders,
-- `docs/agents/`, `sessions/`, governance docs, knowledge indexes, and artifact templates.
+This file is a router. Load the contract for the gate you are in; do not load them all up front.
 
-## Gates
+| Contract                       | Load when                                                                                 |
+| ------------------------------ | ----------------------------------------------------------------------------------------- |
+| `contracts/modes-and-scope.md` | Gates 0-2: mode selection, scope boundary, system detection, subagent delegation.         |
+| `contracts/merge-model.md`     | Gates 3-5: three-way merge, regions, conflicts, customization register, baseline refresh. |
+| `contracts/delta-audit.md`     | Gates 3-6: delta collection and classification, plan shape, final validation.             |
 
-### Gate 0: Scope Intake
+The generated-system contract itself is not duplicated here. Load the sibling `bootstrap-agentic-system/contracts/audit-and-handoff.md` when you need to know what a complete generated system requires.
 
-Confirm the request is about maintaining an Agentic System. If the user asks for app feature work or product bug fixes, stop or ask for confirmation.
+## Maintenance Gates
 
-### Gate 1: System Detection
+Run the gates in order. Each entry names the gate's purpose and the contract that governs it.
 
-Detect whether an Agentic System exists. If not found, ask whether to switch to `bootstrap-agentic-system`.
+- Gate 0, Scope Intake: confirm this is agent-system maintenance and settle the mode. See `contracts/modes-and-scope.md`.
+- Gate 1, System Detection: find the existing system and record which parts of the maintenance baseline exist. See `contracts/modes-and-scope.md`.
+- Gate 2, Evidence Scan: read the agent-system files, the repository changes that affect them, and the version provenance. See `contracts/modes-and-scope.md`.
+- Gate 3, Delta Collection: gather and classify every Bootstrap contract delta from the installed changelog, templates, registry, snapshot, and repository evidence. See `contracts/delta-audit.md`.
+- Gate 4, Region Merge: run the three-way merge per region, resolve conflicts with the user, and apply the register rules. See `contracts/merge-model.md`.
+- Gate 5, Maintenance Plan And Approved Apply: produce the plan, get approval, write only the approved operations, then refresh the baseline and provenance. See `contracts/delta-audit.md` and `contracts/merge-model.md`.
+- Gate 6, Final Validation: verify the operations, the merge decisions, the refreshed baseline, and the generated-system checks. See `contracts/delta-audit.md`.
 
-### Gate 2: Repository Change Scan
+In `audit` mode, stop after Gate 4 and report. Write nothing.
 
-Inspect workflow evidence that may require system updates: new domains, changed validation commands, new docs, new CI, changed issue/session workflow, new risks, or stale knowledge.
+## Output Shape
 
-### Gate 3: Principle Review
+Before writes: output the mode, the classified delta list, the per-region merge outcomes, the proposed operations, and the unapproved plan, then ask for explicit approval.
 
-Evaluate whether the current system still follows kit principles:
-
-- repo-specific over generic,
-- approval gates before risky edits,
-- bounded knowledge loading,
-- explicit artifacts for plans and handoffs,
-- validation tied to real repo commands,
-- role boundaries that match authority changes,
-- minimal durable files instead of broad narrative sprawl.
-
-### Gate 4: Maintenance Plan
-
-Produce a concise plan that lists files to update, why each update is needed, expected risk, and validation commands. Mark approval as required.
-
-### Gate 5: Approved Apply
-
-After explicit approval, apply only the approved file changes. Keep edits small and preserve repo-local conventions.
-
-### Gate 6: Validation
-
-Validate frontmatter, links, basic instruction structure, and any available repo-local checks. Report any validation that could not run.
-
-## Output Requirements
-
-The maintenance plan must include:
-
-1. detected Agentic System components,
-2. repository changes that affect the system,
-3. principle gaps,
-4. proposed file operations,
-5. approval status,
-6. validation plan,
-7. rollback notes.
+After writes: output changed files, conflict resolutions, validation results, the new applied-through version, the refreshed baseline and answers paths, register rows added, post-maintenance recommendations, and remaining risks.

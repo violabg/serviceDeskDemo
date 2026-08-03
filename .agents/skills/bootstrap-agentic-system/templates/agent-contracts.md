@@ -6,11 +6,121 @@ Use these as starting shapes. Adapt names, tools, and paths to the target platfo
 
 When drafting a planner or implementor contract, use these repository originals as source material instead of inventing new shapes:
 
+- Generated system blueprint: [`generated-system-blueprint.md`](generated-system-blueprint.md)
+- Role-specific agent contracts: [`agent-role-contracts.md`](agent-role-contracts.md)
 - Knowledge index schema: [`knowledge-index-schema.md`](knowledge-index-schema.md)
 - Implementation plan schema: [`plan-schema.md`](plan-schema.md)
-- Clarification question schema: [`question-schema.md`](question-schema.md)
 
-Use the original shapes as examples, then adapt fields to the target repo.
+Use the original shapes as examples, then adapt fields to the target repo. Start from `agent-role-contracts.md` for concrete Planner, Implementor, Tester, Knowledge Builder, Vision, Ask, and Contract Auditor contracts; use this file for the shared root, Vision, hidden subagent, and artifact contract snippets.
+
+## Root AGENTS.md Shape
+
+Create root `AGENTS.md`, or an approved platform-equivalent root instruction file, as the stable entrypoint for future agents working in the repository.
+
+Minimum sections:
+
+```markdown
+# Repository Agent Instructions
+
+## Agentic System Entrypoints
+
+- Planner:
+- Implementor:
+- Tester:
+- Knowledge Builder:
+- Vision: `<path>` | not installed
+
+## Repository Context
+
+- Context glossary: `CONTEXT.md` | `<path>` | none
+- Rule: use the glossary for stable repository code/domain vocabulary and source-of-truth boundaries. Do not treat it as a knowledge index.
+
+## Knowledge Loading
+
+- Knowledge index: `<path>`
+- Rule: read the index before loading knowledge files and load only matching entries.
+
+## Runtime Schemas
+
+- Implementation plan schema: `<template-dir>/plan-schema.md`
+- Rule: cite repo-local schema paths in Planner artifacts and keep schema-required section order, anchors, linked file references, coverage scenarios, and operations intact.
+
+## Sessions And Approval
+
+- Session path:
+- Approval gate:
+- Handoff artifact:
+
+## Validation
+
+- Required commands:
+- Skipped or unavailable checks:
+
+## Generated Skills And Templates
+
+- Skills:
+- Templates:
+- Agent partials:
+
+## Provenance
+
+- Manifest: `<agentic-system-manifest-path>`
+- Bootstrap changelog snapshot: `<path>`
+```
+
+Keep this file short, navigational, and prompt-sensitive. It should route agents to the right generated contracts, glossary, knowledge index, repo-local schemas, templates, manifest, prompt-specific partials, and validation commands for the current request without duplicating full agent instructions or bulk-loading repository facts.
+
+When a custom generated agent has no Canonical Template Mirror and the target platform uses Markdown agent contracts, keep the main generated agent file as a stable routing contract. Put prompt-specific procedures, long checklists, or mode-specific instructions into separate Markdown partials and have the main contract name when those partials should be loaded. When a Canonical Template Mirror exists, keep the mirrored runtime body in the main generated file; partials may add repo-specific extensions but must not replace, summarize, rename, or remove mirrored non-slot content unless the user explicitly approves that non-slot relocation.
+
+If a request depends on another role's contract fragment, a shared repository rule, or a repo-specific operating mode, the main contract must say to load that dependency partial as well. Selective loading is for relevance and token control, not for hiding important constraints.
+
+## Vision Agent Shape
+
+Create a Vision agent when screenshots, mockups, wireframes, diagrams, UI snapshots, browser screenshots, image assets, issue attachments, or annotated QA images materially affect planning, implementation, review, or testing.
+
+````markdown
+---
+name: "<Team Vision>"
+description: "Use when: converting image evidence for <repo/team> into a deterministic text artifact that non-vision agents can cite."
+tools: [edit/createFile, edit/editFiles]
+user-invocable: true
+---
+
+# <Team Vision>
+
+## Mission
+
+Convert one image or image set into a deterministic session artifact for Planner, Implementor, and Tester agents.
+
+## Inputs
+
+- Image path, URL, attachment, or session artifact reference
+- Session path
+- Requested output format: SlimUI | structured Markdown | repo-local visual artifact format
+
+## Non-Negotiable Rules
+
+- Treat the image as source evidence; do not infer unstated requirements.
+- Preserve visible reviewer annotations separately from the underlying UI, diagram, or screenshot content.
+- Capture text exactly when legible.
+- Capture layout, hierarchy, color, spacing, controls, icons, assets, and visible state when relevant to downstream work.
+- Mark uncertainty explicitly instead of guessing.
+- Save the output as a session artifact before handing off.
+- Return the artifact path and a compact summary of confidence and gaps.
+
+## Output Artifact
+
+- Path pattern: `<session-path>/visual/<image-name>.slimui` or approved repo-local equivalent
+- Required sections or format rules:
+  - Source image reference
+  - Extracted visual structure
+  - Reviewer annotations
+  - Uncertainties and gaps
+
+## Handoff
+
+Planner, Implementor, and Tester agents must cite the produced visual artifact. They must not rely on raw images unless they have vision capability and an approved reason.
+````
 
 ## User-Invokable Main Agent
 
@@ -18,8 +128,8 @@ Use the original shapes as examples, then adapt fields to the target repo.
 ---
 name: "<Team Planner>"
 description: "Use when: planning approved work for <repo/team>. Produces requirements, spec, implementation plan, test plan, and handoff artifacts."
-tools: [read, search, edit, agent]
-agents: ["<Hidden Requirements Analyst>", "<Hidden Context Scout>"]
+tools: [vscode/askQuestions, read/readFile, agent, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/fileSearch, search/listDirectory, search/textSearch, search/usages]
+agents: [agent]
 user-invocable: true
 ---
 
@@ -33,18 +143,21 @@ Convert a requirement into durable planning artifacts that can be approved befor
 
 - Do not implement application code.
 - Work from a named session artifact package.
+- Keep this main contract role-scoped and concise when no Canonical Template Mirror exists. If a mirror exists for this role, preserve the mirrored runtime body in the main file. Load only additive prompt-specific partials that match the current request, and load shared or cross-role dependency partials when the request depends on them.
 - Do not ask for approval while blocking clarification questions remain open.
-- If the repository has a context glossary such as `CONTEXT.md`, read it before naming roles, gates, artifacts, skills, or source-of-truth boundaries.
+- If the repository has a context glossary such as `CONTEXT.md`, read it for stable repository code/domain vocabulary before naming roles, gates, artifacts, skills, or source-of-truth boundaries.
 - Do not treat the context glossary as a knowledge index or as permission to bulk-load repository docs.
 - Read the generated knowledge index before loading repository knowledge files.
 - Load only knowledge files whose `When to read` triggers match the planning task.
 - Do not bulk-load every knowledge file before selection.
-- Use `templates/question-schema.md` as the source template when asking blocking clarification questions and recording answers.
+- Present each blocking clarification in chat using the per-question format the generated Planner already defines; do not collapse it into an open-question summary or an ad hoc numbered reply list.
 - Use `templates/plan-schema.md` as the source template when producing implementation-plan.md artifacts.
 - Load `templates/plan-schema.md` immediately before drafting or repairing implementation-plan.md artifacts.
 - Preserve plan-schema-required filesystem-tree links, File Details anchors, and backlinks. If markdown diagnostics conflict with the schema, report or waive the diagnostic instead of removing required links or anchors.
 - Before requesting approval or handing work to an Implementor, run a plan-schema adherence self-check and repair any schema drift.
 - Do not bulk-read the repository before knowledge selection and clusterization.
+- Add discovered tracker, documentation, context, framework, or repository-knowledge MCP tools only when they fit Planner authority and are recorded in the file plan.
+- Preserve `agents: [agent]` in frontmatter. If Vision is selected, use `agents: [agent, "<generated Vision agent name>"]`.
 
 ## Gates
 
@@ -71,9 +184,15 @@ Artifact record:
 
 Pass condition:
 
+The Planner has determined the active Planning Session ID, created or resumed only that session folder, and established the initial session artifacts before any planning interview or plan drafting begins.
+
 Fail condition:
 
+The Planner delays session-folder creation until approval, drafts the plan before artifact intake, or scans unrelated session folders instead of resuming directly from the known session id.
+
 Artifact record:
+
+Session identity artifact plus the initial evidence artifacts required by the request.
 
 ### Candidate Gate: Knowledge Selection
 
@@ -93,7 +212,7 @@ Selected Knowledge section in the session artifacts.
 
 Pass condition:
 
-The Planner has read the context glossary when present and uses its terms consistently for roles, gates, artifacts, skills, and ownership boundaries.
+The Planner has read the context glossary when present and uses its repo-code/domain terms consistently for planning language, roles, gates, artifacts, skills, and ownership boundaries.
 
 Fail condition:
 
@@ -131,11 +250,11 @@ Artifact record:
 
 Pass condition:
 
-The implementation-plan artifact preserves the required structure from `templates/plan-schema.md`: approval metadata, linked Filesystem Tree paths, matching File Details anchors from the slug rule, backlinks to the tree, proposed diffs or files where required, operations, validation commands, and risks/rollback.
+The implementation-plan artifact preserves the required structure from `templates/plan-schema.md`: Section 1 through Section 4 in order, the `section-filesystem-tree` anchor, matching file-detail anchors, backlinks to the tree, flush-left diff blocks for modified files, required coverage scenarios, and the operations table or the unit-test-only no-op sentence.
 
 Fail condition:
 
-Any required schema section is missing, filesystem-tree paths are plain code spans instead of links, File Details anchors or backlinks are missing, or markdown cleanup changed the plan away from the schema.
+Any required schema section is missing, filesystem-tree paths are plain text instead of links, file-detail anchors or backlinks are missing, diff blocks are indented or incomplete, coverage scenarios are missing where business logic exists, or markdown cleanup changed the plan away from the schema.
 
 Artifact record:
 
@@ -165,7 +284,7 @@ Rule: do not bulk-load all knowledge files before index selection.
 
 ## Clarification Question Shape
 
-Use [`question-schema.md`](question-schema.md) when recording clarification questions and answers. The generated Planner contract must reference the target repo's local question-schema path explicitly.
+The generated Planner already defines the per-question chat format. Do not restate that format anywhere else; a second copy drifts from the first. This section governs only the artifact that records the questions and their answers.
 
 Minimum artifact shape:
 
@@ -214,23 +333,19 @@ Rule: do not ask for approval while blocking clarification questions remain open
 
 Use [`plan-schema.md`](plan-schema.md) when the generated planner must hand off work to an implementor. The generated Planner contract must reference the target repo's local plan-schema path explicitly. Preserve these sections unless the target repo has a better equivalent:
 
-1. Session ID
-2. Approval Status
-3. Design Overview
-4. Selected Repository Knowledge
-5. Filesystem Tree with linked paths
-6. File Details with backlinks
-7. Proposed Diff for material modified files
-8. Proposed File for new files
-9. Operations and Timeline
-10. Validation Commands
-11. Risks and Rollback
+1. `SECTION 1 - Design Overview`
+2. `SECTION 2 - Filesystem Tree` with the `section-filesystem-tree` anchor
+3. `SECTION 3 - File Details` with matching per-file anchors and backlinks
+4. `SECTION 4 - Operations and Timeline`
+5. Required `Coverage Scenarios` blocks for executable business logic
+6. Flush-left `diff` blocks for modified files and full-file code blocks for new files
 
 Required self-check before approval or handoff:
 
 - Every Filesystem Tree path is a markdown link to its File Details entry.
 - Every File Details entry has the schema-required anchor and a backlink to the Filesystem Tree.
-- The slug used by each tree link matches the schema slug rule.
+- Every Section 3 file with executable business logic contains a `Coverage Scenarios` table derived from the shown code.
+- Modified-file code sections use flush-left `diff` blocks with complete changed regions.
 - Markdown diagnostics cleanup has not removed schema-required links, anchors, or backlinks.
 - If lint tooling flags schema-required inline HTML, keep the schema intact and record the diagnostic as waived or accepted.
 
