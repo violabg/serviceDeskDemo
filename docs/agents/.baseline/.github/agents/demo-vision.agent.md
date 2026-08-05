@@ -9,7 +9,7 @@ disable-model-invocation: true
 ## Bootstrap Template Visual Artifact Storage
 - Store visual evidence artifacts in `sessions/<planning-session-id>/visual/`.
 ## Bootstrap Template Visual Artifact Format
-- Convert visual evidence into `a PNG capture paired with a short Markdown note` so non-vision agents can cite deterministic text artifacts.
+- Convert visual evidence into `PNG captures paired with a short Markdown note` so non-vision agents can cite deterministic text artifacts.
 Cleaned into canonical agent `vision.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
@@ -18,7 +18,20 @@ The source agent called a private server for these operations. Each one keeps it
 
 | Capability | Substitute in the generated system |
 | --- | --- |
+| `#capability:session-activate` | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
+| `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
+| `#capability:session-artifact-read` | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
 | `#capability:session-artifact-write` | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
+| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
+
+## Role Tooling Intent
+
+Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
+
+| Target capability category | Source capability evidence | Bootstrap discovery guidance |
+| --- | --- | --- |
+| Planning-session persistence | `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
+| Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. Prefer platform image or browser tools; add a visual service only when selected workflow needs it. |
 
 ## Mission
 
@@ -654,7 +667,9 @@ Nothing is irrelevant.
 
 The image may contain visual annotations intentionally added by a human.
 
-These annotations are often more important than the UI itself.
+These annotations must be preserved with equal fidelity to the UI — never let them overshadow or replace the underlying UI elements.
+
+Even when annotations highlight specific regions, the agent MUST always parse the entire image in its entirety. Annotations are supplementary markers, not a filter: the whole UI must be extracted regardless of what is annotated.
 
 The agent MUST detect, preserve and explicitly represent every annotation.
 

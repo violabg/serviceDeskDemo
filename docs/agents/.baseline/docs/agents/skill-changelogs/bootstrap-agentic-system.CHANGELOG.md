@@ -4,7 +4,19 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `3.1.2`
+- `3.3.0`
+
+## 2026-08-03
+
+### 3.3.0
+
+- Added per-role tooling-intent profiles inferred from the upstream private-tool scope, so target tool discovery can distinguish tracker, knowledge, repository search, visual evidence, and repository-local session needs.
+- Required Bootstrap to resolve only evidence-backed, least-privilege target tools per role, including conditional documentation support for current external framework, library, vendor, or API contracts.
+
+### 3.2.0
+
+- Added capability-availability guards to generated Ask, Implementor, Integration Tester, Knowledge Builder, and Planner agents, with explicit no-fallback behavior when required capabilities are unavailable.
+- Tightened generated Planner gate execution and failure handling so gates remain linear and failures are logged, summarized, clarified, and halted consistently.
 
 ## 2026-07-31
 
@@ -12,6 +24,8 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 - Reduced repeated work-item planning instructions by keeping retrieval semantics in the subagent prompt instead of restating them in the generated planning-contract preamble.
 - Kept the required tracker, session, dependency-evidence, and clarification constraints while moving the generated planning mirrors closer to their canonical skill wording.
+
+## 2026-07-31
 
 ### 3.1.1
 

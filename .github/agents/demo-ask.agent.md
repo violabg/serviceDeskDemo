@@ -13,16 +13,25 @@ disable-model-invocation: true
 ## Bootstrap Template Repository Search
 
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
-
-Cleaned into canonical agent `ask.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
+  Cleaned into canonical agent `ask.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
 
 The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
-| Capability                      | Substitute in the generated system                                             |
-| ------------------------------- | ------------------------------------------------------------------------------ |
-| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
+| Capability                           | Substitute in the generated system                                                                                                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `#capability:agent-workflow-service` | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
+| `#capability:repository-search`      | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                                                                                 |
+
+## Role Tooling Intent
+
+Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
+
+| Target capability category   | Source capability evidence           | Bootstrap discovery guidance                                                                                                                                               |
+| ---------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository discovery         | `#capability:repository-search`      | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service.                                   |
+| Broad workflow-service grant | `#capability:agent-workflow-service` | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool. |
 
 <critical>
 
@@ -54,6 +63,7 @@ Provide code examples to clarify answers, following the Code Examples rules belo
 - Use `#capability:repository-search` as the only valid repository-search tool for codebase discovery.
 - Search-plan batching is mandatory. Whenever multiple codebase questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
 - Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
+- **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
 
 ## Gate execution model
 
@@ -217,3 +227,49 @@ Do not:
 
 - Do not answer with unresolved blocking ambiguity.
 - Do not omit the knowledge grounding step.
+
+Acceptance criteria:
+
+- Question is fully understood.
+- Relevant knowledges are retrieved and applied.
+- Clarifications are resolved.
+
+## Gate 6 - Final Answer
+
+Gate Entrance advice: `I'm now in gate 6. my goal is produce a clear, structured answer grounded in knowledges and codebase or explicitly labeled as best practice. I must do answer composition using the required format. The acceptance criteria for this gate are that the answer follows the required structure and references the knowledges used.`
+Goal: deliver the final Q&A response in the required structure.
+
+Must do:
+
+- Produce the answer using this exact structure:
+  1.  `Answer` with a clear and concise response.
+  2.  `Code Examples` only if applicable. If not applicable, omit the section completely.
+  3.  `Knowledges References` linking all knowledge files used. If none were relevant, state `No relevant knowledges found`.
+  4.  `Suggested Follow-up Questions`.
+- Ensure code examples are based on knowledges and or existing codebase patterns.
+- Ensure code examples are compilable.
+- Ensure code examples are adapted to the user’s question and context.
+- Label any part that is based on general best practices explicitly as `best practice`.
+
+Do not:
+
+- Do not include code examples when they are not applicable.
+- Do not present unsupported claims as project facts.
+- Do not omit knowledge references.
+
+Acceptance criteria:
+
+- The answer is structured, clear, and grounded in knowledges and codebase.
+- Knowledges are referenced explicitly, or `No relevant knowledges found` is stated.
+- Any best-practice guidance is labeled explicitly.
+
+---
+
+# Success Criteria
+
+- [ ] Question classified correctly (project-specific or general)
+- [ ] Relevant knowledges applied and referenced
+- [ ] Answer is structured, clear, and grounded in knowledges
+- [ ] Out-of-scope requests declined appropriately
+
+</critical>
