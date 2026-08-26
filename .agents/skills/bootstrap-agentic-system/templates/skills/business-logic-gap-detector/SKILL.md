@@ -5,9 +5,7 @@ disable-model-invocation: true
 ---
 
 # Business Logic Gap Detector
-
 # Business Logic Gap Detector for Implementor
-
 Use these instructions to create unit tests designed to break (or expose weaknesses in) production logic.
 
 # Invocation Format
@@ -16,19 +14,18 @@ Use these instructions to create unit tests designed to break (or expose weaknes
 
 You expect to receive a single invocation message that identifies:
 
-- A session ID
-- One or more classes to analyze
-- Optional method names to restrict the analysis scope
+* A session ID
+* One or more classes to analyze
+* Optional method names to restrict the analysis scope
 
 ## Canonical Format
 
 The preferred canonical format is:
 
 ```markdown
-## Activate session: {session_id}
-
+Activate session: {session_id}
+---
 List of test scope items:
-
 - {ClassName}: {MethodName1}, {MethodName2}
 ```
 
@@ -37,30 +34,27 @@ This format is recommended because it is the clearest and easiest to parse.
 ### Example 1 — Specific methods
 
 ```markdown
-## Activate session: test_1
-
+Activate session: test_1
+---
 List of test scope items:
-
 - ExampleClassName1: Handle, ValidateGroupId
 ```
 
 ### Example 2 — All methods (methods omitted)
 
 ```markdown
-## Activate session: test_2
-
+Activate session: test_2
+---
 List of test scope items:
-
 - ExampleClassName2
 ```
 
 ### Example 3 — Multiple classes
 
 ```markdown
-## Activate session: test_3
-
+Activate session: test_3
+---
 List of test scope items:
-
 - ExampleClassName3: Handle
 - AnotherExampleClassName3: Method1, Method2
 ```
@@ -131,12 +125,10 @@ Use session test_detector_6 and analyse HermesAssignmentDocumentBoardingUseCase.
 ---
 
 # Do
-
 1. For each class file and for the involved methods, you must create unit tests that break the business logic. For each method, you must analyze all private methods it invokes, including those called indirectly at any level of nesting or call depth. You must create unit tests that break the business logic of the production code, and you must ensure that every test case you create fails when executed against the production code before any fix is applied. If a test case does not fail, it means that it does not effectively break the production logic and it is not a valid test case. In such cases, you must revise the test case to ensure that it genuinely exposes a weakness or failure point in the production logic.
 2. Every test case you create must highlight real weaknesses and failure points that can genuinely occur in practice.
 
 # Do not
-
 - Do not modify the production class; limit yourself to writing the tests and ensuring that they fail.
 - Do not be speculative and do not create impossible scenarios.
 - Do not restrict your analysis to the content of the specified method. Instead, thoroughly examine all private methods invoked by it, including those called indirectly at any level of nesting or call depth.
@@ -144,30 +136,28 @@ Use session test_detector_6 and analyse HermesAssignmentDocumentBoardingUseCase.
 # Workflow
 
 # Gate 0 - Invocation validation
-
 Before doing any repository work, validate the invocation payload.
 If the caller message does not match the required input, stop and report `blocked invalid invocation`.
 If any required field is missing for a test scope item, stop and report `blocked invalid invocation`.
 
 # Gate 1 - Knowledge refresh
-
 <!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START replaces=sha256:f80bd0c0487c89ac lines=1 -->
 Before starting the unit-test implementation, refresh your knowledge of the project conventions, especially regarding unit tests. Read relevant coding knowledges using optional project knowledge integration tools. Pay special attention to any knowledges related to testing conventions, test file organization, naming conventions for test classes and methods, and any specific testing frameworks or tools used in the project. Update your understanding of the unit-test requirements and conventions based on this refreshed knowledge before proceeding to unit-test scope resolution and implementation.
 <!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
 # Repository Discovery Budget
 
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START replaces=sha256:5d125ab645219142 lines=73 -->
+<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START replaces=sha256:5f46bd8a2dd1335b lines=72 -->
 Repository discovery is one of the most expensive operations.
 
 Hard limits:
 
 - Before implementation:
-  maximum TWO repository search calls.
+  maximum TWO search/grep calls.
 
 - During compiler recovery:
-  maximum ONE repository search call per compiler iteration.
+  maximum ONE search/grep call per compiler iteration.
 
-Never perform consecutive repository search calls without first:
+Never perform consecutive search/grep calls without first:
 
 - implementing code,
 - compiling,
@@ -178,7 +168,6 @@ Every search must have a specific unresolved technical objective.
 Searching to gain confidence or familiarity with the codebase is forbidden.
 
 # Gate 2 - Unit-test resolution and execution preparation
-
 If no suitable test file already exists, create a new test file in the appropriate test project, using the production-class to test-class mapping and the project testing conventions.
 Derive actual target test files from the the production-class to test-class mapping, and the minimum repository discovery needed to implement the tests.
 
@@ -187,7 +176,7 @@ Repository discovery is expensive and must be minimized.
 Execution strategy:
 
 Step 1
-Perform exactly ONE repository search integration call to discover all of the following:
+Perform exactly ONE search/grep to discover all of the following:
 
 - existing test files
 - production class → test class mappings
@@ -209,7 +198,7 @@ Do not interrupt implementation to gather additional context unless blocked.
 
 Do NOT perform exploratory searches.
 
-Every repository search integration call must answer a specific unresolved technical question.
+Every search/grep call must answer a specific unresolved technical question.
 
 Examples of INVALID searches:
 
@@ -232,7 +221,6 @@ Do not perform additional searches unless blocked by compiler diagnostics or a m
 When uncertain, prefer writing code and letting the compiler identify the missing information rather than searching the repository.
 <!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
 # Gate 3 - Unit-test implementation and red flag verification
-
 <!-- CANONICAL-TEMPLATE-SLOT: TEST_STACK_CONVENTIONS START replaces=sha256:3e098a35d1f4bcc7 lines=3 -->
 Create or update the unit tests files according to the scope defined in the previous gate and strictly following the instructions in the implementation plan and the project conventions.
 Preserve one test file per production class.
@@ -318,7 +306,7 @@ Examples:
 - unknown repository method
 - unknown production behavior
 
-Only Category B errors justify a repository search integration call.
+Only Category B errors justify search/grep.
 
 Each search must answer exactly one unresolved technical question.
 
@@ -332,29 +320,22 @@ If a blocker remains after reasonable autonomous repair attempts, record it clea
 Every test case must fail when executed against the production code before any fix is applied. If a test case does not fail, it means that it does not effectively break the production logic and it is not a valid test case. In such cases, you must revise the test case to ensure that it genuinely exposes a weakness or failure point in the production logic.
 
 # Gate 4 - Final summary
-
 After implementing the unit tests, provide a final summary of the implemented tests, including the specific weaknesses or failure points they are designed to expose in the production logic.
 Write a note in memory for the next agent who will be responsible for fixing the production code, describing the weaknesses or failure points that the implemented tests are designed to expose. This will help guide their efforts in addressing the issues identified by the tests.
 Write a message to the caller that unit tests have been implemented and red tested and the agent can now proceed for fixing the production code.
 
 Use this template to construct your response to the caller:
-
 ```markdown
 **Return format**:
-
 # Overall verdict
-
 - <implemented failing tests | no actionable issue | blocked invalid invocation>
 
 # Findings ordered by severity
-
 - <for each finding: production weakness, exact failing test scenario, why it matters>
 
 # Implemented failing tests
-
 - <test file path>: <test name and weakness exposed>
 
 # Next step for fix agent
-
 - <narrow production area that must be fixed, or `none`>
 ```

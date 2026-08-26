@@ -136,10 +136,7 @@ Use diagnostic and test feedback to identify the exact missing information befor
 - Call `#capability:knowledge-index-read` immediately after session initialization.
 - Read every `MustHave` knowledge before any reasoning.
 - Use PerContext and PerComponent knowledges for integration test patterns, constraints, and folder conventions.
-- Use `#capability:repository-search` as the only valid repository-search tool for codebase discovery.
-- Each `#capability:repository-search` call must answer one unresolved technical question or one tightly related batched discovery objective for the current gate.
-- Search-plan batching is mandatory. Whenever multiple reconnaissance questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
-- Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
+- Reducing agent-loop round trips is a hard requirement, not an optimization hint.
 
 ## Repository Discovery Budget
 
@@ -147,10 +144,10 @@ Repository discovery is one of the most expensive operations.
 
 Hard limits:
 
-- Before integration test implementation: maximum TWO `execute_search_plan` calls.
-- During compiler or test recovery: maximum ONE `execute_search_plan` call per recovery iteration.
+- Before integration test implementation: maximum TWO search/grep calls.
+- During compiler or test recovery: maximum ONE search/grep call per recovery iteration.
 
-Never perform consecutive `execute_search_plan` calls without first:
+Never perform consecutive search/grep calls without first:
 
 - implementing tests,
 - reviewing current compiler diagnostics,
@@ -305,7 +302,7 @@ Goal: determine exactly what must be tested.
 Execution strategy:
 
 Step 1
-Perform exactly ONE `#capability:repository-search` when discovery is required to discover all of the following in one batch whenever possible:
+Perform exactly ONE search/grep when discovery is required to discover all of the following in one batch whenever possible:
 
 - existing integration test files
 - production class to integration test class mappings
@@ -325,7 +322,7 @@ Must do:
 
 - For plan-driven work, read the approved implementation plan markdown document, frontmatter plus body, the current execution report, relevant session artifacts.
 - For component-driven work, read and normalize the implementation details provided by the user.
-- When codebase discovery is needed, perform exactly ONE batched `#capability:repository-search` to discover all of the following whenever applicable:
+- When codebase discovery is needed, perform exactly ONE search/grep to discover all of the following whenever applicable:
   - existing integration test files
   - production class to integration test class mappings
   - integration test patterns and fixtures
@@ -341,8 +338,7 @@ Must do:
 Do not:
 
 - Do not create mixed-class test files.
-- Do not use direct repository search outside `#capability:repository-search`.
-- Do not spread compatible discovery searches across multiple `execute_search_plan` calls just because it feels simpler.
+- Do not use different tools from search/grep for searches.
 - Do not perform exploratory searches.
 - Do not perform additional searches unless blocked by compiler diagnostics, test failures, or a missing technical dependency.
 - Do not include production units that are outside the provided scope.
@@ -365,8 +361,6 @@ Examples of VALID searches:
 Acceptance criteria:
 
 - Testable production units are identified.
-- When discovery was needed, a declarative search plan has been executed through `#capability:repository-search`.
-- When discovery was needed, the executed search plan is maximally batched, answers a specific unresolved technical question, and is split only when one explicit blocker is stated.
 - The one-to-one class-to-test-file scope is explicit.
 
 ## Gate 5 - Integration Test Plan Drafting
@@ -490,10 +484,6 @@ Must do:
 - Work in batches whenever possible.
 - When the available plan detail and discovered implementation facts are sufficient, the agent may implement independent integration test files in parallel instead of strictly one by one.
 - Use parallel execution only for independent integration test items whose implementation does not rely on unresolved shared decisions, overlapping edits, or the outcome of another pending test item.
-- If codebase discovery is required to implement or repair one or more integration test items, create and execute a declarative search plan through `#capability:repository-search` only for the missing facts.
-- Pack into that search plan as many compatible search tasks as possible for the current implementation blockers.
-- Treat one batched `#capability:repository-search` call as the default expectation for each discovery pass in this gate. Split into multiple calls only when one explicit blocker makes the batched call impossible or materially invalid.
-- Prefer reading only files returned by the search-plan result, and stop discovery as soon as the blocker is resolved.
 - When uncertain, prefer writing the integration tests and letting compiler or test feedback identify the missing information rather than searching the repository.
 
 Preferred execution order:
@@ -515,7 +505,7 @@ Do not:
 - Do not write production code.
 - Do not create mixed-class tests.
 - Do not add integration, system, or e2e tests.
-- Do not use direct repository search outside `#capability:repository-search`.
+- Do not use different tools from search/grep for searches.
 - Do not interrupt implementation to gather additional context unless blocked.
 - Do not perform exploratory searches.
 - Do not ask the user for confirmation before moving from one approved test item to the next.
@@ -525,7 +515,6 @@ Acceptance criteria:
 - Only integration tests are written.
 - One-to-one production class to integration test file mapping is preserved.
 - Integration test work matches the approved plan across the full executable scope.
-- Any additional discovery obeys the `execute_search_plan`-only rule.
 
 ## Gate 10 - Verification And Documentation
 
@@ -539,8 +528,8 @@ Must do:
 - Run `read/problems` again after each repair iteration.
 - Run the relevant test command and fix failures.
 - Prefer verifying the broadest relevant set of newly implemented integration tests in as few test runs as possible, then apply focused follow-up fixes when failures are localized.
-- Only if Category B diagnostics or unresolved failure-analysis gaps remain, use `#capability:repository-search` as the only repository-search tool.
-- Each `execute_search_plan` call must answer exactly one unresolved technical question.
+- Only if Category B diagnostics or unresolved failure-analysis gaps remain, use only search/grep.
+- Each search/grep call must answer exactly one unresolved technical question.
 - After successful verification, update every completed item status to `tested`.
 - Update `summary_of_changes` for each completed or blocked item via tools.
 - Mirror the final item statuses and summaries into the local yaml working plan.
@@ -629,7 +618,7 @@ Examples:
 - unknown production behavior
 - unknown test infrastructure behavior that cannot be inferred from opened files
 
-Only Category B errors justify `execute_search_plan`.
+Only Category B errors justify search/grep.
 
 Each search must answer exactly one unresolved technical question.
 
@@ -674,7 +663,6 @@ Acceptance criteria:
 # Success Criteria
 
 - [ ] `<test_plan_name>.yaml` exists and preserves the exact test-plan structure
-- [ ] All codebase discovery uses `#capability:repository-search` as the only repository-search tool, each executed search plan is maximally batched unless one explicit blocker is stated, and every search answers a specific unresolved technical question
 - [ ] After explicit plan approval, autonomous execution continues without additional user confirmations between approved test items
 - [ ] All plan-specified components are processed, with completed items tested and blocked items explicitly reported
 - [ ] Tests follow one-to-one class mapping

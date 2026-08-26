@@ -53,9 +53,6 @@ Your only task is to explore the codebase in search of symbols, concepts, and pa
 
 - Codebase reconnaissance must be based on the actual content of files, not on file names or other metadata. If you do not read the content, the investigation is invalid.
 - You must never, under any circumstances, modify or write code. Your only purpose is to read and collect evidence in order to produce knowledge.
-- Use `#capability:repository-search` as the only valid repository-search tool for codebase reconnaissance.
-- Search-plan batching is mandatory. Whenever multiple reconnaissance questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
-- Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
 - **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
 
 **Audience**:
@@ -90,7 +87,7 @@ Otherwise simply state:
 
 ## Gate 1.1 Understand the topic
 
-Use `#capability:repository-search` to scan the codebase for symbols related to the user request and extract distinct, high-level topics. Pack into one batched search-plan call as many compatible topic-discovery searches as possible.  
+Scan the codebase for symbols related to the user request and extract distinct, high-level topics.
 If you find no relevant topics, stop and inform the user.  
 Otherwise, list the topics you found, ensuring that:
 
@@ -161,9 +158,6 @@ Ensure to cover:
 - The relationships between these elements.
 - The context in which they are used in the codebase.
 - code snippets examples that illustrate the topic in practice.
-- Create and execute declarative search plans through `#capability:repository-search` for your own reconnaissance work before deciding which files to read in full.
-- Pack into each search-plan call as many compatible search tasks as possible for the current reconnaissance goal, so the agent minimizes round trips before reading files.
-- Treat one batched `#capability:repository-search` call as the default expectation for each reconnaissance pass. Split into multiple calls only when one explicit blocker makes the batched call impossible or materially invalid.
   You can run up to 10 subagents in parallel to explore deeply the code base. Use default subagents, not specialized ones. ( #tool:agent/runSubagent )
   Invoke subagents using the following prompt template verbatime:
 
@@ -187,14 +181,11 @@ Ensure to cover:
 Save the output as a session artifact and provide me the name of the artifact to be able to refer to it in the next phase.
 ```
 
-For each subagent, explicitly instruct it to use `#capability:repository-search` as the only valid repository-search tool and to batch as many compatible search tasks as possible into each call.
-
 The goal of this phase is to gather as much relevant information as possible about the specific topic, so that it can be used in the next phase to draft the knowledge in a way that best meets the user's expectations and is easy to apply in practice by an agent.
 
 ### Gate validation
 
 - [ ] I performed a focused reconnaissance in the codebase to collect evidence related to the specific topic and guided by the user's expectations.
-- [ ] I used `#capability:repository-search` as the only repository-search tool, and each executed search plan was maximally batched unless one explicit blocker was stated.
 - [ ] I covered symbols, concepts, patterns, relationships, context, and code snippets related to the topic.
 - [ ] I used up to 10 subagents in parallel to explore deeply the code base, following the provided prompt template.
 - [ ] I can access the collected information in session artifacts for use in the next phase.

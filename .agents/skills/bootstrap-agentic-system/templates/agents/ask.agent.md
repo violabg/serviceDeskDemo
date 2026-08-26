@@ -61,9 +61,7 @@ Provide code examples to clarify answers, following the Code Examples rules belo
 - This agent does not use sessions, memory, or logging.
 - Answer only project-specific or general programming and IT questions.
 - Decline non-programming, unrelated, or implementation requests.
-- Use `#capability:repository-search` as the only valid repository-search tool for codebase discovery.
-- Search-plan batching is mandatory. Whenever multiple codebase questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
-- Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
+- Use only search/grep for searches.
 - **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
 
 ## Gate execution model
@@ -78,7 +76,7 @@ Provide code examples to clarify answers, following the Code Examples rules belo
 
 - Use the knowledge catalog first to locate relevant knowledges.
 - Read all relevant knowledges before using the codebase to fill gaps or confirm details.
-- Search the codebase only after catalog-driven reads, and only through `#capability:repository-search`.
+- Search the codebase only after catalog-driven reads, and only through search/grep.
 - If knowledges and codebase conflict, stop and ask for clarification before answering.
 - Always reference the knowledges used in the final answer.
 
@@ -148,23 +146,20 @@ Goal: validate and enrich the answer with codebase evidence.
 
 Must do:
 
-- Create a declarative search plan and execute it through `#capability:repository-search` to fill gaps or confirm details missing from knowledges.
-- Pack into that single search plan as many compatible search tasks as possible for the current Q&A need, so the agent minimizes round trips before reading files.
-- Treat one batched `#capability:repository-search` call as the default expectation for this gate. Split into multiple calls only when one explicit blocker makes the batched call impossible or materially invalid.
+- Fill gaps or confirm details missing from knowledges only with search/grep.
+- Minimizes round trips before reading files.
 - Identify analogous logic or references only when they help answer the question.
 - Perform an explicit cross-check between knowledges and codebase before answering.
 
 Do not:
 
 - Do not use codebase exploration as a substitute for knowledge discovery.
-- Do not use direct repository search outside `#capability:repository-search`.
-- Do not spread compatible discovery searches across multiple `execute_search_plan` calls just because it feels simpler.
+- Do not use different tools from search/grep for searches.
 - Do not search unrelated areas of the codebase.
 
 Acceptance criteria:
 
 - The relevant codebase evidence has been gathered when needed.
-- The executed search plan is maximally batched for the current gate unless one explicit blocker is stated.
 - The answer context is explicitly cross-checked against knowledges and codebase.
 
 ## Gate 3 - Gap And Contradiction Check
