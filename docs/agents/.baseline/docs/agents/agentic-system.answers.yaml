@@ -3,8 +3,8 @@
 version: 1
 
 bootstrap:
-  skill_version: 3.3.0
-  contract_applied_through: 3.3.0
+  skill_version: 3.4.0
+  contract_applied_through: 3.4.0
   generated_on: 2026-08-03
 
 platform:
@@ -85,7 +85,7 @@ slots:
   APPROVED_MCP_TOOLS:
     value: role-specific existing MCP and editor tools; planner and knowledge-builder custom surfaces preserved, no new tools added
     source: user
-    evidence: Approved 3.3.0 upgrade preserves the manifest customization register and existing least-privilege tool assignments.
+    evidence: Approved 3.4.0 upgrade preserves the manifest customization register and existing least-privilege tool assignments.
   VISUAL_EVIDENCE_STRATEGY:
     value: demo-vision with session-local PNG evidence and Markdown notes
     source: user

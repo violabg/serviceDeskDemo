@@ -7,27 +7,30 @@ disable-model-invocation: true
 # Source Mapping
 
 ## Bootstrap Template Knowledge Source
+
 - Read selected project knowledge through `docs/agents/knowledge/README.md and its selected knowledge documents` when the workflow requires repository guidance.
+
 ## Bootstrap Template Repository Search
+
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
-Cleaned into canonical agent `ask.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
+  Cleaned into canonical agent `ask.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
 
 The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
-| Capability | Substitute in the generated system |
-| --- | --- |
+| Capability                           | Substitute in the generated system                                                                                                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `#capability:agent-workflow-service` | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
-| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
+| `#capability:repository-search`      | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                                                                                 |
 
 ## Role Tooling Intent
 
 Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
 
-| Target capability category | Source capability evidence | Bootstrap discovery guidance |
-| --- | --- | --- |
-| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service. |
+| Target capability category   | Source capability evidence           | Bootstrap discovery guidance                                                                                                                                               |
+| ---------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository discovery         | `#capability:repository-search`      | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service.                                   |
 | Broad workflow-service grant | `#capability:agent-workflow-service` | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool. |
 
 <critical>

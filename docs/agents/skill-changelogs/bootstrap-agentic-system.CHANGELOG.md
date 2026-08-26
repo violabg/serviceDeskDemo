@@ -4,7 +4,14 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `3.3.0`
+- `3.4.0`
+
+## 2026-08-26
+
+### 3.4.0
+
+- Refined generated Ask, Integration Tester, Knowledge Builder, and Planner contracts to preserve the refreshed gate-flow, capability-availability, and bounded-search behavior, including explicit continuation and stop-point rules where applicable.
+- Updated the business-logic gap detector template to use public-safe `search/grep` terminology while retaining its repository-discovery limits and red-test requirements.
 
 ## 2026-08-03
 

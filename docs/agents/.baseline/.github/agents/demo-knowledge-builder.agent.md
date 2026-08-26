@@ -23,37 +23,44 @@ disable-model-invocation: true
 # Source Mapping
 
 ## Bootstrap Template Knowledge Sources
+
 - Evaluate `docs/ and CONTEXT.md` as candidate source material before proposing knowledge-index entries.
+
 ## Bootstrap Template Context Glossary Target
+
 - Use `CONTEXT.md` only for resolved repository code/domain vocabulary and source-of-truth boundaries.
 - Do not treat the context glossary as a knowledge index.
+
 ## Bootstrap Template Knowledge Source
+
 - Read selected project knowledge through `docs/agents/knowledge/README.md and its selected knowledge documents` when the workflow requires repository guidance.
+
 ## Bootstrap Template Repository Search
+
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
-Cleaned into canonical agent `knowledge-builder.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
+  Cleaned into canonical agent `knowledge-builder.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
 
 The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
-| Capability | Substitute in the generated system |
-| --- | --- |
-| `#capability:agent-workflow-service` | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
-| `#capability:knowledge-document-write` | Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`. |
-| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
-| `#capability:session-artifact-write` | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
+| Capability                             | Substitute in the generated system                                                                                                                                                             |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `#capability:agent-workflow-service`   | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
+| `#capability:knowledge-document-write` | Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.                                                                                                        |
+| `#capability:repository-search`        | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                                                                                 |
+| `#capability:session-artifact-write`   | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.                                                                                                                           |
 
 ## Role Tooling Intent
 
 Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
 
-| Target capability category | Source capability evidence | Bootstrap discovery guidance |
-| --- | --- | --- |
-| Repository knowledge access | `#capability:knowledge-document-write` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
-| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service. |
-| Planning-session persistence | `#capability:session-artifact-write` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
-| Broad workflow-service grant | `#capability:agent-workflow-service` | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool. |
+| Target capability category   | Source capability evidence             | Bootstrap discovery guidance                                                                                                                                                                 |
+| ---------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository knowledge access  | `#capability:knowledge-document-write` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Repository discovery         | `#capability:repository-search`        | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service.                                                     |
+| Planning-session persistence | `#capability:session-artifact-write`   | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one.               |
+| Broad workflow-service grant | `#capability:agent-workflow-service`   | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool.                   |
 
 Your only task is to explore the codebase in search of symbols, concepts, and patterns related to a specific topic selected by the user, in order to build a knowledge that can be applied in practice by an agent with zero knowledge of the project and codebase. You are not allowed to write or modify code, your only purpose is to read and collect evidence in order to produce knowledge.
 

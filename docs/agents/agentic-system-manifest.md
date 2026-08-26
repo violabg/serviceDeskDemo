@@ -11,11 +11,11 @@
 
 ## Installed Contract Versions
 
-- Bootstrap Skill Version Used: `3.1.2`
-- Bootstrap Contract Applied Through: `3.3.0`
+- Bootstrap Skill Version Used: `3.4.0`
+- Bootstrap Contract Applied Through: `3.4.0`
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Last Applied: `2.0.0`
-- Last Maintenance Date: 2026-08-03
+- Last Maintenance Date: 2026-08-26
 
 ## Generated System Paths
 
@@ -85,10 +85,10 @@ The following deliberate deviations are repository-owned and must be preserved o
 
 | ID | Target File | Region | Kind | Reason | Upstream Relation | Survives Upgrade | Last Verified Version |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `demo-planner-tools` | `.github/agents/demo-planner.agent.md` | frontmatter `tools` | `modified-rule` | User customized the planner tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.3.0` |
-| `demo-knowledge-builder-tools` | `.github/agents/demo-knowledge-builder.agent.md` | frontmatter `tools` | `modified-rule` | User customized the knowledge-builder tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.3.0` |
-| `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `3.3.0` |
-| `customer-terminology` | `CONTEXT.md` | Customer glossary row | `modified-rule` | User established Customer as the canonical application and label term; client is explanatory only. | `independent` | `always` | `3.3.0` |
+| `demo-planner-tools` | `.github/agents/demo-planner.agent.md` | frontmatter `tools` | `modified-rule` | User customized the planner tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.4.0` |
+| `demo-knowledge-builder-tools` | `.github/agents/demo-knowledge-builder.agent.md` | frontmatter `tools` | `modified-rule` | User customized the knowledge-builder tool surface to include repository-approved MCP and editor capabilities. | `overrides-canonical` | `always` | `3.4.0` |
+| `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `3.4.0` |
+| `customer-terminology` | `CONTEXT.md` | Customer glossary row | `modified-rule` | User established Customer as the canonical application and label term; client is explanatory only. | `independent` | `always` | `3.4.0` |
 
 ## Maintenance History
 
@@ -100,3 +100,4 @@ The following deliberate deviations are repository-owned and must be preserved o
 | 2026-07-31 | `2.0.0` | `3.1.0` | `3.1.2` | This manifest | Upgrade run restored missing generated skill mirrors, re-added `demo-ask` to the root router, refreshed the Bootstrap changelog snapshot, and refreshed baseline provenance. |
 | 2026-08-02 | `2.0.0` | `3.1.2` | `3.1.2` | This manifest | Evolve run clarified Customer terminology, synchronized three generated mirrors with current Bootstrap templates, and refreshed baseline provenance. |
 | 2026-08-03 | `2.0.0` | `3.1.2` | `3.3.0` | This manifest | Upgrade run applied Bootstrap 3.2.0 capability guards and 3.3.0 role tooling-intent profiles; preserved registered planner and knowledge-builder tool customizations and refreshed baseline provenance. |
+| 2026-08-26 | `2.0.0` | `3.3.0` | `3.4.0` | This manifest | Upgrade run accepted the four already-present 3.4.0 agent refinements, preserved registered tool-surface customizations, retained the approved business-logic-gap-detector deferral, and refreshed baseline provenance. Evolve review found no root-router change required. |
