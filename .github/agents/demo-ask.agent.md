@@ -12,6 +12,8 @@ disable-model-invocation: true
 
 ## Bootstrap Template Repository Search
 
+The approved search binding uses `search/listDirectory`, `search/usages`. Use bounded directory or symbol lookup followed by `read/readFile` when text search is absent; do not invoke an undeclared search tool.
+
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
   Cleaned into canonical agent `ask.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
@@ -22,7 +24,7 @@ The source agent called a private server for these operations. Each one keeps it
 | Capability                           | Substitute in the generated system                                                                                                                                                             |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `#capability:agent-workflow-service` | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
-| `#capability:repository-search`      | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                                                                                 |
+| `#capability:repository-search`      | Use the bounded repository-search procedure in Bootstrap Template Repository Search above, with only this role's declared tools.                                                                                                                 |
 
 ## Role Tooling Intent
 
@@ -60,10 +62,8 @@ Provide code examples to clarify answers, following the Code Examples rules belo
 - This agent does not use sessions, memory, or logging.
 - Answer only project-specific or general programming and IT questions.
 - Decline non-programming, unrelated, or implementation requests.
-- Use `#capability:repository-search` as the only valid repository-search tool for codebase discovery.
-- Search-plan batching is mandatory. Whenever multiple codebase questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
-- Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
-- **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+- Use only `#capability:repository-search` for searches.
+- **Capability Availability Guard:** Before an operation, verify that its approved capability binding is available. A configured MCP, native tool, repository skill, or local file contract may satisfy the operation. An approved fallback is a binding, not degraded operation. If the selected binding cannot perform the required operation, stop and report the missing capability; do not invent evidence, skip the gate, or silently switch to an unapproved integration.
 
 ## Gate execution model
 
@@ -147,23 +147,20 @@ Goal: validate and enrich the answer with codebase evidence.
 
 Must do:
 
-- Create a declarative search plan and execute it through `#capability:repository-search` to fill gaps or confirm details missing from knowledges.
-- Pack into that single search plan as many compatible search tasks as possible for the current Q&A need, so the agent minimizes round trips before reading files.
-- Treat one batched `#capability:repository-search` call as the default expectation for this gate. Split into multiple calls only when one explicit blocker makes the batched call impossible or materially invalid.
+- Fill gaps or confirm details missing from knowledges only with `#capability:repository-search`.
+- Minimizes round trips before reading files.
 - Identify analogous logic or references only when they help answer the question.
 - Perform an explicit cross-check between knowledges and codebase before answering.
 
 Do not:
 
 - Do not use codebase exploration as a substitute for knowledge discovery.
-- Do not use direct repository search outside `#capability:repository-search`.
-- Do not spread compatible discovery searches across multiple `execute_search_plan` calls just because it feels simpler.
+- Do not use different tools from `#capability:repository-search` for searches.
 - Do not search unrelated areas of the codebase.
 
 Acceptance criteria:
 
 - The relevant codebase evidence has been gathered when needed.
-- The executed search plan is maximally batched for the current gate unless one explicit blocker is stated.
 - The answer context is explicitly cross-checked against knowledges and codebase.
 
 ## Gate 3 - Gap And Contradiction Check

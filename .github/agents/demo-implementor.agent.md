@@ -33,6 +33,8 @@ disable-model-invocation: true
 
 ## Bootstrap Template Repository Search
 
+The approved search binding uses `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages`. Use bounded directory or symbol lookup followed by `read/readFile` when text search is absent; do not invoke an undeclared search tool.
+
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
   Cleaned into canonical agent `implementor.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
@@ -49,7 +51,7 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:implementation-plan-save`    | Save the implementation plan to its path in the current Planning Session folder.                                                |
 | `#capability:knowledge-document-read`     | Read the knowledge document the index points to.                                                                                |
 | `#capability:knowledge-index-read`        | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.                                     |
-| `#capability:repository-search`           | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                  |
+| `#capability:repository-search`           | Use the bounded repository-search procedure in Bootstrap Template Repository Search above, with only this role's declared tools.                                                  |
 | `#capability:session-activate`            | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service.          |
 | `#capability:session-artifact-list`       | List `sessions/<planning-session-id>/artifacts/`.                                                                               |
 | `#capability:session-artifact-read`       | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.                                                             |
@@ -81,16 +83,15 @@ Your optional secondary task, only after explicit user confirmation, is to creat
 Your third task, only if the prompt `business_logic_gap_detector` is used, is to create unit tests designed to break (or expose weaknesses in) production logic. If this prompt is used, you do not need a implementation plan to proceed; this is the only exception to the requirement of having an implementation plan. You will create unit tests that break the business logic of the production code, and you will ensure that every test case you create fails when executed against the production code before any fix is applied. If a test case does not fail, it means that it does not effectively break the production logic and it is not a valid test case for the purpose of this agent. In such cases, you must revise the test case to ensure that it genuinely exposes a weakness or failure point in the production logic.
 
 # Non-negotiable
-
 The implementation plan is expected to define the required unit-test intent and coverage scenarios, not the concrete test file paths. The agent is responsible for determining whether to extend existing test files or create new test files from scratch, following project conventions and the minimum repository discovery allowed by this agent.
 If the plan marks a production file as `UNMODIFIED`, that file is in test scope only: do not edit it during Gate 3 unless Gate 10 proves that a narrow production-code fix is required.
 
 Except where explicitly permitted by Gates 5, 10, and 11, repository exploration is prohibited.
 
-**MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+**Capability Availability Guard:** Before an operation, verify that its approved capability binding is available. A configured MCP, native tool, repository skill, or local file contract may satisfy the operation. An approved fallback is a binding, not degraded operation. If the selected binding cannot perform the required operation, stop and report the missing capability; do not invent evidence, skip the gate, or silently switch to an unapproved integration.
 
-You need a `${session_id}` to start working on the implementation. If you do not have a session id yet, list available sessions and ask the user to select one or let you create a new session.
-**You are forbidden from auto-selecting a session.** Even when a session name appears to match the current activity, you MUST always present the list of available sessions to the user and require explicit selection. Never match, guess, or infer which session to use. Once you have the session id, activate it, read the execution report, read agent memory, inspect session artifacts, and log the execution start.
+You need a `${session_id}` to start working on the implementation. If you do not have a session ID yet, ask for the current Planning Session ID or explicit approval to create a new one. Never enumerate existing sessions.
+Resume only the explicitly supplied or already active Planning Session ID. When resuming and the ID is unknown, ask for it. Never scan, list, or guess other sessions. Once you have the session id, activate it, read the execution report, read agent memory, inspect session artifacts, and log the execution start.
 
 # Anti-Research Rule
 
@@ -204,9 +205,9 @@ If the build fails:
 
 3. Build again.
 
-4. Only if Category B errors remain may search/grep tools be used.
+4. Only if Category B errors remain may `#capability:repository-search` tools be used.
 
-5. Each search/grep usage must answer one unresolved technical question.
+5. Each `#capability:repository-search` usage must answer one unresolved technical question.
 
 6. Repeat until the build succeeds or an unrecoverable blocker remains.
    Do not stop until you get a successful build or you find an unrecoverable blocker that you cannot fix by yourself.
@@ -248,12 +249,12 @@ Repository discovery is one of the most expensive operations.
 Hard limits:
 
 - Before implementation:
-  maximum TWO search/grep calls.
+  maximum TWO `#capability:repository-search` calls.
 
 - During compiler recovery:
-  maximum ONE search/grep call per compiler iteration.
+  maximum ONE `#capability:repository-search` call per compiler iteration.
 
-Never perform consecutive search/grep calls without first:
+Never perform consecutive `#capability:repository-search` calls without first:
 
 - implementing code,
 - compiling,
@@ -272,7 +273,7 @@ Repository discovery is expensive and must be minimized.
 Execution strategy:
 
 Step 1
-Perform exactly ONE search/grep to discover all of the following:
+Perform exactly ONE `#capability:repository-search` to discover all of the following:
 
 - existing test files
 - production class → test class mappings
@@ -294,7 +295,7 @@ Do not interrupt implementation to gather additional context unless blocked.
 
 Do NOT perform exploratory searches.
 
-Every search/grep call must answer a specific unresolved technical question.
+Every `#capability:repository-search` call must answer a specific unresolved technical question.
 
 Examples of INVALID searches:
 
@@ -302,7 +303,7 @@ Examples of INVALID searches:
 - inspect project
 - explore repository
 - search for examples
-- verify conventions using search/grep
+- verify conventions using `#capability:repository-search`
 
 Examples of VALID searches:
 
@@ -402,7 +403,7 @@ Examples:
 - unknown repository method
 - unknown production behavior
 
-Only Category B errors justify search/grep.
+Only Category B errors justify `#capability:repository-search`.
 
 Each search must answer exactly one unresolved technical question.
 
@@ -431,7 +432,7 @@ If the user asks for refinements, add implementations or make changes to the exi
 If the user asks for more unit-test work after Gate 12, require an explicit instruction that identifies the relevant unit-test scope in the implementation plan or confirms reuse of the previously approved unit-test scope.
 Always follow user instructions strictly, and do not make any change that is not requested.
 After refinements, repeat the relevant validation gates before repeating the final summary gate.
-If refinements require codebase inspection beyond the implementation plan and project knowledges, use search/grep.
+If refinements require codebase inspection beyond the implementation plan and project knowledges, use `#capability:repository-search`.
 At every refinement iteration you must:
 
 - read relevant knowledges using `#capability:knowledge-index-read` and `#capability:knowledge-document-read`

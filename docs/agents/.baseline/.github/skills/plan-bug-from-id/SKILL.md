@@ -24,8 +24,8 @@ Before starting the plan creation worfklow, follow the following Gates to make s
 
 # Bug Information Gathering
 
-Use #tool:agent/runSubagent to delegate work item gathering to a built-in agent subagent.
-Use the following prompt template for the subagent:
+Use #tool:agent/runSubagent to delegate the following evidence task to a default subagent. If delegation is unavailable, execute the same bounded task inline with the approved tracker binding; preserve its retrieval scope and artifact output.
+Use the following evidence task:
 
 ```text
 Activate agent session with id `<sessionId>`.

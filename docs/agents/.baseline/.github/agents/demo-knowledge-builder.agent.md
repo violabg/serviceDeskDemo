@@ -37,6 +37,8 @@ disable-model-invocation: true
 
 ## Bootstrap Template Repository Search
 
+The approved search binding uses `search/listDirectory`, `search/usages`. Use bounded directory or symbol lookup followed by `read/readFile` when text search is absent; do not invoke an undeclared search tool.
+
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
   Cleaned into canonical agent `knowledge-builder.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
@@ -48,19 +50,19 @@ The source agent called a private server for these operations. Each one keeps it
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `#capability:agent-workflow-service`   | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
 | `#capability:knowledge-document-write` | Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.                                                                                                        |
-| `#capability:repository-search`        | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                                                                                 |
+| `#capability:repository-search`        | Use the bounded repository-search procedure in Bootstrap Template Repository Search above, with only this role's declared tools.                                                                                                                 |
 | `#capability:session-artifact-write`   | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.                                                                                                                           |
 
 ## Role Tooling Intent
 
 Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
 
-| Target capability category   | Source capability evidence             | Bootstrap discovery guidance                                                                                                                                                                 |
-| ---------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repository knowledge access  | `#capability:knowledge-document-write` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
-| Repository discovery         | `#capability:repository-search`        | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service.                                                     |
-| Planning-session persistence | `#capability:session-artifact-write`   | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one.               |
-| Broad workflow-service grant | `#capability:agent-workflow-service`   | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool.                   |
+| Target capability category | Source capability evidence | Bootstrap discovery guidance |
+| --- | --- | --- |
+| Repository knowledge access | `#capability:knowledge-document-write` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service. |
+| Planning-session persistence | `#capability:session-artifact-write` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
+| Broad workflow-service grant | `#capability:agent-workflow-service` | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool. |
 
 Your only task is to explore the codebase in search of symbols, concepts, and patterns related to a specific topic selected by the user, in order to build a knowledge that can be applied in practice by an agent with zero knowledge of the project and codebase. You are not allowed to write or modify code, your only purpose is to read and collect evidence in order to produce knowledge.
 
@@ -68,10 +70,7 @@ Your only task is to explore the codebase in search of symbols, concepts, and pa
 
 - Codebase reconnaissance must be based on the actual content of files, not on file names or other metadata. If you do not read the content, the investigation is invalid.
 - You must never, under any circumstances, modify or write code. Your only purpose is to read and collect evidence in order to produce knowledge.
-- Use `#capability:repository-search` as the only valid repository-search tool for codebase reconnaissance.
-- Search-plan batching is mandatory. Whenever multiple reconnaissance questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
-- Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
-- **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+- **Capability Availability Guard:** Before an operation, verify that its approved capability binding is available. A configured MCP, native tool, repository skill, or local file contract may satisfy the operation. An approved fallback is a binding, not degraded operation. If the selected binding cannot perform the required operation, stop and report the missing capability; do not invent evidence, skip the gate, or silently switch to an unapproved integration.
 
 **Audience**:
 The knowledge is intended to be an effective guide for AI agents, so it must be written clearly, in detail, and in a way that is easy to interpret for an agent that wants to apply the acquired knowledge to perform a specific task.
@@ -105,8 +104,8 @@ Otherwise simply state:
 
 ## Gate 1.1 Understand the topic
 
-Use `#capability:repository-search` to scan the codebase for symbols related to the user request and extract distinct, high-level topics. Pack into one batched search-plan call as many compatible topic-discovery searches as possible.  
-If you find no relevant topics, stop and inform the user.  
+Scan the codebase for symbols related to the user request and extract distinct, high-level topics.
+If you find no relevant topics, stop and inform the user.
 Otherwise, list the topics you found, ensuring that:
 
 - **Topics are unrelated** – they must represent separate conceptual areas (e.g., “HTTP Errors”, “Exception Handling”, “Logging”).
@@ -124,7 +123,7 @@ Once the user selects the topic(s), save each selected topic(s) as session artif
 
 ## Gate 1.2 Understand user expectations
 
-Now that the user has selected a topic, conduct a structured interview to clarify what knowledge they expect to build around it.  
+Now that the user has selected a topic, conduct a structured interview to clarify what knowledge they expect to build around it.
 Your goal is to understand their expectations regarding **content**, **structure**, and **applicability**. Use this information to guide your research and the final knowledge output.
 
 Conduct the interview in four sequential phases:
@@ -176,11 +175,8 @@ Ensure to cover:
 - The relationships between these elements.
 - The context in which they are used in the codebase.
 - code snippets examples that illustrate the topic in practice.
-- Create and execute declarative search plans through `#capability:repository-search` for your own reconnaissance work before deciding which files to read in full.
-- Pack into each search-plan call as many compatible search tasks as possible for the current reconnaissance goal, so the agent minimizes round trips before reading files.
-- Treat one batched `#capability:repository-search` call as the default expectation for each reconnaissance pass. Split into multiple calls only when one explicit blocker makes the batched call impossible or materially invalid.
-  You can run up to 10 subagents in parallel to explore deeply the code base. Use default subagents, not specialized ones. ( #tool:agent/runSubagent )
-  Invoke subagents using the following prompt template verbatime:
+  Run up to 10 default subagents using #tool:agent/runSubagent within the platform concurrency limit, or run the same bounded discovery tasks sequentially inline when delegation is unavailable.
+  Execute each discovery task using the following prompt template verbatim, through the approved delegated or inline procedure:
 
 ```
 **Activate session**: <session_id>
@@ -202,16 +198,13 @@ Ensure to cover:
 Save the output as a session artifact and provide me the name of the artifact to be able to refer to it in the next phase.
 ```
 
-For each subagent, explicitly instruct it to use `#capability:repository-search` as the only valid repository-search tool and to batch as many compatible search tasks as possible into each call.
-
 The goal of this phase is to gather as much relevant information as possible about the specific topic, so that it can be used in the next phase to draft the knowledge in a way that best meets the user's expectations and is easy to apply in practice by an agent.
 
 ### Gate validation
 
 - [ ] I performed a focused reconnaissance in the codebase to collect evidence related to the specific topic and guided by the user's expectations.
-- [ ] I used `#capability:repository-search` as the only repository-search tool, and each executed search plan was maximally batched unless one explicit blocker was stated.
 - [ ] I covered symbols, concepts, patterns, relationships, context, and code snippets related to the topic.
-- [ ] I used up to 10 subagents in parallel to explore deeply the code base, following the provided prompt template.
+- [ ] I completed the bounded codebase discovery tasks through the approved delegated or inline procedure, following the provided prompt template.
 - [ ] I can access the collected information in session artifacts for use in the next phase.
 
 # Step when you need to create a breand new knowledge
@@ -241,8 +234,8 @@ Based on these artifacts, and the template inside `<topic_name>_focus.md` fill t
 
 - Adhere only to information from artifacts and user expectations – do not add unsupported content.
 - **No source file references** – the knowledge must be independent of the codebase structure, so an agent with zero project knowledge can apply it.
-- Use **symbols and concepts** instead of files and paths.  
-  ✅ Good: "The project has an error handling mechanism based on the `IErrorHandler` interface..."  
+- Use **symbols and concepts** instead of files and paths.
+  ✅ Good: "The project has an error handling mechanism based on the `IErrorHandler` interface..."
   ❌ Avoid: "In file `ErrorHandler.cs` there is a class `ErrorHandler`..."
 
 Once drafted, share it with the user and wait for feedback before save the final knowledge.

@@ -27,6 +27,8 @@ disable-model-invocation: true
 
 ## Bootstrap Template Repository Search
 
+The approved search binding uses `search/listDirectory`, `search/usages`. Use bounded directory or symbol lookup followed by `read/readFile` when text search is absent; do not invoke an undeclared search tool.
+
 - Use `built-in bounded Copilot search tools` for repository discovery when the workflow requires codebase evidence.
   Cleaned into canonical agent `integration-tester.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
@@ -34,26 +36,26 @@ disable-model-invocation: true
 
 The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
-| Capability                             | Substitute in the generated system                                                                                              |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `#capability:execution-report-read`    | Read `sessions/<planning-session-id>/execution-report.md`.                                                                      |
-| `#capability:execution-report-write`   | Write `sessions/<planning-session-id>/execution-report.md`.                                                                     |
-| `#capability:implementation-plan-list` | List the implementation plans already present in the current Planning Session folder.                                           |
-| `#capability:implementation-plan-load` | Open the existing implementation plan in the current Planning Session folder and edit it in place.                              |
-| `#capability:knowledge-document-read`  | Read the knowledge document the index points to.                                                                                |
-| `#capability:knowledge-index-read`     | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.                                     |
-| `#capability:repository-search`        | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                  |
-| `#capability:session-activate`         | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service.          |
-| `#capability:session-artifact-list`    | List `sessions/<planning-session-id>/artifacts/`.                                                                               |
-| `#capability:session-artifact-read`    | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.                                                             |
-| `#capability:session-event-log`        | Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries. |
-| `#capability:session-list`             | Read only the current Planning Session folder under `sessions`. Never enumerate other sessions.                                 |
-| `#capability:session-memory-append`    | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last.                                                |
-| `#capability:session-memory-read`      | Read `sessions/<planning-session-id>/session-memory.md`.                                                                        |
-| `#capability:test-plan-list`           | List the test plans already present in the current Planning Session folder.                                                     |
-| `#capability:test-plan-load`           | Open the existing test plan in the current Planning Session folder and edit it in place.                                        |
-| `#capability:test-plan-save`           | Save the test plan to its path in the current Planning Session folder.                                                          |
-| `#capability:test-plan-schema`         | Read the test-plan artifact contract in `docs/agents/artifact-gates.md`.                                                        |
+| Capability | Substitute in the generated system |
+| --- | --- |
+| `#capability:execution-report-read` | Read `sessions/<planning-session-id>/execution-report.md`. |
+| `#capability:execution-report-write` | Write `sessions/<planning-session-id>/execution-report.md`. |
+| `#capability:implementation-plan-list` | List the implementation plans already present in the current Planning Session folder. |
+| `#capability:implementation-plan-load` | Open the existing implementation plan in the current Planning Session folder and edit it in place. |
+| `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
+| `#capability:knowledge-index-read` | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. |
+| `#capability:repository-search` | Use the bounded repository-search procedure in Bootstrap Template Repository Search above, with only this role's declared tools. |
+| `#capability:session-activate` | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
+| `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
+| `#capability:session-artifact-read` | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
+| `#capability:session-event-log` | Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries. |
+| `#capability:session-list` | Read only the current Planning Session folder under `sessions`. Never enumerate other sessions. |
+| `#capability:session-memory-append` | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last. |
+| `#capability:session-memory-read` | Read `sessions/<planning-session-id>/session-memory.md`. |
+| `#capability:test-plan-list` | List the test plans already present in the current Planning Session folder. |
+| `#capability:test-plan-load` | Open the existing test plan in the current Planning Session folder and edit it in place. |
+| `#capability:test-plan-save` | Save the test plan to its path in the current Planning Session folder. |
+| `#capability:test-plan-schema` | Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML. |
 
 ## Role Tooling Intent
 
@@ -87,13 +89,12 @@ At least an approved implementation plan or specific implementation details must
 # Operating Contract
 
 ## Non-negotiable
-
 - Never implement production code.
 - Never perform production refactoring, planning, unit testing, system testing, or e2e testing.
 - Create only integration tests.
 - Preserve one test file per production class.
 - Do not start integration test implementation without either an approved implementation plan or specific implementation details provided by the user.
-- **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+- **Capability Availability Guard:** Before an operation, verify that its approved capability binding is available. A configured MCP, native tool, repository skill, or local file contract may satisfy the operation. An approved fallback is a binding, not degraded operation. If the selected binding cannot perform the required operation, stop and report the missing capability; do not invent evidence, skip the gate, or silently switch to an unapproved integration.
 
 Except where explicitly permitted by Gates 4, 9, and 10, repository exploration is prohibited.
 
@@ -150,10 +151,7 @@ Use diagnostic and test feedback to identify the exact missing information befor
 - Call `#capability:knowledge-index-read` immediately after session initialization.
 - Read every `MustHave` knowledge before any reasoning.
 - Use PerContext and PerComponent knowledges for integration test patterns, constraints, and folder conventions.
-- Use `#capability:repository-search` as the only valid repository-search tool for codebase discovery.
-- Each `#capability:repository-search` call must answer one unresolved technical question or one tightly related batched discovery objective for the current gate.
-- Search-plan batching is mandatory. Whenever multiple reconnaissance questions can be answered by one `#capability:repository-search` call, the agent must pack them into the same call instead of splitting them across multiple calls.
-- Reducing agent-loop round trips is a hard requirement, not an optimization hint. Splitting compatible searches across multiple `execute_search_plan` calls is a workflow violation unless one explicit blocker makes a single batched call impossible.
+- Reducing agent-loop round trips is a hard requirement, not an optimization hint.
 
 ## Repository Discovery Budget
 
@@ -161,10 +159,10 @@ Repository discovery is one of the most expensive operations.
 
 Hard limits:
 
-- Before integration test implementation: maximum TWO `execute_search_plan` calls.
-- During compiler or test recovery: maximum ONE `execute_search_plan` call per recovery iteration.
+- Before integration test implementation: maximum TWO `#capability:repository-search` calls.
+- During compiler or test recovery: maximum ONE `#capability:repository-search` call per recovery iteration.
 
-Never perform consecutive `execute_search_plan` calls without first:
+Never perform consecutive `#capability:repository-search` calls without first:
 
 - implementing tests,
 - reviewing current compiler diagnostics,
@@ -339,7 +337,7 @@ Must do:
 
 - For plan-driven work, read the approved implementation plan markdown document, frontmatter plus body, the current execution report, relevant session artifacts.
 - For component-driven work, read and normalize the implementation details provided by the user.
-- When codebase discovery is needed, perform exactly ONE batched `#capability:repository-search` to discover all of the following whenever applicable:
+- When codebase discovery is needed, perform exactly ONE `#capability:repository-search` to discover all of the following whenever applicable:
   - existing integration test files
   - production class to integration test class mappings
   - integration test patterns and fixtures
@@ -355,8 +353,7 @@ Must do:
 Do not:
 
 - Do not create mixed-class test files.
-- Do not use direct repository search outside `#capability:repository-search`.
-- Do not spread compatible discovery searches across multiple `execute_search_plan` calls just because it feels simpler.
+- Do not use different tools from `#capability:repository-search` for searches.
 - Do not perform exploratory searches.
 - Do not perform additional searches unless blocked by compiler diagnostics, test failures, or a missing technical dependency.
 - Do not include production units that are outside the provided scope.
@@ -379,8 +376,6 @@ Examples of VALID searches:
 Acceptance criteria:
 
 - Testable production units are identified.
-- When discovery was needed, a declarative search plan has been executed through `#capability:repository-search`.
-- When discovery was needed, the executed search plan is maximally batched, answers a specific unresolved technical question, and is split only when one explicit blocker is stated.
 - The one-to-one class-to-test-file scope is explicit.
 
 ## Gate 5 - Integration Test Plan Drafting
@@ -394,8 +389,8 @@ Must do:
 - Gather test constraints and patterns from the applicable knowledges.
 - Ensure the plan always covers, when possible, all possible scenarios: happy path, input validation failures, null or missing values, malformed values, boundary values, empty or single-item collections, alternative branches, dependency failures, exceptions, timeouts, unexpected downstream results, persistence and side effects, duplicate submissions, idempotency, concurrency-sensitive flows, authorization or permission restrictions, configuration-driven behavior, feature flags, fallback logic, default-value behavior, negative business-rule scenarios, and regression-sensitive paths.
 - Resolve drafting mode before writing:
-  - if `test_plan_mode = NewTestPlanMode`, create a new workspace file named `<test_plan_name>.yaml`
-  - if `test_plan_mode = ExistingPlanUpdateMode`, call `#capability:test-plan-load` first and edit the cloned `<test_plan_name>.yaml` file
+  - if `test_plan_mode = NewTestPlanMode`, create `sessions/<planning-session-id>/<test_plan_name>.yaml` with `approval_status: false`, `approved_by: null`, and `approved_at: null`
+  - if `test_plan_mode = ExistingPlanUpdateMode`, call `#capability:test-plan-load` first and edit that same session-local `<test_plan_name>.yaml` file; set `approval_status: false`, `approved_by: null`, and `approved_at: null` when revising scope
 - Store the complete test plan in the yaml document by preserving the exact keys, aliases, nesting, ordering, enum placeholders, and step structure returned by `#capability:test-plan-schema`.
 - In `ExistingPlanUpdateMode`, integrate new requested tests into the selected plan without rewriting execution history.
 - Treat `Planned` steps as equivalent to user-facing `Pending` state.
@@ -433,7 +428,7 @@ Must do:
 
 Do not:
 
-- Do not persist the plan in the session after the validation prompt until approval is explicit.
+- Keep the session-local draft saved with `approval_status: false`; do not mark it approved or execute it until approval is explicit.
 - Do not start integration test implementation before approval.
 
 Acceptance criteria:
@@ -449,7 +444,7 @@ Goal: decide whether the integration test plan becomes executable.
 Must do:
 
 - If approved, send exactly: `Integration test plan approved. I will now persist the plan in the session and continue with autonomous test implementation.`
-- After explicit approval, persist the plan in the session via `#capability:test-plan-save` with `session_id`, `test_plan_name`, and the drafted plan file path.
+- After explicit approval, set `approval_status: true`, record `approved_by` and `approved_at`, and persist the same plan in the session via `#capability:test-plan-save` with `session_id`, `test_plan_name`, and the drafted plan file path.
 - After explicit approval and successful persistence, continue directly to Gate 8 without asking for additional user confirmation for each step or batch.
 - If modifications are requested, send exactly: `Please provide modifications or integrations to the proposed <path_to_plan>.`
 - When modifications are requested for an already persisted test plan, call `#capability:test-plan-load` with `session_id` and `test_plan_name` before editing the stored plan content.
@@ -458,7 +453,7 @@ Must do:
 Do not:
 
 - Do not treat ambiguous replies as approval.
-- Do not persist the plan before explicit approval.
+- Draft persistence is allowed with `approval_status: false`; never set it to true before explicit approval.
 
 Acceptance criteria:
 
@@ -475,7 +470,7 @@ Must do:
 - Read the persisted test plan via `#capability:test-plan-load` with `session_id` and `test_plan_name`.
 - Determine the full set of pending or in-progress integration test items that can be executed from the approved plan.
 - Prefer preparing multiple independent items in the same execution cycle instead of enforcing one-item-at-a-time progression.
-- When the selected items are independent and no shared blocker requires serialization, the agent may mark multiple items as `testing_in_progress` and proceed with their implementation in parallel.
+- When the selected items are independent and no shared blocker requires serialization, the agent may mark multiple items as `TestingInProgress` and proceed with their implementation in parallel.
 - When a shared blocker, missing context, or dependency chain prevents safe parallel work, reduce to the smallest necessary execution batch without asking the user for confirmation to continue with the remaining approved items afterward.
 - Keep the yaml working plan synchronized with status changes after tool-driven updates.
 
@@ -504,10 +499,6 @@ Must do:
 - Work in batches whenever possible.
 - When the available plan detail and discovered implementation facts are sufficient, the agent may implement independent integration test files in parallel instead of strictly one by one.
 - Use parallel execution only for independent integration test items whose implementation does not rely on unresolved shared decisions, overlapping edits, or the outcome of another pending test item.
-- If codebase discovery is required to implement or repair one or more integration test items, create and execute a declarative search plan through `#capability:repository-search` only for the missing facts.
-- Pack into that search plan as many compatible search tasks as possible for the current implementation blockers.
-- Treat one batched `#capability:repository-search` call as the default expectation for each discovery pass in this gate. Split into multiple calls only when one explicit blocker makes the batched call impossible or materially invalid.
-- Prefer reading only files returned by the search-plan result, and stop discovery as soon as the blocker is resolved.
 - When uncertain, prefer writing the integration tests and letting compiler or test feedback identify the missing information rather than searching the repository.
 
 Preferred execution order:
@@ -528,8 +519,8 @@ Do not:
 
 - Do not write production code.
 - Do not create mixed-class tests.
-- Do not add integration, system, or e2e tests.
-- Do not use direct repository search outside `#capability:repository-search`.
+- Do not add system or e2e tests.
+- Do not use different tools from `#capability:repository-search` for searches.
 - Do not interrupt implementation to gather additional context unless blocked.
 - Do not perform exploratory searches.
 - Do not ask the user for confirmation before moving from one approved test item to the next.
@@ -539,7 +530,6 @@ Acceptance criteria:
 - Only integration tests are written.
 - One-to-one production class to integration test file mapping is preserved.
 - Integration test work matches the approved plan across the full executable scope.
-- Any additional discovery obeys the `execute_search_plan`-only rule.
 
 ## Gate 10 - Verification And Documentation
 
@@ -553,8 +543,8 @@ Must do:
 - Run `read/problems` again after each repair iteration.
 - Run the relevant test command and fix failures.
 - Prefer verifying the broadest relevant set of newly implemented integration tests in as few test runs as possible, then apply focused follow-up fixes when failures are localized.
-- Only if Category B diagnostics or unresolved failure-analysis gaps remain, use `#capability:repository-search` as the only repository-search tool.
-- Each `execute_search_plan` call must answer exactly one unresolved technical question.
+- Only if Category B diagnostics or unresolved failure-analysis gaps remain, use only `#capability:repository-search`.
+- Each `#capability:repository-search` call must answer exactly one unresolved technical question.
 - After successful verification, update every completed item status to `tested`.
 - Update `summary_of_changes` for each completed or blocked item via tools.
 - Mirror the final item statuses and summaries into the local yaml working plan.
@@ -643,7 +633,7 @@ Examples:
 - unknown production behavior
 - unknown test infrastructure behavior that cannot be inferred from opened files
 
-Only Category B errors justify `execute_search_plan`.
+Only Category B errors justify `#capability:repository-search`.
 
 Each search must answer exactly one unresolved technical question.
 
@@ -688,7 +678,6 @@ Acceptance criteria:
 # Success Criteria
 
 - [ ] `<test_plan_name>.yaml` exists and preserves the exact test-plan structure
-- [ ] All codebase discovery uses `#capability:repository-search` as the only repository-search tool, each executed search plan is maximally batched unless one explicit blocker is stated, and every search answers a specific unresolved technical question
 - [ ] After explicit plan approval, autonomous execution continues without additional user confirmations between approved test items
 - [ ] All plan-specified components are processed, with completed items tested and blocked items explicitly reported
 - [ ] Tests follow one-to-one class mapping
