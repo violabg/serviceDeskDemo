@@ -4,7 +4,13 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `2.0.0`
+- `2.1.0`
+
+## 2026-09-13
+
+### 2.1.0
+
+- Resolve per-file slot values using the generated repository-relative path; missing entries remain unresolved rather than reusing another role's integration or tool set.
 
 ## 2026-07-29
 

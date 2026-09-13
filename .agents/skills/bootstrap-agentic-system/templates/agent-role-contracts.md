@@ -37,7 +37,7 @@ Use a verified model name only when the target platform and user confirm that ex
 
 ## Baseline Tool Surface
 
-Use these baseline VS Code tool and delegated-agent lists when the target platform supports frontmatter. Add discovered or approved MCP tools only when they fit the role. If the target platform cannot express `tools:` or `agents:` frontmatter, place the same information in `Required Tools` and `Delegated Agents` sections inside the agent contract.
+These lists preserve the source baseline for resolving `PLATFORM_TOOLS`. Use supported names as-is; translate unsupported names to discovered equivalents for the same operations, or record approved manual fallbacks. Add discovered or approved MCP tools only when they fit the role. If the target platform cannot express `tools:` or `agents:` frontmatter, place the resolved target operations and any inline delegation procedure in `Required Tools` and `Delegated Agents` sections inside the agent contract.
 
 | Role | Baseline tools | Baseline agents |
 | --- | --- | --- |

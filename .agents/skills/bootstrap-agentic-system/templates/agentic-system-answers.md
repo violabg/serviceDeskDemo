@@ -26,7 +26,8 @@ platform:
 # generated system uses. `source` records how the value was settled.
 slots:
   <SLOT_NAME>:
-    value: <approved-value>
+    # A scalar for shared values, or a map keyed by generated path for role-specific values.
+    value: <approved-value-or-per-file-map>
     source: <discovery | user | recommend-accepted | fallback>
     evidence: <what-in-the-repository-justified-it | none>
 

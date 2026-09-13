@@ -5,6 +5,7 @@ disable-model-invocation: true
 ---
 
 # Business Logic Gap Detector
+
 # Business Logic Gap Detector for Implementor
 Use these instructions to create unit tests designed to break (or expose weaknesses in) production logic.
 

@@ -4,7 +4,17 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `3.4.0`
+- `4.0.0`
+
+## 2026-09-13
+
+### 4.0.0
+
+- Replaced private-server guards with checks of approved capability bindings, preserving fail-closed behavior when the chosen implementation cannot perform the operation.
+- Added target-platform tool and invocation slots, including native or inline gathering, plain-chat questions, and per-file answers for role-specific tools.
+- Added a labeled local test-plan YAML fallback and required verification before selecting an existing repository schema.
+- Reconciled direct session resume with current-session isolation and permitted the Planner to persist its required session evidence.
+- Made tracker setup conditional and grouped routine default approvals; restored converted workflow bodies and invocation examples.
 
 ## 2026-08-26
 

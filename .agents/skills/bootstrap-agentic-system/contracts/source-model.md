@@ -13,6 +13,7 @@ Load source assets only when their output is needed.
 - `templates/agentic-system-answers.md`: machine-readable record of every approved slot value, capability resolution, and generated-to-baseline path pair.
 - `templates/knowledge-index-schema.md`: bounded knowledge-loading index.
 - `templates/plan-schema.md`: implementation-plan artifact contract.
+- `templates/test-plan-schema.md`: local YAML fallback for Integration Tester; verify an existing target schema before selecting it instead.
 - `templates/artifact-gates.md`: artifact, gate, and handoff conventions.
 - `templates/agent-role-contracts.md`: baseline role, tool, and delegation reference for roles without mirrors or for validating mirrored frontmatter.
 - `templates/agent-contracts.md`: custom agent contract reference when no mirror exists.

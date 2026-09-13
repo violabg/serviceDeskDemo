@@ -26,6 +26,7 @@ The Core System batch should normally include:
 | `<bootstrap-changelog-snapshot-path>` | Yes | Repo-local copy of the installed Bootstrap skill `CHANGELOG.md` used as the maintenance baseline when the original installed skill path is unavailable later. |
 | `<knowledge-index-path>` | Yes | Index-first routing file with knowledge entries and `When to read` triggers. |
 | `<template-dir>/plan-schema.md` | Yes | Implementation-plan artifact schema copied or adapted from this skill. |
+| `<template-dir>/test-plan-schema.md` | When Integration Tester is selected | Verified existing test-plan schema or the shipped local YAML fallback. |
 | `<template-dir>/artifact-gates.md` | Usually | Gate, approval, handoff, and session artifact contract. |
 | `<context-glossary-path>` | When glossary-worthy terms are resolved | Repository code/domain vocabulary and source-of-truth boundaries. |
 

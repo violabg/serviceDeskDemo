@@ -1,6 +1,6 @@
 ---
 description: "This custom agent analyzes images and produces a detailed JSON representation of the visual content."
-tools: [edit/createFile, edit/editFiles, "{{APPROVED_MCP_TOOLS}}"]
+tools: [{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"]
 disable-model-invocation: true
 ---
 

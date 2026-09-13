@@ -8,7 +8,7 @@ Every file change Maintainer proposes goes through the same three-way merge. The
 - `THEIRS` is the current template for that file, re-filled with the slot values recorded in `agentic-system.answers.yaml`. For an upgrade, the template comes from the currently installed `bootstrap-agentic-system/templates/`. For a repository-driven change, the template is unchanged and `THEIRS` equals `BASE`.
 - `MINE` is the file as it exists in the repository right now.
 
-Re-filling `THEIRS` is a substitution, not a redesign. Use the recorded slot values verbatim. If the new template introduces a slot the answers file does not have, that slot is a decision, not a merge: ask for it and record the answer before merging the file.
+Re-filling `THEIRS` is a substitution, not a redesign. Use the recorded slot values verbatim. When a slot value is a map keyed by generated repository-relative path, select the entry for the file being merged; a missing entry is an unresolved decision, not permission to reuse another role's tools. If the new template introduces a slot the answers file does not have, that slot is a decision, not a merge: ask for it and record the answer before merging the file.
 
 ## Regions
 

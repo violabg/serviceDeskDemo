@@ -41,7 +41,9 @@ Required checks:
 - Every generated agent has the required baseline tool surface or an approved reduction.
 - Every approved MCP or platform tool assignment appears by exact string name in the approved target agent or required-tool section.
 - Every omitted, deferred, or recommendation-only integration is absent from generated tool surfaces and recorded with a reason.
-- Every `tools:` frontmatter item is a string.
+- Every `tools:` frontmatter item is a string. Invocation slots contain exact available target syntax or an explicit inline/manual procedure; no unsupported source tool invocation remains.
+- Required capability bindings work without the source MCP: verify operation inputs, output artifacts, and prerequisites for each selected native tool, repository skill, or fallback. Missing required operations block the affected workflow.
+- Integration Tester resolves `TEST_PLAN_SCHEMA_PATH` to an existing compatible YAML schema; inspect its fields and lifecycle against the generated Tester before handoff.
 - Tracker/session contract names the external adapter or local Markdown issue root, ID format, lookup/index rule, required fields, and missing-ID behavior when ID-based skills are generated.
 - Tracker/session contract distinguishes External Issue ID from Planning Session ID, limits default retrieval to current issue, records explicitly referenced dependency retrieval without recursion, and limits session access to current Planning Session ID folder with direct resume.
 - Context glossary operation or no-op matches the approved decision; any glossary is primarily repository code/domain vocabulary and records preferred terms, avoided terms, aliases, and distinctions when ambiguity was resolved.
@@ -49,7 +51,7 @@ Required checks:
 - Plan schema exists at the approved path, preserves the required content from `templates/plan-schema.md` or an approved stronger equivalent, and is explicitly referenced by Planner.
 - Vision decision is reflected in generated files or recorded as an intentional no-op.
 - Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
-- Generated work-item planning skills preserve tracker/local adapter, session, evidence, Planner-only, no-skill-tools-frontmatter, and `#tool:agent/runSubagent` requirements.
+- Generated work-item planning skills preserve tracker/local adapter, session, evidence, Planner-only, no-skill-tools-frontmatter, and approved native-or-inline gathering requirements.
 - Generated Planner and work-item planning skills ask clarification only for genuine blocking uncertainty; otherwise complete mandatory gates, artifacts, and implementation plan before requesting review or approval.
 - Validation commands from the file plan were run where available, or each skipped command has a reason.
 

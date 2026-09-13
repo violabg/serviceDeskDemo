@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Plan Bug From Id
 
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:fc670b130ca8a631 lines=80 -->
+<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:53de71a620a415a2 lines=73 -->
 ## Work-Item Planning Contract
 
 Require one External Issue ID matching `{{WORK_ITEM_ID_FORMAT}}`. External Issue ID identifies tracker ticket; it is never Planning Session ID.
@@ -25,8 +25,8 @@ Before starting the plan creation worfklow, follow the following Gates to make s
 
 # Bug Information Gathering
 
-Use #tool:agent/runSubagent to delegate work item gathering to a built-in agent subagent.
-Use the following prompt template for the subagent:
+{{WORK_ITEM_GATHERING}}
+Use the following evidence task:
 
 ```text
 Activate agent session with id `<sessionId>`.

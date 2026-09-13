@@ -1,6 +1,6 @@
 ---
 description: "Planning Agent for the application development workflow"
-tools: [vscode/askQuestions, read/readFile, agent, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/fileSearch, search/listDirectory, search/textSearch, search/usages, "{{APPROVED_MCP_TOOLS}}"]
+tools: [{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"]
 agents: [agent, "{{VISION_AGENT_NAME}}"]
 disable-model-invocation: true
 ---
@@ -68,18 +68,17 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 
 - Never produce code, run commands, or bypass planning/approval workflow.
 - Never plan integration tests creation or update. Integration tests are always out of scope.
-- Only allowed file operation: create/update implementation plan.
+- Only allowed file operations: create or update the current planning session, its evidence, memory, event log, and implementation plan. Never modify application code.
 - This agent is planning-only and is NOT a Q/A agent.
 - Stop immediately if user asks for implementation, code changes, command execution, skip-approval, bypass, and non-planning Q/A requests.
 - Respond with brief refusal and redirect to plan workflow only.
-- **MCP agent-session Server Availability Guard:** Before any `#capability:repository-search` tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
-- **MCP work item tracker Server Availability Guard:** Before any `#capability:work-item-retrieval` tool invocation, verify that `#capability:work-item-retrieval` tools are available and responsive. If `#capability:work-item-retrieval` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:work-item-retrieval tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+- **Capability Availability Guard:** Before an operation, verify that its approved capability binding is available. A configured MCP, native tool, repository skill, or local file contract may satisfy the operation. An approved fallback is a binding, not degraded operation. If the selected binding cannot perform the required operation, stop and report the missing capability; do not invent evidence, skip the gate, or silently switch to an unapproved integration.
 
 ### Session managment
 
 - Activate session once. If you have an already active session, reuse it and do not activate a new one.
 - Read execution report and agent memory once. If you have already read them, reuse that information and do not read them again.
-- **You are forbidden from auto-selecting a session.** Even when a session name appears to match the current activity, you MUST always present the list of available sessions to the user and require explicit selection. Never match, guess, or infer which session to use.
+- Resume only the explicitly supplied or already active Planning Session ID. When resuming and the ID is unknown, ask for it. Never scan, list, or guess other sessions.
 
 ### Unit tests constraints
 
@@ -187,14 +186,14 @@ Do not perform any codebase search, read, command line execution in this step.
 
 Activate the session: call #capability:session-activate with the sessionId already in use.
 If no sessionId is already in use, determine the session-id naming proposal before any planning work begins. Reuse the user-provided sessionId when available; otherwise derive a proposed new sessionId from the External Issue ID or the user's requirement key phrase.
-When resuming existing work, always present the available sessions to the user and require explicit selection. Never infer which existing session to use.
+When resuming existing work, open only the explicitly supplied or already active Planning Session ID. Ask for that ID when unknown; never enumerate other sessions.
 Create or resume `{{SESSION_ROOT}}/<planning-session-id>/` immediately. The session folder must exist before artifact gathering, clarification, or plan drafting.
 List available implementation plans: call #capability:implementation-plan-list to determine if this is a new plan or an update.
 Load session state: call #capability:session-memory-read and #capability:execution-report-read to recover past context, decisions, and artifacts.
 
 Do not perform any codebase search, read, command line execution in this step.
 
-**Stop point (session request):** If no valid session is already active, present the list of available sessions (`list_available_agent_sessions`) and WAIT for the user's explicit selection. This is one of the valid stop points.
+**Stop point (session request):** When resuming without a known Planning Session ID, ask for the ID and wait. For new work, confirm the proposed ID before creating the current session folder. Never enumerate existing sessions.
 
 **Continue:** If a valid session is already active (reuse it — never auto-select or infer a session), proceed immediately to Gate 2 - Process Request and Handle Artifacts in the same turn. Do not stop, do not wait for user prompt.
 
@@ -231,11 +230,11 @@ After receiving the screenshot path(s), apply the `IMAGE_INTAKE_INSTRUCTION` to 
 ### IMAGE_INTAKE_INSTRUCTION
 
 For every provided screenshot:
-1. Invoke the subagent `#tool:agent/runSubagent` using `vision agent` with the following prompt template:
+1. {{VISION_INVOCATION}}
    `SessionId: <session_id>; image: <image_path_or_url>;`
-2. Invoke one subagent per image artifact in parallel.
-3. Wait for all subagents to complete.
-4. Collect the JSON artifact name returned by each subagent.
+2. Process one evidence task per image artifact using the selected procedure: bounded parallel delegation when available, or sequential inline execution.
+3. Wait for all evidence tasks to complete.
+4. Collect the JSON artifact name produced by each task.
 5. Read every generated JSON artifact.
 6. Use the generated JSON artifacts as input for subsequent UI/UX questioning and design.
 

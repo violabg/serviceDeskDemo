@@ -27,7 +27,7 @@ Keep Bootstrap as one public orchestrator. Use internal scout lanes, decision re
 - Keep generated runtime files free of `CANONICAL-TEMPLATE-SLOT` comments. Those markers are source-template maintenance markers only.
 - Record every generated, skipped, deferred, placeholder-filled, marker-stripped, and user-approved non-slot decision in the agentic-system manifest.
 - Before writing files, produce a file plan and wait for explicit approval. Use one master plan and ask for approval before each write batch unless the user explicitly approves collapsed batches.
-- Preserve required baseline tool and delegated-agent frontmatter when the target platform supports it. Add only exact discovered or user-approved MCP or platform tools.
+- Preserve required baseline operations using `PLATFORM_TOOLS` and the declared invocation slots; preserve delegated-agent frontmatter when the target platform supports it. Add only exact discovered or user-approved MCP or platform tools.
 - Every `tools:` frontmatter item in generated Markdown agents must be a string. When filling `"{{APPROVED_MCP_TOOLS}}"`, replace it with zero or more exact quoted tool-name strings, or remove the placeholder item when no additional tool is approved.
 - Keep context glossary and knowledge index separate. A context glossary stores stable repository code/domain vocabulary; a knowledge index controls task-specific knowledge selection.
 - Keep schema enforcement in generated runtime contracts. The enriched Planner template already contains slots for knowledge-index and plan-schema paths; Bootstrap must fill and verify those paths in generated files. The Planner also carries the clarification-question format in its own body, so no generated file may restate it.

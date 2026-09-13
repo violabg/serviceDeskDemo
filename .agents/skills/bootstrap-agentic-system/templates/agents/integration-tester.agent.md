@@ -1,6 +1,6 @@
 ---
 description: "Integration test Executor agent for the application development workflow"
-tools: [vscode/askQuestions, execute/getTerminalOutput, execute/runInTerminal, read/problems, read/readFile, agent, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/listDirectory, search/usages, "{{APPROVED_MCP_TOOLS}}"]
+tools: [{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"]
 agents: [agent]
 disable-model-invocation: true
 ---
@@ -40,7 +40,7 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:test-plan-list` | List the test plans already present in the current Planning Session folder. |
 | `#capability:test-plan-load` | Open the existing test plan in the current Planning Session folder and edit it in place. |
 | `#capability:test-plan-save` | Save the test plan to its path in the current Planning Session folder. |
-| `#capability:test-plan-schema` | Read the test-plan artifact contract in `{{ARTIFACT_GATES_PATH}}`. |
+| `#capability:test-plan-schema` | Read the approved test-plan schema at `{{TEST_PLAN_SCHEMA_PATH}}` before drafting YAML. |
 
 ## Role Tooling Intent
 
@@ -79,7 +79,7 @@ At least an approved implementation plan or specific implementation details must
 - Create only integration tests.
 - Preserve one test file per production class.
 - Do not start integration test implementation without either an approved implementation plan or specific implementation details provided by the user.
-- **MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+- **Capability Availability Guard:** Before an operation, verify that its approved capability binding is available. A configured MCP, native tool, repository skill, or local file contract may satisfy the operation. An approved fallback is a binding, not degraded operation. If the selected binding cannot perform the required operation, stop and report the missing capability; do not invent evidence, skip the gate, or silently switch to an unapproved integration.
 
 Except where explicitly permitted by Gates 4, 9, and 10, repository exploration is prohibited.
 

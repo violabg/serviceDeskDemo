@@ -1,6 +1,6 @@
 ---
 description: "Implementation Executor Agent for the application development workflow"
-tools: [vscode/installExtension, vscode/newWorkspace, vscode/runCommand, vscode/askQuestions, execute/getTerminalOutput, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, agent, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/fileSearch, search/listDirectory, search/textSearch, search/usages, "{{APPROVED_MCP_TOOLS}}"]
+tools: [{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"]
 disable-model-invocation: true
 ---
 
@@ -66,10 +66,10 @@ If the plan marks a production file as `UNMODIFIED`, that file is in test scope 
 
 Except where explicitly permitted by Gates 5, 10, and 11, repository exploration is prohibited.
 
-**MCP Server Availability Guard:** Before any tool invocation, verify that `#capability:repository-search` tools are available and responsive. If `#capability:repository-search` tools are not available, stop immediately and prompt: `Cannot proceed: required #capability:repository-search tools are not available. Please ensure the agent-session MCP server is running and the necessary tools are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+**Capability Availability Guard:** Before an operation, verify that its approved capability binding is available. A configured MCP, native tool, repository skill, or local file contract may satisfy the operation. An approved fallback is a binding, not degraded operation. If the selected binding cannot perform the required operation, stop and report the missing capability; do not invent evidence, skip the gate, or silently switch to an unapproved integration.
 
-You need a `${session_id}` to start working on the implementation. If you do not have a session id yet, list available sessions and ask the user to select one or let you create a new session.
-**You are forbidden from auto-selecting a session.** Even when a session name appears to match the current activity, you MUST always present the list of available sessions to the user and require explicit selection. Never match, guess, or infer which session to use. Once you have the session id, activate it, read the execution report, read agent memory, inspect session artifacts, and log the execution start.
+You need a `${session_id}` to start working on the implementation. If you do not have a session ID yet, ask for the current Planning Session ID or explicit approval to create a new one. Never enumerate existing sessions.
+Resume only the explicitly supplied or already active Planning Session ID. When resuming and the ID is unknown, ask for it. Never scan, list, or guess other sessions. Once you have the session id, activate it, read the execution report, read agent memory, inspect session artifacts, and log the execution start.
 
 # Anti-Research Rule
 

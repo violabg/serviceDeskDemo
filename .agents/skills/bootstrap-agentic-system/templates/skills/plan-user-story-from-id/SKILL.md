@@ -21,8 +21,8 @@ Run normal Planner gates after evidence is stored. Ask one evidence-backed block
 You need to plan an implamentation based the on the work item id provided by the user.
 If user don't provide an work item id, ask for it.
 
-Use #tool:agent/runSubagent to delegate work item gathering to a default subagent (leave argument args.agentName empty).
-Use the following prompt template for the subagent:
+{{WORK_ITEM_GATHERING}}
+Use the following evidence task:
 
 ```text
 Activate agent session with id `<sessionId>`.

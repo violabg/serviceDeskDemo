@@ -14,8 +14,8 @@
 # recommend  - the default proposal Bootstrap states when it asks the question.
 # infer_from - target-repository evidence Bootstrap inspects before proposing.
 #
-# A recommendation is never an approval: Bootstrap asks the question, shows the
-# evidence it found, states the recommendation, and waits for the user's answer.
+# A recommendation is never an approval. Bootstrap may group evidence-backed
+# routine defaults for approval; only unresolved material choices need questions.
 
 placeholders:
   - name: AGENT_PREFIX
@@ -138,6 +138,61 @@ placeholders:
     infer_from:
       - resolved KNOWLEDGE_INDEX_PATH folder
 
+  - name: TEST_PLAN_SCHEMA_PATH
+    kind: value
+    question: Which compatible test-plan schema should the Integration Tester use?
+    fill_from: discovery
+    recommend: Use an existing compatible repository schema; otherwise install templates/test-plan-schema.md beside the implementation-plan schema.
+    infer_from:
+      - existing test-plan schemas and test workflow documentation
+      - selected Integration Tester contract and resolved PLAN_SCHEMA_PATH folder
+
+  - name: PLATFORM_TOOLS
+    kind: value
+    question: Which baseline tool names implement this role on the selected platform?
+    fill_from: discovery
+    recommend: Preserve supported source baseline tools; translate unsupported names to exact discovered equivalents for the same operations. Emit quoted YAML list items, or no items when approved manual fallbacks cover the role.
+    infer_from:
+      - matching Baseline Tool Surface row in templates/agent-role-contracts.md
+      - available target tools and existing agent declarations
+
+  - name: QUESTION_TOOL
+    kind: value
+    question: How does this platform collect user answers?
+    fill_from: discovery
+    recommend: Use the exact available question tool reference; use plain chat when there is no question tool.
+    infer_from:
+      - target question tools and existing agent instructions
+
+  - name: WORK_ITEM_GATHERING
+    kind: value
+    question: How should work-item evidence gathering run?
+    fill_from: discovery
+    capability: subagent-delegation
+    recommend: Delegate the following gathering task to a default subagent through the exact approved target invocation, or execute it inline when delegation is unavailable. Preserve the retrieval scope and artifact output in either case.
+    infer_from:
+      - target delegation tools and supported arguments
+      - approved tracker adapter and capability bindings
+
+  - name: KNOWLEDGE_DISCOVERY_DELEGATION
+    kind: value
+    question: How should bounded knowledge discovery run?
+    fill_from: discovery
+    capability: subagent-delegation
+    recommend: Run up to 10 default subagents within the target's concurrency limit, or run the same bounded discovery tasks sequentially inline when delegation is unavailable.
+    infer_from:
+      - target delegation tools and concurrency limits
+
+  - name: VISION_INVOCATION
+    kind: value
+    question: How should the Planner process visual evidence?
+    fill_from: discovery
+    capability: visual-evidence
+    recommend: Invoke the selected visual agent with approved target syntax, or process the same task inline using approved visual tools. If no visual capability exists, require user-supplied textual evidence before making image-dependent claims. Introduce the following evidence task in the replacement instruction.
+    infer_from:
+      - approved Vision decision and target delegation tools
+      - available image tools or user-supplied visual evidence
+
   - name: ARTIFACT_GATES_PATH
     kind: both
     question: What is the artifact and gate conventions path?
@@ -167,6 +222,7 @@ placeholders:
       - Capability Substitutions table in the selected templates/agents/<role>.agent.md mirror
       - .vscode/mcp.json, .mcp.json, .cursor/mcp.json
       - tool lists in existing agent files
+      - existing repository skills and their supported operations
       - package manifests and lockfiles that identify framework, library, cloud, or API documentation needs
 
   - name: REPOSITORY_SEARCH_TOOL

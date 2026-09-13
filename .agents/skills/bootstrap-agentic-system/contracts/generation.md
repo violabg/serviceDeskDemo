@@ -31,7 +31,7 @@ The file plan must include:
 - approved placeholder values and slot replacements,
 - source-only marker stripping decisions,
 - files generated, skipped, or deferred,
-- schema file destination copied from `templates/plan-schema.md`, plus any approved repo-local equivalent or adaptation,
+- schema file destination copied from `templates/plan-schema.md`, plus any approved repo-local equivalent or adaptation; include `templates/test-plan-schema.md` or a verified compatible local schema when Integration Tester is selected,
 - context glossary operation or no-op reason,
 - issue tracker or local Markdown adapter contract,
 - maintenance baseline plan: answers file path, baseline directory path, and the promise that every generated file gets a pristine copy,
@@ -40,7 +40,7 @@ The file plan must include:
 
 Default batch order:
 
-1. Core System: root instructions copied from `templates/instructions/AGENTS.md`, the modular instruction files selected from `templates/instructions/`, manifest, Bootstrap changelog snapshot, knowledge index shell, the repo-local schema file copied from `templates/plan-schema.md`, Planner, Implementor, Tester or Integration Tester, Knowledge Builder, Ask when selected, and context glossary only when resolved.
+1. Core System: root instructions copied from `templates/instructions/AGENTS.md`, the modular instruction files selected from `templates/instructions/`, manifest, Bootstrap changelog snapshot, knowledge index shell, the repo-local schema file copied from `templates/plan-schema.md`, the resolved test-plan schema when Integration Tester is selected, Planner, Implementor, Tester or Integration Tester, Knowledge Builder, Ask when selected, and context glossary only when resolved.
 2. Vision Evidence: Vision agent or visual-intake skill when selected.
 3. Knowledge Builder Bootstrap: initial knowledge files and index entries when evidence supports them; otherwise recommend running generated Knowledge Builder.
 4. Skill Template Generation: selected skills from `templates/skills/`.
@@ -63,8 +63,10 @@ For every generated agent or skill with a matching mirror:
 - fill or remove approved block slots,
 - strip `CANONICAL-TEMPLATE-SLOT` marker comments from final generated runtime files,
 - preserve non-slot canonical wording and heading order,
-- preserve baseline `tools:` and `agents:` frontmatter when supported,
-- replace `"{{APPROVED_MCP_TOOLS}}"` with exact quoted string tool names or remove it if no additional tools are approved,
+- fill `PLATFORM_TOOLS` with exact approved quoted YAML tool-name strings for that role; preserve supported baseline operations and record translated names or approved manual fallbacks,
+- preserve `agents:` frontmatter when supported, using the generated role names; remove unsupported delegation metadata when the approved platform decision uses inline execution,
+- replace `"{{APPROVED_MCP_TOOLS}}"` with exact quoted string tool names or remove it if no additional tools are approved; deduplicate with `PLATFORM_TOOLS` and remove empty list items,
+- fill invocation slots with the approved native syntax or explicit inline/manual procedure; using plain chat for `QUESTION_TOOL` must not leave a fictitious tool reference,
 - replace `"{{VISION_AGENT_NAME}}"` with the generated Vision agent name when Vision is selected, or remove that delegated-agent item only when the approved file plan records the no-op,
 - record all decisions in the manifest.
 
@@ -73,9 +75,9 @@ For generated work-item planning skills:
 - do not add skill-level `tools:` frontmatter,
 - name the selected external tracker adapter or local Markdown adapter in the body,
 - preserve Planner-only invocation,
-- preserve inline `#tool:agent/runSubagent` gathering instructions from the mirrors,
+- fill `WORK_ITEM_GATHERING` with the approved target invocation or an explicit inline gathering instruction; preserve the following evidence task and its artifact contract,
 - define adapter name, exact approved retrieval tools when available, supported issue types, External Issue ID format, required retrieved fields, rich-content and attachment Markdown conversion, missing/duplicate/unreadable/invalid-ID behavior, and local lookup rules when applicable,
-- retrieve only requested External Issue ID by default. Retrieve a referenced issue only when current issue explicitly links it and it is relevant; record retrieval reason as dependency evidence and do not recurse,
+- retrieve only requested External Issue ID by default. Read each issue explicitly referenced or linked by the current issue before deciding relevance; record retrieval reason as dependency evidence and do not recurse,
 - distinguish External Issue ID from Planning Session ID. Determine issue type before recommending `bug-<external-issue-id>` or `us-<external-issue-id>`, allow approved custom prefix, and record resulting identity in current-session artifact,
 - create or resume only current Planning Session ID folder under approved session root; resume directly from known Planning Session ID and never enumerate other session folders.
 
@@ -90,6 +92,7 @@ For generated instruction files:
 For generated runtime schema files:
 
 - copy `templates/plan-schema.md` to the approved implementation-plan schema path,
+- when Integration Tester is selected, copy `templates/test-plan-schema.md` to `TEST_PLAN_SCHEMA_PATH`, or verify the approved existing schema there; record whether it is the shipped local fallback or a compatible repository contract,
 - preserve the plan schema's filesystem-tree links, File Details anchors, backlinks, approval metadata, operations, validation, and risks,
 - do not generate a separate clarification-question schema: the generated Planner already carries that format, and a second copy drifts from it,
 - record any approved stronger repo-local equivalent or adaptation in the manifest.
@@ -100,7 +103,7 @@ For generated files without a mirror, adapt `templates/agent-role-contracts.md`,
 
 Write the maintenance baseline from `templates/agentic-system-answers.md` and the manifest template once the generated files exist.
 
-- Write the answers file at the approved path. Record the Bootstrap skill version, the resolved platform and roots, every slot the generated system uses with its value, `source`, and evidence, every capability with its resolution and installed fallback, every generated path paired with its baseline path, and every deferred decision.
+- Write the answers file at the approved path. For a slot whose value differs by role or file, store its `value` as a map keyed by generated repository-relative path; otherwise store a scalar. Resolve the exact file entry during future template filling. Record the Bootstrap skill version, the resolved platform and roots, every slot the generated system uses with its value, `source`, and evidence, every capability with its resolution and installed fallback, every generated path paired with its baseline path, and every deferred decision.
 - Copy each generated file into the baseline directory under its repository-relative path, byte for byte, before any post-generation hand edit. A baseline copy taken after a manual edit silently turns a customization into part of the baseline.
 - Do not copy files Bootstrap did not generate. The baseline describes what Bootstrap produced, not the repository.
 - Initialize the customization register in the manifest. A first install normally has no rows; add one row for every deliberate deviation approved during this run, including approved non-slot wording changes, dropped routing lines, and slot overrides that contradict a template default.
