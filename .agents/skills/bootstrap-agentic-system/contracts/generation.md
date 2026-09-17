@@ -68,6 +68,7 @@ For every generated agent or skill with a matching mirror:
 - replace `"{{APPROVED_MCP_TOOLS}}"` with exact quoted string tool names or remove it if no additional tools are approved; deduplicate with `PLATFORM_TOOLS` and remove empty list items,
 - fill invocation slots with the approved native syntax or explicit inline/manual procedure; using plain chat for `QUESTION_TOOL` must not leave a fictitious tool reference,
 - replace `"{{VISION_AGENT_NAME}}"` with the generated Vision agent name when Vision is selected, or remove that delegated-agent item only when the approved file plan records the no-op,
+- replace `"{{VISION_MODEL}}"` with the approved exact model when Vision is selected; if the user approves the target platform default, remove the generated Vision agent's `model` field and record that omission in the manifest,
 - record all decisions in the manifest.
 
 For generated work-item planning skills:

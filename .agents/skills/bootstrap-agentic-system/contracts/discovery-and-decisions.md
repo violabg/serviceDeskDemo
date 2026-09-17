@@ -29,6 +29,7 @@ Discovery lanes:
 - Visual Artifacts: screenshots, mockups, diagrams, UI snapshots, image assets, issue attachments, browser screenshots, annotated QA evidence, and whether image evidence affects planning or testing.
 - Validation Surface: package scripts, CI, lint/test commands, PR templates, contribution docs, and commands generated agents should run.
 - Role Capability Scope: read each selected agent mirror's `## Role Tooling Intent` profile, then audit its `## Capability Substitutions` table. For every profile category and token, record source role, supported operation, whether that role needs it for its selected workflow, and target-repository evidence for candidate tools or services. Profiles and tokens describe capability needs, not names of MCP servers to install.
+- Vision model support: when Vision is selected, inspect existing target-platform Vision agents and model configuration so Bootstrap can recommend whether the canonical Vision default is supported or the platform default should be used.
 
 For every role capability need, search target MCP configuration, existing agent tool lists and repository skills, tracker and knowledge sources, package manifests, lockfiles, and project documentation before proposing a candidate. A framework, vendor, library, or API dependency may justify a documentation capability for the role that needs current external contracts. Do not infer a specific provider from the source mirror; prefer an already configured target-repository service, then a platform-native tool, then a documented fallback.
 
@@ -58,6 +59,7 @@ Required decisions for the selected workflow (mark conditional items not applica
 - session root and current-session-only restriction,
 - maintenance baseline location: the `docs/agents/` root that will hold the manifest, the answers file, and the `.baseline/` directory,
 - Vision support: Vision agent, smaller visual-intake skill, defer, or no change,
+- Vision model: the approved exact model for the generated Vision agent, or an explicit platform-default/omitted-model decision when Vision is selected,
 - Canonical Template Mirror skills to generate, skip, or defer,
 - approval owner and batch approval plan, including each batch's composition, order, split/combine/skip/defer choices, and approval checkpoint.
 

@@ -61,6 +61,8 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 - Proposed Visual Support: Vision agent | visual-intake skill | deferred | no change
 - Proposed Visual Artifact Format: SlimUI | structured Markdown | repo-local format | not applicable
 - Visual Artifact Path Pattern:
+- Proposed Vision Model: canonical upstream default | target platform default | user-selected exact model | not applicable
+- User-Selected Vision Model:
 - Reason:
 - User-Selected Option:
 
@@ -119,7 +121,7 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 | `templates/agents/integration-tester.agent.md` | `<agent-dir>/<prefix>-tester.agent.md` | prefix, validation commands, approved tools | stripped | none | pending |
 | `templates/agents/knowledge-builder.agent.md` | `<agent-dir>/<prefix>-knowledge-builder.agent.md` | prefix, knowledge paths, glossary path, approved tools | stripped | none | pending |
 | `templates/agents/ask.agent.md` | `<agent-dir>/<prefix>-ask.agent.md` | prefix, knowledge paths, approved tools | none | pending |
-| `templates/agents/vision.agent.md` | `<agent-dir>/<prefix>-vision.agent.md` | prefix, visual evidence strategy, artifact format, approved tools | none | pending |
+| `templates/agents/vision.agent.md` | `<agent-dir>/<prefix>-vision.agent.md` | prefix, Vision model, visual evidence strategy, artifact format, approved tools | none | pending |
 
 ## Canonical Skill Inventory
 

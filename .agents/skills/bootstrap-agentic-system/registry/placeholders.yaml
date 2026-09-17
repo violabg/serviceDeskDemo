@@ -46,6 +46,16 @@ placeholders:
       - resolved AGENT_PREFIX
       - existing agent naming style in the platform folder
 
+  - name: VISION_MODEL
+    kind: value
+    question: Which model should the generated Vision agent use?
+    fill_from: user
+    recommend: The sanitized upstream Vision default when the target platform supports it (`GPT-5.6 Luna` in the current source); otherwise use the target platform default by omitting the model field.
+    infer_from:
+      - model declarations in existing target-platform Vision agents
+      - target platform model support and configuration
+      - canonical Vision agent model default
+
   - name: TRACKER_ADAPTER
     kind: both
     question: Which work-item tracker adapter should generated planning skills use?
@@ -435,8 +445,15 @@ required:
       - KNOWLEDGE_SOURCE
     vision.agent.md:
       - APPROVED_MCP_TOOLS
+      - VISION_MODEL
       - VISUAL_ARTIFACT_FORMAT
       - VISUAL_ARTIFACT_STORAGE
+    direct-implementor.agent.md:
+      - APPROVED_MCP_TOOLS
+      - KNOWLEDGE_SOURCE
+      - REPOSITORY_SEARCH_TOOL
+      - VISION_AGENT_NAME
+      - VISION_INVOCATION
   skills:
     default:
       - KNOWLEDGE_SOURCE
