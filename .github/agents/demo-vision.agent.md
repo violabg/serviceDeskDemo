@@ -1,6 +1,7 @@
 ---
 description: "This custom agent analyzes images and produces a detailed JSON representation of the visual content."
 tools: [edit/createFile, edit/editFiles]
+model: "gpt-5.6 luna"
 disable-model-invocation: true
 ---
 

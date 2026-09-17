@@ -13,10 +13,10 @@
 
 - Bootstrap Skill Version Used: `3.4.0`
 - Bootstrap Contract Applied Through: `3.4.0`
-- Maintenance Target: `4.0.0` (runtime changes applied; full capability verification blocked)
+- Maintenance Target: `4.1.0` (Vision model applied; full 4.0.0 capability verification remains blocked)
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Last Applied: `2.1.0`
-- Last Maintenance Date: 2026-09-13
+- Last Maintenance Date: 2026-09-17
 
 ## Generated System Paths
 
@@ -43,6 +43,7 @@
 - Session contract: tracker requests use `sessions/us-<issue-number>/` and `sessions/bug-<issue-number>/`; free-form requests use a confirmed request-based ID. Direct resume by supplied or active ID only.
 - Knowledge: preserve `docs/agents/knowledge/README.md` as the index and use `CONTEXT.md` as the glossary.
 - Visual evidence: `demo-vision`; store source PNG captures and a short Markdown note under `sessions/<planning-session-id>/visual/`.
+- Vision model: `gpt-5.6 luna` (user-approved exact model).
 - Validation: artifact gate linting, then lint, typecheck, test, and build for buildable app changes.
 
 ## Mirror Inventory
@@ -99,6 +100,7 @@ The following deliberate deviations are repository-owned and must be preserved o
 | `planner-gate3-validation` | `.github/agents/demo-planner.agent.md` | Gate 3 / Completion Criteria and verification | `modified-rule` | Retain baseline C1–C6 criteria and table still required by upstream behavior rules. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
 | `planner-blocker-precedence` | `.github/agents/demo-planner.agent.md` | Operating Contract / Gate execution model | `modified-rule` | Preserve required blocker halts over routine auto-advance; failed capability checks must stop. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
 | `preserve-runtime-formatting` | Existing agent and skill mirrors | Unchanged regions; tools frontmatter | `modified-rule` | Approved merge retains repository formatting and exact tool lists while applying changed behavior. | `independent` | `always` | `4.0.0` |
+| `vision-model` | `.github/agents/demo-vision.agent.md` | frontmatter `model` | `slot-override` | User explicitly selected the Vision model for Bootstrap 4.1.0. | `overrides-canonical` | `always` | `4.1.0` |
 
 ## Maintenance History
 
@@ -113,6 +115,7 @@ The following deliberate deviations are repository-owned and must be preserved o
 | 2026-08-26 | `2.0.0` | `3.3.0` | `3.4.0` | This manifest | Upgrade run accepted the four already-present 3.4.0 agent refinements, preserved registered tool-surface customizations, retained the approved business-logic-gap-detector deferral, and refreshed baseline provenance. Evolve review found no root-router change required. |
 
 | 2026-09-13 | `2.1.0` | `3.4.0` | `3.4.0` (target `4.0.0` partially applied) | This manifest, maintenance assessment below | User approved upgrade and merge policy. Applied guards, invocation slots, local test schema, session workflow, and restored workflow bodies; retained protected tools and corrected audited contradictions. Tracker verification remains blocked, not deferred or passed. |
+| 2026-09-17 | `2.1.0` | `3.4.0` | `3.4.0` (target `4.1.0` partially applied) | This manifest, maintenance assessment below | User approved and selected `gpt-5.6 luna` for Vision. Applied the 4.1.0 model slot; full 4.0.0 capability verification remains blocked. |
 
 ## Maintenance Assessment — 2026-09-13
 
@@ -152,3 +155,11 @@ The following deliberate deviations are repository-owned and must be preserved o
 - `pnpm agent:lint-artifacts` is intentionally not run: it reads a planning session, excluded by the approved maintenance scope. `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` are not applicable to these agent-documentation changes.
 - Rollback: restore only this maintenance diff (including matching baseline copies), remove the newly added test schema and its baseline, and restore provenance together; preserve unrelated working-tree changes.
 - Next: verify the exact issue-and-comments binding in the configured Copilot host before advancing applied-through to 4.0.0. Run `demo-knowledge-builder` after this structural update. For tracker creation workflows use `create-work-item-from-description`; author repeatable repository procedures as local skills rather than expanding agent contracts.
+
+## Maintenance Assessment — 2026-09-17
+
+- Mode: upgrade toward installed Bootstrap 4.1.0. Approval: **true**; user selected `gpt-5.6 luna` as the exact Vision model.
+- Classified 4.1.0 delta: Vision model decision — **applied**. The answers file records the slot and the Vision agent declares the approved model.
+- Region merge: Vision frontmatter had no repository-side change beyond the approved slot addition; all existing custom formatting and tool-surface decisions were preserved.
+- Session-folder contents were excluded from discovery, reads, validation, and edits. Application code, tests, schema, migrations, and runtime configuration were not changed.
+- Full contract application remains blocked by the previously recorded 4.0.0 capability-verification gaps; `Bootstrap Contract Applied Through` therefore remains `3.4.0`.

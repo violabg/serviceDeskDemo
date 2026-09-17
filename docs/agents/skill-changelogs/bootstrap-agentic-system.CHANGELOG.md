@@ -4,7 +4,13 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `4.0.0`
+- `4.1.0`
+
+## 2026-09-17
+
+### 4.1.0
+
+- Added an explicit Vision model decision. Bootstrap recommends the canonical upstream Vision default when supported by the target platform, asks for the user's exact choice when Vision is selected, and records an approved platform-default omission when appropriate.
 
 ## 2026-09-13
 
