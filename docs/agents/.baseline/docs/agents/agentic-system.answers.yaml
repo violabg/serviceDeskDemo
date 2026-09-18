@@ -1,4 +1,4 @@
-# Approved decisions and per-file tool slots. Refresh matching baselines with approved maintenance.
+# Approved dual-platform decisions. Preserve shared sources and refresh only approved changed-file baselines.
 ---
 version: 1
 bootstrap:
@@ -6,23 +6,96 @@ bootstrap:
   contract_applied_through: 3.4.0
   generated_on: '2026-08-03'
   maintenance_target: 4.1.0
-  maintenance_status: partially-applied; 4.0.0 capability verification blocked
-  last_maintenance: '2026-09-13'
+  maintenance_status: dual-platform evolution applied; 4.0.0 live capability verification remains blocked
+  last_maintenance: '2026-09-17'
   maintain_skill_version: 2.1.0
 platform:
-  target: github-copilot
-  agent_root: ".github/agents"
-  skill_root: ".github/skills"
-  instruction_root: ".github/instructions"
+  target: github-copilot+codex
+  skill_root: .agents/skills
+  instruction_root: .github/instructions
+  targets:
+  - github-copilot
+  - codex
+  agent_roots:
+    github-copilot: .github/agents
+    codex: .codex/agents
+  shared_role_root: .agents/roles
+  mcp_source: .vscode/mcp.json
+  mcp_projection: .codex/config.toml
+  mcp_aliases:
+    github: github
+    neondatabase/mcp-server-neon: neon
+    io.github.vercel/next-devtools-mcp: next-devtools
+  mcp_codex_overrides:
+    github:
+      bearer_token_env_var: GITHUB_TOKEN
+  shared_skills:
+  - integration-test-knowledge-checklist
+  - plan-bug-from-id
+  - plan-user-story-from-id
+  - user-story-analysis
+  bindings:
+    github-copilot: .agents/platforms/copilot.md
+    codex: .agents/platforms/codex.md
+    shared: .agents/platforms/capabilities.md
+  roles:
+    demo-ask:
+      shared: .agents/roles/demo-ask.md
+      github-copilot: .github/agents/demo-ask.agent.md
+      codex: .codex/agents/demo-ask.toml
+      upstream_template: templates/agents/ask.agent.md
+      copilot_frontmatter_sha256: 6709d798563121b9e3b7daae0e401dfdea42c08002e2d7ca2e4e705121027e6f
+    demo-implementor:
+      shared: .agents/roles/demo-implementor.md
+      github-copilot: .github/agents/demo-implementor.agent.md
+      codex: .codex/agents/demo-implementor.toml
+      upstream_template: templates/agents/implementor.agent.md
+      copilot_frontmatter_sha256: 29ddc70d52b9015ef19ed31d7aa30ed5e5463d1874eb73c099c4eab7782f5ae2
+    demo-integration-tester:
+      shared: .agents/roles/demo-integration-tester.md
+      github-copilot: .github/agents/demo-integration-tester.agent.md
+      codex: .codex/agents/demo-integration-tester.toml
+      upstream_template: templates/agents/integration-tester.agent.md
+      copilot_frontmatter_sha256: e7168a3dabeee67602bd45c2e50f113cde85233f994b4797e85c721576178795
+    demo-knowledge-builder:
+      shared: .agents/roles/demo-knowledge-builder.md
+      github-copilot: .github/agents/demo-knowledge-builder.agent.md
+      codex: .codex/agents/demo-knowledge-builder.toml
+      upstream_template: templates/agents/knowledge-builder.agent.md
+      copilot_frontmatter_sha256: 36fd9bd52c9e6724d312a0775bab49a710f2ba3093dfcb13a017253091d4a7ba
+    demo-planner:
+      shared: .agents/roles/demo-planner.md
+      github-copilot: .github/agents/demo-planner.agent.md
+      codex: .codex/agents/demo-planner.toml
+      upstream_template: templates/agents/planner.agent.md
+      copilot_frontmatter_sha256: fa99df9ef56c33ae524f653294efda9ef6ea60dcf99a5e8eb91638bc83e749f0
+    demo-vision:
+      shared: .agents/roles/demo-vision.md
+      github-copilot: .github/agents/demo-vision.agent.md
+      codex: .codex/agents/demo-vision.toml
+      upstream_template: templates/agents/vision.agent.md
+      copilot_frontmatter_sha256: 919a8b1b9ff4c009535ce463b6ea0b9316f4221b4f86440466805a4943cab849
+  relocations:
+    .github/skills/integration-test-knowledge-checklist/SKILL.md: .agents/skills/integration-test-knowledge-checklist/SKILL.md
+    .github/skills/plan-bug-from-id/SKILL.md: .agents/skills/plan-bug-from-id/SKILL.md
+    .github/skills/plan-user-story-from-id/SKILL.md: .agents/skills/plan-user-story-from-id/SKILL.md
+    .github/skills/user-story-analysis/SKILL.md: .agents/skills/user-story-analysis/SKILL.md
+  model_policy:
+    github-copilot/demo-vision: gpt-5.6 luna
+    codex: inherit parent model and reasoning; visual workflow requires image capability
+  rendering_policy: 'Split upstream role frontmatter/body before filling: platform tool maps use the matching
+    Copilot adapter path; shared bodies use scalar capability slots; host-keyed platform metadata is not
+    a template slot map. See docs/agents/platform-support.md.'
 slots:
   AGENT_PREFIX:
     value: demo-
     source: user
     evidence: User supplied demo during Bootstrap intake.
   TARGET_PLATFORM:
-    value: github-copilot
+    value: GitHub Copilot and Codex through native adapters
     source: user
-    evidence: User selected GitHub Copilot; .vscode/mcp.json supports the choice.
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   VISION_AGENT_NAME:
     value: demo-vision
     source: recommend-accepted
@@ -36,12 +109,12 @@ slots:
     source: user
     evidence: User selected GitHub issue read only; origin is github.com.
   WORK_ITEM_RETRIEVAL:
-    value: mcp_github_mcp_s2_issue_read
+    value: authenticated GitHub MCP issue-and-comments read binding in .agents/platforms/capabilities.md
     source: user
-    evidence: User approved planner issue read only.
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   LOCAL_MARKDOWN_TRACKER_CONTRACT:
-    value: no local Markdown fallback is approved; stop and report that GitHub issue
-      retrieval is required
+    value: no local Markdown fallback is approved; stop and report that GitHub issue retrieval is required
     source: user
     evidence: User selected no fallback.
   WORK_ITEM_ID_FORMAT:
@@ -53,10 +126,9 @@ slots:
     source: user
     evidence: User approved the existing sessions model.
   SESSION_ACTIVATION:
-    value: For tracker-backed work use the supplied External Issue ID; for free-form
-      work propose a filesystem-safe request-based Planning Session ID and confirm
-      it before creation. Resume only by the supplied or already active Planning Session
-      ID.
+    value: For tracker-backed work use the supplied External Issue ID; for free-form work propose a filesystem-safe
+      request-based Planning Session ID and confirm it before creation. Resume only by the supplied or
+      already active Planning Session ID.
     source: recommend-accepted
     evidence: Approved 4.0.0 conditional tracker and direct-resume workflow on 2026-09-13.
   SESSION_ARTIFACT_STORAGE:
@@ -88,24 +160,24 @@ slots:
     source: user
     evidence: User approved repository validation set from package.json.
   REPOSITORY_SEARCH_TOOL:
-    value: built-in bounded Copilot search tools
+    value: active host repository-search binding in .agents/platforms
     source: user
-    evidence: User approved text search, file search, and usages.
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   APPROVED_MCP_TOOLS:
     value:
-      ".github/agents/demo-integration-tester.agent.md": ''
-      ".github/agents/demo-ask.agent.md": ''
-      ".github/agents/demo-planner.agent.md": '"github/*", "io.github.vercel/next-devtools-mcp/*",
-        "neondatabase/mcp-server-neon/*", "io.github.upstash/context7/*", "vscodeGeneral/rename",
-        "vscodeGeneral/usages"'
-      ".github/agents/demo-vision.agent.md": ''
-      ".github/agents/demo-implementor.agent.md": ''
-      ".github/agents/demo-knowledge-builder.agent.md": '"io.github.vercel/next-devtools-mcp/*",
-        "neondatabase/mcp-server-neon/*", "context7/*", "vscodeGeneral/rename", "vscodeGeneral/usages"'
+      .github/agents/demo-integration-tester.agent.md: ''
+      .github/agents/demo-ask.agent.md: ''
+      .github/agents/demo-planner.agent.md: '"github/*", "io.github.vercel/next-devtools-mcp/*", "neondatabase/mcp-server-neon/*",
+        "io.github.upstash/context7/*", "vscodeGeneral/rename", "vscodeGeneral/usages"'
+      .github/agents/demo-vision.agent.md: ''
+      .github/agents/demo-implementor.agent.md: ''
+      .github/agents/demo-knowledge-builder.agent.md: '"io.github.vercel/next-devtools-mcp/*", "neondatabase/mcp-server-neon/*",
+        "context7/*", "vscodeGeneral/rename", "vscodeGeneral/usages"'
     source: recommend-accepted
-    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing
-      role tool lists preserved verbatim, native delegation with bounded inline procedure,
-      and supplied filesystem test-plan schema.
+    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing role tool lists
+      preserved verbatim, native delegation with bounded inline procedure, and supplied filesystem test-plan
+      schema.
   VISUAL_EVIDENCE_STRATEGY:
     value: demo-vision with session-local PNG evidence and Markdown notes
     source: user
@@ -123,13 +195,12 @@ slots:
     source: discovery
     evidence: Existing docs and generated glossary.
   TEST_STACK_CONVENTIONS:
-    value: Vitest, Testing Library, jest-dom, Node environment, cleanup after each
-      test
+    value: Vitest, Testing Library, jest-dom, Node environment, cleanup after each test
     source: discovery
     evidence: package.json, vitest.config.ts, and test/setup.ts.
   INTEGRATION_TEST_SCOPE:
-    value: Internal wiring with third-party boundaries stubbed; exclude unit-only,
-      browser E2E, and live vendor services.
+    value: Internal wiring with third-party boundaries stubbed; exclude unit-only, browser E2E, and live
+      vendor services.
     source: user
     evidence: User selected internal wiring scope.
   OUTPUT_LANGUAGE:
@@ -137,15 +208,17 @@ slots:
     source: user
     evidence: User selected English.
   AGENT_ROOT:
-    value: ".github/agents"
+    value: .agents/roles
     source: user
-    evidence: User approved standard GitHub Copilot locations.
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   SKILL_ROOT:
-    value: ".github/skills"
+    value: .agents/skills
     source: user
-    evidence: User approved standard GitHub Copilot locations.
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   INSTRUCTION_ROOT:
-    value: ".github/instructions"
+    value: .github/instructions
     source: user
     evidence: User approved standard GitHub Copilot locations.
   MANIFEST_PATH:
@@ -159,77 +232,73 @@ slots:
   TEST_PLAN_SCHEMA_PATH:
     value: docs/agents/test-plan-schema.md
     source: recommend-accepted
-    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing
-      role tool lists preserved verbatim, native delegation with bounded inline procedure,
-      and supplied filesystem test-plan schema.
+    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing role tool lists
+      preserved verbatim, native delegation with bounded inline procedure, and supplied filesystem test-plan
+      schema.
   PLATFORM_TOOLS:
     value:
-      ".github/agents/demo-integration-tester.agent.md": '"vscode/askQuestions", "execute/getTerminalOutput",
-        "execute/runInTerminal", "read/problems", "read/readFile", "agent", "edit/createDirectory",
-        "edit/createFile", "edit/editFiles", "edit/rename", "search/listDirectory",
+      .github/agents/demo-integration-tester.agent.md: '"vscode/askQuestions", "execute/getTerminalOutput",
+        "execute/runInTerminal", "read/problems", "read/readFile", "agent", "edit/createDirectory", "edit/createFile",
+        "edit/editFiles", "edit/rename", "search/listDirectory", "search/usages"'
+      .github/agents/demo-ask.agent.md: '"vscode/askQuestions", "read/readFile", "search/listDirectory",
         "search/usages"'
-      ".github/agents/demo-ask.agent.md": '"vscode/askQuestions", "read/readFile",
-        "search/listDirectory", "search/usages"'
-      ".github/agents/demo-planner.agent.md": '"vscode/askQuestions", "read/readFile",
-        "agent", "edit/createDirectory", "edit/createFile", "edit/editFiles", "edit/rename",
-        "search/fileSearch", "search/listDirectory", "search/textSearch", "search/usages"'
-      ".github/agents/demo-vision.agent.md": '"edit/createFile", "edit/editFiles"'
-      ".github/agents/demo-implementor.agent.md": '"vscode/installExtension", "vscode/newWorkspace",
-        "vscode/runCommand", "vscode/askQuestions", "execute/getTerminalOutput", "execute/runInTerminal",
-        "read/problems", "read/readFile", "read/terminalSelection", "read/terminalLastCommand",
-        "agent", "edit/createDirectory", "edit/createFile", "edit/editFiles", "edit/rename",
-        "search/fileSearch", "search/listDirectory", "search/textSearch", "search/usages"'
-      ".github/agents/demo-knowledge-builder.agent.md": '"vscode/askQuestions", "read/readFile",
-        "agent", "edit/createDirectory", "edit/createFile", "edit/editFiles", "edit/rename",
-        "search/listDirectory", "search/usages"'
+      .github/agents/demo-planner.agent.md: '"vscode/askQuestions", "read/readFile", "agent", "edit/createDirectory",
+        "edit/createFile", "edit/editFiles", "edit/rename", "search/fileSearch", "search/listDirectory",
+        "search/textSearch", "search/usages"'
+      .github/agents/demo-vision.agent.md: '"edit/createFile", "edit/editFiles"'
+      .github/agents/demo-implementor.agent.md: '"vscode/installExtension", "vscode/newWorkspace", "vscode/runCommand",
+        "vscode/askQuestions", "execute/getTerminalOutput", "execute/runInTerminal", "read/problems",
+        "read/readFile", "read/terminalSelection", "read/terminalLastCommand", "agent", "edit/createDirectory",
+        "edit/createFile", "edit/editFiles", "edit/rename", "search/fileSearch", "search/listDirectory",
+        "search/textSearch", "search/usages"'
+      .github/agents/demo-knowledge-builder.agent.md: '"vscode/askQuestions", "read/readFile", "agent",
+        "edit/createDirectory", "edit/createFile", "edit/editFiles", "edit/rename", "search/listDirectory",
+        "search/usages"'
     source: recommend-accepted
-    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing
-      role tool lists preserved verbatim, native delegation with bounded inline procedure,
-      and supplied filesystem test-plan schema.
+    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing role tool lists
+      preserved verbatim, native delegation with bounded inline procedure, and supplied filesystem test-plan
+      schema.
   QUESTION_TOOL:
-    value: "#tool:vscode/askQuestions"
-    source: recommend-accepted
-    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing
-      role tool lists preserved verbatim, native delegation with bounded inline procedure,
-      and supplied filesystem test-plan schema.
+    value: '#capability:ask-user'
+    source: user
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   WORK_ITEM_GATHERING:
-    value: 'Use #tool:agent/runSubagent to delegate the following evidence task to
-      a default subagent. If delegation is unavailable, execute the same bounded task
-      inline with the approved tracker binding; preserve its retrieval scope and artifact
-      output.'
-    source: recommend-accepted
-    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing
-      role tool lists preserved verbatim, native delegation with bounded inline procedure,
-      and supplied filesystem test-plan schema.
+    value: Use the active platform delegation binding for bounded Planner evidence gathering; run the
+      same authorized task inline if delegation is unavailable. Preserve retrieval scope and artifact
+      output.
+    source: user
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   KNOWLEDGE_DISCOVERY_DELEGATION:
-    value: 'Run up to 10 default subagents using #tool:agent/runSubagent within the
-      platform concurrency limit, or run the same bounded discovery tasks sequentially
-      inline when delegation is unavailable.'
-    source: recommend-accepted
-    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing
-      role tool lists preserved verbatim, native delegation with bounded inline procedure,
-      and supplied filesystem test-plan schema.
+    value: Run up to 10 bounded tasks through the active platform delegation binding within host concurrency
+      limits, or execute the same tasks sequentially inline.
+    source: user
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   VISION_INVOCATION:
-    value: 'Use #tool:agent/runSubagent with agentName="demo-vision" for the following
-      evidence task. If delegation is unavailable, use approved visual tools inline;
-      if visual evidence cannot be inspected, ask for textual evidence and stop image-dependent
-      planning.'
-    source: recommend-accepted
-    evidence: User approved maintenance plan and merge policy on 2026-09-13; existing
-      role tool lists preserved verbatim, native delegation with bounded inline procedure,
-      and supplied filesystem test-plan schema.
+    value: Use the active platform binding to invoke demo-vision with actual image and active session;
+      Copilot callers preload the required contracts. If unavailable, use approved visual tools inline;
+      stop if evidence cannot be inspected.
+    source: user
+    evidence: User approved the dual Copilot/Codex evolution plan on 2026-09-17; preserve shared sources
+      and platform adapters in future updates.
   REPO_NAME:
     value: serviceDeskDemo
     source: discovery
     evidence: Existing approved root router preserved by the maintenance plan.
   AGENT_ROSTER:
-    value: |-
-      - `demo-planner`: implementation planning from a validated work item.
+    value: '- `demo-planner`: implementation planning from a validated work item.
+
       - `demo-implementor`: implementation from an approved plan.
+
       - `demo-integration-tester`: integration-test planning and execution.
+
       - `demo-knowledge-builder`: repository knowledge and glossary refinement.
+
       - `demo-ask`: project-specific Q&A without code changes.
-      - `demo-vision`: deterministic extraction from visual evidence.
+
+      - `demo-vision`: deterministic extraction from visual evidence.'
     source: discovery
     evidence: Existing approved root router preserved by the maintenance plan.
   PLANNER_CLARIFICATION_WORKFLOW:
@@ -244,47 +313,60 @@ slots:
     value: Preserve the canonical block body with recorded inline slots substituted.
     source: generator
     evidence: Approved maintenance preserves canonical workflow bodies; template templates/skills/plan-bug-from-id/SKILL.md
+  SHARED_ROLE_ROOT:
+    value: .agents/roles
+    source: user
+    evidence: Approved shared workflow extraction; overrides upstream non-slot partial prohibition.
+  CODEX_TOOL_POLICY:
+    value: Inherit all enabled parent native/MCP tools; no per-agent filters; use only within shared role
+      authority.
+    source: user
+    evidence: Approved all available MCP inheritance on 2026-09-17.
 capabilities:
   repository-search:
     resolution: native-tool
-    tool: search/textSearch, search/fileSearch, search/usages
-    note: Resolve per role from PLATFORM_TOOLS. Bounded listDirectory/usages followed
-      by readFile when textSearch is not declared; no source MCP or root registry
-      required.
+    tool: active host binding in .agents/platforms/copilot.md or .agents/platforms/codex.md
+    note: Shared role scope remains mandatory; platform bindings define native tools or bounded inline
+      procedures.
   file-editing:
     resolution: native-tool
-    tool: read/readFile, edit/createFile, edit/editFiles
-    note: Canonical role tool surfaces preserved.
+    tool: active host binding in .agents/platforms/copilot.md or .agents/platforms/codex.md
+    note: Shared role scope remains mandatory; platform bindings define native tools or bounded inline
+      procedures.
   terminal-execution:
     resolution: native-tool
-    tool: execute/runInTerminal
-    note: Required validation commands are available to execution roles.
+    tool: active host binding in .agents/platforms/copilot.md or .agents/platforms/codex.md
+    note: Shared role scope remains mandatory; platform bindings define native tools or bounded inline
+      procedures.
   knowledge-retrieval:
     resolution: fallback
-    tool: read/readFile
-    note: Read the curated repository knowledge index and selected documents.
+    tool: active host binding in .agents/platforms/copilot.md or .agents/platforms/codex.md
+    note: Shared role scope remains mandatory; platform bindings define native tools or bounded inline
+      procedures.
   agent-session-persistence:
     resolution: fallback
-    tool: read/readFile and edit/createFile
-    note: Persist session memory, session log, execution report, and derived planning
-      artifacts under sessions/<planning-session-id>/.
+    tool: active host binding in .agents/platforms/copilot.md or .agents/platforms/codex.md
+    note: Shared role scope remains mandatory; platform bindings define native tools or bounded inline
+      procedures.
   work-item-retrieval:
-    resolution: user-supplied
-    tool: mcp_github_mcp_s2_issue_read
-    note: Planner-only read access for the current GitHub issue.
-    verification: 'blocked: legacy exact name not exposed in current tools; configured
-      github/* does not prove an equivalent issue-and-comments binding'
+    resolution: approved-platform-binding
+    tool: .agents/platforms/capabilities.md#github-issue-evidence
+    note: Planner and its bounded evidence collector only; Implementor consumes captured evidence. Equivalent
+      authenticated GitHub MCP names approved, no local/shell/HTTP fallback.
+    verification: 'blocked: GitHub configured but tools absent in this conversation; GITHUB_TOKEN absent
+      from shell environment; live issue/comments read not exercised without a supplied planning ID.'
   visual-evidence:
     resolution: native-tool
-    tool: view_image, screenshot_page, open_browser_page
-    note: demo-vision captures deterministic session-local evidence.
-    verification: 'unknown: existing Vision declares edit tools only; image intake/delegation
-      not exercised during maintenance'
+    tool: active host binding in .agents/platforms/copilot.md or .agents/platforms/codex.md
+    note: Shared role scope remains mandatory; platform bindings define native tools or bounded inline
+      procedures.
+    verification: 'unknown: shared contract/static adapters verified; Copilot image/delegation and Codex
+      custom-role runtime not exercised here.'
   subagent-delegation:
     resolution: native-tool
-    tool: agent
-    note: Existing Copilot agent/runSubagent invocation retained, with bounded inline
-      fallback for gathering and knowledge discovery when unavailable.
+    tool: active host binding in .agents/platforms/copilot.md or .agents/platforms/codex.md
+    note: Shared role scope remains mandatory; platform bindings define native tools or bounded inline
+      procedures.
   web-documentation:
     resolution: fallback
     tool: none
@@ -293,8 +375,8 @@ capabilities:
     resolution: fallback
     tool: read/readFile
     path: docs/agents/test-plan-schema.md
-    note: Lab-authored local YAML schema; fields and lifecycle statically checked
-      against Integration Tester.
+    note: Lab-authored local YAML schema; fields and lifecycle statically checked against Integration
+      Tester.
 generated:
 - path: AGENTS.md
   template: templates/instructions/AGENTS.md
@@ -302,10 +384,10 @@ generated:
 - path: CONTEXT.md
   template: authored
   baseline: docs/agents/.baseline/CONTEXT.md
-- path: ".github/instructions/knowledge-guard.instructions.md"
+- path: .github/instructions/knowledge-guard.instructions.md
   template: templates/instructions/knowledge-guard.instructions.md
   baseline: docs/agents/.baseline/.github/instructions/knowledge-guard.instructions.md
-- path: ".github/instructions/planning-sessions.instructions.md"
+- path: .github/instructions/planning-sessions.instructions.md
   template: templates/instructions/planning-sessions.instructions.md
   baseline: docs/agents/.baseline/.github/instructions/planning-sessions.instructions.md
 - path: docs/agents/plan-schema.md
@@ -314,36 +396,36 @@ generated:
 - path: docs/agents/artifact-gates.md
   template: templates/artifact-gates.md
   baseline: docs/agents/.baseline/docs/agents/artifact-gates.md
-- path: ".github/agents/demo-planner.agent.md"
-  template: templates/agents/planner.agent.md
+- path: .github/agents/demo-planner.agent.md
+  template: authored Copilot adapter; upstream body mapped through platform.roles
   baseline: docs/agents/.baseline/.github/agents/demo-planner.agent.md
-- path: ".github/agents/demo-implementor.agent.md"
-  template: templates/agents/implementor.agent.md
+- path: .github/agents/demo-implementor.agent.md
+  template: authored Copilot adapter; upstream body mapped through platform.roles
   baseline: docs/agents/.baseline/.github/agents/demo-implementor.agent.md
-- path: ".github/agents/demo-integration-tester.agent.md"
-  template: templates/agents/integration-tester.agent.md
+- path: .github/agents/demo-integration-tester.agent.md
+  template: authored Copilot adapter; upstream body mapped through platform.roles
   baseline: docs/agents/.baseline/.github/agents/demo-integration-tester.agent.md
-- path: ".github/agents/demo-knowledge-builder.agent.md"
-  template: templates/agents/knowledge-builder.agent.md
+- path: .github/agents/demo-knowledge-builder.agent.md
+  template: authored Copilot adapter; upstream body mapped through platform.roles
   baseline: docs/agents/.baseline/.github/agents/demo-knowledge-builder.agent.md
-- path: ".github/agents/demo-ask.agent.md"
-  template: templates/agents/ask.agent.md
+- path: .github/agents/demo-ask.agent.md
+  template: authored Copilot adapter; upstream body mapped through platform.roles
   baseline: docs/agents/.baseline/.github/agents/demo-ask.agent.md
-- path: ".github/agents/demo-vision.agent.md"
-  template: templates/agents/vision.agent.md
+- path: .github/agents/demo-vision.agent.md
+  template: authored Copilot adapter; upstream body mapped through platform.roles
   baseline: docs/agents/.baseline/.github/agents/demo-vision.agent.md
-- path: ".github/skills/plan-bug-from-id/SKILL.md"
+- path: .agents/skills/plan-bug-from-id/SKILL.md
   template: templates/skills/plan-bug-from-id/SKILL.md
-  baseline: docs/agents/.baseline/.github/skills/plan-bug-from-id/SKILL.md
-- path: ".github/skills/plan-user-story-from-id/SKILL.md"
+  baseline: docs/agents/.baseline/.agents/skills/plan-bug-from-id/SKILL.md
+- path: .agents/skills/plan-user-story-from-id/SKILL.md
   template: templates/skills/plan-user-story-from-id/SKILL.md
-  baseline: docs/agents/.baseline/.github/skills/plan-user-story-from-id/SKILL.md
-- path: ".github/skills/user-story-analysis/SKILL.md"
+  baseline: docs/agents/.baseline/.agents/skills/plan-user-story-from-id/SKILL.md
+- path: .agents/skills/user-story-analysis/SKILL.md
   template: templates/skills/user-story-analysis/SKILL.md
-  baseline: docs/agents/.baseline/.github/skills/user-story-analysis/SKILL.md
-- path: ".github/skills/integration-test-knowledge-checklist/SKILL.md"
+  baseline: docs/agents/.baseline/.agents/skills/user-story-analysis/SKILL.md
+- path: .agents/skills/integration-test-knowledge-checklist/SKILL.md
   template: templates/skills/integration-test-knowledge-checklist/SKILL.md
-  baseline: docs/agents/.baseline/.github/skills/integration-test-knowledge-checklist/SKILL.md
+  baseline: docs/agents/.baseline/.agents/skills/integration-test-knowledge-checklist/SKILL.md
 - path: docs/agents/agentic-system-manifest.md
   template: templates/agentic-system-manifest.md
   baseline: docs/agents/.baseline/docs/agents/agentic-system-manifest.md
@@ -351,11 +433,77 @@ generated:
   template: templates/agentic-system-answers.md
   baseline: docs/agents/.baseline/docs/agents/agentic-system.answers.yaml
 - path: docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md
-  template: ".agents/skills/bootstrap-agentic-system/CHANGELOG.md"
+  template: .agents/skills/bootstrap-agentic-system/CHANGELOG.md
   baseline: docs/agents/.baseline/docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md
 - path: docs/agents/test-plan-schema.md
   template: templates/test-plan-schema.md
   baseline: docs/agents/.baseline/docs/agents/test-plan-schema.md
+- path: .agents/roles/demo-ask.md
+  template: templates/agents/ask.agent.md
+  baseline: docs/agents/.baseline/.agents/roles/demo-ask.md
+- path: .codex/agents/demo-ask.toml
+  template: authored Codex adapter; shared role in platform.roles
+  baseline: docs/agents/.baseline/.codex/agents/demo-ask.toml
+- path: .agents/roles/demo-implementor.md
+  template: templates/agents/implementor.agent.md
+  baseline: docs/agents/.baseline/.agents/roles/demo-implementor.md
+- path: .codex/agents/demo-implementor.toml
+  template: authored Codex adapter; shared role in platform.roles
+  baseline: docs/agents/.baseline/.codex/agents/demo-implementor.toml
+- path: .agents/roles/demo-integration-tester.md
+  template: templates/agents/integration-tester.agent.md
+  baseline: docs/agents/.baseline/.agents/roles/demo-integration-tester.md
+- path: .codex/agents/demo-integration-tester.toml
+  template: authored Codex adapter; shared role in platform.roles
+  baseline: docs/agents/.baseline/.codex/agents/demo-integration-tester.toml
+- path: .agents/roles/demo-knowledge-builder.md
+  template: templates/agents/knowledge-builder.agent.md
+  baseline: docs/agents/.baseline/.agents/roles/demo-knowledge-builder.md
+- path: .codex/agents/demo-knowledge-builder.toml
+  template: authored Codex adapter; shared role in platform.roles
+  baseline: docs/agents/.baseline/.codex/agents/demo-knowledge-builder.toml
+- path: .agents/roles/demo-planner.md
+  template: templates/agents/planner.agent.md
+  baseline: docs/agents/.baseline/.agents/roles/demo-planner.md
+- path: .codex/agents/demo-planner.toml
+  template: authored Codex adapter; shared role in platform.roles
+  baseline: docs/agents/.baseline/.codex/agents/demo-planner.toml
+- path: .agents/roles/demo-vision.md
+  template: templates/agents/vision.agent.md
+  baseline: docs/agents/.baseline/.agents/roles/demo-vision.md
+- path: .codex/agents/demo-vision.toml
+  template: authored Codex adapter; shared role in platform.roles
+  baseline: docs/agents/.baseline/.codex/agents/demo-vision.toml
+- path: .agents/skills/integration-test-knowledge-checklist/agents/openai.yaml
+  template: authored
+  baseline: docs/agents/.baseline/.agents/skills/integration-test-knowledge-checklist/agents/openai.yaml
+- path: .agents/skills/plan-bug-from-id/agents/openai.yaml
+  template: authored
+  baseline: docs/agents/.baseline/.agents/skills/plan-bug-from-id/agents/openai.yaml
+- path: .agents/skills/plan-user-story-from-id/agents/openai.yaml
+  template: authored
+  baseline: docs/agents/.baseline/.agents/skills/plan-user-story-from-id/agents/openai.yaml
+- path: .agents/skills/user-story-analysis/agents/openai.yaml
+  template: authored
+  baseline: docs/agents/.baseline/.agents/skills/user-story-analysis/agents/openai.yaml
+- path: .agents/platforms/capabilities.md
+  template: authored
+  baseline: docs/agents/.baseline/.agents/platforms/capabilities.md
+- path: .agents/platforms/copilot.md
+  template: authored
+  baseline: docs/agents/.baseline/.agents/platforms/copilot.md
+- path: .agents/platforms/codex.md
+  template: authored
+  baseline: docs/agents/.baseline/.agents/platforms/codex.md
+- path: .agents/scripts/check-agent-system.py
+  template: authored
+  baseline: docs/agents/.baseline/.agents/scripts/check-agent-system.py
+- path: .codex/config.toml
+  template: authored
+  baseline: docs/agents/.baseline/.codex/config.toml
+- path: docs/agents/platform-support.md
+  template: authored
+  baseline: docs/agents/.baseline/docs/agents/platform-support.md
 deferred:
 - decision: Initial knowledge-index refinement
   reason: Preserve the existing curated index and delegate refinement to demo-knowledge-builder.
@@ -365,8 +513,19 @@ deferred:
   reason: Not selected for the first install.
 maintenance:
   approval_status: true
-  approved_on: '2026-09-13'
-  scope: Bootstrap 4.0.0 upgrade plus approved integration-test prohibition correction;
-    session contents excluded
-  tracker_blocker: Retain approved legacy tool name and no-fallback policy until the
-    exact GitHub issue-and-comment binding is verified. Do not mark 4.0.0 fully applied.
+  approved_on: '2026-09-17'
+  scope: Approved dual-platform evolution, shared-role/skill extraction, native Codex adapters, MCP projection
+    and parity validation; session contents excluded.
+  tracker_blocker: Live MCP availability/authentication must be verified separately; legacy exact-name
+    restriction superseded by approved GitHub MCP read capability.
+  preserve_always:
+  - dual-platform-support
+  - shared-role-source
+  - shared-skill-source
+  - mcp-projection
+  - platform-bindings
+  - agent-system-validation
+  merge_outcome: BASE equals THEIRS for evolve; preserve MINE formatting. All role frontmatter retained
+    byte-for-byte. User approved shared-body extraction and binding changes; no unresolved merge conflicts.
+  baseline_policy: Refresh approved changed-file baselines after validation; preserve unrelated baseline
+    pairs.

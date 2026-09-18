@@ -26,24 +26,29 @@
 - Plan Schema: `docs/agents/plan-schema.md`
 - Artifact Gates: `docs/agents/artifact-gates.md`
 - Test Plan Schema: `docs/agents/test-plan-schema.md`
-- Agent Directory: `.github/agents`
-- Skill Directory: `.github/skills`
+- Shared Role Directory: `.agents/roles`
+- Copilot Agent Directory: `.github/agents`
+- Codex Agent Directory: `.codex/agents`
+- Host Bindings: `.agents/platforms`
+- Platform Maintenance Guide: `docs/agents/platform-support.md`
+- Codex MCP Projection: `.codex/config.toml`
+- Skill Directory: `.agents/skills`
 - Bootstrap Changelog Snapshot: `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md`
 - Answers File: `docs/agents/agentic-system.answers.yaml`
 - Baseline Directory: `docs/agents/.baseline/`
 - Session Root: `sessions/`
-- Work Item Adapter Contract: `.github/skills/plan-bug-from-id/SKILL.md` and `.github/skills/plan-user-story-from-id/SKILL.md`
+- Work Item Adapter Contract: `.agents/skills/plan-bug-from-id/SKILL.md` and `.agents/skills/plan-user-story-from-id/SKILL.md`
 - Planning Session Identity Artifact: `sessions/<planning-session-id>/session-identity.md`
 
 ## Bootstrap Decisions
 
-- Platform: GitHub Copilot.
+- Platforms: GitHub Copilot and Codex; shared workflows with native host adapters.
 - Agent prefix: `demo-`.
-- Work-item adapter: GitHub Issues using `violabg/serviceDeskDemo#<number>` and planner-only `mcp_github_mcp_s2_issue_read`.
+- Work-item adapter: GitHub Issues using `violabg/serviceDeskDemo#<number>` and Planner-only authenticated GitHub MCP issue/comments operations defined in `.agents/platforms/capabilities.md`.
 - Session contract: tracker requests use `sessions/us-<issue-number>/` and `sessions/bug-<issue-number>/`; free-form requests use a confirmed request-based ID. Direct resume by supplied or active ID only.
 - Knowledge: preserve `docs/agents/knowledge/README.md` as the index and use `CONTEXT.md` as the glossary.
 - Visual evidence: `demo-vision`; store source PNG captures and a short Markdown note under `sessions/<planning-session-id>/visual/`.
-- Vision model: `gpt-5.6 luna` (user-approved exact model).
+- Vision model: Copilot retains `gpt-5.6 luna`; Codex inherits the parent model and requires image capability.
 - Validation: artifact gate linting, then lint, typecheck, test, and build for buildable app changes.
 
 ## Mirror Inventory
@@ -56,16 +61,18 @@
 - `templates/plan-schema.md` to `docs/agents/plan-schema.md`
 - `templates/artifact-gates.md` to `docs/agents/artifact-gates.md`
 - `templates/test-plan-schema.md` to `docs/agents/test-plan-schema.md`
-- `templates/agents/planner.agent.md` to `.github/agents/demo-planner.agent.md`
-- `templates/agents/implementor.agent.md` to `.github/agents/demo-implementor.agent.md`
-- `templates/agents/integration-tester.agent.md` to `.github/agents/demo-integration-tester.agent.md`
-- `templates/agents/knowledge-builder.agent.md` to `.github/agents/demo-knowledge-builder.agent.md`
-- `templates/agents/ask.agent.md` to `.github/agents/demo-ask.agent.md`
-- `templates/agents/vision.agent.md` to `.github/agents/demo-vision.agent.md`
-- `templates/skills/plan-bug-from-id/SKILL.md` to `.github/skills/plan-bug-from-id/SKILL.md`
-- `templates/skills/plan-user-story-from-id/SKILL.md` to `.github/skills/plan-user-story-from-id/SKILL.md`
-- `templates/skills/user-story-analysis/SKILL.md` to `.github/skills/user-story-analysis/SKILL.md`
-- `templates/skills/integration-test-knowledge-checklist/SKILL.md` to `.github/skills/integration-test-knowledge-checklist/SKILL.md`
+- `templates/agents/planner.agent.md` to `.agents/roles/demo-planner.md`; adapters `.github/agents/demo-planner.agent.md` and `.codex/agents/demo-planner.toml`
+- `templates/agents/implementor.agent.md` to `.agents/roles/demo-implementor.md`; adapters `.github/agents/demo-implementor.agent.md` and `.codex/agents/demo-implementor.toml`
+- `templates/agents/integration-tester.agent.md` to `.agents/roles/demo-integration-tester.md`; adapters `.github/agents/demo-integration-tester.agent.md` and `.codex/agents/demo-integration-tester.toml`
+- `templates/agents/knowledge-builder.agent.md` to `.agents/roles/demo-knowledge-builder.md`; adapters `.github/agents/demo-knowledge-builder.agent.md` and `.codex/agents/demo-knowledge-builder.toml`
+- `templates/agents/ask.agent.md` to `.agents/roles/demo-ask.md`; adapters `.github/agents/demo-ask.agent.md` and `.codex/agents/demo-ask.toml`
+- `templates/agents/vision.agent.md` to `.agents/roles/demo-vision.md`; adapters `.github/agents/demo-vision.agent.md` and `.codex/agents/demo-vision.toml`
+- `templates/skills/plan-bug-from-id/SKILL.md` to `.agents/skills/plan-bug-from-id/SKILL.md`
+- `templates/skills/plan-user-story-from-id/SKILL.md` to `.agents/skills/plan-user-story-from-id/SKILL.md`
+- `templates/skills/user-story-analysis/SKILL.md` to `.agents/skills/user-story-analysis/SKILL.md`
+- `templates/skills/integration-test-knowledge-checklist/SKILL.md` to `.agents/skills/integration-test-knowledge-checklist/SKILL.md`
+
+- Shared skill Codex invocation metadata, host capability contracts, MCP projection, validation script, and platform maintenance guide; complete path/baseline inventory is in the answers file.
 
 ### Skipped
 
@@ -79,8 +86,8 @@
 ## Marker And Tool Decisions
 
 - Source-only `CANONICAL-TEMPLATE-SLOT` comments were stripped from all generated runtime mirror files.
-- Canonical non-slot wording and baseline frontmatter were preserved.
-- `mcp_github_mcp_s2_issue_read` remains the recorded planner-only retrieval binding, but its exact availability is unverified against the configured `github/*` surface. ID-based workflows must stop when unavailable; no replacement was silently approved.
+- Shared workflow bodies preserve existing gates with approved host-binding corrections. Copilot frontmatter is preserved byte-for-byte; hashes are recorded in answers.
+- The legacy exact tool-name requirement is superseded by the shared GitHub MCP read binding. Configuration parity does not prove live authentication or tool exposure.
 - Existing registered Planner and Knowledge Builder MCP/editor tool surfaces are preserved verbatim. Their wildcard grants predate this maintenance; no tools were added. Exact per-role strings are recorded in the answers file.
 
 ## Customization Register
@@ -94,13 +101,20 @@ The following deliberate deviations are repository-owned and must be preserved o
 | `custom-mcp-config` | `.vscode/mcp.json` | `servers` | `modified-rule` | User added custom MCP server configuration that informs approved agent tool-surface customizations. | `independent` | `always` | `3.4.0` |
 | `customer-terminology` | `CONTEXT.md` | Customer glossary row | `modified-rule` | User established Customer as the canonical application and label term; client is explanatory only. | `independent` | `always` | `3.4.0` |
 
-| `native-search-binding` | Five updated agent contracts | Bootstrap Template Repository Search; Capability Substitutions; search instructions | `modified-rule` | Bind source search terminology to existing role tools and bounded file reads; remove nonexistent root-registry dependency. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
-| `tester-integration-scope` | `.github/agents/demo-integration-tester.agent.md` | Gate 9 / Do not | `modified-rule` | Permit integration tests, retaining system/E2E exclusion; upstream accidentally prohibits its own role. | `overrides-canonical` | `drop-when-superseded` | `4.0.0` |
-| `tester-local-schema-lifecycle` | `.github/agents/demo-integration-tester.agent.md` | Gates 5–8 | `modified-rule` | Match the approved local schema: session-local unapproved drafts, approval metadata, same-file revision, TestingInProgress status. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
-| `planner-gate3-validation` | `.github/agents/demo-planner.agent.md` | Gate 3 / Completion Criteria and verification | `modified-rule` | Retain baseline C1–C6 criteria and table still required by upstream behavior rules. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
-| `planner-blocker-precedence` | `.github/agents/demo-planner.agent.md` | Operating Contract / Gate execution model | `modified-rule` | Preserve required blocker halts over routine auto-advance; failed capability checks must stop. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
+| `native-search-binding` | `.agents/roles/demo-{ask,implementor,integration-tester,knowledge-builder,planner}.md` | Bootstrap Template Repository Search; Capability Substitutions; search instructions | `modified-rule` | Bind source search terminology to existing role tools and bounded file reads; remove nonexistent root-registry dependency. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
+| `tester-integration-scope` | `.agents/roles/demo-integration-tester.md` | Gate 9 / Do not | `modified-rule` | Permit integration tests, retaining system/E2E exclusion; upstream accidentally prohibits its own role. | `overrides-canonical` | `drop-when-superseded` | `4.0.0` |
+| `tester-local-schema-lifecycle` | `.agents/roles/demo-integration-tester.md` | Gates 5–8 | `modified-rule` | Match the approved local schema: session-local unapproved drafts, approval metadata, same-file revision, TestingInProgress status. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
+| `planner-gate3-validation` | `.agents/roles/demo-planner.md` | Gate 3 / Completion Criteria and verification | `modified-rule` | Retain baseline C1–C6 criteria and table still required by upstream behavior rules. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
+| `planner-blocker-precedence` | `.agents/roles/demo-planner.md` | Operating Contract / Gate execution model | `modified-rule` | Preserve required blocker halts over routine auto-advance; failed capability checks must stop. | `extends-canonical` | `drop-when-superseded` | `4.0.0` |
 | `preserve-runtime-formatting` | Existing agent and skill mirrors | Unchanged regions; tools frontmatter | `modified-rule` | Approved merge retains repository formatting and exact tool lists while applying changed behavior. | `independent` | `always` | `4.0.0` |
 | `vision-model` | `.github/agents/demo-vision.agent.md` | frontmatter `model` | `slot-override` | User explicitly selected the Vision model for Bootstrap 4.1.0. | `overrides-canonical` | `always` | `4.1.0` |
+
+| `dual-platform-support` | `AGENTS.md`, answers, platform guide, both adapter directories | routing and platform mappings | `modified-rule` | Copilot and Codex must both survive future updates. | `overrides-canonical` | `always` | `4.1.0` |
+| `shared-role-source` | `.agents/roles`, `.github/agents`, `.codex/agents` | role bodies and source/adapter mappings | `modified-rule` | Approved extraction overrides the upstream non-slot partial prohibition; merge upstream behavior into one shared body. Preserve Copilot frontmatter. | `overrides-canonical` | `always` | `4.1.0` |
+| `shared-skill-source` | `.agents/skills` generated skills and `agents/openai.yaml` | paths, host-neutral invocations, explicit-only policy | `modified-rule` | Single shared runtime copy for both hosts; retired .github paths must not return. | `overrides-canonical` | `always` | `4.1.0` |
+| `platform-bindings` | `.agents/platforms`, shared role/skill capability substitutions, answers | search, diagnostics, questions, delegation, tracker, visual, schema precedence | `modified-rule` | Use available host tools; equivalent GitHub MCP reads approved, no local fallback; Implementor uses Planner evidence; fix nonexistent visual registry references. | `overrides-canonical` | `always` | `4.1.0` |
+| `mcp-projection` | `.codex/config.toml`, answers platform MCP mapping | server inventory and inheritance | `modified-rule` | Project all repository MCP servers from unchanged VS Code source; inherit other enabled Codex servers with no role filters. | `extends-canonical` | `always` | `4.1.0` |
+| `agent-system-validation` | `.agents/scripts/check-agent-system.py`, platform guide, `AGENTS.md` | static parity and maintenance workflow | `added-section` | Detect missing host adapters, duplicated skills, protected-setting drift, stale bindings, and baseline mapping errors. | `extends-canonical` | `always` | `4.1.0` |
 
 ## Maintenance History
 
@@ -116,6 +130,8 @@ The following deliberate deviations are repository-owned and must be preserved o
 
 | 2026-09-13 | `2.1.0` | `3.4.0` | `3.4.0` (target `4.0.0` partially applied) | This manifest, maintenance assessment below | User approved upgrade and merge policy. Applied guards, invocation slots, local test schema, session workflow, and restored workflow bodies; retained protected tools and corrected audited contradictions. Tracker verification remains blocked, not deferred or passed. |
 | 2026-09-17 | `2.1.0` | `3.4.0` | `3.4.0` (target `4.1.0` partially applied) | This manifest, maintenance assessment below | User approved and selected `gpt-5.6 luna` for Vision. Applied the 4.1.0 model slot; full 4.0.0 capability verification remains blocked. |
+
+| 2026-09-17 | `2.1.0` | `3.4.0` | `3.4.0` | Dual-platform assessment below | User explicitly approved shared contracts, Copilot/Codex adapters, MCP projection, and preservation policy. Runtime capability verification remains blocked. |
 
 ## Maintenance Assessment — 2026-09-13
 
@@ -163,3 +179,29 @@ The following deliberate deviations are repository-owned and must be preserved o
 - Region merge: Vision frontmatter had no repository-side change beyond the approved slot addition; all existing custom formatting and tool-surface decisions were preserved.
 - Session-folder contents were excluded from discovery, reads, validation, and edits. Application code, tests, schema, migrations, and runtime configuration were not changed.
 - Full contract application remains blocked by the previously recorded 4.0.0 capability-verification gaps; `Bootstrap Contract Applied Through` therefore remains `3.4.0`.
+
+## Dual-platform Evolution — 2026-09-17
+
+- Mode: evolve. Approval: **true**, user replied “approved” to the concrete maintenance plan.
+- Detection: all 20 original generated/baseline pairs existed; installed Bootstrap and snapshot are 4.1.0. Session-folder contents were excluded from reads, enumeration, edits, and validation. No application files or user-level configuration changed.
+- Merge: THEIRS equals BASE for this evolution; no substantive repository conflicts. Preserve the existing checklist blank lines and unrelated glossary EOF customization. Copilot frontmatter remains byte-for-byte intact. Approved shared-body extraction supersedes the upstream no-partials restriction only for this repository.
+- Operations: extracted six shared roles, retained six Copilot adapters, added six Codex adapters, moved four skills and added invocation metadata, installed host capability bindings and static checks, projected repository MCP configuration, and updated root routing/provenance. All current generated files and baseline paths are recorded in answers.
+
+| Delta | Classification | Evidence / result |
+| --- | --- | --- |
+| Existing Bootstrap 4.0 workflow bodies, guards, local test schema, session rules | applied | Preserved in shared roles and existing scoped rules/schemas. |
+| Bootstrap 4.1 Copilot Vision model | applied | Protected original frontmatter retained. Codex inherits parent model. |
+| Bootstrap initial grouped intake | not applicable | Existing installation, approved evolve request. |
+| Host-specific legacy tracker name | superseded | Approved shared GitHub MCP read capability; no local fallback retained. |
+| Dual-platform role and skill discovery | applied | Native adapters and single shared sources registered with always policy. |
+| Shared role contract omissions | applied | Planner knowledge-index provenance/schema priority, Planner-only skill activation, actual visual binding, and Implementor evidence handoff corrected. |
+| Repository MCP configuration parity | applied | VS Code inventory projected to Codex; global/plugin inheritance retained. |
+| GitHub live retrieval and host agent/visual execution | unknown | GitHub and Neon are not exposed in this conversation; shell lacks GITHUB_TOKEN. Next-devtools tool discovery succeeds, but its operations were not exercised. Requires host reload/authentication and a supplied planning issue for bounded live verification. |
+
+### Validation and limitations
+
+Validation: all six Copilot frontmatter blocks were compared byte-for-byte with their original baselines and passed. Independent Contract Auditor review found only a future template-rendering ambiguity; scalar shared slots and the explicit split/render procedure resolved it. Codex CLI parses the project configuration and lists GitHub, Neon, and next-devtools enabled; native tool discovery exposes next-devtools only among those three. Static parity, structure, and refreshed-baseline checks are required below; live GitHub/Neon operations and host role/image invocation remain unverified.
+
+Commands: `uv run .agents/scripts/check-agent-system.py`, the same with `--baseline`, `git diff --check`, and a sanitized `codex mcp list --json` inspection. App lint/typecheck/test/build were not run because no buildable application files changed. Artifact gate linting was not run because no session artifacts were touched and maintenance excludes session access. The Phase F/G runtime capability checks in the installed Bootstrap audit contract remain blocked, not deferred or passed. Applied-through remains 3.4.0. No new deferrals were introduced.
+
+Rollback restores shared sources, both adapter sets, MCP projection, moved skills, router, and matching provenance together. Post-maintenance: run demo-knowledge-builder for structural knowledge refinement; use create-work-item-from-description for tracker intake and author-repo-skill for additional repeatable repository workflows.

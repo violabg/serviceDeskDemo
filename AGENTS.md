@@ -11,11 +11,12 @@ Route the current request through this file, then load only what that request ne
 - `demo-ask`: project-specific Q&A without code changes.
 - `demo-vision`: deterministic extraction from visual evidence.
 
-Full role contracts live in `.github/agents`. Do not restate them here.
+Shared role contracts live in `.agents/roles`. Copilot adapters live in `.github/agents`; Codex adapters live in `.codex/agents`. Read only the role needed for the request.
+Read `.agents/platforms/capabilities.md` and the active host adapter before tool operations.
 
 ## Skills
 
-Repository skills live in `.github/skills`. Read a skill's `SKILL.md` before running its workflow.
+Repository skills live in `.agents/skills`. Read a skill's `SKILL.md` before running its workflow.
 
 ## Instructions
 
@@ -35,6 +36,8 @@ Modular rules live in `.github/instructions`. Each file declares the paths it ap
 ## Validation
 
 Validate every change with `pnpm agent:lint-artifacts --mode <gate> --session <id>` for planning artifacts, then `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` for buildable app changes before handing work back.
+
+For agent-system changes, run `uv run .agents/scripts/check-agent-system.py`. See `docs/agents/platform-support.md` for MCP setup, parity checks, and preservation rules.
 
 ## Provenance
 
