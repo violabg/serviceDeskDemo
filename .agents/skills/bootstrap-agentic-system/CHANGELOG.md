@@ -4,9 +4,81 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `2.0.0`
+- `5.0.0`
+
+## 2026-09-18
+
+### 5.0.0
+
+- Select one or more target environments: GitHub Copilot in VS Code, Claude Code, Codex, OpenCode, Cursor, or user-named Other; the execution host does not select targets.
+- Discover formats, loading rules, permissions, and exact tools from selected-client documentation and runtime evidence instead of shipping platform tool defaults.
+- Preserve complete canonical copies outside declared placeholders and tooling slots; separate native registration adapters must load the full instructions without rewriting workflow content.
+- Add version-2 environment/role/operation provenance, shared-file ownership, compatibility status, and a hashed preservation plan with a dependency-free verifier.
+
+## 2026-09-17
+
+### 4.1.0
+
+- Added an explicit Vision model decision. Bootstrap recommends the canonical upstream Vision default when supported by the target platform, asks for the user's exact choice when Vision is selected, and records an approved platform-default omission when appropriate.
+
+## 2026-09-13
+
+### 4.0.0
+
+- Replaced private-server guards with checks of approved capability bindings, preserving fail-closed behavior when the chosen implementation cannot perform the operation.
+- Added target-platform tool and invocation slots, including native or inline gathering, plain-chat questions, and per-file answers for role-specific tools.
+- Added a labeled local test-plan YAML fallback and required verification before selecting an existing repository schema.
+- Reconciled direct session resume with current-session isolation and permitted the Planner to persist its required session evidence.
+- Made tracker setup conditional and grouped routine default approvals; restored converted workflow bodies and invocation examples.
+
+## 2026-08-26
+
+### 3.4.0
+
+- Refined generated Ask, Integration Tester, Knowledge Builder, and Planner contracts to preserve the refreshed gate-flow, capability-availability, and bounded-search behavior, including explicit continuation and stop-point rules where applicable.
+- Updated the business-logic gap detector template to use public-safe `search/grep` terminology while retaining its repository-discovery limits and red-test requirements.
+
+## 2026-08-03
+
+### 3.3.0
+
+- Added per-role tooling-intent profiles inferred from the upstream private-tool scope, so target tool discovery can distinguish tracker, knowledge, repository search, visual evidence, and repository-local session needs.
+- Required Bootstrap to resolve only evidence-backed, least-privilege target tools per role, including conditional documentation support for current external framework, library, vendor, or API contracts.
+
+### 3.2.0
+
+- Added capability-availability guards to generated Ask, Implementor, Integration Tester, Knowledge Builder, and Planner agents, with explicit no-fallback behavior when required capabilities are unavailable.
+- Tightened generated Planner gate execution and failure handling so gates remain linear and failures are logged, summarized, clarified, and halted consistently.
+
+## 2026-07-31
+
+### 3.1.2
+
+- Reduced repeated work-item planning instructions by keeping retrieval semantics in the subagent prompt instead of restating them in the generated planning-contract preamble.
+- Kept the required tracker, session, dependency-evidence, and clarification constraints while moving the generated planning mirrors closer to their canonical skill wording.
+
+## 2026-07-31
+
+### 3.1.1
+
+- Replaced additive work-item planning overlay insertion with full conflicting-body replacement for the generated `plan-bug-from-id` and `plan-user-story-from-id` mirrors.
+- Removed contradictory duplicate planning instructions so generated work-item skills stay close to canonical wording while keeping only the required tracker, session, and clarification contract additions.
+
+## 2026-07-30
+
+### 3.1.0
+
+- Required generated planning workflows to create or resume the planning-session folder before artifact intake, clarification, or plan drafting.
+- Expanded the generated session contract so planning persists a deterministic artifact package instead of only the implementation plan, including issue-intake artifacts such as `*_info` or `*_details`, `normative_rules_inventory.md`, and bug cause or visual evidence artifacts when they are part of the upstream flow.
+- Updated the generated session-persistence fallback to preserve separate `session-memory.md`, `session-log.md`, and `execution-report.md` files instead of collapsing event history into session memory.
+- Replaced the generated implementation-plan schema with the current four-section schema, including the linked filesystem tree anchor, file-detail backlinks, and operations timeline requirements.
 
 ## 2026-07-29
+
+### 3.0.0
+
+- Made the Ask agent part of the required Core System batch by default, alongside Planner, Implementor, Tester or Integration Tester, Knowledge Builder, and root instructions.
+- Made Phase G treat a missing Ask agent as a blocking contract failure unless the user explicitly approved a narrower first install before generation.
 
 ### 2.0.0
 
@@ -15,6 +87,7 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 - Split the skill into a router plus phase contracts under `contracts/`, so a phase loads only the rules it needs instead of the whole workflow.
 - Replaced the collapsed private-tool sanitization with a capability-token substitution map, so each generated agent states which substitute a given upstream capability uses instead of hiding ten distinct capabilities behind one phrase.
 - Removed the separate clarification-question schema template. The generated Planner already defines the per-question chat format, and the duplicate had drifted from it; the question register and answers table live in the agent contracts.
+- Made the generated Planner's structured interview conditional: it runs only when a blocking clarification remains, and keeps the full question format, logging, halt protocol, and answer-validation gate when it does run.
 - Added an `agent-session-persistence` capability covering cross-gate memory, session artifacts, and the execution report, with the session-folder files as the fallback resolution.
 - Added the `author-repo-skill` mirror so the target repository can author and rework its own skills after Bootstrap, and stopped recommending the removed `create-work-item-planning-skills` kit skill.
 - Started rendering `templates/` and `registry/` at export time from the canonical sources, so every shipped template is reproducible from a single source of truth.

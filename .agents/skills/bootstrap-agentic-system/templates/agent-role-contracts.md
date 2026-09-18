@@ -11,7 +11,7 @@ Use these templates when generating role-specific agents that do not have Canoni
 | Tester | Yes | Required | Test plan, tests or validation report | Redesign production code or widen beyond approved test scope. |
 | Knowledge Builder | Yes | Required | Knowledge index updates, knowledge entries, glossary candidates | Modify application code or bulk-write unsupported knowledge. |
 | Vision | Yes when selected | Conditional | Deterministic text artifact from images | Infer unstated requirements from images. |
-| Ask | Yes | Optional | Knowledge-grounded answer | Implement, refactor, or create project code. |
+| Ask | Yes | Required | Knowledge-grounded answer | Implement, refactor, or create project code. |
 | Contract Auditor | No | Optional | Contract pass/fail report | Edit files or ask the user directly. |
 
 ## Common Contract Frame
@@ -29,7 +29,7 @@ Every generated agent contract should include:
 - handoff obligations
 - refusal or blocker behavior
 
-For custom agents without Canonical Template Mirrors, the main role contract should stay stable and deliberate. Put prompt-specific procedures, long decision trees, or task-mode instructions into separate Markdown partials under a role-specific partial directory, and require the main contract to load only the partials relevant to the current prompt. When a Canonical Template Mirror exists, partials may add repo-specific extensions but must not replace, summarize, rename, or remove mirrored non-slot content unless the user explicitly approves that non-slot relocation.
+For custom agents without Canonical Template Mirrors, the main role contract should stay stable and deliberate. Put prompt-specific procedures, long decision trees, or task-mode instructions into separate Markdown partials under a role-specific partial directory, and require the main contract to load only the partials relevant to the current prompt. When a Canonical Template Mirror exists, partials may add repo-specific extensions but must not replace, summarize, rename, or remove mirrored non-slot content under the platform compatibility contract.
 
 Selective loading must account for dependencies. If the current task depends on another role's guardrails, a shared repository rule, a repo-specific role extension, or a split template, the generated contract must load that dependent module too.
 
@@ -37,7 +37,7 @@ Use a verified model name only when the target platform and user confirm that ex
 
 ## Baseline Tool Surface
 
-Use these baseline VS Code tool and delegated-agent lists when the target platform supports frontmatter. Add discovered or approved MCP tools only when they fit the role. If the target platform cannot express `tools:` or `agents:` frontmatter, place the same information in `Required Tools` and `Delegated Agents` sections inside the agent contract.
+These lists preserve the source baseline for resolving `PLATFORM_TOOLS`. Use supported names as-is; translate unsupported names to discovered equivalents for the same operations, or record approved manual fallbacks. Add discovered or approved MCP tools only when they fit the role. If native registration cannot consume the canonical format, use a separate adapter under `contracts/platform-compatibility.md`; do not add or rewrite sections in a canonical copy.
 
 | Role | Baseline tools | Baseline agents |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ MCP assignment rules:
 - Cloud, deployment, runtime, database, or test-environment MCPs belong on Implementor or Tester only when the approved workflow needs that authority.
 - Do not invent MCP tool names. Use discovered configured names or ask for approval before recommending installation.
 - Avoid wildcard MCP access unless the target repository already uses it and the user approves that broader surface.
-- Preserve baseline `agents:` delegation exactly for Planner and Tester unless the target platform lacks delegated-agent frontmatter or the user approves a reduction.
+- Preserve canonical delegation metadata outside declared slots. Native adapters encode supported delegation or the approved inline procedure without rewriting canonical copies.
 
 ## Planner Agent Shape
 
@@ -74,9 +74,10 @@ Non-negotiable rules:
 - Read the knowledge index before loading repository knowledge files.
 - Load only knowledge files whose `When to read` triggers match the task.
 - Record selected knowledge files, skipped related candidates, and rationale in the plan.
+- Create or resume the session folder before artifact intake and keep session artifacts updated as the plan evolves.
 - Present each blocking clarification in chat using the per-question format the generated Planner already defines; do not collapse it into an open-question summary or an ad hoc numbered reply list.
 - Use the repo-local `templates/plan-schema.md` when producing `implementation-plan.md`.
-- Preserve plan-schema links, anchors, backlinks, approval metadata, operations, validation, and risks even when markdown diagnostics object.
+- Preserve plan-schema section order, anchors, backlinks, coverage scenarios, and operations rules even when markdown diagnostics object.
 
 Recommended gates:
 
@@ -88,16 +89,19 @@ Recommended gates:
 6. `Gate 5: Clarification` records blocking questions in the clarification artifact and stops until answered.
 7. `Gate 6: Bounded Codebase Discovery` reads only the code needed to test the current hypothesis or plan decision.
 8. `Gate 7: Plan Draft` writes or updates `implementation-plan.md` from the plan schema.
-9. `Gate 8: Plan Self-Check` validates tree links, anchors, backlinks, approval metadata, operations, validation commands, and risks.
+9. `Gate 8: Plan Self-Check` validates tree links, anchors, backlinks, required coverage scenarios, and operations formatting.
 10. `Gate 9: Approval And Handoff` records approval metadata before handing to Implementor.
 
 Key artifacts:
 
-- `session-brief.md`
-- `requirements-analysis.md`
-- `clarification-questions.md`
-- `selected-knowledge.md` or equivalent section inside `implementation-plan.md`
-- `implementation-plan.md`
+- issue-scoped tracker or request evidence artifact such as `bug_<external-issue-id>_info.md`, `bug_<external-issue-id>_details.md`, `us_<external-issue-id>_info.md`, or `request_<slug>_info.md`
+- `requirements-analysis.md` or equivalent reasoning artifact when the workflow keeps Gate 3 output outside chat
+- `clarification_questions.md` when blocking clarification exists
+- `selected-knowledge.md` or equivalent session artifact
+- `normative_rules_inventory.md` or equivalent session artifact
+- `bug_<external-issue-id>_cause_analysis.md` when bug planning narrows to a selected root cause
+- visual evidence artifact such as `bug_<external-issue-id>_screenshot.md`, `bug_<external-issue-id>_screenshot.slimui.md`, or `<image-name>.slimui.md` when screenshots or mockups affect the plan
+- `<plan-name>.plan.md`
 - handoff envelope
 
 ## Implementor Agent Shape

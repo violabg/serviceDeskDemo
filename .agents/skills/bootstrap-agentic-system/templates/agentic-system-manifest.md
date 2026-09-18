@@ -33,6 +33,9 @@ This file does not update itself. Bootstrap initializes it, and Maintainer updat
 - Knowledge Index: `<path>`
 - Plan Schema: `<template-dir>/plan-schema.md`
 - Artifact Gates: none | `<template-dir>/artifact-gates.md`
+- Session Memory: none | `<session-root>/<planning-session-id>/session-memory.md`
+- Session Log: none | `<session-root>/<planning-session-id>/session-log.md`
+- Execution Report: none | `<session-root>/<planning-session-id>/execution-report.md`
 - Agent Directory: `<agent-dir>`
 - Skill Directory: none | `<skill-dir>`
 - Bootstrap Changelog Snapshot: `<path>`
@@ -41,6 +44,19 @@ This file does not update itself. Bootstrap initializes it, and Maintainer updat
 - Session Root: `<session-root>`
 - Work Item Adapter Contract: `<path>`
 - Planning Session Identity Artifact: `<session-root>/<planning-session-id>/session-identity.md>`
+
+## Environment Compatibility
+
+- Execution Host: `<client>`
+- Selected Environments And Roots: `<answers-path>#environments`
+- Compatibility Evidence: `<path>`
+- Canonical Source Snapshots: `<non-discoverable-path>`
+- Preservation Plan And SHA-256: `<path>` / `<hash>`
+- Preservation Verification: `<command-result-date>`
+
+| Environment | Client / Version | Native Entrypoints | Canonical Copies / Shared Consumers | Status | Verification / Limitations |
+| --- | --- | --- | --- | --- | --- |
+| `<id>` | `<client-version-or-unknown>` | `<paths>` | `<paths>` | verified-native \| verified-fallback \| blocked \| unverified | `<evidence>` |
 
 ## Customization Register
 

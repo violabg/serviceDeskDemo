@@ -4,7 +4,21 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `2.0.0`
+- `3.0.0`
+
+## 2026-09-18
+
+### 3.0.0
+
+- Reuse Bootstrap's compatibility contract to assess selected environments and platform changes without assuming the latest client or installing unselected platforms.
+- Migrate singular version-1 answers without losing roots, per-file decisions, or baselines; keep unavailable evidence explicitly unverified.
+- Merge native adapters by configuration keys and preserve canonical copies mechanically; legacy non-slot overrides remain visible conflicts and cannot be silently certified as compliant.
+
+## 2026-09-13
+
+### 2.1.0
+
+- Resolve per-file slot values using the generated repository-relative path; missing entries remain unresolved rather than reusing another role's integration or tool set.
 
 ## 2026-07-29
 

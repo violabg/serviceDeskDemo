@@ -37,18 +37,17 @@ Use this checklist to generate a project-specific integration-test knowledge for
 - The keywords are specific enough to let the agent associate the knowledge with the right task.
 
 Example snippet:
-
-<!-- CANONICAL-TEMPLATE-SLOT: TEST_STACK_CONVENTIONS START replaces=sha256:869567a4edd0770d lines=14 -->
+<!-- CANONICAL-TEMPLATE-SLOT: TEST_STACK_CONVENTIONS START replaces=sha256:695a7d3f98b5659d lines=14 -->
 ```yaml
 ---
 title: Orders API Integration Test Knowledge
 description: Rules and templates for integration tests covering the Orders API.
 keywords:
-  - integration test
-  - api testing
-  - orders
-  - test host
-  - seeding
+- integration test
+- api testing
+- orders
+- test host
+- seeding
 authority: MustHave
 intent: When an agent needs to create, modify, or debug integration tests for the Orders API.
 ---
@@ -137,12 +136,10 @@ intent: When an agent needs to create, modify, or debug integration tests for th
 ## Recommended Split Decision
 
 Create a second companion knowledge if one file is becoming too broad because it mixes:
-
 - framework explanation and deep project context
 - hard constraints and strict templates
 - different integration-test families with different entrypoints or setup models
 
 A good split is usually:
-
 - one descriptive knowledge for workflow, utilities, discovery, and validation
 - one prescriptive knowledge for constraints, templates, anti-patterns, and checklists
