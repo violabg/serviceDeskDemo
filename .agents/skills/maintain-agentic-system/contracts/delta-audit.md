@@ -7,7 +7,9 @@ An upgrade delta is anything that changed between the Bootstrap contract the rep
 1. the currently installed `bootstrap-agentic-system/CHANGELOG.md`, from the manifest's `Bootstrap Contract Applied Through` version to the current version,
 2. the currently installed `bootstrap-agentic-system/templates/` and `registry/`, compared against the baseline copies,
 3. the repo-local Bootstrap changelog snapshot, as the recorded baseline when the manifest is incomplete,
-4. direct repository evidence.
+4. direct repository evidence, including recorded versus current selected-environment versions, official compatibility sources, native configuration, and effective tool access.
+
+Classify the cause of each delta as canonical-contract, platform-compatibility, or repository-customization. Record affected environment IDs; unselected platforms create no work. Use the sibling Bootstrap compatibility contract for research and preservation checks.
 
 The package `CHANGELOG.md` is supporting context only, and only when the installed skill-local changelog is unavailable.
 
@@ -18,7 +20,7 @@ Never declare a delta missing from changelog text alone. A repository can satisf
 Classify every delta as exactly one of:
 
 - `applied`: the repository files already satisfy it.
-- `not applicable`: it does not apply to this repository's approved platform, tracker, session, glossary, knowledge, visual, or skill choices.
+- `not applicable`: it does not apply to this repository's approved environments, tracker, session, glossary, knowledge, visual, or skill choices.
 - `deferred`: it applies and the user approved postponing it.
 - `superseded`: a later approved repository decision or a newer Bootstrap contract replaces it.
 - `unknown`: the evidence is insufficient. Propose a bounded verification step or ask one targeted question.
@@ -45,7 +47,8 @@ The plan must contain:
 7. customization register rows to add or update,
 8. approval status, false by default,
 9. validation commands,
-10. rollback notes.
+10. rollback notes,
+11. environment changes, shared-file consumers, preservation results, and compatibility status/evidence for each affected workflow.
 
 The plan must state that session-folder contents were excluded from discovery and edits.
 
@@ -64,7 +67,7 @@ After the approved changes are written, validate:
 - Maintainer did not enumerate, read, or modify session-folder contents.
 - Validation commands from the plan were run where available, or each skipped command has a recorded reason.
 
-Treat a failing check as blocking unless the user explicitly approved the omission.
+An approved deferral must remain visibly deferred or unverified. It cannot certify a canonical preservation failure or an unavailable required capability as compatible.
 
 Run the Contract Auditor subagent against the final file list when available; otherwise run these checks inline and say that delegation could not run.
 

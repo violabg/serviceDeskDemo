@@ -12,9 +12,11 @@ Use this before creating or modifying agent-system files.
 - Approved At:
 - Source Message:
 
-## Proposed Platform
+## Selected Environments
 
-- Platform:
+- Environment IDs And User Selection:
+- Execution Host (Not A Target Default):
+- Client / Version / Context Per Environment:
 - Reason:
 
 ## Agent Naming
@@ -42,6 +44,16 @@ Use this before creating or modifying agent-system files.
 - User-Approved Prefix Override:
 - Direct Resume Rule:
 
+## Environment And Preservation Plan
+
+- Explicitly Selected Environments And Separate Execution Host:
+- Official Sources, Retrieval Dates, Applicable Versions, And Local Evidence:
+- Shared Canonical Copies, Per-Environment Bindings, And Native Adapters:
+- Source Hashes, Approved Substitution Recipe, And Preservation Command:
+- Role / Operation / Environment Tool And Permission Bindings:
+- Discovery Collisions, Complete Instruction Loading, And Verification Results:
+- Blocked Or Unverified Workflows:
+
 ## Batch Approval Plan
 
 Batch Change Choices: select | defer | skip | reorder | split | combine.
@@ -52,7 +64,7 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 | Vision Evidence | selected | Vision agent or visual-intake skill | visual support option, relevant visual assets, artifact format | visual artifact support check |
 | Knowledge Builder Bootstrap | pending | knowledge index updates and knowledge files | knowledge gaps, authority boundaries, source evidence | knowledge-index checks |
 | Skill Template Generation | pending | selected repo-local skills | generated/skipped/deferred choices, tracker/session adapter | skill mirror and adapter checks |
-| Contract Audit | pending | audit artifact or final report | approved omissions or wording changes | mirror/tool/manifest validation |
+| Contract Audit | pending | audit artifact or final report | approved selections, substitutions, and unresolved compatibility | mirror/tool/manifest validation |
 
 ## Visual Artifacts
 
@@ -94,7 +106,7 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 
 ## Agent Instruction Structure
 
-- Canonical Mirror Runtime Rule: generated agents and skills with mirrors keep mirrored runtime bodies in the main generated files.
+- Canonical Mirror Runtime Rule: retain complete canonical copies; verified native adapters load or losslessly embed them when direct registration is unavailable.
 - Slot Marker Rule: final generated runtime files strip source-only `CANONICAL-TEMPLATE-SLOT` marker comments.
 - Manifest Slot Decision Record:
 - Partial Instruction Directory: `<agent-dir>/<prefix>-partials/` | `<path>` | none
@@ -104,7 +116,7 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 - Shared Or Repo-Wide Partial Groups:
 - Roles Using Additive Partials: Planner | Implementor | Tester | Knowledge Builder | Vision | Ask | none
 - Repo-Specific Roles Or Split Templates:
-- Approved Non-Slot Relocations:
+- Non-Slot Drift (Blocking):
 - Reason:
 
 ## Canonical Template Mirrors
@@ -112,9 +124,9 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 - Slot Syntax: inline `{{SLOT_NAME}}` placeholders for small values; non-nested `<!-- CANONICAL-TEMPLATE-SLOT: SLOT_NAME START -->` / `<!-- CANONICAL-TEMPLATE-SLOT: SLOT_NAME END -->` blocks for larger repo-dependent assumptions.
 - Slot Fallback Rule: block content is canonical fallback and may be replaced only from target-repository evidence or explicit user approval.
 - Generated Runtime Rule: strip slot marker comments from generated runtime files after applying approved slot content.
-- Manifest Record Rule: record source mirror path, generated path, approved slot replacements, approved placeholder values, marker stripping, and any approved non-slot wording or relocation change.
+- Manifest Record Rule: record source mirror path, generated path, approved slot replacements, approved placeholder values, marker stripping, and native adapters with complete instruction-loading evidence.
 
-| Mirror | Generated Path | Personalization Slots | Marker Comments In Generated Runtime | Non-Slot Wording Or Relocation Changes | Approval Status |
+| Mirror | Generated Path | Personalization Slots | Marker Comments In Generated Runtime | Non-Slot Preservation Result | Approval Status |
 | --- | --- | --- | --- | --- | --- |
 | `templates/agents/planner.agent.md` | `<agent-dir>/<prefix>-planner.agent.md` | prefix, tracker/session paths, knowledge paths, approved tools | stripped | none | pending |
 | `templates/agents/implementor.agent.md` | `<agent-dir>/<prefix>-implementor.agent.md` | prefix, validation commands, approved tools | stripped | none | pending |
@@ -180,11 +192,11 @@ Every generated file must have a pristine baseline copy and an answers-file entr
 
 ## Proposed Files
 
-| Operation | Path | Purpose | User | Failure Mode Prevented |
+| Operation | Path | Kind / Canonical Source | Consuming Environments | Purpose |
 | --- | --- | --- | --- | --- |
-| NEW | `...` | ... | ... | ... |
-| MODIFIED | `...` | ... | ... | ... |
-| UNMODIFIED | `...` | context only | ... | ... |
+| NEW | `...` | canonical-copy / adapter / resource / provenance | `<ids>` | ... |
+| MODIFIED | `...` | `<source>` | `<ids>` | ... |
+| UNMODIFIED | `...` | context only | `<ids>` | ... |
 
 ## File Details
 

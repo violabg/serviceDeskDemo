@@ -45,6 +45,19 @@ This file does not update itself. Bootstrap initializes it, and Maintainer updat
 - Work Item Adapter Contract: `<path>`
 - Planning Session Identity Artifact: `<session-root>/<planning-session-id>/session-identity.md>`
 
+## Environment Compatibility
+
+- Execution Host: `<client>`
+- Selected Environments And Roots: `<answers-path>#environments`
+- Compatibility Evidence: `<path>`
+- Canonical Source Snapshots: `<non-discoverable-path>`
+- Preservation Plan And SHA-256: `<path>` / `<hash>`
+- Preservation Verification: `<command-result-date>`
+
+| Environment | Client / Version | Native Entrypoints | Canonical Copies / Shared Consumers | Status | Verification / Limitations |
+| --- | --- | --- | --- | --- | --- |
+| `<id>` | `<client-version-or-unknown>` | `<paths>` | `<paths>` | verified-native \| verified-fallback \| blocked \| unverified | `<evidence>` |
+
 ## Customization Register
 
 One row per repository-specific deviation from the generated baseline. Maintainer reads this register before applying any contract delta and never silently overwrites a region marked `overrides-canonical`.
