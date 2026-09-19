@@ -10,7 +10,7 @@ Use this before adding or changing dashboard breadcrumbs, grouped sidebar naviga
 - app/(dashboard)/(admin)
 - lib/service-desk-navigation.ts
 - components/app-sidebar.tsx
-- Historical `CONTEXT.md` is absent; current vocabulary is in `docs/agents/context-glossary.md` (reference repaired 2026-09-19; product behavior was not reverified).
+- CONTEXT.md
 
 ## Dashboard Navigation Boundaries
 

@@ -12,8 +12,10 @@ Do not use this for broad app architecture or UI composition decisions that do n
 
 2026-07-22, dirty worktree. Evidence from repository files:
 
-- Historical Demo agent and test-strategy references from the 2026-07-22 verification no longer exist. Current role bindings: `docs/agents/integration-bindings.md`; agents: `.github/agents/demo-planner.agent.md`, `.github/agents/demo-implementor.agent.md`, `.github/agents/demo-integration-tester.agent.md`.
-- Bootstrap repaired these references on 2026-09-19; this is not a new product-behavior verification.
+- `.github/agents/DemoPlanner.agent.md`
+- `.github/agents/DemoImplementor.agent.md`
+- `.github/agents/DemoTester.agent.md`
+- `.agents/skills/test-strategy/SKILL.md`
 - `package.json`
 - `vitest.config.ts`
 
@@ -42,15 +44,15 @@ Do not use this for broad app architecture or UI composition decisions that do n
 
 ## Planning rules
 
-- The test plan (Integration Tester uses the YAML schema at `docs/agents/test-plan-schema.md`) should name the affected test files or affected test commands first.
-- The test plan (Integration Tester uses the YAML schema at `docs/agents/test-plan-schema.md`) should state deliberate exceptions explicitly, especially when `components/ui/**` is excluded.
+- `test-plan.md` should name the affected test files or affected test commands first.
+- `test-plan.md` should state deliberate exceptions explicitly, especially when `components/ui/**` is excluded.
 - If a feature touches forms, server actions, or business logic, plan focused unit coverage before any broad regression step.
 
 ## Implementor and Tester rules
 
 - Implementor and tester should both prefer the smallest affected-test command before any wider suite.
 - Full `pnpm test` belongs after focused validation, not before.
-- If a focused failure proves a narrow in-scope implementation defect, Implementor repairs that slice within its authorized scope and reruns the same focused command. Integration Tester reports production defects to Implementor and does not edit production code.
+- If a focused failure proves a narrow in-scope implementation defect, repair that slice and rerun the same focused command first.
 
 ## Pitfalls to avoid
 

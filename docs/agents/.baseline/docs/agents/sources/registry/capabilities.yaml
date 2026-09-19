@@ -1,0 +1,70 @@
+# Generated from system/registry/. Do not edit by hand.
+# Stable capability needs. Resolve tools from selected-environment evidence at runtime.
+# Choices are a multi-select intake aid, not supported-platform claims or an enum.
+# Other requires free text; neither an unlisted platform nor an unknown version is rejected.
+# Fallbacks still require approval and working prerequisites for the selected operation.
+
+resolution: runtime-discovery
+platform_choices:
+  - id: github-copilot-vscode
+    label: GitHub Copilot in VS Code
+  - id: claude-code
+    label: Claude Code
+  - id: codex
+    label: Codex
+  - id: opencode
+    label: OpenCode
+  - id: cursor
+    label: Cursor
+  - id: other
+    label: Other
+    requires_name: true
+
+capabilities:
+  - id: repository-search
+    essential: true
+    why: Bounded discovery of code, symbols, and call sites under a search budget.
+    fallback: Ask the user for the exact search tool name and record it in the manifest before generating agents.
+
+  - id: file-editing
+    essential: true
+    why: Generated agents write plans, knowledge, and implementation changes.
+    fallback: Generated agents emit diffs in chat for the user to apply manually.
+
+  - id: terminal-execution
+    essential: true
+    why: Validation commands, builds, and tests must be runnable by the generated agents.
+    fallback: Generated agents print the exact validation commands and require the user to report results before closing a gate.
+
+  - id: knowledge-retrieval
+    essential: true
+    why: Bounded knowledge loading through the generated knowledge index.
+    fallback: Read the knowledge index and the listed knowledge documents directly from the repository with the file-editing capability.
+
+  - id: agent-session-persistence
+    essential: true
+    why: Cross-gate memory, session artifacts, and the execution report must survive between agent turns and handoffs.
+    fallback: >-
+      Keep all three inside the current Planning Session folder under SESSION_ROOT:
+      append-only `session-memory.md`, one file per artifact in `artifacts/`, and
+      `execution-report.md`. Use the file-editing capability to read and write them.
+
+  - id: work-item-retrieval
+    essential: true
+    why: Planning skills need the External Issue ID payload from the tracker.
+    fallback: Use the local Markdown tracker contract declared in LOCAL_MARKDOWN_TRACKER_CONTRACT.
+
+  - id: visual-evidence
+    essential: false
+    why: Screenshot, mockup, and UI evidence review for visual planning and testing.
+    fallback: Skip the visual-evidence agent and record the omission in the manifest.
+
+  - id: subagent-delegation
+    essential: false
+    why: Bounded discovery lanes without flooding the main conversation.
+    fallback: Run each discovery lane inline and report that subagent delegation was unavailable.
+
+  - id: web-documentation
+    essential: false
+    why: Verifying external library or API contracts cited in a plan.
+    fallback: Require the user to paste the authoritative documentation excerpt before the claim enters a plan.
