@@ -6,7 +6,7 @@ applyTo: "sessions/**"
 
 Tracker-specific ID and retrieval rules apply only to tracker-backed requests. Free-form planning uses the approved request-based Planning Session ID and does not require a tracker adapter.
 
-- External Issue ID identifies the tracker ticket and matches `violabg/serviceDeskDemo#<number>`. Planning Session ID identifies the session folder. Never use one in place of the other.
+- External Issue ID identifies the tracker ticket and matches `#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix`. Planning Session ID identifies the session folder. Never use one in place of the other.
 - Create or resume the current `sessions/<planning-session-id>/` folder before artifact intake, clarification, or plan drafting. Resume directly from the known Planning Session ID; never scan or enumerate other session folders.
 - Work only inside the current `sessions/<planning-session-id>/` folder.
 - Store session identity, tracker evidence, dependency evidence, decisions, gate evidence, and derived planning artifacts in that folder as they are produced. The implementation plan is not the only required artifact.

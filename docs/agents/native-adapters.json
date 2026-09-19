@@ -1,0 +1,154 @@
+[
+  {
+    "path": ".codex/agents/demo-planner.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+    "format": "toml",
+    "body_sha256": "21cd4595703570c0ea16fd9c1d9c8878c63378098b7ba06040ca1b9e613f9f39",
+    "role": "planner",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-implementor.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+    "format": "toml",
+    "body_sha256": "72c734bd8f226ba2dc28f09d89ad74aeee03cb0ff5bd3e36cd48104816b5ff17",
+    "role": "implementor",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-direct-implementor.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+    "format": "toml",
+    "body_sha256": "f619644f6e88658c50612b86bb4e5885114e0a2f9782ceaa39a7e79d5f75e063",
+    "role": "direct-implementor",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-integration-tester.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+    "format": "toml",
+    "body_sha256": "d27f59be6b294ac83c57b449f11649c4bec118f3c8da6129fd8ccc689b8b16cd",
+    "role": "integration-tester",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-knowledge-builder.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+    "format": "toml",
+    "body_sha256": "2f1bfcb5d58b45d563c2a424a1343ca36f7cf909edfd7fdf12a6250fb60a3e6b",
+    "role": "knowledge-builder",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-ask.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+    "format": "toml",
+    "body_sha256": "892b96f3e6f9f16ca49e6defd647e62adca715045f55795515ccf84362067cf8",
+    "role": "ask",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-vision.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
+    "format": "toml",
+    "body_sha256": "363f6e405119831f07c2feda45d90f635d132d49ed8077d8944a2237178c06c5",
+    "role": "vision",
+    "environment": "codex"
+  },
+  {
+    "path": ".github/agents/demo-planner.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+    "format": "markdown",
+    "body_sha256": "35b7c6ad99aaa290499976421fa4df7d9436d4ba28f69b51f18a802a4cebe4f8",
+    "role": "planner",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-implementor.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+    "format": "markdown",
+    "body_sha256": "72c734bd8f226ba2dc28f09d89ad74aeee03cb0ff5bd3e36cd48104816b5ff17",
+    "role": "implementor",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-direct-implementor.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+    "format": "markdown",
+    "body_sha256": "42f290422a28236619a0ddae574dd9410b53f3551f196d61ba26d90ffc96e07c",
+    "role": "direct-implementor",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-integration-tester.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+    "format": "markdown",
+    "body_sha256": "d27f59be6b294ac83c57b449f11649c4bec118f3c8da6129fd8ccc689b8b16cd",
+    "role": "integration-tester",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-knowledge-builder.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+    "format": "markdown",
+    "body_sha256": "b098baaa3b5e7b2db8c6fd1a2ba8627af22b4b065264d5ec2881e67fe170caf5",
+    "role": "knowledge-builder",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-ask.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+    "format": "markdown",
+    "body_sha256": "892b96f3e6f9f16ca49e6defd647e62adca715045f55795515ccf84362067cf8",
+    "role": "ask",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-vision.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+    "format": "markdown",
+    "body_sha256": "363f6e405119831f07c2feda45d90f635d132d49ed8077d8944a2237178c06c5",
+    "role": "vision",
+    "environment": "copilot"
+  },
+  {
+    "path": ".agents/skills/demo-author-repo-skill/SKILL.md",
+    "canonical_copy": "docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md",
+    "format": "markdown",
+    "body_sha256": "57394ca9bd839231bed8054d90cfef1902e302963a752831d2b60bc053b18589",
+    "environment": "shared",
+    "role": "skill"
+  },
+  {
+    "path": ".agents/skills/demo-plan-bug-from-id/SKILL.md",
+    "canonical_copy": "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
+    "format": "markdown",
+    "body_sha256": "f3e5c500a356f1bd946534760200faf7d7c97cf19c7f632a900ba216a714ca47",
+    "environment": "shared",
+    "role": "skill"
+  },
+  {
+    "path": ".agents/skills/demo-plan-user-story-from-id/SKILL.md",
+    "canonical_copy": "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
+    "format": "markdown",
+    "body_sha256": "0c9f972f1a9e83801b081f090966068fda4d397bff0d73cc5a75c7d2542e7941",
+    "environment": "shared",
+    "role": "skill"
+  },
+  {
+    "path": ".agents/skills/demo-user-story-analysis/SKILL.md",
+    "canonical_copy": "docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md",
+    "format": "markdown",
+    "body_sha256": "7beb774d8e2a94962f46697e978113f25e0c42ee97b184814b9fdad1390ae33a",
+    "environment": "shared",
+    "role": "skill"
+  },
+  {
+    "path": ".agents/skills/demo-integration-test-knowledge-checklist/SKILL.md",
+    "canonical_copy": "docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md",
+    "format": "markdown",
+    "body_sha256": "6b639132836cd6ca1691bdeff0e8c8c7cb504709b929f1ee6da0ce0f17e126e6",
+    "environment": "shared",
+    "role": "skill"
+  }
+]

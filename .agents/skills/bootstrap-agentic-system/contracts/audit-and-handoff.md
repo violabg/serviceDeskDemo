@@ -25,7 +25,7 @@ Required checks:
 
 - Every approved file operation was completed, skipped with an approved reason, or reported as blocked.
 - Root `AGENTS.md` generated from `templates/instructions/AGENTS.md` exists, or the approved platform-equivalent root instruction file exists with the reason for not creating `AGENTS.md`.
-- Every generated modular instruction file declares an `applyTo` scope that matches the paths its rules govern, and no rule that belongs in a modular file was inlined into the root instructions.
+- Each modular canonical instruction copy retains its declared scope; any native adapter applies the same scope using documented loading rules.
 - Root instructions name generated agents, generated skills or skill directory, session rules, validation expectations, context glossary path when one exists, knowledge-index path, schema paths, and manifest path without duplicating full agent contracts.
 - Root instructions are prompt-sensitive and navigational: they tell agents which generated agents, skills, schemas, knowledge-index entries, glossary, and partial instruction files to consult for the current request, and they do not bulk-load repository facts or full role contracts into every request.
 - Core System includes generated Planner, Implementor, Tester or Integration Tester, Knowledge Builder, and Ask agents unless the user explicitly approved a narrower first install before generation.
@@ -37,11 +37,11 @@ Required checks:
 - Customization register exists in the manifest, with a row for every deliberate deviation approved during this run, or an explicit statement that this install has none.
 - Repo-local Bootstrap changelog snapshot exists when the installed changelog was available, or the manifest records why the baseline was inferred or unknown.
 - Generated runtime files from mirrors contain no `CANONICAL-TEMPLATE-SLOT` markers.
-- Generated runtime files preserve mirrored non-slot canonical wording unless the file plan records explicit user approval for a non-slot change.
+- Every canonical copy passes the deterministic preservation comparison in `contracts/platform-compatibility.md`; source hashes and approved substitutions match the file inventory. Native adapters load the complete preserved instructions.
 - Every generated agent has the required baseline tool surface or an approved reduction.
-- Every approved MCP or platform tool assignment appears by exact string name in the approved target agent or required-tool section.
+- Approved tool assignments are present in the correct environment and role's effective native configuration, with verified prerequisites or an explicit unresolved status.
 - Every omitted, deferred, or recommendation-only integration is absent from generated tool surfaces and recorded with a reason.
-- Every `tools:` frontmatter item is a string. Invocation slots contain exact available target syntax or an explicit inline/manual procedure; no unsupported source tool invocation remains.
+- Canonical tool slots contain string tool names; native adapter syntax matches researched platform requirements. Invocations resolve to available tools or approved procedures for that execution context.
 - Required capability bindings work without the source MCP: verify operation inputs, output artifacts, and prerequisites for each selected native tool, repository skill, or fallback. Missing required operations block the affected workflow.
 - Integration Tester resolves `TEST_PLAN_SCHEMA_PATH` to an existing compatible YAML schema; inspect its fields and lifecycle against the generated Tester before handoff.
 - Tracker/session contract names the external adapter or local Markdown issue root, ID format, lookup/index rule, required fields, and missing-ID behavior when ID-based skills are generated.
@@ -53,9 +53,10 @@ Required checks:
 - Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
 - Generated work-item planning skills preserve tracker/local adapter, session, evidence, Planner-only, no-skill-tools-frontmatter, and approved native-or-inline gathering requirements.
 - Generated Planner and work-item planning skills ask clarification only for genuine blocking uncertainty; otherwise complete mandatory gates, artifacts, and implementation plan before requesting review or approval.
+- Compatibility verification from `contracts/platform-compatibility.md` covers every selected environment, including discovery collisions, complete instruction loading, and effective operations. Installed files alone do not establish compatibility.
 - Validation commands from the file plan were run where available, or each skipped command has a reason.
 
-Treat missing required contract elements as blocking failures unless the user explicitly approved the omission.
+Treat missing required contract elements as blocking failures. An approved narrower selection or deferral must remain explicit; it cannot turn canonical drift or an unavailable required operation into a passing compatibility result.
 
 ## Phase H: Maintenance Handoff
 
@@ -72,6 +73,8 @@ The final handoff must include:
 - baseline directory path,
 - repo-local Bootstrap changelog snapshot path,
 - deferred decisions,
+- per-environment compatibility status and evidence, including blocked or unverified workflows,
+- preservation plan and source-snapshot paths,
 - remaining risks,
 - post-bootstrap recommendations.
 
