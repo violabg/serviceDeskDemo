@@ -14,8 +14,9 @@
 - Bootstrap Skill Version Used: 5.0.0
 - Bootstrap Contract Applied Through: 5.0.0 with the explicit Vision native-metadata exception below
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
-- Maintain Skill Version Available: 3.0.0; not applied
-- Last Maintenance Date: none
+- Maintain Skill Version Available: 3.0.0
+- Maintain Skill Version Last Applied: 3.0.0
+- Last Maintenance Date: 2026-09-19
 
 ## Generated System Paths
 
@@ -67,6 +68,7 @@
 | C003 | Native skill adapters | name | native-registration | demo-prefixed invocation names distinguish configured skills from shipped source mirrors | independent; body exact | re-evaluate on discovery changes |
 | C004 | `.github/instructions/agent-integrations.instructions.md` and integration-bindings.md | repository bindings | added-section | GitHub-only planning, exact MCP grants, English, current-role routing, native authority limits | extends-canonical | always |
 | C005 | two existing knowledge files and README | obsolete references and test ownership | modified-rule | Reconcile missing Demo agents/glossary, session identity and Integration Tester production-code boundary | independent repository documentation | always |
+| C006 | `docs/agents/context-glossary.md` | Customer/Client terminology normalization | modified-rule | User approved `Customer`/`Customers` as the canonical Service Desk term; normalize `Client`/`clients` from issue wording in user stories and bugs | independent repository documentation | always |
 
 Canonical copies remain exact after approved slots and marker stripping. The native Vision metadata override is not described as an unchanged canonical translation. No other non-slot canonical edits are authorized.
 
@@ -84,5 +86,6 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 | Date | Bootstrap contract | Maintain version applied | Summary |
 | --- | --- | --- | --- |
 | 2026-09-19 | 5.0.0 plus explicit C001 exception | none | First approved install, seven roles and five skills; runtime verification outstanding |
+| 2026-09-19 | 5.0.0 | 3.0.0 | Evolved the context glossary to normalize `Client`/`clients` to `Customer`/`Customers` in issue intake and planning artifacts |
 
 After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, demo-author-repo-skill for reusable procedures, and create-work-item-from-description when ticket creation is explicitly requested.
