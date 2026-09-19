@@ -4,7 +4,13 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `5.0.0`
+- `5.1.0`
+
+## 2026-09-19
+
+### 5.1.0
+
+- Expanded the implementation-plan schema mirror with explicit template anchors, flush-left code and diff formatting guidance, localized no-logic diff coverage, branch-complete coverage scenarios, nested method-detail guidance, and authoritative example rules.
 
 ## 2026-09-18
 

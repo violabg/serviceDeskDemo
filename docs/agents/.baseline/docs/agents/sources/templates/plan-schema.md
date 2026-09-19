@@ -11,6 +11,10 @@ Schema adherence rules:
 - If markdown tooling conflicts with this schema, report or waive the diagnostic after schema validation passes. Schema compliance wins over lint cleanup.
 - Before asking for approval or handing off to an Implementor, verify that every Filesystem Tree link points to a matching File Details anchor and that every File Details entry links back to the tree.
 
+<a id="overall-template"></a>
+
+## OVERALL TEMPLATE & MANDATORY ANCHORS
+
 Overall template and mandatory anchors:
 
 Compatibility anchor for public template overlays:
@@ -105,6 +109,35 @@ Code blocks and diff rules:
 
 - Never indent code blocks or diff blocks, even when they follow a bullet label.
 - For modified files, each diff zone must be preceded by its own bullet label and then a flush-left `diff` block.
+
+### Code Blocks and diffs rules
+
+Never indent code blocks and diffs, even if they are inside a bullet label or nested bullet list.
+This improves readability and document integrity.
+
+**Wrong**
+```
+- write the following method
+  ```csharp
+  public static int CountThings()
+  {
+    var things = 3;
+    return things;
+  }
+  ```
+```
+
+**Right**
+```
+- write the following method
+```csharp
+public static int CountThings()
+{
+  var things = 3;
+  return things;
+}
+```
+```
 
 Representative new-file example:
 
@@ -203,6 +236,30 @@ Representative modified-file example:
 [← Back to Filesystem Tree](#section-filesystem-tree)
 ````
 
+### Example C - Localised change with no new logic (diff block only, skip logic recap)
+
+````text
+### src/Infrastructure/Logging/OrderLogger.cs
+<a id="file-OrderLogger-cs"></a>
+
+**Role:** Logs order state changes with structured data.
+
+**Code sections:**
+- **Structural diff**
+```diff
+-     _logger.LogInformation("Order deleted");
++     _logger.LogInformation("Order {OrderId} deleted", order.Id);
+```
+
+**Coverage Scenarios:**
+None
+
+**Constraints and notes:**
+- The log template now includes the order ID for better diagnostics.
+
+[← Back to Filesystem Tree](#section-filesystem-tree)
+````
+
 Rules for Section 3:
 
 - Each file subsection must have a plain-text heading followed immediately by its anchor tag on the next line.
@@ -212,13 +269,26 @@ Rules for Section 3:
 - The `Coverage Scenarios` body must contain only the exact markdown table `| Test name scenario | Description |` for files with executable business logic, or the literal `None` for files that do not require unit-test coverage.
 - Scenario names must follow the unit-test naming convention defined in the project knowledge base. Only if the knowledge base does not define one, use `<class-name>_<method-name>_<scenario>` adapted to the naming conventions of the target language.
 - Coverage scenarios must maximize business-logic coverage rather than aiming for total implementation coverage.
+- Coverage scenarios must be case-specific: a single unit test scenario must not be used to cover multiple independent business rules or branches.
+- Coverage scenarios must enumerate all materially distinct business-logic branches introduced by the shown code. When applicable, include separate scenarios for: happy path, null or guard clauses, authorization or validation failures, not-found or state-conflict branches, optional enabled or disabled flows, no-op or idempotent behavior, error-handling branches, and persistence or result-mapping outcomes when they represent distinct business behavior.
+- Given a class, the objective is to cover all the business logic contained in the class, but not necessarily all the lines of code. It is sufficient to cover each distinct business rule or branch once; for example, if a method contains a null check that throws an exception and one happy-path branch, two scenarios are sufficient: one for the null check and one for the happy path.
+- A single happy-path scenario is never sufficient when the shown code also contains additional guards, throws, early returns, optional paths, no-op behavior, or other materially distinct branches.
 - For new files, show the full file content, including imports and declarations.
 - For modified files, every code block must be a `diff` block, start at column 1, and show the complete final implementation of each changed method or section.
 - For unmodified files, use regular code blocks to show only the existing executable code under test that is needed to derive the coverage scenarios.
 - Code shown must be mechanically transcribable. Include all required using, import, include, or export statements.
 - Add short comments in the code only when they explain why a non-obvious choice was made.
+- For files with multiple methods, create nested subsections (bullets) with the method name in bold, followed by a one- or two-sentence functional recap. Do not restate every line of the diff.
 - The link back to Section 2 must be exactly `[← Back to Filesystem Tree](#section-filesystem-tree)` and must be the last line of the subsection.
 - Never use tab characters anywhere; indentation is spaces only.
+
+### Coverage Scenarios
+
+| Test name scenario | Description |
+|--------------------|-------------|
+| <test_name> | <Describe the expected business behaviors> |
+
+`<test_name>` follows the naming convention defined in the project knowledge base. If no convention is specified, use `<class-name>_<method-name>_<scenario>`, following the target language's naming conventions. For example, for a Java method `register` in the `UserService` class, the happy-path scenario would be `UserService_register_happyPath`.
 
 Coverage Scenarios table shape:
 
@@ -264,5 +334,7 @@ Absolute rules:
 - Include all required using or import statements.
 - DI changes must be described even if they seem trivial.
 - Unit-test planning belongs only in `Coverage Scenarios`. Do not add unit-test files or unit-test operations to Sections 2 or 4.
+
+Produce the plan exactly as specified. If any rule is unclear, refer back to the corresponding example; the examples are the authoritative format reference.
 
 Adaptation rule: keep the structure unless the target repository has a stronger equivalent. Modify only what is necessary to fit the real repo workflow, artifact names, validation tools, or approval model.

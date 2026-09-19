@@ -12,7 +12,7 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 5.0.0 with the explicit Vision native-metadata exception below
+- Bootstrap Contract Applied Through: 5.1.0 with the explicit Vision native-metadata exception below
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Available: 3.0.0
 - Maintain Skill Version Last Applied: 3.0.0
@@ -87,5 +87,6 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 | --- | --- | --- | --- |
 | 2026-09-19 | 5.0.0 plus explicit C001 exception | none | First approved install, seven roles and five skills; runtime verification outstanding |
 | 2026-09-19 | 5.0.0 | 3.0.0 | Evolved the context glossary to normalize `Client`/`clients` to `Customer`/`Customers` in issue intake and planning artifacts |
+| 2026-09-19 | 5.1.0 | 3.0.0 | Applied the Bootstrap 5.1.0 implementation-plan schema delta; refreshed schema and changelog provenance; runtime verification remains outstanding |
 
 After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, demo-author-repo-skill for reusable procedures, and create-work-item-from-description when ticket creation is explicitly requested.

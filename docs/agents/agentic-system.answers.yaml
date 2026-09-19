@@ -2,7 +2,7 @@
   "version": 2,
   "bootstrap": {
     "skill_version": "5.0.0",
-    "contract_applied_through": "5.0.0",
+    "contract_applied_through": "5.1.0",
     "generated_on": "2026-09-19"
   },
   "execution_host": "Codex in VS Code Insiders; SDK environment path 0.153.0",
@@ -5221,7 +5221,7 @@
         "copilot"
       ],
       "template": "templates/plan-schema.md",
-      "source_sha256": "b673c89f8d629d5c858b9dd63f7c09fe3de4aa692f8178fa6d76e38b84c36657",
+    "source_sha256": "e612257c414361fdde3c83a714dd3478bf041db94b0a2885fde8bc3f89278921",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/plan-schema.md"
     },
     {
@@ -5232,7 +5232,7 @@
         "copilot"
       ],
       "template": "templates/plan-schema.md",
-      "source_sha256": "b673c89f8d629d5c858b9dd63f7c09fe3de4aa692f8178fa6d76e38b84c36657",
+    "source_sha256": "e612257c414361fdde3c83a714dd3478bf041db94b0a2885fde8bc3f89278921",
       "baseline": "docs/agents/.baseline/docs/agents/plan-schema.md"
     },
     {
@@ -5287,7 +5287,7 @@
         "copilot"
       ],
       "template": "CHANGELOG.md",
-      "source_sha256": "b78ec693d57294c27d291a12190eccff593c0a53e8b1bed2630ecab8032b1631",
+    "source_sha256": "4d0089c457e3117a12efa4271ced830bfc838fee8a26c194c857a5e81e2e8ace",
       "baseline": "docs/agents/.baseline/docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md"
     },
     {
