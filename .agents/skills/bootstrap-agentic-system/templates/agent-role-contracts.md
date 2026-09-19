@@ -29,7 +29,7 @@ Every generated agent contract should include:
 - handoff obligations
 - refusal or blocker behavior
 
-For custom agents without Canonical Template Mirrors, the main role contract should stay stable and deliberate. Put prompt-specific procedures, long decision trees, or task-mode instructions into separate Markdown partials under a role-specific partial directory, and require the main contract to load only the partials relevant to the current prompt. When a Canonical Template Mirror exists, partials may add repo-specific extensions but must not replace, summarize, rename, or remove mirrored non-slot content unless the user explicitly approves that non-slot relocation.
+For custom agents without Canonical Template Mirrors, the main role contract should stay stable and deliberate. Put prompt-specific procedures, long decision trees, or task-mode instructions into separate Markdown partials under a role-specific partial directory, and require the main contract to load only the partials relevant to the current prompt. When a Canonical Template Mirror exists, partials may add repo-specific extensions but must not replace, summarize, rename, or remove mirrored non-slot content under the platform compatibility contract.
 
 Selective loading must account for dependencies. If the current task depends on another role's guardrails, a shared repository rule, a repo-specific role extension, or a split template, the generated contract must load that dependent module too.
 
@@ -37,7 +37,7 @@ Use a verified model name only when the target platform and user confirm that ex
 
 ## Baseline Tool Surface
 
-These lists preserve the source baseline for resolving `PLATFORM_TOOLS`. Use supported names as-is; translate unsupported names to discovered equivalents for the same operations, or record approved manual fallbacks. Add discovered or approved MCP tools only when they fit the role. If the target platform cannot express `tools:` or `agents:` frontmatter, place the resolved target operations and any inline delegation procedure in `Required Tools` and `Delegated Agents` sections inside the agent contract.
+These lists preserve the source baseline for resolving `PLATFORM_TOOLS`. Use supported names as-is; translate unsupported names to discovered equivalents for the same operations, or record approved manual fallbacks. Add discovered or approved MCP tools only when they fit the role. If native registration cannot consume the canonical format, use a separate adapter under `contracts/platform-compatibility.md`; do not add or rewrite sections in a canonical copy.
 
 | Role | Baseline tools | Baseline agents |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ MCP assignment rules:
 - Cloud, deployment, runtime, database, or test-environment MCPs belong on Implementor or Tester only when the approved workflow needs that authority.
 - Do not invent MCP tool names. Use discovered configured names or ask for approval before recommending installation.
 - Avoid wildcard MCP access unless the target repository already uses it and the user approves that broader surface.
-- Preserve baseline `agents:` delegation exactly for Planner and Tester unless the target platform lacks delegated-agent frontmatter or the user approves a reduction.
+- Preserve canonical delegation metadata outside declared slots. Native adapters encode supported delegation or the approved inline procedure without rewriting canonical copies.
 
 ## Planner Agent Shape
 

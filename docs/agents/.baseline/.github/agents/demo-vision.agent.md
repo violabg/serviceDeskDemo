@@ -1,19 +1,20 @@
 ---
 description: "This custom agent analyzes images and produces a detailed JSON representation of the visual content."
-tools: [edit/createFile, edit/editFiles]
-model: "gpt-5.6 luna"
-disable-model-invocation: true
+tools: ["read/readFile", "edit/createFile", "edit/editFiles"]
+model: "GPT-5.6 Luna"
+disable-model-invocation: false
+name: "demo-vision"
 ---
 
 # Source Mapping
 
 ## Bootstrap Template Visual Artifact Storage
 
-- Store visual evidence artifacts in `sessions/<planning-session-id>/visual/`.
+- Store visual evidence artifacts in `sessions/<planning-session-id>/artifacts/visual/`.
 
 ## Bootstrap Template Visual Artifact Format
 
-- Convert visual evidence into `PNG captures paired with a short Markdown note` so non-vision agents can cite deterministic text artifacts.
+- Convert visual evidence into `SlimUI v1.0 in .slimui files; the parent separately writes a .json reference containing session_id, image, artifact_path and format` so non-vision agents can cite deterministic text artifacts.
   Cleaned into canonical agent `vision.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
@@ -185,32 +186,32 @@ canvas {id} {w}x{h} primary:{type} platform:{platform} theme:{theme} style:{styl
 div {id} {x,y,w,h} [properties]
 ```
 
-| Property           | Key         | Values                                                  | Default     |
-| ------------------ | ----------- | ------------------------------------------------------- | ----------- |
-| background         | `bg:`       | color or `gradient({type},{params})`                    | transparent |
-| display            | `d:`        | `flex`, `grid`, `block`, `inline`, `none`               | `block`     |
-| flexDirection      | `dir:`      | `row`, `col`                                            | `row`       |
-| justifyContent     | `j:`        | `start`, `center`, `end`, `between`, `around`, `evenly` | `start`     |
-| alignItems         | `items:`    | `start`, `center`, `end`, `stretch`, `baseline`         | `stretch`   |
-| gap                | `gap:`      | integer (px)                                            | 0           |
-| flex               | `flex:`     | integer (flex grow)                                     | none        |
-| padding (all)      | `p:`        | integer (px)                                            | 0           |
-| padding (per-side) | `p:`        | `top,right,bottom,left`                                 | 0           |
-| margin (all)       | `m:`        | integer or `auto`                                       | 0           |
-| margin (per-side)  | `m:`        | `top,right,bottom,left`                                 | 0           |
-| border             | `b:`        | `width,style,color` (style: solid                       | dashed      | dotted) | none |
-| borderRadius       | `r:`        | integer or `tl,tr,br,bl`                                | 0           |
-| shadow             | `sh:`       | `x,y,blur,spread,color`                                 | none        |
-| opacity            | `o:`        | 0.0–1.0                                                 | 1           |
-| overflow           | `ov:`       | `visible`, `hidden`, `scroll`, `auto`                   | `visible`   |
-| zIndex             | `z:`        | integer                                                 | 0           |
-| visible            | `vis:false` | flag                                                    | visible     |
-| rotation           | `rot:`      | degrees                                                 | 0           |
-| blur               | `blur:`     | integer (px)                                            | 0           |
-| estimated          | `est:`      | flag                                                    | false       |
-| confidence         | `conf:`     | 0.0–1.0                                                 | 1.0         |
-| grid columns       | `cols:`     | number or repeat pattern                                | none        |
-| grid rows          | `rows:`     | number or repeat pattern                                | none        |
+| Property | Key | Values | Default |
+| ------------------ | ----------- | ------------------------------------------------------- | ----------- | ------- | ---- |
+| background | `bg:` | color or `gradient({type},{params})` | transparent |
+| display | `d:` | `flex`, `grid`, `block`, `inline`, `none` | `block` |
+| flexDirection | `dir:` | `row`, `col` | `row` |
+| justifyContent | `j:` | `start`, `center`, `end`, `between`, `around`, `evenly` | `start` |
+| alignItems | `items:` | `start`, `center`, `end`, `stretch`, `baseline` | `stretch` |
+| gap | `gap:` | integer (px) | 0 |
+| flex | `flex:` | integer (flex grow) | none |
+| padding (all) | `p:` | integer (px) | 0 |
+| padding (per-side) | `p:` | `top,right,bottom,left` | 0 |
+| margin (all) | `m:` | integer or `auto` | 0 |
+| margin (per-side) | `m:` | `top,right,bottom,left` | 0 |
+| border | `b:` | `width,style,color` (style: solid | dashed | dotted) | none |
+| borderRadius | `r:` | integer or `tl,tr,br,bl` | 0 |
+| shadow | `sh:` | `x,y,blur,spread,color` | none |
+| opacity | `o:` | 0.0–1.0 | 1 |
+| overflow | `ov:` | `visible`, `hidden`, `scroll`, `auto` | `visible` |
+| zIndex | `z:` | integer | 0 |
+| visible | `vis:false` | flag | visible |
+| rotation | `rot:` | degrees | 0 |
+| blur | `blur:` | integer (px) | 0 |
+| estimated | `est:` | flag | false |
+| confidence | `conf:` | 0.0–1.0 | 1.0 |
+| grid columns | `cols:` | number or repeat pattern | none |
+| grid rows | `rows:` | number or repeat pattern | none |
 
 ### text
 

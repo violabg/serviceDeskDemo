@@ -4,7 +4,22 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `4.1.0`
+- `5.1.0`
+
+## 2026-09-19
+
+### 5.1.0
+
+- Expanded the implementation-plan schema mirror with explicit template anchors, flush-left code and diff formatting guidance, localized no-logic diff coverage, branch-complete coverage scenarios, nested method-detail guidance, and authoritative example rules.
+
+## 2026-09-18
+
+### 5.0.0
+
+- Select one or more target environments: GitHub Copilot in VS Code, Claude Code, Codex, OpenCode, Cursor, or user-named Other; the execution host does not select targets.
+- Discover formats, loading rules, permissions, and exact tools from selected-client documentation and runtime evidence instead of shipping platform tool defaults.
+- Preserve complete canonical copies outside declared placeholders and tooling slots; separate native registration adapters must load the full instructions without rewriting workflow content.
+- Add version-2 environment/role/operation provenance, shared-file ownership, compatibility status, and a hashed preservation plan with a dependency-free verifier.
 
 ## 2026-09-17
 

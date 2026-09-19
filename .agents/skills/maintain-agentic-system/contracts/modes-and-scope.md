@@ -30,14 +30,19 @@ An existing Agentic System requires at least one root instruction file plus at l
 
 Look for:
 
-- repository instruction files, including modular `*.instructions.md` files with `applyTo` scopes,
+- repository instruction files, canonical copies, native adapters, and their declared instruction scopes,
 - `docs/agents/agentic-system-manifest.md` or an equivalent provenance ledger,
 - `docs/agents/agentic-system.answers.yaml` and `docs/agents/.baseline/`,
-- `.github/agents/`, `.github/prompts/`, `.github/instructions/`, `.github/skills/`,
-- `.claude/agents/`, `.claude/skills/`, or equivalent platform folders,
+- selected-environment roots recorded in the answers and manifest, plus evidence-backed discovery locations when provenance is missing; folder presence does not select a platform,
 - governance docs, knowledge indexes, artifact templates, and at most a session-root README that documents session rules without exposing session contents.
 
 The manifest, the answers file, and the baseline directory are the maintenance baseline. Record which of the three are present in the plan, because their absence degrades the merge. See `contracts/merge-model.md`.
+
+## Environment Compatibility
+
+Read the selected environments, execution host, versions, capability evidence, source snapshots, and preservation plan. Use the sibling Bootstrap `contracts/platform-compatibility.md` to refresh only relevant official documentation and assess client/version changes. Adding or removing environments follows that contract's multi-select intake, including Other with user-entered names. Do not migrate to the latest platform release automatically.
+
+Legacy single-platform answers remain usable: migrate them under the shared compatibility contract without changing their selections or inventing verification results. If that contract or its source evidence is unavailable, report the affected checks as unknown and propose recovery; do not generate a replacement platform policy from memory.
 
 ## Bootstrap Contract Gaps
 

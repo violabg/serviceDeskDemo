@@ -22,7 +22,7 @@ Move a generated system forward without losing what the repository deliberately 
 - Never declare a Bootstrap delta missing from changelog text alone. Check the repository files first.
 - Do not restate the generated-system checklist. It lives in the sibling Bootstrap skill's audit contract; cite the checks that fail.
 - Refresh the baseline, the answers file, and the customization register only after the user approves the changes, never before.
-- Do not rewrite a working system to match wording. Propose the smallest change that closes a real gap.
+- Assess platform changes using the sibling Bootstrap compatibility contract. Keep canonical copies intact outside declared substitutions; preserve legacy deviations as visible conflicts, never silently certify them.
 
 ## Contract Files
 
@@ -33,6 +33,8 @@ This file is a router. Load the contract for the gate you are in; do not load th
 | `contracts/modes-and-scope.md` | Gates 0-2: mode selection, scope boundary, system detection, subagent delegation.         |
 | `contracts/merge-model.md`     | Gates 3-5: three-way merge, regions, conflicts, customization register, baseline refresh. |
 | `contracts/delta-audit.md`     | Gates 3-6: delta collection and classification, plan shape, final validation.             |
+
+For environment selection, current documentation research, native adapters, preservation checks, and version-1 answers migration, load the sibling `bootstrap-agentic-system/contracts/platform-compatibility.md`. Reuse this contract rather than maintaining platform-specific instructions here.
 
 The generated-system contract itself is not duplicated here. Load the sibling `bootstrap-agentic-system/contracts/audit-and-handoff.md` when you need to know what a complete generated system requires.
 

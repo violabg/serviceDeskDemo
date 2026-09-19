@@ -5,14 +5,18 @@ Every file change Maintainer proposes goes through the same three-way merge. The
 ## The Three Inputs
 
 - `BASE` is the pristine copy in the baseline directory recorded by the answers file, normally `docs/agents/.baseline/<repository-relative-path>`.
-- `THEIRS` is the current template for that file, re-filled with the slot values recorded in `agentic-system.answers.yaml`. For an upgrade, the template comes from the currently installed `bootstrap-agentic-system/templates/`. For a repository-driven change, the template is unchanged and `THEIRS` equals `BASE`.
+- `THEIRS` is the current template for that file, re-filled with the slot values recorded in `agentic-system.answers.yaml`. For an upgrade, the template comes from the currently installed `bootstrap-agentic-system/templates/`. For a repository-driven change without revised slot or adapter decisions, the template is unchanged and `THEIRS` equals `BASE`. For approved binding or native-format changes, reconstruct `THEIRS` from that same source and the new recorded decisions, keeping the old baseline for the comparison.
 - `MINE` is the file as it exists in the repository right now.
 
 Re-filling `THEIRS` is a substitution, not a redesign. Use the recorded slot values verbatim. When a slot value is a map keyed by generated repository-relative path, select the entry for the file being merged; a missing entry is an unresolved decision, not permission to reuse another role's tools. If the new template introduces a slot the answers file does not have, that slot is a decision, not a merge: ask for it and record the answer before merging the file.
 
+For canonical copies, reproduce `THEIRS` with the hashed source and approved substitution recipe under the Bootstrap compatibility contract. A native adapter is a separate generated file: reconstruct its recorded configuration and loading recipe using the applicable platform evidence. Do not treat native serialization as permission to change instruction content.
+
+Legacy non-slot overrides must stay visible as preservation conflicts. Register policies protect them against silent loss but cannot make them canonical-compliant or authorize copying them into a new pristine canonical baseline. Platform adaptation never creates new non-slot overrides.
+
 ## Regions
 
-Compare per region, not per file. A region is one Markdown section identified by its heading path, plus frontmatter as its own region. Two files agree on a region when the normalized text of that section matches after line-ending and trailing-whitespace normalization.
+Compare per region, not per file. For Markdown, a region is one section identified by its heading path, plus frontmatter as its own region. For native configuration, use stable parsed key paths and compare decoded embedded instructions exactly. When a format cannot be parsed reliably, compare the entire adapter as one region; never normalize away workflow text. Canonical copies and decoded embedded instructions allow only line-ending normalization; all other bytes must match their approved fill. Other Markdown regions may additionally normalize trailing whitespace.
 
 A heading that exists in `MINE` and not in `BASE` is an added region. A heading in `BASE` and not in `MINE` is a removed region. Both are customizations, not merge conflicts.
 
@@ -35,7 +39,7 @@ A system bootstrapped before the baseline existed, or one whose baseline was del
 
 - Say in the maintenance plan that the merge is degraded to a two-way comparison and that every difference is therefore ambiguous.
 - Treat every region where `MINE` differs from `THEIRS` as a conflict question rather than assuming a customization or a stale file.
-- Propose reconstructing the baseline as the first approved operation: write the current files into the baseline directory, and record in the customization register every region the user confirms was a deliberate deviation.
+- Propose recovering known source templates and decisions first. Keep an explicit legacy snapshot of current files as comparison evidence and record confirmed deviations; do not call that snapshot a pristine canonical baseline until preservation verification passes.
 
 The same degradation applies when the answers file is missing: `THEIRS` cannot be re-filled reliably, so slot values must be re-derived from the existing files and confirmed with the user before any merge.
 
@@ -56,11 +60,12 @@ Any region the user changes during this maintenance run gets a new or updated ro
 
 Once the approved operations are written:
 
-- refresh the baseline copy of every changed file, so the next run compares against what was actually agreed,
+- after preservation and compatibility checks, refresh baseline copies for approved compliant changes; leave unresolved legacy overrides visibly noncompliant instead of absorbing them as canonical source,
+- refresh selected-environment evidence, source hashes, adapters, and the preservation plan together; retain each blocked or unverified status,
 - update the answers file for any slot value that changed and for any file added or removed,
 - add or update the register rows for every deliberate deviation,
 - update `Bootstrap Contract Applied Through` to the latest fully applied Bootstrap version, and record `Maintain Skill Version Last Applied` and `Last Maintenance Date`,
 - refresh the repo-local Bootstrap changelog snapshot when the installed changelog was available, or record why it was not,
 - append a maintenance history row naming the mode, the applied deltas, and the deferred ones.
 
-Refreshing the baseline before the user approves the changes destroys the only evidence of what was customized. Refresh it last.
+Refreshing the baseline before approval and verification destroys the only evidence of what was customized. Refresh it last.

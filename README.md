@@ -6,7 +6,7 @@ This folder contains a standalone agentic development demo pack for an enterpris
 
 The demo shows the difference between a traditional prompt and an enterprise agentic workflow:
 
-1. Intake a GitHub issue, product request, or sample user story.
+1. Intake a GitHub issue from `violabg/serviceDeskDemo`.
 2. Create or reuse a named planning session under `sessions/<session-id>/`.
 3. Analyze gaps, ambiguity, risks, and missing acceptance criteria.
 4. Ask focused grooming questions.
@@ -18,25 +18,7 @@ The demo shows the difference between a traditional prompt and an enterprise age
 
 ## Layout
 
-```text
-enterprise-agentic-demo/
-├── AGENTS.md
-├── README.md
-├── .vscode/
-│   └── mcp.json
-├── .github/
-│   ├── agents/
-│   └── skills/
-├── .agents/
-│   ├── skills/
-│   └── templates/
-└── sessions/
-    └── <session-id>/
-```
-
-Copilot custom agents live in `.github/agents/` because VS Code discovers them from that location. Portable skills and templates live in `.agents/` so the workflow can be reused by other agent runtimes later.
-
-Generated workflow artifacts live in local, gitignored `sessions/<session-id>/` packages. GitHub-driven workflows use the issue number as the session ID. Offline workflows ask the user to provide or confirm the session ID, then write `session-brief.md`, `requirements-analysis.md`, `spec.md`, `task-breakdown.md`, `implementation-plan.md`, `test-plan.md`, and later handoff artifacts into that folder.
+Generated workflow artifacts live in local, gitignored `sessions/<planning-session-id>/` packages. Planning starts from a GitHub issue such as `#12`. After retrieving its type, the default session is `bug-12` or `us-12`; the issue ID and session ID are distinct. Resume only an explicitly supplied or active session, including previously approved custom IDs. The Planner writes the artifacts required by [the artifact contract](docs/agents/artifact-gates.md) and [plan schema](docs/agents/plan-schema.md). Integration Tester uses [the YAML test-plan schema](docs/agents/test-plan-schema.md).
 
 ## Demo Stack
 
@@ -66,92 +48,20 @@ pnpm db:studio
 
 ## Agent Flow
 
-Use `Demo Planner` as the primary entry point.
+Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approved-plan execution. Select `demo-direct-implementor` explicitly for direct implementation from validated requirements without a plan document; it never creates tests.
 
-```mermaid
-flowchart LR
-    A[Issue or User Story] --> B[Demo Planner]
-    B --> C[Requirements Analyst]
-    B --> D[Task Builder]
-    B --> E[Knowledge Builder]
-    B --> F[Implementation Plan]
-    F --> G[Demo Implementor]
-    G --> H[Demo Tester]
-    H --> I[Review-Ready Handoff]
-    I --> J[Human or PR Review]
-```
+| Agent | Purpose |
+| --- | --- |
+| demo-planner | Issue intake, clarification, knowledge selection and implementation planning |
+| demo-implementor | Approved-plan execution and authorized unit-test work |
+| demo-direct-implementor | Direct implementation with knowledge/session/validation gates; no test creation |
+| demo-integration-tester | Integration-test planning and execution |
+| demo-knowledge-builder | Evidence-backed knowledge and index maintenance |
+| demo-ask | Read-only codebase and programming Q&A |
+| demo-vision | Luna image extraction when the calling model lacks vision |
 
-The planner is planning-only. It must not implement code, run project commands, or bypass approval. The implementor works only from an approved plan in `sessions/<session-id>/`. Review remains required, but it is handled through review-ready artifacts, `review-checklist`, and human or PR review surfaces rather than a dedicated default agent.
+Codex registrations live in `.codex/agents/`; Copilot registrations live in `.github/agents/`. Their full preserved contracts and maintenance evidence live in `docs/agents/`.
 
-## GitHub Issue Intake
+Generated skills use explicit `demo-` invocation names: `demo-author-repo-skill`, `demo-plan-bug-from-id`, `demo-plan-user-story-from-id`, `demo-user-story-analysis`, and `demo-integration-test-knowledge-checklist`. The two issue-planning skills run within `demo-planner`. The gap-detector skill is deferred.
 
-Live GitHub issue retrieval is explicit and user-invoked. Use these skills when GitHub MCP access is available:
-
-- `/plan-from-github-issue owner/repo#123` for user stories, features, and service desk requirements.
-- `/plan-from-github-bug owner/repo#456` for bug reports that need root-cause analysis before planning.
-
-Both skills are configured with `disable-model-invocation: true`, so they appear as slash commands but are not auto-loaded for generic planning requests.
-
-The workspace MCP configuration is in `.vscode/mcp.json` and defines a `github` MCP server. If the server is enabled and trusted in VS Code, GitHub tools are exposed as `github/*` to the hidden `Demo GitHub Issue Intake` agent.
-
-Bug planning follows an additional gate before `Demo Planner`: gather bug details, inspect likely local causes, expand to code/config/data/external dependencies, present the top probable causes, wait for user cause selection, then create a root-cause-focused planning intake. The selected cause analysis is saved in the planner-created session folder.
-
-## Hidden Subagents
-
-Some agents are intentionally hidden from the user picker with `user-invocable: false`. They exist for main agents to call with a small, clean context packet instead of dragging the full conversation and repository context into every specialist step.
-
-Current hidden subagents:
-
-- `Demo Requirements Analyst`: requirement gaps, risks, and clarification questions.
-- `Demo Task Builder`: atomic vertical slices after requirements are known.
-- `Demo GitHub Issue Intake`: factual GitHub issue retrieval only.
-- `Demo Vision UI`: deterministic visual extraction from screenshots, mockups, and diagrams.
-- `Demo Context Scout`: bounded repository evidence packets for one planning or review question.
-
-Main agents expose hidden helpers through their `agents:` allow-list. When adding a new helper, keep it single-purpose, give it minimal tools, set `user-invocable: false`, and pass only the artifact excerpt or bounded question it needs. Add a `model:` only when the exact model name is verified in the local Copilot environment; otherwise leave model selection to the caller.
-
-## Session Artifacts
-
-For GitHub-driven workflows, the session ID is the GitHub issue number. For offline workflows, the user provides or confirms the session ID. The planner creates or reuses `sessions/<session-id>/` before requirements analysis starts.
-
-`implementation-plan.md` includes a `Proposed Diffs` section. These are concise before/after snippets for material code, markdown, configuration, schema, skill, prompt, or agent changes. They are not a replacement for review, but they make the handoff concrete before implementation begins.
-
-## Vision Handling
-
-For screenshots and mockups, the planner should invoke the hidden `Demo Vision UI` subagent and save its `SlimUI v1` plus `Planner Notes` output as the durable visual contract. Native model vision can still help with quick inspection, but it does not replace the artifact-producing subagent path.
-
-## Suggested Walkthrough
-
-1. Start from GitHub issue, product request, or user-provided story.
-2. Ask `Demo Planner` to plan the story.
-3. Provide or confirm the session ID.
-4. Answer any grooming questions.
-5. Review generated requirements analysis, spec, task breakdown, implementation plan, and test plan in `sessions/<session-id>/`.
-6. Approve the plan.
-7. Ask `Demo Implementor` to implement the approved plan from the session folder.
-8. Ask `Demo Tester` to create or run the relevant tests.
-9. Run the review capability by using `review-checklist` with the session artifacts, validation output, and a handoff marked `Current Gate: Review Ready`.
-
-The teaching point is that the prompt becomes small because the workflow carries the process knowledge.
-
-## Next.js template
-
-This is a Next.js template with shadcn/ui.
-
-## Adding components
-
-To add components to your app, run the following command:
-
-```bash
-npx shadcn@latest add button
-```
-
-This will place the ui components in the `components` directory.
-
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button"
-```
+Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. Read [compatibility evidence](docs/agents/compatibility.md) for verified and outstanding client checks. Reload the client after installation and confirm role and skill discovery before relying on an unverified operation.

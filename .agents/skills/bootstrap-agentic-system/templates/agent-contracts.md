@@ -1,6 +1,6 @@
 # Agent Contract Templates
 
-Use these as starting shapes. Adapt names, tools, and paths to the target platform.
+Use these as starting shapes only for custom roles without mirrors. Selected canonical roles, skills, and instructions always use their complete mirrors. Native formats and tool bindings come from `contracts/platform-compatibility.md`, not the example syntax below.
 
 ## Source Templates to Preserve
 
@@ -70,7 +70,7 @@ Minimum sections:
 
 Keep this file short, navigational, and prompt-sensitive. It should route agents to the right generated contracts, glossary, knowledge index, repo-local schemas, templates, manifest, prompt-specific partials, and validation commands for the current request without duplicating full agent instructions or bulk-loading repository facts.
 
-When a custom generated agent has no Canonical Template Mirror and the target platform uses Markdown agent contracts, keep the main generated agent file as a stable routing contract. Put prompt-specific procedures, long checklists, or mode-specific instructions into separate Markdown partials and have the main contract name when those partials should be loaded. When a Canonical Template Mirror exists, keep the mirrored runtime body in the main generated file; partials may add repo-specific extensions but must not replace, summarize, rename, or remove mirrored non-slot content unless the user explicitly approves that non-slot relocation.
+When a custom generated agent has no Canonical Template Mirror and the target platform uses Markdown agent contracts, keep the main generated agent file as a stable routing contract. Put prompt-specific procedures, long checklists, or mode-specific instructions into separate Markdown partials and have the main contract name when those partials should be loaded. When a Canonical Template Mirror exists, keep the mirrored runtime body in the main generated file; partials may add repo-specific extensions but must not replace, summarize, rename, or remove mirrored non-slot content under the platform compatibility contract.
 
 If a request depends on another role's contract fragment, a shared repository rule, or a repo-specific operating mode, the main contract must say to load that dependency partial as well. Selective loading is for relevance and token control, not for hiding important constraints.
 

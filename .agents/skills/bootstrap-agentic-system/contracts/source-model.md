@@ -21,9 +21,14 @@ Load source assets only when their output is needed.
 ## Personalization Registry
 
 - `registry/placeholders.yaml`: every Personalization Slot with its decision question, the target-repository evidence to inspect (`infer_from`), and the default proposal to state (`recommend`).
-- `registry/capabilities.yaml`: capabilities the generated system needs, per-platform tool defaults, and the fallback to install when a platform lacks a native tool.
+- `registry/capabilities.yaml`: stable capability needs, multi-select platform suggestions, and fallback procedures to assess against runtime evidence. Tool names and native formats are discovered only for selected environments.
 
-A `recommend` value is a proposal, never an approval. Essential capabilities are never dropped: when the target platform has no native tool, install the declared fallback instead.
+A `recommend` value is a proposal, never an approval. Essential operations are never dropped: a fallback needs approval and working prerequisites; otherwise the affected workflow is blocked. See `contracts/platform-compatibility.md`.
+
+## Compatibility Assets
+
+- `contracts/platform-compatibility.md`: shared runtime research, preservation, registration, and verification procedure for Bootstrap and Maintainer.
+- `scripts/verify-canonical-copies.mjs`: dependency-free mechanical comparison of repo-local canonical copies with hashed mirrors and approved substitutions. Its plan and source snapshots are maintenance evidence.
 
 ## Provenance Input
 

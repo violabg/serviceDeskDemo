@@ -1,7 +1,7 @@
 ---
 name: bootstrap-agentic-system
 description: "Use when: bootstrapping a repository-specific coding agentic system with custom agents, gates, hidden subagents, skills, artifacts, handoffs, bounded knowledge loading, or a prompt-to-skill conversion for agent workflows."
-argument-hint: "Target repo, preferred agent platform, and any known workflow risks"
+argument-hint: "Target repo, selected agent environments (one or more), and any known workflow risks"
 disable-model-invocation: true
 ---
 
@@ -23,16 +23,16 @@ Keep Bootstrap as one public orchestrator. Use internal scout lanes, decision re
 
 - Generate from the public Bootstrap templates in this skill folder whenever a matching template exists.
 - Treat `templates/agents/`, `templates/skills/`, and `templates/instructions/` as Canonical Template Mirrors: copy first, fill approved placeholders and slots, strip source-only slot markers, and preserve non-slot canonical wording.
-- Do not paraphrase, reorder, weaken, summarize, split, or move mirrored non-slot content unless the user explicitly approves that non-slot change.
+- Platform adaptation may change only declared placeholder values and tool/invocation slots. All remaining canonical content stays exact; native registration adapters follow `contracts/platform-compatibility.md`.
 - Keep generated runtime files free of `CANONICAL-TEMPLATE-SLOT` comments. Those markers are source-template maintenance markers only.
-- Record every generated, skipped, deferred, placeholder-filled, marker-stripped, and user-approved non-slot decision in the agentic-system manifest.
+- Record every generated, skipped, deferred, placeholder-filled, marker-stripped, and native-adapter decision in the agentic-system manifest.
 - Before writing files, produce a file plan and wait for explicit approval. Use one master plan and ask for approval before each write batch unless the user explicitly approves collapsed batches.
 - Preserve required baseline operations using `PLATFORM_TOOLS` and the declared invocation slots; preserve delegated-agent frontmatter when the target platform supports it. Add only exact discovered or user-approved MCP or platform tools.
 - Every `tools:` frontmatter item in generated Markdown agents must be a string. When filling `"{{APPROVED_MCP_TOOLS}}"`, replace it with zero or more exact quoted tool-name strings, or remove the placeholder item when no additional tool is approved.
 - Keep context glossary and knowledge index separate. A context glossary stores stable repository code/domain vocabulary; a knowledge index controls task-specific knowledge selection.
 - Keep schema enforcement in generated runtime contracts. The enriched Planner template already contains slots for knowledge-index and plan-schema paths; Bootstrap must fill and verify those paths in generated files. The Planner also carries the clarification-question format in its own body, so no generated file may restate it.
 - Keep root instructions short, navigational, and prompt-sensitive. Generate them from `templates/instructions/AGENTS.md`. Root instructions must route to generated agents, skills, schemas, knowledge index, glossary, and prompt-specific partials when relevant; they must not become a monolithic fact dump or duplicate full agent contracts for every request.
-- Put specialized rules in modular instruction files generated from `templates/instructions/*.instructions.md`, each scoped by its `applyTo` paths, instead of growing the root instructions.
+- Put specialized rules in modular instruction files generated from `templates/instructions/*.instructions.md`, preserving their declared scope through the selected platform's verified instruction-loading mechanism, instead of growing the root instructions.
 - Do not create a `CONTEXT.md` just because it is missing. Create or update a glossary only when stable repository vocabulary, source-of-truth boundaries, or ambiguous terms have been resolved.
 - Never hand off a generated system without its maintenance baseline: the answers file, the pristine `.baseline/` copies, and the manifest customization register.
 - Keep future maintenance explicit. Bootstrap writes manifest, answers, baseline, and changelog snapshot evidence so Maintainer can classify later contract deltas rather than silently rewriting files.
@@ -45,6 +45,7 @@ This file is a router. Load the contract for the phase you are in; do not load t
 | -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `contracts/source-model.md`            | Any phase, before reading templates or the registry. Defines the source assets and the shared vocabulary. |
 | `contracts/discovery-and-decisions.md` | Phases A-C: intake, bounded discovery, decision register.                                                 |
+| `contracts/platform-compatibility.md` | Selected-environment research, canonical preservation, native registration, and compatibility verification; shared with Maintainer. |
 | `contracts/generation.md`              | Phases D-E: proposal, file plan, copy-first generation, maintenance baseline writes.                      |
 | `contracts/audit-and-handoff.md`       | Phases F-H: schema enforcement, contract audit, maintenance handoff.                                      |
 
@@ -52,7 +53,7 @@ This file is a router. Load the contract for the phase you are in; do not load t
 
 Run the phases in order. Each entry names the phase's purpose and the contract that governs it.
 
-- Phase A, Intake And Scope: confirm the request is agent-system work and capture the target repo, platform, language, prefix, risks, and whether generation is wanted. See `contracts/discovery-and-decisions.md`.
+- Phase A, Intake And Scope: confirm the request is agent-system work and capture the target repo, selected environments, execution host, language, prefix, risks, and whether generation is wanted. See `contracts/discovery-and-decisions.md`.
 - Phase B, Bounded Discovery: run the read-only discovery lanes and produce the candidate tool and integration matrix. See `contracts/discovery-and-decisions.md`.
 - Phase C, Decision Register: resolve every required decision one question at a time, driven by `registry/placeholders.yaml` and `registry/capabilities.yaml`. See `contracts/discovery-and-decisions.md`.
 - Phase D, Proposal And File Plan: produce the proposal, the file plan, and the batch approval checkpoints. Approval is false by default. See `contracts/generation.md`.

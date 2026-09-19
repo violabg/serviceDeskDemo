@@ -1,0 +1,169 @@
+[
+  {
+    "id": "environments",
+    "value": [
+      "codex",
+      "copilot"
+    ],
+    "source": "user",
+    "evidence": "User: uso codex and copilot"
+  },
+  {
+    "id": "tracker",
+    "value": "GitHub Issues only",
+    "source": "user",
+    "evidence": "User: Solo GitHub Issues"
+  },
+  {
+    "id": "defaults",
+    "value": {
+      "AGENT_PREFIX": "demo-",
+      "OUTPUT_LANGUAGE": "English",
+      "SESSION_ROOT": "sessions",
+      "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+      "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
+      "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+      "TEST_PLAN_SCHEMA_PATH": "docs/agents/test-plan-schema.md"
+    },
+    "source": "recommend-accepted",
+    "evidence": "User accepted naming and storage defaults"
+  },
+  {
+    "id": "skills",
+    "value": [
+      "author-repo-skill",
+      "plan-bug-from-id",
+      "plan-user-story-from-id",
+      "user-story-analysis",
+      "integration-test-knowledge-checklist"
+    ],
+    "source": "recommend-accepted",
+    "evidence": "Recommended five skills; defer gap detector"
+  },
+  {
+    "id": "mcp",
+    "value": {
+      "planner": {
+        "github": [
+          "issue_read"
+        ],
+        "neon": [
+          "list_docs_resources",
+          "get_doc_resource",
+          "get_database_tables",
+          "describe_table_schema",
+          "list_branches",
+          "compare_database_schema"
+        ],
+        "next-devtools": [
+          "init",
+          "nextjs_docs",
+          "nextjs_index",
+          "nextjs_call"
+        ]
+      },
+      "implementor": {
+        "github": [
+          "issue_read"
+        ],
+        "neon": [
+          "list_docs_resources",
+          "get_doc_resource",
+          "get_database_tables",
+          "describe_table_schema",
+          "list_branches",
+          "compare_database_schema",
+          "prepare_database_migration",
+          "run_sql",
+          "complete_database_migration"
+        ],
+        "next-devtools": [
+          "init",
+          "nextjs_docs",
+          "nextjs_index",
+          "nextjs_call",
+          "browser_eval"
+        ]
+      },
+      "direct-implementor": {
+        "github": [
+          "issue_read"
+        ],
+        "neon": [
+          "list_docs_resources",
+          "get_doc_resource",
+          "get_database_tables",
+          "describe_table_schema",
+          "list_branches",
+          "compare_database_schema",
+          "prepare_database_migration",
+          "run_sql",
+          "complete_database_migration"
+        ],
+        "next-devtools": [
+          "init",
+          "nextjs_docs",
+          "nextjs_index",
+          "nextjs_call",
+          "browser_eval"
+        ]
+      },
+      "integration-tester": {},
+      "knowledge-builder": {
+        "neon": [
+          "list_docs_resources",
+          "get_doc_resource",
+          "get_database_tables",
+          "describe_table_schema",
+          "list_branches",
+          "compare_database_schema"
+        ],
+        "next-devtools": [
+          "init",
+          "nextjs_docs",
+          "nextjs_index",
+          "nextjs_call"
+        ]
+      },
+      "ask": {
+        "neon": [
+          "list_docs_resources",
+          "get_doc_resource",
+          "get_database_tables",
+          "describe_table_schema",
+          "list_branches",
+          "compare_database_schema"
+        ],
+        "next-devtools": [
+          "init",
+          "nextjs_docs",
+          "nextjs_index",
+          "nextjs_call"
+        ]
+      },
+      "vision": {}
+    },
+    "source": "user",
+    "evidence": "User added Neon/Next to Ask, Planner, Implementor, then Knowledge Builder; Direct Implementor added with same implementation grants in approved roster"
+  },
+  {
+    "id": "vision",
+    "value": {
+      "codex": "gpt-5.6-luna",
+      "copilot": "GPT-5.6 Luna",
+      "conditional": "inline if image-capable; otherwise spawn Vision"
+    },
+    "source": "user",
+    "evidence": "User: use vision with luna; planner can spin a vision agent as subagent if current model lack vision capabilities"
+  },
+  {
+    "id": "approval",
+    "value": {
+      "approved": true,
+      "owner": "user",
+      "batches": "combined installation including seventh agent and later MCP additions"
+    },
+    "source": "user",
+    "evidence": "User final message: approved; after full file plan and amended roster"
+  }
+]
