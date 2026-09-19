@@ -6,7 +6,7 @@ This folder contains a standalone agentic development demo pack for an enterpris
 
 The demo shows the difference between a traditional prompt and an enterprise agentic workflow:
 
-1. Intake a GitHub issue, product request, or sample user story.
+1. Intake a GitHub issue from `violabg/serviceDeskDemo`.
 2. Create or reuse a named planning session under `sessions/<session-id>/`.
 3. Analyze gaps, ambiguity, risks, and missing acceptance criteria.
 4. Ask focused grooming questions.
@@ -18,7 +18,7 @@ The demo shows the difference between a traditional prompt and an enterprise age
 
 ## Layout
 
-Generated workflow artifacts live in local, gitignored `sessions/<session-id>/` packages. GitHub-driven workflows use the issue number as the session ID. Offline workflows ask the user to provide or confirm the session ID, then write `session-brief.md`, `requirements-analysis.md`, `spec.md`, `task-breakdown.md`, `implementation-plan.md`, `test-plan.md`, and later handoff artifacts into that folder.
+Generated workflow artifacts live in local, gitignored `sessions/<planning-session-id>/` packages. Planning starts from a GitHub issue such as `#12`. After retrieving its type, the default session is `bug-12` or `us-12`; the issue ID and session ID are distinct. Resume only an explicitly supplied or active session, including previously approved custom IDs. The Planner writes the artifacts required by [the artifact contract](docs/agents/artifact-gates.md) and [plan schema](docs/agents/plan-schema.md). Integration Tester uses [the YAML test-plan schema](docs/agents/test-plan-schema.md).
 
 ## Demo Stack
 
@@ -48,17 +48,20 @@ pnpm db:studio
 
 ## Agent Flow
 
-Use `Demo Planner` as the primary entry point.
+Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approved-plan execution. Select `demo-direct-implementor` explicitly for direct implementation from validated requirements without a plan document; it never creates tests.
 
-```mermaid
-flowchart LR
-    A[Issue or User Story] --> B[Demo Planner]
-    B --> C[Requirements Analyst]
-    B --> D[Task Builder]
-    B --> E[Knowledge Builder]
-    B --> F[Implementation Plan]
-    F --> G[Demo Implementor]
-    G --> H[Demo Tester]
-    H --> I[Review-Ready Handoff]
-    I --> J[Human or PR Review]
-```
+| Agent | Purpose |
+| --- | --- |
+| demo-planner | Issue intake, clarification, knowledge selection and implementation planning |
+| demo-implementor | Approved-plan execution and authorized unit-test work |
+| demo-direct-implementor | Direct implementation with knowledge/session/validation gates; no test creation |
+| demo-integration-tester | Integration-test planning and execution |
+| demo-knowledge-builder | Evidence-backed knowledge and index maintenance |
+| demo-ask | Read-only codebase and programming Q&A |
+| demo-vision | Luna image extraction when the calling model lacks vision |
+
+Codex registrations live in `.codex/agents/`; Copilot registrations live in `.github/agents/`. Their full preserved contracts and maintenance evidence live in `docs/agents/`.
+
+Generated skills use explicit `demo-` invocation names: `demo-author-repo-skill`, `demo-plan-bug-from-id`, `demo-plan-user-story-from-id`, `demo-user-story-analysis`, and `demo-integration-test-knowledge-checklist`. The two issue-planning skills run within `demo-planner`. The gap-detector skill is deferred.
+
+Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. Read [compatibility evidence](docs/agents/compatibility.md) for verified and outstanding client checks. Reload the client after installation and confirm role and skill discovery before relying on an unverified operation.

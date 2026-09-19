@@ -1,0 +1,630 @@
+# Structural Validation Report
+
+Date: 2026-09-19. Result: **PASS** for structural checks.
+
+616 checks passed; 0 failed. Canonical copies: 22. Native adapters: 19. Primary/baseline files: 93.
+
+Method: independent Python reconstruction of the declared slot recipe, SHA-256 source checks, exact canonical/body comparisons, constrained generated YAML/TOML syntax checks, schema/index/roster checks, baseline equality and a disposable file-contract fixture outside existing sessions. No native model, client handoff or live MCP operation was tested.
+
+The shipped Node verifier could not run: Node was blocked by the current sandbox, including the requested escalation. Git status was similarly unavailable because Git could not read its user configuration. Python verification is the equivalent deterministic comparison allowed by Bootstrap; generated native execution remains **unverified**. General YAML/TOML features outside the emitted JSON-compatible subset were not tested.
+
+Product lint, typecheck, tests and build were skipped because changes are confined to agent-system instructions, scripts and documentation. No product, database or runtime mutation was performed.
+
+## Passed checks
+
+- Answers version 2 (JSON-compatible YAML 1.2)
+- Preservation recipe version 1
+- Preservation recipe hash
+- Unique primary inventory paths
+- Complete canonical coverage
+- Source hash: docs/agents/canonical/codex/agents/demo-planner.agent.md
+- Exact canonical preservation: docs/agents/canonical/codex/agents/demo-planner.agent.md
+- Resolved slots/markers: docs/agents/canonical/codex/agents/demo-planner.agent.md
+- String-only unique tools: docs/agents/canonical/codex/agents/demo-planner.agent.md
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md PLAN_SCHEMA_PATH
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md VISION_INVOCATION
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-planner.agent.md VISION_AGENT_NAME
+- Source hash: docs/agents/canonical/codex/agents/demo-implementor.agent.md
+- Exact canonical preservation: docs/agents/canonical/codex/agents/demo-implementor.agent.md
+- Resolved slots/markers: docs/agents/canonical/codex/agents/demo-implementor.agent.md
+- String-only unique tools: docs/agents/canonical/codex/agents/demo-implementor.agent.md
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-implementor.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-implementor.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-implementor.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-implementor.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-implementor.agent.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-implementor.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-implementor.agent.md PLATFORM_TOOLS
+- Source hash: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md
+- Exact canonical preservation: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md
+- Resolved slots/markers: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md
+- String-only unique tools: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md VISION_INVOCATION
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md VISION_AGENT_NAME
+- Source hash: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md
+- Exact canonical preservation: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md
+- Resolved slots/markers: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md
+- String-only unique tools: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md TEST_PLAN_SCHEMA_PATH
+- Source hash: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md
+- Exact canonical preservation: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md
+- Resolved slots/markers: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md
+- String-only unique tools: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md CONTEXT_GLOSSARY_PATH
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md QUESTION_TOOL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md KNOWLEDGE_DISCOVERY_DELEGATION
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md REPO_KNOWLEDGE_PATHS
+- Source hash: docs/agents/canonical/codex/agents/demo-ask.agent.md
+- Exact canonical preservation: docs/agents/canonical/codex/agents/demo-ask.agent.md
+- Resolved slots/markers: docs/agents/canonical/codex/agents/demo-ask.agent.md
+- String-only unique tools: docs/agents/canonical/codex/agents/demo-ask.agent.md
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-ask.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-ask.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-ask.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-ask.agent.md PLATFORM_TOOLS
+- Source hash: docs/agents/canonical/codex/agents/demo-vision.agent.md
+- Exact canonical preservation: docs/agents/canonical/codex/agents/demo-vision.agent.md
+- Resolved slots/markers: docs/agents/canonical/codex/agents/demo-vision.agent.md
+- String-only unique tools: docs/agents/canonical/codex/agents/demo-vision.agent.md
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-vision.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-vision.agent.md VISUAL_ARTIFACT_FORMAT
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-vision.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-vision.agent.md VISUAL_ARTIFACT_STORAGE
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-vision.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/codex/agents/demo-vision.agent.md VISION_MODEL
+- Source hash: docs/agents/canonical/copilot/agents/demo-planner.agent.md
+- Exact canonical preservation: docs/agents/canonical/copilot/agents/demo-planner.agent.md
+- Resolved slots/markers: docs/agents/canonical/copilot/agents/demo-planner.agent.md
+- String-only unique tools: docs/agents/canonical/copilot/agents/demo-planner.agent.md
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md PLAN_SCHEMA_PATH
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md VISION_INVOCATION
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-planner.agent.md VISION_AGENT_NAME
+- Source hash: docs/agents/canonical/copilot/agents/demo-implementor.agent.md
+- Exact canonical preservation: docs/agents/canonical/copilot/agents/demo-implementor.agent.md
+- Resolved slots/markers: docs/agents/canonical/copilot/agents/demo-implementor.agent.md
+- String-only unique tools: docs/agents/canonical/copilot/agents/demo-implementor.agent.md
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-implementor.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-implementor.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-implementor.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-implementor.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-implementor.agent.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-implementor.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-implementor.agent.md PLATFORM_TOOLS
+- Source hash: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md
+- Exact canonical preservation: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md
+- Resolved slots/markers: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md
+- String-only unique tools: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md VISION_INVOCATION
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md VISION_AGENT_NAME
+- Source hash: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md
+- Exact canonical preservation: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md
+- Resolved slots/markers: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md
+- String-only unique tools: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md TEST_PLAN_SCHEMA_PATH
+- Source hash: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md
+- Exact canonical preservation: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md
+- Resolved slots/markers: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md
+- String-only unique tools: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md CONTEXT_GLOSSARY_PATH
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md QUESTION_TOOL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md KNOWLEDGE_DISCOVERY_DELEGATION
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md REPO_KNOWLEDGE_PATHS
+- Source hash: docs/agents/canonical/copilot/agents/demo-ask.agent.md
+- Exact canonical preservation: docs/agents/canonical/copilot/agents/demo-ask.agent.md
+- Resolved slots/markers: docs/agents/canonical/copilot/agents/demo-ask.agent.md
+- String-only unique tools: docs/agents/canonical/copilot/agents/demo-ask.agent.md
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-ask.agent.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-ask.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-ask.agent.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-ask.agent.md PLATFORM_TOOLS
+- Source hash: docs/agents/canonical/copilot/agents/demo-vision.agent.md
+- Exact canonical preservation: docs/agents/canonical/copilot/agents/demo-vision.agent.md
+- Resolved slots/markers: docs/agents/canonical/copilot/agents/demo-vision.agent.md
+- String-only unique tools: docs/agents/canonical/copilot/agents/demo-vision.agent.md
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-vision.agent.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-vision.agent.md VISUAL_ARTIFACT_FORMAT
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-vision.agent.md APPROVED_MCP_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-vision.agent.md VISUAL_ARTIFACT_STORAGE
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-vision.agent.md PLATFORM_TOOLS
+- Answer/recipe agreement: docs/agents/canonical/copilot/agents/demo-vision.agent.md VISION_MODEL
+- Source hash: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md
+- Exact canonical preservation: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md
+- Resolved slots/markers: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md SKILL_ROOT
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md VALIDATION_COMMANDS
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md REPOSITORY_SEARCH_TOOL
+- Source hash: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md
+- Exact canonical preservation: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md
+- Resolved slots/markers: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md LOCAL_MARKDOWN_TRACKER_CONTRACT
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md WORK_ITEM_ID_FORMAT
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md WORK_ITEM_GATHERING
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md TRACKER_ADAPTER
+- Source hash: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md
+- Exact canonical preservation: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md
+- Resolved slots/markers: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md SESSION_ROOT
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md WORK_ITEM_RETRIEVAL
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md LOCAL_MARKDOWN_TRACKER_CONTRACT
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md WORK_ITEM_ID_FORMAT
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md WORK_ITEM_GATHERING
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md TRACKER_ADAPTER
+- Source hash: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md
+- Exact canonical preservation: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md
+- Resolved slots/markers: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md REPOSITORY_SEARCH_TOOL
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md KNOWLEDGE_SOURCE
+- Source hash: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md
+- Exact canonical preservation: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md
+- Resolved slots/markers: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md VALIDATION_COMMANDS
+- Answer/recipe agreement: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md INTEGRATION_TEST_SCOPE
+- Source hash: .github/instructions/knowledge-guard.instructions.md
+- Exact canonical preservation: .github/instructions/knowledge-guard.instructions.md
+- Resolved slots/markers: .github/instructions/knowledge-guard.instructions.md
+- Answer/recipe agreement: .github/instructions/knowledge-guard.instructions.md KNOWLEDGE_SOURCE
+- Answer/recipe agreement: .github/instructions/knowledge-guard.instructions.md KNOWLEDGE_FILE_GLOB
+- Answer/recipe agreement: .github/instructions/knowledge-guard.instructions.md KNOWLEDGE_INDEX_PATH
+- Source hash: .github/instructions/planning-sessions.instructions.md
+- Exact canonical preservation: .github/instructions/planning-sessions.instructions.md
+- Resolved slots/markers: .github/instructions/planning-sessions.instructions.md
+- Answer/recipe agreement: .github/instructions/planning-sessions.instructions.md ARTIFACT_GATES_PATH
+- Answer/recipe agreement: .github/instructions/planning-sessions.instructions.md SESSION_ROOT
+- Answer/recipe agreement: .github/instructions/planning-sessions.instructions.md WORK_ITEM_ID_FORMAT
+- Answer/recipe agreement: .github/instructions/planning-sessions.instructions.md PLAN_SCHEMA_PATH
+- Source hash: AGENTS.md
+- Exact canonical preservation: AGENTS.md
+- Resolved slots/markers: AGENTS.md
+- Answer/recipe agreement: AGENTS.md CONTEXT_GLOSSARY_PATH
+- Answer/recipe agreement: AGENTS.md ARTIFACT_GATES_PATH
+- Answer/recipe agreement: AGENTS.md AGENT_ROOT
+- Answer/recipe agreement: AGENTS.md SESSION_ROOT
+- Answer/recipe agreement: AGENTS.md PLAN_SCHEMA_PATH
+- Answer/recipe agreement: AGENTS.md INSTRUCTION_ROOT
+- Answer/recipe agreement: AGENTS.md KNOWLEDGE_INDEX_PATH
+- Answer/recipe agreement: AGENTS.md MANIFEST_PATH
+- Answer/recipe agreement: AGENTS.md AGENT_ROSTER
+- Answer/recipe agreement: AGENTS.md REPO_NAME
+- Answer/recipe agreement: AGENTS.md SKILL_ROOT
+- Answer/recipe agreement: AGENTS.md VALIDATION_COMMANDS
+- Codex required metadata: .codex/agents/demo-planner.toml
+- Codex sandbox choice: .codex/agents/demo-planner.toml
+- Codex exact model/inheritance: .codex/agents/demo-planner.toml
+- Codex exact MCP filter: .codex/agents/demo-planner.toml github
+- Codex exact MCP filter: .codex/agents/demo-planner.toml neon
+- Codex exact MCP filter: .codex/agents/demo-planner.toml next-devtools
+- Complete decoded body: .codex/agents/demo-planner.toml
+- Codex required metadata: .codex/agents/demo-implementor.toml
+- Codex sandbox choice: .codex/agents/demo-implementor.toml
+- Codex exact model/inheritance: .codex/agents/demo-implementor.toml
+- Codex exact MCP filter: .codex/agents/demo-implementor.toml github
+- Codex exact MCP filter: .codex/agents/demo-implementor.toml neon
+- Codex exact MCP filter: .codex/agents/demo-implementor.toml next-devtools
+- Complete decoded body: .codex/agents/demo-implementor.toml
+- Codex required metadata: .codex/agents/demo-direct-implementor.toml
+- Codex sandbox choice: .codex/agents/demo-direct-implementor.toml
+- Codex exact model/inheritance: .codex/agents/demo-direct-implementor.toml
+- Codex exact MCP filter: .codex/agents/demo-direct-implementor.toml github
+- Codex exact MCP filter: .codex/agents/demo-direct-implementor.toml neon
+- Codex exact MCP filter: .codex/agents/demo-direct-implementor.toml next-devtools
+- Complete decoded body: .codex/agents/demo-direct-implementor.toml
+- Codex required metadata: .codex/agents/demo-integration-tester.toml
+- Codex sandbox choice: .codex/agents/demo-integration-tester.toml
+- Codex exact model/inheritance: .codex/agents/demo-integration-tester.toml
+- Codex exact MCP filter: .codex/agents/demo-integration-tester.toml github
+- Codex exact MCP filter: .codex/agents/demo-integration-tester.toml neon
+- Codex exact MCP filter: .codex/agents/demo-integration-tester.toml next-devtools
+- Complete decoded body: .codex/agents/demo-integration-tester.toml
+- Codex required metadata: .codex/agents/demo-knowledge-builder.toml
+- Codex sandbox choice: .codex/agents/demo-knowledge-builder.toml
+- Codex exact model/inheritance: .codex/agents/demo-knowledge-builder.toml
+- Codex exact MCP filter: .codex/agents/demo-knowledge-builder.toml github
+- Codex exact MCP filter: .codex/agents/demo-knowledge-builder.toml neon
+- Codex exact MCP filter: .codex/agents/demo-knowledge-builder.toml next-devtools
+- Complete decoded body: .codex/agents/demo-knowledge-builder.toml
+- Codex required metadata: .codex/agents/demo-ask.toml
+- Codex sandbox choice: .codex/agents/demo-ask.toml
+- Codex exact model/inheritance: .codex/agents/demo-ask.toml
+- Codex exact MCP filter: .codex/agents/demo-ask.toml github
+- Codex exact MCP filter: .codex/agents/demo-ask.toml neon
+- Codex exact MCP filter: .codex/agents/demo-ask.toml next-devtools
+- Complete decoded body: .codex/agents/demo-ask.toml
+- Codex required metadata: .codex/agents/demo-vision.toml
+- Codex sandbox choice: .codex/agents/demo-vision.toml
+- Codex exact model/inheritance: .codex/agents/demo-vision.toml
+- Codex exact MCP filter: .codex/agents/demo-vision.toml github
+- Codex exact MCP filter: .codex/agents/demo-vision.toml neon
+- Codex exact MCP filter: .codex/agents/demo-vision.toml next-devtools
+- Complete decoded body: .codex/agents/demo-vision.toml
+- Only approved native metadata changes: .github/agents/demo-planner.agent.md
+- Complete decoded body: .github/agents/demo-planner.agent.md
+- Only approved native metadata changes: .github/agents/demo-implementor.agent.md
+- Complete decoded body: .github/agents/demo-implementor.agent.md
+- Only approved native metadata changes: .github/agents/demo-direct-implementor.agent.md
+- Complete decoded body: .github/agents/demo-direct-implementor.agent.md
+- Only approved native metadata changes: .github/agents/demo-integration-tester.agent.md
+- Complete decoded body: .github/agents/demo-integration-tester.agent.md
+- Only approved native metadata changes: .github/agents/demo-knowledge-builder.agent.md
+- Complete decoded body: .github/agents/demo-knowledge-builder.agent.md
+- Only approved native metadata changes: .github/agents/demo-ask.agent.md
+- Complete decoded body: .github/agents/demo-ask.agent.md
+- Only approved native metadata changes: .github/agents/demo-vision.agent.md
+- Complete decoded body: .github/agents/demo-vision.agent.md
+- Only approved native metadata changes: .agents/skills/demo-author-repo-skill/SKILL.md
+- Complete decoded body: .agents/skills/demo-author-repo-skill/SKILL.md
+- No skill tools frontmatter: .agents/skills/demo-author-repo-skill/SKILL.md
+- Skill directory/name match: .agents/skills/demo-author-repo-skill/SKILL.md
+- Only approved native metadata changes: .agents/skills/demo-plan-bug-from-id/SKILL.md
+- Complete decoded body: .agents/skills/demo-plan-bug-from-id/SKILL.md
+- No skill tools frontmatter: .agents/skills/demo-plan-bug-from-id/SKILL.md
+- Skill directory/name match: .agents/skills/demo-plan-bug-from-id/SKILL.md
+- Only approved native metadata changes: .agents/skills/demo-plan-user-story-from-id/SKILL.md
+- Complete decoded body: .agents/skills/demo-plan-user-story-from-id/SKILL.md
+- No skill tools frontmatter: .agents/skills/demo-plan-user-story-from-id/SKILL.md
+- Skill directory/name match: .agents/skills/demo-plan-user-story-from-id/SKILL.md
+- Only approved native metadata changes: .agents/skills/demo-user-story-analysis/SKILL.md
+- Complete decoded body: .agents/skills/demo-user-story-analysis/SKILL.md
+- No skill tools frontmatter: .agents/skills/demo-user-story-analysis/SKILL.md
+- Skill directory/name match: .agents/skills/demo-user-story-analysis/SKILL.md
+- Only approved native metadata changes: .agents/skills/demo-integration-test-knowledge-checklist/SKILL.md
+- Complete decoded body: .agents/skills/demo-integration-test-knowledge-checklist/SKILL.md
+- No skill tools frontmatter: .agents/skills/demo-integration-test-knowledge-checklist/SKILL.md
+- Skill directory/name match: .agents/skills/demo-integration-test-knowledge-checklist/SKILL.md
+- Primary and baseline exist: docs/agents/pre-bootstrap/README.md
+- Pristine baseline equality: docs/agents/pre-bootstrap/README.md
+- No denied temporary path: docs/agents/pre-bootstrap/README.md
+- Primary and baseline exist: docs/agents/pre-bootstrap/docs/agents/knowledge/testing-flow-checklist.md
+- Pristine baseline equality: docs/agents/pre-bootstrap/docs/agents/knowledge/testing-flow-checklist.md
+- No denied temporary path: docs/agents/pre-bootstrap/docs/agents/knowledge/testing-flow-checklist.md
+- Primary and baseline exist: docs/agents/pre-bootstrap/docs/agents/knowledge/dashboard-navigation-boundaries.md
+- Pristine baseline equality: docs/agents/pre-bootstrap/docs/agents/knowledge/dashboard-navigation-boundaries.md
+- No denied temporary path: docs/agents/pre-bootstrap/docs/agents/knowledge/dashboard-navigation-boundaries.md
+- Primary and baseline exist: docs/agents/sources/registry/capabilities.yaml
+- Pristine baseline equality: docs/agents/sources/registry/capabilities.yaml
+- No denied temporary path: docs/agents/sources/registry/capabilities.yaml
+- Primary and baseline exist: docs/agents/sources/registry/placeholders.yaml
+- Pristine baseline equality: docs/agents/sources/registry/placeholders.yaml
+- No denied temporary path: docs/agents/sources/registry/placeholders.yaml
+- Primary and baseline exist: docs/agents/sources/templates/knowledge-index-schema.md
+- Pristine baseline equality: docs/agents/sources/templates/knowledge-index-schema.md
+- No denied temporary path: docs/agents/sources/templates/knowledge-index-schema.md
+- Primary and baseline exist: docs/agents/sources/templates/agent-role-contracts.md
+- Pristine baseline equality: docs/agents/sources/templates/agent-role-contracts.md
+- No denied temporary path: docs/agents/sources/templates/agent-role-contracts.md
+- Primary and baseline exist: docs/agents/sources/templates/agentic-system-manifest.md
+- Pristine baseline equality: docs/agents/sources/templates/agentic-system-manifest.md
+- No denied temporary path: docs/agents/sources/templates/agentic-system-manifest.md
+- Primary and baseline exist: docs/agents/sources/templates/agentic-system-answers.md
+- Pristine baseline equality: docs/agents/sources/templates/agentic-system-answers.md
+- No denied temporary path: docs/agents/sources/templates/agentic-system-answers.md
+- Primary and baseline exist: docs/agents/sources/templates/bootstrap-file-plan.md
+- Pristine baseline equality: docs/agents/sources/templates/bootstrap-file-plan.md
+- No denied temporary path: docs/agents/sources/templates/bootstrap-file-plan.md
+- Primary and baseline exist: docs/agents/sources/contracts/platform-compatibility.md
+- Pristine baseline equality: docs/agents/sources/contracts/platform-compatibility.md
+- No denied temporary path: docs/agents/sources/contracts/platform-compatibility.md
+- Primary and baseline exist: docs/agents/sources/templates/agents/planner.agent.md
+- Pristine baseline equality: docs/agents/sources/templates/agents/planner.agent.md
+- No denied temporary path: docs/agents/sources/templates/agents/planner.agent.md
+- Primary and baseline exist: docs/agents/canonical/codex/agents/demo-planner.agent.md
+- Pristine baseline equality: docs/agents/canonical/codex/agents/demo-planner.agent.md
+- No denied temporary path: docs/agents/canonical/codex/agents/demo-planner.agent.md
+- Primary and baseline exist: .codex/agents/demo-planner.toml
+- Pristine baseline equality: .codex/agents/demo-planner.toml
+- No denied temporary path: .codex/agents/demo-planner.toml
+- Primary and baseline exist: docs/agents/sources/templates/agents/implementor.agent.md
+- Pristine baseline equality: docs/agents/sources/templates/agents/implementor.agent.md
+- No denied temporary path: docs/agents/sources/templates/agents/implementor.agent.md
+- Primary and baseline exist: docs/agents/canonical/codex/agents/demo-implementor.agent.md
+- Pristine baseline equality: docs/agents/canonical/codex/agents/demo-implementor.agent.md
+- No denied temporary path: docs/agents/canonical/codex/agents/demo-implementor.agent.md
+- Primary and baseline exist: .codex/agents/demo-implementor.toml
+- Pristine baseline equality: .codex/agents/demo-implementor.toml
+- No denied temporary path: .codex/agents/demo-implementor.toml
+- Primary and baseline exist: docs/agents/sources/templates/agents/direct-implementor.agent.md
+- Pristine baseline equality: docs/agents/sources/templates/agents/direct-implementor.agent.md
+- No denied temporary path: docs/agents/sources/templates/agents/direct-implementor.agent.md
+- Primary and baseline exist: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md
+- Pristine baseline equality: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md
+- No denied temporary path: docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md
+- Primary and baseline exist: .codex/agents/demo-direct-implementor.toml
+- Pristine baseline equality: .codex/agents/demo-direct-implementor.toml
+- No denied temporary path: .codex/agents/demo-direct-implementor.toml
+- Primary and baseline exist: docs/agents/sources/templates/agents/integration-tester.agent.md
+- Pristine baseline equality: docs/agents/sources/templates/agents/integration-tester.agent.md
+- No denied temporary path: docs/agents/sources/templates/agents/integration-tester.agent.md
+- Primary and baseline exist: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md
+- Pristine baseline equality: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md
+- No denied temporary path: docs/agents/canonical/codex/agents/demo-integration-tester.agent.md
+- Primary and baseline exist: .codex/agents/demo-integration-tester.toml
+- Pristine baseline equality: .codex/agents/demo-integration-tester.toml
+- No denied temporary path: .codex/agents/demo-integration-tester.toml
+- Primary and baseline exist: docs/agents/sources/templates/agents/knowledge-builder.agent.md
+- Pristine baseline equality: docs/agents/sources/templates/agents/knowledge-builder.agent.md
+- No denied temporary path: docs/agents/sources/templates/agents/knowledge-builder.agent.md
+- Primary and baseline exist: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md
+- Pristine baseline equality: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md
+- No denied temporary path: docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md
+- Primary and baseline exist: .codex/agents/demo-knowledge-builder.toml
+- Pristine baseline equality: .codex/agents/demo-knowledge-builder.toml
+- No denied temporary path: .codex/agents/demo-knowledge-builder.toml
+- Primary and baseline exist: docs/agents/sources/templates/agents/ask.agent.md
+- Pristine baseline equality: docs/agents/sources/templates/agents/ask.agent.md
+- No denied temporary path: docs/agents/sources/templates/agents/ask.agent.md
+- Primary and baseline exist: docs/agents/canonical/codex/agents/demo-ask.agent.md
+- Pristine baseline equality: docs/agents/canonical/codex/agents/demo-ask.agent.md
+- No denied temporary path: docs/agents/canonical/codex/agents/demo-ask.agent.md
+- Primary and baseline exist: .codex/agents/demo-ask.toml
+- Pristine baseline equality: .codex/agents/demo-ask.toml
+- No denied temporary path: .codex/agents/demo-ask.toml
+- Primary and baseline exist: docs/agents/sources/templates/agents/vision.agent.md
+- Pristine baseline equality: docs/agents/sources/templates/agents/vision.agent.md
+- No denied temporary path: docs/agents/sources/templates/agents/vision.agent.md
+- Primary and baseline exist: docs/agents/canonical/codex/agents/demo-vision.agent.md
+- Pristine baseline equality: docs/agents/canonical/codex/agents/demo-vision.agent.md
+- No denied temporary path: docs/agents/canonical/codex/agents/demo-vision.agent.md
+- Primary and baseline exist: .codex/agents/demo-vision.toml
+- Pristine baseline equality: .codex/agents/demo-vision.toml
+- No denied temporary path: .codex/agents/demo-vision.toml
+- Primary and baseline exist: docs/agents/canonical/copilot/agents/demo-planner.agent.md
+- Pristine baseline equality: docs/agents/canonical/copilot/agents/demo-planner.agent.md
+- No denied temporary path: docs/agents/canonical/copilot/agents/demo-planner.agent.md
+- Primary and baseline exist: .github/agents/demo-planner.agent.md
+- Pristine baseline equality: .github/agents/demo-planner.agent.md
+- No denied temporary path: .github/agents/demo-planner.agent.md
+- Primary and baseline exist: docs/agents/canonical/copilot/agents/demo-implementor.agent.md
+- Pristine baseline equality: docs/agents/canonical/copilot/agents/demo-implementor.agent.md
+- No denied temporary path: docs/agents/canonical/copilot/agents/demo-implementor.agent.md
+- Primary and baseline exist: .github/agents/demo-implementor.agent.md
+- Pristine baseline equality: .github/agents/demo-implementor.agent.md
+- No denied temporary path: .github/agents/demo-implementor.agent.md
+- Primary and baseline exist: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md
+- Pristine baseline equality: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md
+- No denied temporary path: docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md
+- Primary and baseline exist: .github/agents/demo-direct-implementor.agent.md
+- Pristine baseline equality: .github/agents/demo-direct-implementor.agent.md
+- No denied temporary path: .github/agents/demo-direct-implementor.agent.md
+- Primary and baseline exist: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md
+- Pristine baseline equality: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md
+- No denied temporary path: docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md
+- Primary and baseline exist: .github/agents/demo-integration-tester.agent.md
+- Pristine baseline equality: .github/agents/demo-integration-tester.agent.md
+- No denied temporary path: .github/agents/demo-integration-tester.agent.md
+- Primary and baseline exist: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md
+- Pristine baseline equality: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md
+- No denied temporary path: docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md
+- Primary and baseline exist: .github/agents/demo-knowledge-builder.agent.md
+- Pristine baseline equality: .github/agents/demo-knowledge-builder.agent.md
+- No denied temporary path: .github/agents/demo-knowledge-builder.agent.md
+- Primary and baseline exist: docs/agents/canonical/copilot/agents/demo-ask.agent.md
+- Pristine baseline equality: docs/agents/canonical/copilot/agents/demo-ask.agent.md
+- No denied temporary path: docs/agents/canonical/copilot/agents/demo-ask.agent.md
+- Primary and baseline exist: .github/agents/demo-ask.agent.md
+- Pristine baseline equality: .github/agents/demo-ask.agent.md
+- No denied temporary path: .github/agents/demo-ask.agent.md
+- Primary and baseline exist: docs/agents/canonical/copilot/agents/demo-vision.agent.md
+- Pristine baseline equality: docs/agents/canonical/copilot/agents/demo-vision.agent.md
+- No denied temporary path: docs/agents/canonical/copilot/agents/demo-vision.agent.md
+- Primary and baseline exist: .github/agents/demo-vision.agent.md
+- Pristine baseline equality: .github/agents/demo-vision.agent.md
+- No denied temporary path: .github/agents/demo-vision.agent.md
+- Primary and baseline exist: docs/agents/sources/templates/skills/author-repo-skill/SKILL.md
+- Pristine baseline equality: docs/agents/sources/templates/skills/author-repo-skill/SKILL.md
+- No denied temporary path: docs/agents/sources/templates/skills/author-repo-skill/SKILL.md
+- Primary and baseline exist: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md
+- Pristine baseline equality: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md
+- No denied temporary path: docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md
+- Primary and baseline exist: .agents/skills/demo-author-repo-skill/SKILL.md
+- Pristine baseline equality: .agents/skills/demo-author-repo-skill/SKILL.md
+- No denied temporary path: .agents/skills/demo-author-repo-skill/SKILL.md
+- Primary and baseline exist: docs/agents/sources/templates/skills/plan-bug-from-id/SKILL.md
+- Pristine baseline equality: docs/agents/sources/templates/skills/plan-bug-from-id/SKILL.md
+- No denied temporary path: docs/agents/sources/templates/skills/plan-bug-from-id/SKILL.md
+- Primary and baseline exist: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md
+- Pristine baseline equality: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md
+- No denied temporary path: docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md
+- Primary and baseline exist: .agents/skills/demo-plan-bug-from-id/SKILL.md
+- Pristine baseline equality: .agents/skills/demo-plan-bug-from-id/SKILL.md
+- No denied temporary path: .agents/skills/demo-plan-bug-from-id/SKILL.md
+- Primary and baseline exist: docs/agents/sources/templates/skills/plan-user-story-from-id/SKILL.md
+- Pristine baseline equality: docs/agents/sources/templates/skills/plan-user-story-from-id/SKILL.md
+- No denied temporary path: docs/agents/sources/templates/skills/plan-user-story-from-id/SKILL.md
+- Primary and baseline exist: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md
+- Pristine baseline equality: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md
+- No denied temporary path: docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md
+- Primary and baseline exist: .agents/skills/demo-plan-user-story-from-id/SKILL.md
+- Pristine baseline equality: .agents/skills/demo-plan-user-story-from-id/SKILL.md
+- No denied temporary path: .agents/skills/demo-plan-user-story-from-id/SKILL.md
+- Primary and baseline exist: docs/agents/sources/templates/skills/user-story-analysis/SKILL.md
+- Pristine baseline equality: docs/agents/sources/templates/skills/user-story-analysis/SKILL.md
+- No denied temporary path: docs/agents/sources/templates/skills/user-story-analysis/SKILL.md
+- Primary and baseline exist: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md
+- Pristine baseline equality: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md
+- No denied temporary path: docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md
+- Primary and baseline exist: .agents/skills/demo-user-story-analysis/SKILL.md
+- Pristine baseline equality: .agents/skills/demo-user-story-analysis/SKILL.md
+- No denied temporary path: .agents/skills/demo-user-story-analysis/SKILL.md
+- Primary and baseline exist: docs/agents/sources/templates/skills/integration-test-knowledge-checklist/SKILL.md
+- Pristine baseline equality: docs/agents/sources/templates/skills/integration-test-knowledge-checklist/SKILL.md
+- No denied temporary path: docs/agents/sources/templates/skills/integration-test-knowledge-checklist/SKILL.md
+- Primary and baseline exist: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md
+- Pristine baseline equality: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md
+- No denied temporary path: docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md
+- Primary and baseline exist: .agents/skills/demo-integration-test-knowledge-checklist/SKILL.md
+- Pristine baseline equality: .agents/skills/demo-integration-test-knowledge-checklist/SKILL.md
+- No denied temporary path: .agents/skills/demo-integration-test-knowledge-checklist/SKILL.md
+- Primary and baseline exist: docs/agents/sources/templates/instructions/knowledge-guard.instructions.md
+- Pristine baseline equality: docs/agents/sources/templates/instructions/knowledge-guard.instructions.md
+- No denied temporary path: docs/agents/sources/templates/instructions/knowledge-guard.instructions.md
+- Primary and baseline exist: .github/instructions/knowledge-guard.instructions.md
+- Pristine baseline equality: .github/instructions/knowledge-guard.instructions.md
+- No denied temporary path: .github/instructions/knowledge-guard.instructions.md
+- Primary and baseline exist: docs/agents/sources/templates/instructions/planning-sessions.instructions.md
+- Pristine baseline equality: docs/agents/sources/templates/instructions/planning-sessions.instructions.md
+- No denied temporary path: docs/agents/sources/templates/instructions/planning-sessions.instructions.md
+- Primary and baseline exist: .github/instructions/planning-sessions.instructions.md
+- Pristine baseline equality: .github/instructions/planning-sessions.instructions.md
+- No denied temporary path: .github/instructions/planning-sessions.instructions.md
+- Primary and baseline exist: docs/agents/sources/templates/instructions/AGENTS.md
+- Pristine baseline equality: docs/agents/sources/templates/instructions/AGENTS.md
+- No denied temporary path: docs/agents/sources/templates/instructions/AGENTS.md
+- Primary and baseline exist: AGENTS.md
+- Pristine baseline equality: AGENTS.md
+- No denied temporary path: AGENTS.md
+- Primary and baseline exist: docs/agents/sources/templates/plan-schema.md
+- Pristine baseline equality: docs/agents/sources/templates/plan-schema.md
+- No denied temporary path: docs/agents/sources/templates/plan-schema.md
+- Primary and baseline exist: docs/agents/plan-schema.md
+- Pristine baseline equality: docs/agents/plan-schema.md
+- No denied temporary path: docs/agents/plan-schema.md
+- Primary and baseline exist: docs/agents/sources/templates/test-plan-schema.md
+- Pristine baseline equality: docs/agents/sources/templates/test-plan-schema.md
+- No denied temporary path: docs/agents/sources/templates/test-plan-schema.md
+- Primary and baseline exist: docs/agents/test-plan-schema.md
+- Pristine baseline equality: docs/agents/test-plan-schema.md
+- No denied temporary path: docs/agents/test-plan-schema.md
+- Primary and baseline exist: docs/agents/sources/templates/artifact-gates.md
+- Pristine baseline equality: docs/agents/sources/templates/artifact-gates.md
+- No denied temporary path: docs/agents/sources/templates/artifact-gates.md
+- Primary and baseline exist: docs/agents/artifact-gates.md
+- Pristine baseline equality: docs/agents/artifact-gates.md
+- No denied temporary path: docs/agents/artifact-gates.md
+- Primary and baseline exist: docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md
+- Pristine baseline equality: docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md
+- No denied temporary path: docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md
+- Primary and baseline exist: docs/agents/scripts/verify-canonical-copies.mjs
+- Pristine baseline equality: docs/agents/scripts/verify-canonical-copies.mjs
+- No denied temporary path: docs/agents/scripts/verify-canonical-copies.mjs
+- Primary and baseline exist: docs/agents/context-glossary.md
+- Pristine baseline equality: docs/agents/context-glossary.md
+- No denied temporary path: docs/agents/context-glossary.md
+- Primary and baseline exist: docs/agents/github-issues-adapter.md
+- Pristine baseline equality: docs/agents/github-issues-adapter.md
+- No denied temporary path: docs/agents/github-issues-adapter.md
+- Primary and baseline exist: docs/agents/integration-bindings.md
+- Pristine baseline equality: docs/agents/integration-bindings.md
+- No denied temporary path: docs/agents/integration-bindings.md
+- Primary and baseline exist: .github/instructions/agent-integrations.instructions.md
+- Pristine baseline equality: .github/instructions/agent-integrations.instructions.md
+- No denied temporary path: .github/instructions/agent-integrations.instructions.md
+- Primary and baseline exist: README.md
+- Pristine baseline equality: README.md
+- No denied temporary path: README.md
+- Primary and baseline exist: docs/agents/knowledge/testing-flow-checklist.md
+- Pristine baseline equality: docs/agents/knowledge/testing-flow-checklist.md
+- No denied temporary path: docs/agents/knowledge/testing-flow-checklist.md
+- Primary and baseline exist: docs/agents/knowledge/dashboard-navigation-boundaries.md
+- Pristine baseline equality: docs/agents/knowledge/dashboard-navigation-boundaries.md
+- No denied temporary path: docs/agents/knowledge/dashboard-navigation-boundaries.md
+- Primary and baseline exist: docs/agents/preservation-plan.json
+- Pristine baseline equality: docs/agents/preservation-plan.json
+- No denied temporary path: docs/agents/preservation-plan.json
+- Primary and baseline exist: docs/agents/native-adapters.json
+- Pristine baseline equality: docs/agents/native-adapters.json
+- No denied temporary path: docs/agents/native-adapters.json
+- Primary and baseline exist: docs/agents/scripts/generate-agentic-system.py
+- Pristine baseline equality: docs/agents/scripts/generate-agentic-system.py
+- No denied temporary path: docs/agents/scripts/generate-agentic-system.py
+- Primary and baseline exist: docs/agents/scripts/verify-agentic-system.py
+- Pristine baseline equality: docs/agents/scripts/verify-agentic-system.py
+- No denied temporary path: docs/agents/scripts/verify-agentic-system.py
+- Primary and baseline exist: docs/agents/compatibility.md
+- Pristine baseline equality: docs/agents/compatibility.md
+- No denied temporary path: docs/agents/compatibility.md
+- Primary and baseline exist: docs/agents/decision-register.json
+- Pristine baseline equality: docs/agents/decision-register.json
+- No denied temporary path: docs/agents/decision-register.json
+- Primary and baseline exist: docs/agents/bootstrap-file-plan.md
+- Pristine baseline equality: docs/agents/bootstrap-file-plan.md
+- No denied temporary path: docs/agents/bootstrap-file-plan.md
+- Primary and baseline exist: docs/agents/agentic-system-manifest.md
+- Pristine baseline equality: docs/agents/agentic-system-manifest.md
+- No denied temporary path: docs/agents/agentic-system-manifest.md
+- Primary and baseline exist: docs/agents/validation-report.md
+- Pristine baseline equality: docs/agents/validation-report.md
+- No denied temporary path: docs/agents/validation-report.md
+- Primary and baseline exist: docs/agents/contract-audit.md
+- Pristine baseline equality: docs/agents/contract-audit.md
+- No denied temporary path: docs/agents/contract-audit.md
+- Primary and baseline exist: docs/agents/agentic-system.answers.yaml
+- Pristine baseline equality: docs/agents/agentic-system.answers.yaml
+- No denied temporary path: docs/agents/agentic-system.answers.yaml
+- No orphan or missing baseline entries
+- Seven-role roster: codex
+- Planner schema and index gates: codex
+- No false native compatibility claim: codex
+- Seven-role roster: copilot
+- Planner schema and index gates: copilot
+- No false native compatibility claim: copilot
+- Root router under 80 lines
+- Root navigation path: docs/agents/knowledge/README.md
+- Root navigation path: docs/agents/context-glossary.md
+- Root navigation path: docs/agents/plan-schema.md
+- Root navigation path: docs/agents/artifact-gates.md
+- Root navigation path: docs/agents/agentic-system-manifest.md
+- Exactly five native generated skills
+- Unmodified shipped schema: plan-schema
+- Unmodified shipped schema: test-plan-schema
+- Unmodified shipped schema: artifact-gates
+- Existing index retains required schema shape
+- Fixture file contract: session-memory.md
+- Fixture file contract: session-log.md
+- Fixture file contract: execution-report.md
+- Fixture SlimUI/JSON reference contract
+- Fixture confined to owning session

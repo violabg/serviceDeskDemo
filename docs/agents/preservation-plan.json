@@ -1,0 +1,561 @@
+{
+  "version": 1,
+  "canonical_outputs": [
+    "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+    "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+    "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+    "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+    "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+    "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+    "docs/agents/canonical/codex/agents/demo-vision.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+    "docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md",
+    "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
+    "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
+    "docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md",
+    "docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md",
+    ".github/instructions/knowledge-guard.instructions.md",
+    ".github/instructions/planning-sessions.instructions.md",
+    "AGENTS.md"
+  ],
+  "copies": [
+    {
+      "template": "templates/agents/planner.agent.md",
+      "sha256": "32b1f26c7440424e30ec47b25c0b7e81baf2896f754416cad1abc10c8656b65c",
+      "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "APPROVED_MCP_TOOLS": [
+          "mcp__github__issue_read",
+          "mcp__neon__list_docs_resources",
+          "mcp__neon__get_doc_resource",
+          "mcp__neon__get_database_tables",
+          "mcp__neon__describe_table_schema",
+          "mcp__neon__list_branches",
+          "mcp__neon__compare_database_schema",
+          "mcp__next_devtools__init",
+          "mcp__next_devtools__nextjs_docs",
+          "mcp__next_devtools__nextjs_index",
+          "mcp__next_devtools__nextjs_call"
+        ],
+        "VISION_INVOCATION": "Check the active model's image-input capability using runtime model metadata, not its name. If image input is supported, perform this image-evidence task inline using the complete demo-vision extraction contract and the active model. If the active model lacks image input, invoke the active Codex native custom-agent delegation tool for agent_type=\"demo-vision\", but only after client discovery actually lists that registered role; the pre-install host does not expose that role and must reload or otherwise verify native registration first. If it is absent, stop this visual operation and report the missing binding; do not attempt a fictitious spawn or substitute a model, passing the current session ID and the image; the registered delegate uses Luna. If capability information is unavailable, resolve it before making image-dependent claims. Require one SlimUI artifact in sessions/<planning-session-id>/artifacts/visual/ per image. After the inline task or delegate finishes, the parent writes a JSON reference file beside that SlimUI file with session_id, image, artifact_path, and format=\"SlimUI v1.0\". Return the JSON reference filename to the steps below; read that JSON and its referenced SlimUI. The Vision delegate itself emits SlimUI only. Use the following task context:",
+        "PLATFORM_TOOLS": "\"functions.exec\", \"collaboration.spawn_agent\", \"collaboration.send_message\", \"collaboration.wait_agent\"",
+        "VISION_AGENT_NAME": "demo-vision"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n- Implementation plans must follow `docs/agents/plan-schema.md`, copied from the shipped plan schema. Schema compliance overrides Markdown cleanup: preserve the filesystem tree, file-detail anchors and backlinks, approval metadata, operations, coverage scenarios, validation and risks. Do not duplicate the clarification-question format carried later in this Planner contract.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/implementor.agent.md",
+      "sha256": "f2e0e4253626e133cb5af1d1d40b31f7d456f0cedcb657eaec6237e6988b5952",
+      "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "APPROVED_MCP_TOOLS": [
+          "mcp__github__issue_read",
+          "mcp__neon__list_docs_resources",
+          "mcp__neon__get_doc_resource",
+          "mcp__neon__get_database_tables",
+          "mcp__neon__describe_table_schema",
+          "mcp__neon__list_branches",
+          "mcp__neon__compare_database_schema",
+          "mcp__neon__prepare_database_migration",
+          "mcp__neon__run_sql",
+          "mcp__neon__complete_database_migration",
+          "mcp__next_devtools__init",
+          "mcp__next_devtools__nextjs_docs",
+          "mcp__next_devtools__nextjs_index",
+          "mcp__next_devtools__nextjs_call",
+          "mcp__next_devtools__browser_eval"
+        ],
+        "PLATFORM_TOOLS": "\"functions.exec\""
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/direct-implementor.agent.md",
+      "sha256": "de3511eb3f682deb040c2a8947db92f7e20667b40aa1795473b8e531ace42c44",
+      "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "APPROVED_MCP_TOOLS": [
+          "mcp__github__issue_read",
+          "mcp__neon__list_docs_resources",
+          "mcp__neon__get_doc_resource",
+          "mcp__neon__get_database_tables",
+          "mcp__neon__describe_table_schema",
+          "mcp__neon__list_branches",
+          "mcp__neon__compare_database_schema",
+          "mcp__neon__prepare_database_migration",
+          "mcp__neon__run_sql",
+          "mcp__neon__complete_database_migration",
+          "mcp__next_devtools__init",
+          "mcp__next_devtools__nextjs_docs",
+          "mcp__next_devtools__nextjs_index",
+          "mcp__next_devtools__nextjs_call",
+          "mcp__next_devtools__browser_eval"
+        ],
+        "VISION_INVOCATION": "Check the active model's image-input capability using runtime model metadata, not its name. If image input is supported, perform this image-evidence task inline using the complete demo-vision extraction contract and the active model. If the active model lacks image input, invoke the active Codex native custom-agent delegation tool for agent_type=\"demo-vision\", but only after client discovery actually lists that registered role; the pre-install host does not expose that role and must reload or otherwise verify native registration first. If it is absent, stop this visual operation and report the missing binding; do not attempt a fictitious spawn or substitute a model, passing the current session ID and the image; the registered delegate uses Luna. If capability information is unavailable, resolve it before making image-dependent claims. Require one SlimUI artifact in sessions/<planning-session-id>/artifacts/visual/ per image. After the inline task or delegate finishes, the parent writes a JSON reference file beside that SlimUI file with session_id, image, artifact_path, and format=\"SlimUI v1.0\". Return the JSON reference filename to the steps below; read that JSON and its referenced SlimUI. The Vision delegate itself emits SlimUI only. Use the following task context:",
+        "PLATFORM_TOOLS": "\"functions.exec\", \"collaboration.spawn_agent\", \"collaboration.send_message\", \"collaboration.wait_agent\"",
+        "VISION_AGENT_NAME": "demo-vision"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/integration-tester.agent.md",
+      "sha256": "6daeb71a57391e14e6d22e95ecfa6e5afe7045effa70081d6aebfe913fbd3feb",
+      "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "APPROVED_MCP_TOOLS": [],
+        "PLATFORM_TOOLS": "\"functions.exec\", \"collaboration.spawn_agent\", \"collaboration.send_message\", \"collaboration.wait_agent\"",
+        "TEST_PLAN_SCHEMA_PATH": "docs/agents/test-plan-schema.md"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/knowledge-builder.agent.md",
+      "sha256": "90a1b34f6faae82deb13d863d507b798f951dfe651005c1f0d6a8f5ee8bbe8b5",
+      "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+      "values": {
+        "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "QUESTION_TOOL": "the foreground user-facing chat channel; delegates return questions to the parent, which asks the user and returns the answers through the active native delegate messaging or reinvocation mechanism",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "APPROVED_MCP_TOOLS": [
+          "mcp__neon__list_docs_resources",
+          "mcp__neon__get_doc_resource",
+          "mcp__neon__get_database_tables",
+          "mcp__neon__describe_table_schema",
+          "mcp__neon__list_branches",
+          "mcp__neon__compare_database_schema",
+          "mcp__next_devtools__init",
+          "mcp__next_devtools__nextjs_docs",
+          "mcp__next_devtools__nextjs_index",
+          "mcp__next_devtools__nextjs_call"
+        ],
+        "PLATFORM_TOOLS": "\"functions.exec\", \"collaboration.spawn_agent\", \"collaboration.send_message\", \"collaboration.wait_agent\"",
+        "KNOWLEDGE_DISCOVERY_DELEGATION": "Use collaboration.spawn_agent with agent_type=\"default\" in this host, up to 10 evidence tasks within the runtime concurrency limit; receive results through collaboration.wait_agent. Other Codex contexts must verify their native spawn/wait bindings before delegating.",
+        "REPO_KNOWLEDGE_PATHS": "docs/agents/knowledge/"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/ask.agent.md",
+      "sha256": "ca9f17d10484cf99bb524e1229591e273365d171787b68b5c192604abb63a778",
+      "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "APPROVED_MCP_TOOLS": [
+          "mcp__neon__list_docs_resources",
+          "mcp__neon__get_doc_resource",
+          "mcp__neon__get_database_tables",
+          "mcp__neon__describe_table_schema",
+          "mcp__neon__list_branches",
+          "mcp__neon__compare_database_schema",
+          "mcp__next_devtools__init",
+          "mcp__next_devtools__nextjs_docs",
+          "mcp__next_devtools__nextjs_index",
+          "mcp__next_devtools__nextjs_call"
+        ],
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "PLATFORM_TOOLS": "\"functions.exec\""
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/vision.agent.md",
+      "sha256": "9138a887b992cb69a9fea8748b9a797348048845b807dcb0cc45995e7783622b",
+      "output": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
+      "values": {
+        "SESSION_ROOT": "sessions",
+        "VISUAL_ARTIFACT_FORMAT": "SlimUI v1.0 in .slimui files; the parent separately writes a .json reference containing session_id, image, artifact_path and format",
+        "APPROVED_MCP_TOOLS": [],
+        "VISUAL_ARTIFACT_STORAGE": "sessions/<planning-session-id>/artifacts/visual/",
+        "PLATFORM_TOOLS": "\"functions.exec\"",
+        "VISION_MODEL": "gpt-5.6-luna"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/agents/planner.agent.md",
+      "sha256": "32b1f26c7440424e30ec47b25c0b7e81baf2896f754416cad1abc10c8656b65c",
+      "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "APPROVED_MCP_TOOLS": [
+          "github/issue_read",
+          "neondatabase/mcp-server-neon/list_docs_resources",
+          "neondatabase/mcp-server-neon/get_doc_resource",
+          "neondatabase/mcp-server-neon/get_database_tables",
+          "neondatabase/mcp-server-neon/describe_table_schema",
+          "neondatabase/mcp-server-neon/list_branches",
+          "neondatabase/mcp-server-neon/compare_database_schema",
+          "io.github.vercel/next-devtools-mcp/init",
+          "io.github.vercel/next-devtools-mcp/nextjs_docs",
+          "io.github.vercel/next-devtools-mcp/nextjs_index",
+          "io.github.vercel/next-devtools-mcp/nextjs_call"
+        ],
+        "VISION_INVOCATION": "Check the active model's image-input capability using runtime model metadata, not its name. If image input is supported, perform this image-evidence task inline using the complete demo-vision extraction contract and the active model. If the active model lacks image input, invoke agent/runSubagent with agentName=\"demo-vision\", passing the current session ID and the image; the registered delegate uses Luna. If capability information is unavailable, resolve it before making image-dependent claims. Require one SlimUI artifact in sessions/<planning-session-id>/artifacts/visual/ per image. After the inline task or delegate finishes, the parent writes a JSON reference file beside that SlimUI file with session_id, image, artifact_path, and format=\"SlimUI v1.0\". Return the JSON reference filename to the steps below; read that JSON and its referenced SlimUI. The Vision delegate itself emits SlimUI only. Use the following task context:",
+        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"edit/createDirectory\", \"edit/createFile\", \"edit/editFiles\", \"edit/rename\", \"agent\", \"web/fetch\"",
+        "VISION_AGENT_NAME": "demo-vision"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n- Implementation plans must follow `docs/agents/plan-schema.md`, copied from the shipped plan schema. Schema compliance overrides Markdown cleanup: preserve the filesystem tree, file-detail anchors and backlinks, approval metadata, operations, coverage scenarios, validation and risks. Do not duplicate the clarification-question format carried later in this Planner contract.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/implementor.agent.md",
+      "sha256": "f2e0e4253626e133cb5af1d1d40b31f7d456f0cedcb657eaec6237e6988b5952",
+      "output": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "APPROVED_MCP_TOOLS": [
+          "github/issue_read",
+          "neondatabase/mcp-server-neon/list_docs_resources",
+          "neondatabase/mcp-server-neon/get_doc_resource",
+          "neondatabase/mcp-server-neon/get_database_tables",
+          "neondatabase/mcp-server-neon/describe_table_schema",
+          "neondatabase/mcp-server-neon/list_branches",
+          "neondatabase/mcp-server-neon/compare_database_schema",
+          "neondatabase/mcp-server-neon/prepare_database_migration",
+          "neondatabase/mcp-server-neon/run_sql",
+          "neondatabase/mcp-server-neon/complete_database_migration",
+          "io.github.vercel/next-devtools-mcp/init",
+          "io.github.vercel/next-devtools-mcp/nextjs_docs",
+          "io.github.vercel/next-devtools-mcp/nextjs_index",
+          "io.github.vercel/next-devtools-mcp/nextjs_call",
+          "io.github.vercel/next-devtools-mcp/browser_eval"
+        ],
+        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"edit/createDirectory\", \"edit/createFile\", \"edit/editFiles\", \"edit/rename\", \"execute/runInTerminal\", \"execute/getTerminalOutput\", \"read/problems\", \"vscode/installExtension\", \"vscode/newWorkspace\", \"vscode/runCommand\", \"read/terminalSelection\", \"read/terminalLastCommand\", \"agent\""
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/direct-implementor.agent.md",
+      "sha256": "de3511eb3f682deb040c2a8947db92f7e20667b40aa1795473b8e531ace42c44",
+      "output": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "APPROVED_MCP_TOOLS": [
+          "github/issue_read",
+          "neondatabase/mcp-server-neon/list_docs_resources",
+          "neondatabase/mcp-server-neon/get_doc_resource",
+          "neondatabase/mcp-server-neon/get_database_tables",
+          "neondatabase/mcp-server-neon/describe_table_schema",
+          "neondatabase/mcp-server-neon/list_branches",
+          "neondatabase/mcp-server-neon/compare_database_schema",
+          "neondatabase/mcp-server-neon/prepare_database_migration",
+          "neondatabase/mcp-server-neon/run_sql",
+          "neondatabase/mcp-server-neon/complete_database_migration",
+          "io.github.vercel/next-devtools-mcp/init",
+          "io.github.vercel/next-devtools-mcp/nextjs_docs",
+          "io.github.vercel/next-devtools-mcp/nextjs_index",
+          "io.github.vercel/next-devtools-mcp/nextjs_call",
+          "io.github.vercel/next-devtools-mcp/browser_eval"
+        ],
+        "VISION_INVOCATION": "Check the active model's image-input capability using runtime model metadata, not its name. If image input is supported, perform this image-evidence task inline using the complete demo-vision extraction contract and the active model. If the active model lacks image input, invoke agent/runSubagent with agentName=\"demo-vision\", passing the current session ID and the image; the registered delegate uses Luna. If capability information is unavailable, resolve it before making image-dependent claims. Require one SlimUI artifact in sessions/<planning-session-id>/artifacts/visual/ per image. After the inline task or delegate finishes, the parent writes a JSON reference file beside that SlimUI file with session_id, image, artifact_path, and format=\"SlimUI v1.0\". Return the JSON reference filename to the steps below; read that JSON and its referenced SlimUI. The Vision delegate itself emits SlimUI only. Use the following task context:",
+        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"edit/createDirectory\", \"edit/createFile\", \"edit/editFiles\", \"edit/rename\", \"execute/runInTerminal\", \"execute/getTerminalOutput\", \"read/problems\", \"vscode/installExtension\", \"vscode/newWorkspace\", \"vscode/runCommand\", \"read/terminalSelection\", \"read/terminalLastCommand\", \"agent\"",
+        "VISION_AGENT_NAME": "demo-vision"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/integration-tester.agent.md",
+      "sha256": "6daeb71a57391e14e6d22e95ecfa6e5afe7045effa70081d6aebfe913fbd3feb",
+      "output": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "APPROVED_MCP_TOOLS": [],
+        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"edit/createDirectory\", \"edit/createFile\", \"edit/editFiles\", \"edit/rename\", \"execute/runInTerminal\", \"execute/getTerminalOutput\", \"read/problems\", \"agent\"",
+        "TEST_PLAN_SCHEMA_PATH": "docs/agents/test-plan-schema.md"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/knowledge-builder.agent.md",
+      "sha256": "90a1b34f6faae82deb13d863d507b798f951dfe651005c1f0d6a8f5ee8bbe8b5",
+      "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+      "values": {
+        "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "SESSION_ROOT": "sessions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "QUESTION_TOOL": "vscode/askQuestions in a foreground role; delegates return questions to the parent, which asks and reinvokes with the answers",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "APPROVED_MCP_TOOLS": [
+          "neondatabase/mcp-server-neon/list_docs_resources",
+          "neondatabase/mcp-server-neon/get_doc_resource",
+          "neondatabase/mcp-server-neon/get_database_tables",
+          "neondatabase/mcp-server-neon/describe_table_schema",
+          "neondatabase/mcp-server-neon/list_branches",
+          "neondatabase/mcp-server-neon/compare_database_schema",
+          "io.github.vercel/next-devtools-mcp/init",
+          "io.github.vercel/next-devtools-mcp/nextjs_docs",
+          "io.github.vercel/next-devtools-mcp/nextjs_index",
+          "io.github.vercel/next-devtools-mcp/nextjs_call"
+        ],
+        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"edit/createDirectory\", \"edit/createFile\", \"edit/editFiles\", \"edit/rename\", \"agent\", \"web/fetch\"",
+        "KNOWLEDGE_DISCOVERY_DELEGATION": "Use bounded agent/runSubagent calls to the built-in agent, up to 10 evidence tasks within the runtime concurrency limit. Run as the foreground Knowledge Builder; delegate questions return to it. Do not rely on nested delegation being enabled.",
+        "REPO_KNOWLEDGE_PATHS": "docs/agents/knowledge/"
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/ask.agent.md",
+      "sha256": "ca9f17d10484cf99bb524e1229591e273365d171787b68b5c192604abb63a778",
+      "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "APPROVED_MCP_TOOLS": [
+          "neondatabase/mcp-server-neon/list_docs_resources",
+          "neondatabase/mcp-server-neon/get_doc_resource",
+          "neondatabase/mcp-server-neon/get_database_tables",
+          "neondatabase/mcp-server-neon/describe_table_schema",
+          "neondatabase/mcp-server-neon/list_branches",
+          "neondatabase/mcp-server-neon/compare_database_schema",
+          "io.github.vercel/next-devtools-mcp/init",
+          "io.github.vercel/next-devtools-mcp/nextjs_docs",
+          "io.github.vercel/next-devtools-mcp/nextjs_index",
+          "io.github.vercel/next-devtools-mcp/nextjs_call"
+        ],
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"web/fetch\""
+      },
+      "blocks": [
+        {
+          "slot": "KNOWLEDGE_SOURCE",
+          "occurrence": 0,
+          "value": "## Repository Knowledge Binding\n- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).\n- Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.\n- Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.\n- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.\n"
+        }
+      ]
+    },
+    {
+      "template": "templates/agents/vision.agent.md",
+      "sha256": "9138a887b992cb69a9fea8748b9a797348048845b807dcb0cc45995e7783622b",
+      "output": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+      "values": {
+        "SESSION_ROOT": "sessions",
+        "VISUAL_ARTIFACT_FORMAT": "SlimUI v1.0 in .slimui files; the parent separately writes a .json reference containing session_id, image, artifact_path and format",
+        "APPROVED_MCP_TOOLS": [],
+        "VISUAL_ARTIFACT_STORAGE": "sessions/<planning-session-id>/artifacts/visual/",
+        "PLATFORM_TOOLS": "\"read/readFile\", \"edit/createFile\", \"edit/editFiles\"",
+        "VISION_MODEL": "GPT-5.6 Luna"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/skills/author-repo-skill/SKILL.md",
+      "sha256": "88448bd66c6557e097d18b760e20946c92626b45b7ea4654fd9ec63d5837bc42",
+      "output": "docs/agents/canonical/shared/skills/author-repo-skill/SKILL.md",
+      "values": {
+        "SKILL_ROOT": ".agents/skills",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "VALIDATION_COMMANDS": "diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 docs/agents/scripts/verify-agentic-system.py",
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/skills/plan-bug-from-id/SKILL.md",
+      "sha256": "6c9f6959e924ec5c4e27a28bc860e47fe05da65bc6aa2b40c4609f406fbfb619",
+      "output": "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
+      "values": {
+        "SESSION_ROOT": "sessions",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "LOCAL_MARKDOWN_TRACKER_CONTRACT": "NOT APPLICABLE: GitHub Issues only; stop if GitHub retrieval is unavailable; no local or free-form fallback is approved",
+        "WORK_ITEM_ID_FORMAT": "#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix",
+        "WORK_ITEM_GATHERING": "When invoked as demo-planner, delegate this bounded gathering task to the built-in default agent using the current client's approved delegation tool from docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read tool, current session ID and this exact evidence task. On Copilot, use agent/runSubagent with agentName=\"agent\"; on the Codex execution host, use collaboration.spawn_agent with agent_type=\"default\". Delegate questions return to the parent. If delegation or the approved issue-read tool is unavailable, stop and report the missing binding; do not broaden access.",
+        "TRACKER_ADAPTER": "GitHub Issues via docs/agents/github-issues-adapter.md; invoked only by demo-planner for these planning skills"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/skills/plan-user-story-from-id/SKILL.md",
+      "sha256": "b915cf9b299fc89b7bfb88277410020ebeaf909ffd7e35b249064db20314ecb5",
+      "output": "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
+      "values": {
+        "SESSION_ROOT": "sessions",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "LOCAL_MARKDOWN_TRACKER_CONTRACT": "NOT APPLICABLE: GitHub Issues only; stop if GitHub retrieval is unavailable; no local or free-form fallback is approved",
+        "WORK_ITEM_ID_FORMAT": "#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix",
+        "WORK_ITEM_GATHERING": "When invoked as demo-planner, delegate this bounded gathering task to the built-in default agent using the current client's approved delegation tool from docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read tool, current session ID and this exact evidence task. On Copilot, use agent/runSubagent with agentName=\"agent\"; on the Codex execution host, use collaboration.spawn_agent with agent_type=\"default\". Delegate questions return to the parent. If delegation or the approved issue-read tool is unavailable, stop and report the missing binding; do not broaden access.",
+        "TRACKER_ADAPTER": "GitHub Issues via docs/agents/github-issues-adapter.md; invoked only by demo-planner for these planning skills"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/skills/user-story-analysis/SKILL.md",
+      "sha256": "a02e2f2efcb4d47b739cd64db87379840d9e4fb11640abe717d2337150bbd62a",
+      "output": "docs/agents/canonical/shared/skills/user-story-analysis/SKILL.md",
+      "values": {
+        "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/skills/integration-test-knowledge-checklist/SKILL.md",
+      "sha256": "68c749a97b11078219fe2694d6b77f1358fcac47de1d88f0f71227722e7ddf3b",
+      "output": "docs/agents/canonical/shared/skills/integration-test-knowledge-checklist/SKILL.md",
+      "values": {
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "VALIDATION_COMMANDS": "diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 docs/agents/scripts/verify-agentic-system.py",
+        "INTEGRATION_TEST_SCOPE": "Vitest tests of connected repo-owned modules, actions, routes and feature components with real internal wiring and stubbed Neon/auth/third-party boundaries; exclude live vendor systems, unit and e2e tests, and direct components/ui/** tests unless the user overrides that exclusion"
+      },
+      "blocks": [
+        {
+          "slot": "TEST_STACK_CONVENTIONS",
+          "occurrence": 0,
+          "value": "```yaml\n---\ntitle: Service Desk Integration Test Knowledge\ndescription: Vitest integration rules for connected Service Desk modules and actions.\nkeywords: [integration, vitest, service-desk, server-actions, permissions]\nauthority: PerContext\nintent: When creating or debugging integration tests for repo-owned modules with third-party boundaries stubbed.\n---\n```\nUse Vitest, Testing Library for feature components, and Vitest mocks. The default Vitest environment is node with test/setup.ts; choose a DOM environment only for component tests. Preserve existing test naming conventions discovered in the touched feature."
+        }
+      ]
+    },
+    {
+      "template": "templates/instructions/knowledge-guard.instructions.md",
+      "sha256": "d07713c27ed9ad57f4e964df164d31bcaf0b9c7d981b9d01c967aba2fcb045a6",
+      "output": ".github/instructions/knowledge-guard.instructions.md",
+      "values": {
+        "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
+        "KNOWLEDGE_FILE_GLOB": "docs/agents/knowledge/**/*.md",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/instructions/planning-sessions.instructions.md",
+      "sha256": "9b0ccc7958d502a2c6e0a07c79cd9ea37f978ccf7b4f18a2c0f94739ce1f37e4",
+      "output": ".github/instructions/planning-sessions.instructions.md",
+      "values": {
+        "ARTIFACT_GATES_PATH": "docs/agents/artifact-gates.md",
+        "SESSION_ROOT": "sessions",
+        "WORK_ITEM_ID_FORMAT": "#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md"
+      },
+      "blocks": []
+    },
+    {
+      "template": "templates/instructions/AGENTS.md",
+      "sha256": "6f15f83a68f05b55aa841cd027f0819a21a245a2cf6a2d49c8be8aaecc86a9cc",
+      "output": "AGENTS.md",
+      "values": {
+        "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
+        "ARTIFACT_GATES_PATH": "docs/agents/artifact-gates.md",
+        "AGENT_ROOT": "docs/agents/canonical/<environment>/agents (codex or copilot)",
+        "SESSION_ROOT": "sessions",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+        "INSTRUCTION_ROOT": ".github/instructions",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "MANIFEST_PATH": "docs/agents/agentic-system-manifest.md",
+        "AGENT_ROSTER": "- `demo-planner`: GitHub-issue planning and clarification. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.\n- `demo-implementor`: approved-plan implementation. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.\n- `demo-direct-implementor`: explicit direct implementation without a plan document; no test creation. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.\n- `demo-integration-tester`: integration-test planning and execution. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.\n- `demo-knowledge-builder`: evidence-backed repository knowledge. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.\n- `demo-ask`: read-only Q&A. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.\n- `demo-vision`: Luna image extraction, delegated only when the caller lacks vision. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.",
+        "REPO_NAME": "serviceDeskDemo",
+        "SKILL_ROOT": ".agents/skills",
+        "VALIDATION_COMMANDS": "diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 docs/agents/scripts/verify-agentic-system.py"
+      },
+      "blocks": []
+    }
+  ]
+}
