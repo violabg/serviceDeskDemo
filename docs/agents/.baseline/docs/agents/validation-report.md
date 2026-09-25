@@ -1,12 +1,14 @@
 # Structural Validation Report
 
-## Maintenance Verification: 2026-09-25
+## Bootstrap 5.2.0 Maintenance Verification: 2026-09-25
 
-- Canonical preservation: PASS, 22 copies with the installed Node verifier.
-- Bootstrap registry and changelog snapshots: byte-identical to the locally corrected 5.1.1 sources. Six approved compliant baseline copies match their files. The two native Vision baselines retain the pre-override metadata deliberately; C001, C007 and C008 document the exceptions.
-- Native repository-search procedure: bounded path grouping and filename-scoped text search exercised against agent-system files; Copilot file/path search returned candidate Planner paths. Generated-role execution in Codex and Copilot remains unverified.
-- Codex Vision TOML: decoded model is `gpt-6-luna` and embedded instructions match the canonical body. Copilot Vision frontmatter decodes, retains the user-selected model and has unique tool names. Neither delegate has been verified to view a repository image in its actual client.
-- Full `python3 docs/agents/scripts/verify-agentic-system.py`: BLOCKED. Its restricted YAML decoder rejects pre-existing multiline tool arrays in five other Copilot adapters. Its hard-coded Vision model and strict baseline-equality assertions also predate the approved native metadata overrides. Do not treat the 2026-09-19 result below as current full validation.
+- Canonical preservation: PASS, 22 copies checked against retained 5.2.0 source templates with the Node verifier. Registry and changelog snapshots match the installed sources; 14 updated role mirrors and their native bodies match exactly. The registered Vision metadata exceptions C001, C007 and C008 remain explicit and are checked separately.
+- Native repository-search procedure: bounded path grouping and filename-scoped text search exercised against agent-system files; generated-role execution in Codex and Copilot remains unverified. The 5.2.0 rule does not require cluster metadata or an MCP; C009 retains concrete native search commands and C010 is superseded.
+- Remote issue images: the 5.2.0 source and bindings require authorized image bytes and inspection, or a request to the user. No private issue image or generated-role permission test was available; remote-image retrieval and inspection remain unverified for both selected environments. Do not infer image access from an issue lookup or URL.
+- Native syntax and bodies: the structural checker decodes all 19 adapters, verifies the approved Luna model and Copilot tool metadata, and checks embedded body hashes. Generated-role discovery, effective tool access and image input still require client verification.
+- Full `python3 docs/agents/scripts/verify-agentic-system.py`: 615 checks passed; one pre-existing inventory check failed because five legacy baseline files have no current generated-inventory entry: four `.github/skills/` copies and `CONTEXT.md`. They were not removed or reclassified by this upgrade. The 2026-09-19 result below is historical, not a current full pass.
+- `git diff --check` flags trailing whitespace and an extra final blank line in copied upstream role text and its native/baseline mirrors. Removing it would break the exact canonical preservation check; no hand cleanup was applied.
+- Product lint, typecheck, tests and build were skipped because only agent-system files changed. Existing session-folder contents were not used as evidence or modified.
 
 The following report remains the 2026-09-19 installation record.
 

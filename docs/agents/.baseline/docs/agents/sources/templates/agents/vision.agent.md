@@ -36,7 +36,7 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 | Target capability category | Source capability evidence | Bootstrap discovery guidance |
 | --- | --- | --- |
 | Planning-session persistence | `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
-| Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. Prefer platform image or browser tools; add a visual service only when selected workflow needs it. |
+| Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. For remote issue images, discover an authorized way to fetch and view the image URL, including private repository attachments; URL text alone is not visual evidence. Add a visual service only when native tools cannot perform the selected workflow. |
 
 ## Mission
 
@@ -168,15 +168,15 @@ No separate `hex`, `rgb`, `rgba`, `opacity` fields. A single token encodes every
 canvas {id} {w}x{h} primary:{type} platform:{platform} theme:{theme} style:{style} ar:{ratio} bg:{color}
 ```
 
-| Property       | Key         | Example                                                                                   | Default  |
-| -------------- | ----------- | ----------------------------------------------------------------------------------------- | -------- |
-| width × height | positional  | `1920x1080`                                                                               | required |
-| primaryType    | `primary:`  | `web-app`, `mobile-app`, `dashboard`, `wireframe`, `diagram`, `desktop-app`, `screenshot` | required |
-| platform       | `platform:` | `web`, `ios`, `android`, `windows`, `macos`, `linux`                                      | required |
-| theme          | `theme:`    | `light`, `dark`, `high-contrast`                                                          | `light`  |
-| style          | `style:`    | `modern`, `classic`, `minimal`, `corporate`, `material`                                   | `modern` |
-| aspectRatio    | `ar:`       | `16:9`, `4:3`, `1:1`                                                                      | computed |
-| background     | `bg:`       | `#fff`, `#1a1a2e`, `gradient(linear,135deg,#667eea,#764ba2)`                              | required |
+| Property | Key | Example | Default |
+|---|---|---|---|
+| width × height | positional | `1920x1080` | required |
+| primaryType | `primary:` | `web-app`, `mobile-app`, `dashboard`, `wireframe`, `diagram`, `desktop-app`, `screenshot` | required |
+| platform | `platform:` | `web`, `ios`, `android`, `windows`, `macos`, `linux` | required |
+| theme | `theme:` | `light`, `dark`, `high-contrast` | `light` |
+| style | `style:` | `modern`, `classic`, `minimal`, `corporate`, `material` | `modern` |
+| aspectRatio | `ar:` | `16:9`, `4:3`, `1:1` | computed |
+| background | `bg:` | `#fff`, `#1a1a2e`, `gradient(linear,135deg,#667eea,#764ba2)` | required |
 
 ---
 
@@ -186,32 +186,32 @@ canvas {id} {w}x{h} primary:{type} platform:{platform} theme:{theme} style:{styl
 div {id} {x,y,w,h} [properties]
 ```
 
-| Property           | Key         | Values                                                  | Default     |
-| ------------------ | ----------- | ------------------------------------------------------- | ----------- | ------- | ---- |
-| background         | `bg:`       | color or `gradient({type},{params})`                    | transparent |
-| display            | `d:`        | `flex`, `grid`, `block`, `inline`, `none`               | `block`     |
-| flexDirection      | `dir:`      | `row`, `col`                                            | `row`       |
-| justifyContent     | `j:`        | `start`, `center`, `end`, `between`, `around`, `evenly` | `start`     |
-| alignItems         | `items:`    | `start`, `center`, `end`, `stretch`, `baseline`         | `stretch`   |
-| gap                | `gap:`      | integer (px)                                            | 0           |
-| flex               | `flex:`     | integer (flex grow)                                     | none        |
-| padding (all)      | `p:`        | integer (px)                                            | 0           |
-| padding (per-side) | `p:`        | `top,right,bottom,left`                                 | 0           |
-| margin (all)       | `m:`        | integer or `auto`                                       | 0           |
-| margin (per-side)  | `m:`        | `top,right,bottom,left`                                 | 0           |
-| border             | `b:`        | `width,style,color` (style: solid                       | dashed      | dotted) | none |
-| borderRadius       | `r:`        | integer or `tl,tr,br,bl`                                | 0           |
-| shadow             | `sh:`       | `x,y,blur,spread,color`                                 | none        |
-| opacity            | `o:`        | 0.0–1.0                                                 | 1           |
-| overflow           | `ov:`       | `visible`, `hidden`, `scroll`, `auto`                   | `visible`   |
-| zIndex             | `z:`        | integer                                                 | 0           |
-| visible            | `vis:false` | flag                                                    | visible     |
-| rotation           | `rot:`      | degrees                                                 | 0           |
-| blur               | `blur:`     | integer (px)                                            | 0           |
-| estimated          | `est:`      | flag                                                    | false       |
-| confidence         | `conf:`     | 0.0–1.0                                                 | 1.0         |
-| grid columns       | `cols:`     | number or repeat pattern                                | none        |
-| grid rows          | `rows:`     | number or repeat pattern                                | none        |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| background | `bg:` | color or `gradient({type},{params})` | transparent |
+| display | `d:` | `flex`, `grid`, `block`, `inline`, `none` | `block` |
+| flexDirection | `dir:` | `row`, `col` | `row` |
+| justifyContent | `j:` | `start`, `center`, `end`, `between`, `around`, `evenly` | `start` |
+| alignItems | `items:` | `start`, `center`, `end`, `stretch`, `baseline` | `stretch` |
+| gap | `gap:` | integer (px) | 0 |
+| flex | `flex:` | integer (flex grow) | none |
+| padding (all) | `p:` | integer (px) | 0 |
+| padding (per-side) | `p:` | `top,right,bottom,left` | 0 |
+| margin (all) | `m:` | integer or `auto` | 0 |
+| margin (per-side) | `m:` | `top,right,bottom,left` | 0 |
+| border | `b:` | `width,style,color` (style: solid|dashed|dotted) | none |
+| borderRadius | `r:` | integer or `tl,tr,br,bl` | 0 |
+| shadow | `sh:` | `x,y,blur,spread,color` | none |
+| opacity | `o:` | 0.0–1.0 | 1 |
+| overflow | `ov:` | `visible`, `hidden`, `scroll`, `auto` | `visible` |
+| zIndex | `z:` | integer | 0 |
+| visible | `vis:false` | flag | visible |
+| rotation | `rot:` | degrees | 0 |
+| blur | `blur:` | integer (px) | 0 |
+| estimated | `est:` | flag | false |
+| confidence | `conf:` | 0.0–1.0 | 1.0 |
+| grid columns | `cols:` | number or repeat pattern | none |
+| grid rows | `rows:` | number or repeat pattern | none |
 
 ### text
 
@@ -219,22 +219,22 @@ div {id} {x,y,w,h} [properties]
 text {id} {x,y,w,h} "content" [properties]
 ```
 
-| Property      | Key      | Values                                                | Default   |
-| ------------- | -------- | ----------------------------------------------------- | --------- |
-| fontFamily    | `f:`     | `Inter`, `Roboto`, `SF Pro`, `Segoe UI`, etc.         | system    |
-| fontSize      | `s:`     | integer (px)                                          | 16        |
-| fontWeight    | `wt:`    | 100–900 (or `bold` = 700)                             | 400       |
-| italic        | `i:`     | flag                                                  | false     |
-| underline     | `u:`     | flag                                                  | false     |
-| strike        | `stk:`   | flag                                                  | false     |
-| lineHeight    | `lh:`    | decimal (multiplier)                                  | 1.2       |
-| letterSpacing | `ls:`    | decimal (px)                                          | 0         |
-| textAlign     | `align:` | `left`, `center`, `right`, `justify`                  | `left`    |
-| wrapping      | `wrap:`  | `normal`, `nowrap`, `break-word`                      | `normal`  |
-| maxLines      | `max:`   | integer                                               | unlimited |
-| ellipsis      | `ell:`   | flag                                                  | false     |
-| color         | `c:`     | hex color                                             | `#000`    |
-| role          | `role:`  | `heading`, `label`, `caption`, `body`, `code`, `link` | `body`    |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| fontFamily | `f:` | `Inter`, `Roboto`, `SF Pro`, `Segoe UI`, etc. | system |
+| fontSize | `s:` | integer (px) | 16 |
+| fontWeight | `wt:` | 100–900 (or `bold` = 700) | 400 |
+| italic | `i:` | flag | false |
+| underline | `u:` | flag | false |
+| strike | `stk:` | flag | false |
+| lineHeight | `lh:` | decimal (multiplier) | 1.2 |
+| letterSpacing | `ls:` | decimal (px) | 0 |
+| textAlign | `align:` | `left`, `center`, `right`, `justify` | `left` |
+| wrapping | `wrap:` | `normal`, `nowrap`, `break-word` | `normal` |
+| maxLines | `max:` | integer | unlimited |
+| ellipsis | `ell:` | flag | false |
+| color | `c:` | hex color | `#000` |
+| role | `role:` | `heading`, `label`, `caption`, `body`, `code`, `link` | `body` |
 
 Text content: use double quotes ONLY when content contains spaces or special characters.
 Single-word content needs no quotes.
@@ -247,13 +247,13 @@ btn {id} {x,y,w,h} [properties]
 
 All `div` properties apply, plus:
 
-| Property | Key     | Values                                      | Default  |
-| -------- | ------- | ------------------------------------------- | -------- |
-| role     | `role:` | `button`, `submit`, `reset`, `link`, `icon` | `button` |
-| disabled | `dis:`  | flag                                        | false    |
-| hover    | `hv:`   | flag                                        | false    |
-| pressed  | `prs:`  | flag                                        | false    |
-| focused  | `foc:`  | flag                                        | false    |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| role | `role:` | `button`, `submit`, `reset`, `link`, `icon` | `button` |
+| disabled | `dis:` | flag | false |
+| hover | `hv:` | flag | false |
+| pressed | `prs:` | flag | false |
+| focused | `foc:` | flag | false |
 
 A button with text should nest a `text` child.
 
@@ -265,24 +265,23 @@ input {id} {x,y,w,h} [properties]
 
 All `div` properties apply, plus:
 
-| Property    | Key     | Values                                                        | Default |
-| ----------- | ------- | ------------------------------------------------------------- | ------- |
-| placeholder | `ph:`   | string                                                        | none    |
-| value       | `val:`  | string                                                        | none    |
-| inputType   | `type:` | `text`, `password`, `email`, `number`, `search`, `tel`, `url` | `text`  |
-| focused     | `foc:`  | flag                                                          | false   |
-| disabled    | `dis:`  | flag                                                          | false   |
-| readonly    | `ro:`   | flag                                                          | false   |
-| hasError    | `err:`  | flag                                                          | false   |
-| prefix icon | `pre:`  | icon name                                                     | none    |
-| suffix icon | `suf:`  | icon name                                                     | none    |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| placeholder | `ph:` | string | none |
+| value | `val:` | string | none |
+| inputType | `type:` | `text`, `password`, `email`, `number`, `search`, `tel`, `url` | `text` |
+| focused | `foc:` | flag | false |
+| disabled | `dis:` | flag | false |
+| readonly | `ro:` | flag | false |
+| hasError | `err:` | flag | false |
+| prefix icon | `pre:` | icon name | none |
+| suffix icon | `suf:` | icon name | none |
 
 ### textarea
 
 ```
 textarea {id} {x,y,w,h} [properties]
 ```
-
 Same as `input` plus `rows:` (integer, visible rows).
 
 ### select / dropdown
@@ -291,11 +290,11 @@ Same as `input` plus `rows:` (integer, visible rows).
 select {id} {x,y,w,h} [properties]
 ```
 
-| Property      | Key     | Values                         | Default |
-| ------------- | ------- | ------------------------------ | ------- |
-| selectedValue | `val:`  | string                         | none    |
-| open          | `open:` | flag                           | false   |
-| options       | `opts:` | comma-separated quoted strings | none    |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| selectedValue | `val:` | string | none |
+| open | `open:` | flag | false |
+| options | `opts:` | comma-separated quoted strings | none |
 
 ### checkbox / radio / toggle
 
@@ -305,11 +304,11 @@ rad {id} {x,y,w,h} [properties]    → radio button
 tgl {id} {x,y,w,h} [properties]    → toggle switch
 ```
 
-| Property | Key    | Values | Default |
-| -------- | ------ | ------ | ------- |
-| checked  | `ck:`  | flag   | false   |
-| label    | `lbl:` | string | none    |
-| disabled | `dis:` | flag   | false   |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| checked | `ck:` | flag | false |
+| label | `lbl:` | string | none |
+| disabled | `dis:` | flag | false |
 
 ### img (image / picture)
 
@@ -317,17 +316,17 @@ tgl {id} {x,y,w,h} [properties]    → toggle switch
 img {id} {x,y,w,h} [properties]
 ```
 
-| Property       | Key     | Values                                           | Default  |
-| -------------- | ------- | ------------------------------------------------ | -------- |
-| description    | `desc:` | quoted string                                    | none     |
-| fit            | `fit:`  | `cover`, `contain`, `fill`, `none`, `scale-down` | `cover`  |
-| aspectRatio    | `ar:`   | `w:h` ratio                                      | original |
-| dominantColors | `dc:`   | comma-separated hex                              | none     |
-| crop           | `crop:` | `x,y,w,h`                                        | none     |
-| borderRadius   | `r:`    | integer                                          | 0        |
-| opacity        | `o:`    | 0.0–1.0                                          | 1        |
-| alt text       | `alt:`  | quoted string                                    | none     |
-| source         | `src:`  | url or filename                                  | none     |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| description | `desc:` | quoted string | none |
+| fit | `fit:` | `cover`, `contain`, `fill`, `none`, `scale-down` | `cover` |
+| aspectRatio | `ar:` | `w:h` ratio | original |
+| dominantColors | `dc:` | comma-separated hex | none |
+| crop | `crop:` | `x,y,w,h` | none |
+| borderRadius | `r:` | integer | 0 |
+| opacity | `o:` | 0.0–1.0 | 1 |
+| alt text | `alt:` | quoted string | none |
+| source | `src:` | url or filename | none |
 
 ### icon
 
@@ -335,22 +334,21 @@ img {id} {x,y,w,h} [properties]
 icon {id} {x,y,w,h} [properties]
 ```
 
-| Property | Key     | Values                                                                   | Default     |
-| -------- | ------- | ------------------------------------------------------------------------ | ----------- |
-| library  | `lib:`  | `material`, `fontawesome`, `feather`, `lucide`, `custom`, `svg`, `emoji` | `material`  |
-| name     | `icon:` | icon name                                                                | required    |
-| variant  | `var:`  | `filled`, `outlined`, `round`, `sharp`, `two-tone`                       | `filled`    |
-| size     | `is:`   | integer (px, overrides height)                                           | from bounds |
-| color    | `c:`    | hex                                                                      | `#000`      |
-| rotation | `rot:`  | degrees                                                                  | 0           |
-| opacity  | `o:`    | 0.0–1.0                                                                  | 1           |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| library | `lib:` | `material`, `fontawesome`, `feather`, `lucide`, `custom`, `svg`, `emoji` | `material` |
+| name | `icon:` | icon name | required |
+| variant | `var:` | `filled`, `outlined`, `round`, `sharp`, `two-tone` | `filled` |
+| size | `is:` | integer (px, overrides height) | from bounds |
+| color | `c:` | hex | `#000` |
+| rotation | `rot:` | degrees | 0 |
+| opacity | `o:` | 0.0–1.0 | 1 |
 
 ### card
 
 ```
 card {id} {x,y,w,h} [properties]
 ```
-
 Inherits all `div` properties. Semantic wrapper indicating a distinct content card.
 
 ### table
@@ -358,20 +356,18 @@ Inherits all `div` properties. Semantic wrapper indicating a distinct content ca
 ```
 table {id} {x,y,w,h} cols:{n} [properties]
 ```
-
-| Property         | Key      | Default  |
-| ---------------- | -------- | -------- |
-| columns          | `cols:`  | required |
-| header bg        | `hdr:`   | none     |
-| row height       | `row-h:` | auto     |
-| alternate row bg | `alt:`   | none     |
+| Property | Key | Default |
+|---|---|---|
+| columns | `cols:` | required |
+| header bg | `hdr:` | none |
+| row height | `row-h:` | auto |
+| alternate row bg | `alt:` | none |
 
 ### tr (table row)
 
 ```
 tr {id} {x,y,w,h} [properties]
 ```
-
 Special `tr` properties: `hdr:` (is header row flag), `sel:` (selected flag), `hv:` (hover flag).
 
 ### td (table cell)
@@ -379,7 +375,6 @@ Special `tr` properties: `hdr:` (is header row flag), `sel:` (selected flag), `h
 ```
 td {id} {x,y,w,h} [properties]
 ```
-
 Special `td` properties: `colspan:`, `align:`.
 
 ### spacer
@@ -387,7 +382,6 @@ Special `td` properties: `colspan:`, `align:`.
 ```
 spacer {id} {x,y,w,h} flex:{grow}
 ```
-
 A flex spacer element. Must have `flex:` property.
 
 ### separator / divider
@@ -395,18 +389,16 @@ A flex spacer element. Must have `flex:` property.
 ```
 sep {id} {x,y,w,h} [properties]
 ```
-
-| Property    | Key    | Default                            |
-| ----------- | ------ | ---------------------------------- |
+| Property | Key | Default |
+|---|---|---|
 | orientation | `dir:` | `h` (horizontal) or `v` (vertical) |
-| color       | `c:`   | `#e0e0e0`                          |
+| color | `c:` | `#e0e0e0` |
 
 ### list / menu
 
 ```
 list {id} {x,y,w,h} [properties]
 ```
-
 Oriented container for repeated items.
 
 ### li (list item)
@@ -414,7 +406,6 @@ Oriented container for repeated items.
 ```
 li {id} {x,y,w,h} [properties]
 ```
-
 Special `li` properties: `sel:` (selected), `hv:` (hover), `dis:` (disabled).
 
 ### nav / navbar / sidebar / footer / header / main / aside / section / article
@@ -422,7 +413,6 @@ Special `li` properties: `sel:` (selected), `hv:` (hover), `dis:` (disabled).
 ```
 nav {id} {x,y,w,h} [properties]
 ```
-
 Semantic wrappers inheriting all `div` properties. Used for structural landmarks.
 
 ### badge
@@ -430,7 +420,6 @@ Semantic wrappers inheriting all `div` properties. Used for structural landmarks
 ```
 badge {id} {x,y,w,h} "content" [properties]
 ```
-
 Small label, typically with high `r:` and small `s:`.
 
 ### progress
@@ -438,18 +427,16 @@ Small label, typically with high `r:` and small `s:`.
 ```
 prog {id} {x,y,w,h} val:{pct} [properties]
 ```
-
-| Property | Key    | Default          |
-| -------- | ------ | ---------------- |
-| value    | `val:` | 0–100 percentage |
-| color    | `c:`   | accent color     |
+| Property | Key | Default |
+|---|---|---|
+| value | `val:` | 0–100 percentage |
+| color | `c:` | accent color |
 
 ### tooltip
 
 ```
 tip {id} {x,y,w,h} "content" [properties]
 ```
-
 Floating tooltip/popover.
 
 ### avt (avatar)
@@ -457,11 +444,10 @@ Floating tooltip/popover.
 ```
 avt {id} {x,y,w,h} [properties]
 ```
-
-| Property     | Key     |
-| ------------ | ------- |
-| image source | `src:`  |
-| initials     | `init:` |
+| Property | Key |
+|---|---|
+| image source | `src:` |
+| initials | `init:` |
 
 ### tabs / tab
 
@@ -469,7 +455,6 @@ avt {id} {x,y,w,h} [properties]
 tabs {id} {x,y,w,h} [properties]
 tab {id} {x,y,w,h} "label" [properties]
 ```
-
 Tab properties: `act:` (active flag), `dis:` (disabled flag).
 
 ### modal / dialog / overlay
@@ -477,12 +462,11 @@ Tab properties: `act:` (active flag), `dis:` (disabled flag).
 ```
 modal {id} {x,y,w,h} [properties]
 ```
-
-| Property         | Key     | Default |
-| ---------------- | ------- | ------- |
-| backdrop         | `bdr:`  | `true`  |
-| backdrop opacity | `bdro:` | `0.5`   |
-| centered         | `ctr:`  | `true`  |
+| Property | Key | Default |
+|---|---|---|
+| backdrop | `bdr:` | `true` |
+| backdrop opacity | `bdro:` | `0.5` |
+| centered | `ctr:` | `true` |
 
 ### scrollbar
 
@@ -510,7 +494,6 @@ sh:0,2,8,0,#00000020
 ```
 
 Multiple shadows separated by `|`:
-
 ```
 sh:0,1,3,#00000010|0,4,12,#00000015
 ```
@@ -551,22 +534,22 @@ Annotations are lines starting with `~` (tilde). They are always extracted BEFOR
 
 ## Annotation Properties
 
-| Property      | Key        | Values                                                                                                                                                                               | Default      |
-| ------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| type          | positional | `underline`, `highlight`, `arrow`, `circle`, `rectangle`, `freehand`, `strike`, `scribble`, `callout`, `handwritten_text`, `number_marker`, `icon_marker`, `focus_region`, `unknown` | required     |
-| strokeColor   | `sc:`      | hex                                                                                                                                                                                  | `#ff0000`    |
-| fillColor     | `fc:`      | hex or `none`                                                                                                                                                                        | `none`       |
-| strokeWidth   | `sw:`      | integer (px)                                                                                                                                                                         | 2            |
-| opacity       | `o:`       | 0.0–1.0                                                                                                                                                                              | 0.85         |
-| lineStyle     | `ls:`      | `solid`, `dashed`, `dotted`                                                                                                                                                          | `solid`      |
-| rotation      | `rot:`     | degrees                                                                                                                                                                              | 0            |
-| zIndex        | `z:`       | integer                                                                                                                                                                              | above all UI |
-| targets       | `tg:`      | comma-separated node ids                                                                                                                                                             | none         |
-| description   | `desc:`    | quoted string                                                                                                                                                                        | none         |
-| geometry path | `path:`    | space-separated `x,y` pairs                                                                                                                                                          | none         |
-| closed        | `cl:`      | flag                                                                                                                                                                                 | false        |
-| estimated     | `est:`     | flag                                                                                                                                                                                 | false        |
-| confidence    | `conf:`    | 0.0–1.0                                                                                                                                                                              | 1.0          |
+| Property | Key | Values | Default |
+|---|---|---|---|
+| type | positional | `underline`, `highlight`, `arrow`, `circle`, `rectangle`, `freehand`, `strike`, `scribble`, `callout`, `handwritten_text`, `number_marker`, `icon_marker`, `focus_region`, `unknown` | required |
+| strokeColor | `sc:` | hex | `#ff0000` |
+| fillColor | `fc:` | hex or `none` | `none` |
+| strokeWidth | `sw:` | integer (px) | 2 |
+| opacity | `o:` | 0.0–1.0 | 0.85 |
+| lineStyle | `ls:` | `solid`, `dashed`, `dotted` | `solid` |
+| rotation | `rot:` | degrees | 0 |
+| zIndex | `z:` | integer | above all UI |
+| targets | `tg:` | comma-separated node ids | none |
+| description | `desc:` | quoted string | none |
+| geometry path | `path:` | space-separated `x,y` pairs | none |
+| closed | `cl:` | flag | false |
+| estimated | `est:` | flag | false |
+| confidence | `conf:` | 0.0–1.0 | 1.0 |
 
 ## Annotation Examples
 
@@ -609,7 +592,6 @@ A `@tokens` block at the top defines reusable design tokens to avoid repetition:
 ```
 
 Then reference tokens with `$` prefix:
-
 ```
 btn login 0,0,200,48 bg:$primary c:#fff r:$btn sh:$card
   text login-txt 0,0,200,48 Login f:$ui s:$body wt:600 c:#fff align:center
@@ -815,26 +797,26 @@ est: conf:0.85
 
 **Never emit default values.** A property only appears when it differs from the default.
 
-| Property                 | Default (do NOT emit) |
-| ------------------------ | --------------------- |
-| `d:`                     | `block`               |
-| `dir:`                   | `row`                 |
-| `j:`                     | `start`               |
-| `items:`                 | `stretch`             |
-| `p:`, `m:`, `gap:`, `r:` | `0`                   |
-| `o:`                     | `1`                   |
-| `z:`                     | `0`                   |
-| `rot:`                   | `0`                   |
-| `vis:`                   | `true`                |
-| `f:`                     | system default        |
-| `s:`                     | `16`                  |
-| `wt:`                    | `400`                 |
-| `lh:`                    | `1.2`                 |
-| `align:`                 | `left`                |
-| `ls:`                    | `0`                   |
-| `c:` (text)              | `#000000`             |
-| `bg:` (non-canvas)       | transparent           |
-| `role:` (div)            | none                  |
+| Property | Default (do NOT emit) |
+|---|---|
+| `d:` | `block` |
+| `dir:` | `row` |
+| `j:` | `start` |
+| `items:` | `stretch` |
+| `p:`, `m:`, `gap:`, `r:` | `0` |
+| `o:` | `1` |
+| `z:` | `0` |
+| `rot:` | `0` |
+| `vis:` | `true` |
+| `f:` | system default |
+| `s:` | `16` |
+| `wt:` | `400` |
+| `lh:` | `1.2` |
+| `align:` | `left` |
+| `ls:` | `0` |
+| `c:` (text) | `#000000` |
+| `bg:` (non-canvas) | transparent |
+| `role:` (div) | none |
 
 ---
 
@@ -952,7 +934,6 @@ sh:0,2,8,0,#00000020
 ```
 
 Multiple shadows separated by `|`:
-
 ```
 sh:0,1,3,#00000010|0,4,12,#00000015
 ```
@@ -983,16 +964,16 @@ icon search 0,0,24,24 lib:material icon:search var:outlined c:#5f6368 is:20
 
 Interaction state is expressed as flags on the element:
 
-| Property    | Key                  | Meaning                                                                                                                                                                                                         |
-| ----------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| interactive | (inferred from type) | button, input, select are interactive by default                                                                                                                                                                |
-| disabled    | `dis:`               | disabled state                                                                                                                                                                                                  |
-| selected    | `sel:`               | selected state (list items, tabs)                                                                                                                                                                               |
-| checked     | `ck:`                | checked state (checkboxes, toggles, radios)                                                                                                                                                                     |
-| focused     | `foc:`               | keyboard focus                                                                                                                                                                                                  |
-| hover       | `hv:`                | mouse hover state                                                                                                                                                                                               |
-| pressed     | `prs:`               | active/pressed state                                                                                                                                                                                            |
-| role        | `role:`              | semantic role (`button`, `heading`, `link`, `alert`, `dialog`, `navigation`, `search`, `textbox`, `checkbox`, `radio`, `switch`, `listbox`, `option`, `tab`, `tablist`, `menu`, `menuitem`, `img`, `separator`) |
+| Property | Key | Meaning |
+|---|---|---|
+| interactive | (inferred from type) | button, input, select are interactive by default |
+| disabled | `dis:` | disabled state |
+| selected | `sel:` | selected state (list items, tabs) |
+| checked | `ck:` | checked state (checkboxes, toggles, radios) |
+| focused | `foc:` | keyboard focus |
+| hover | `hv:` | mouse hover state |
+| pressed | `prs:` | active/pressed state |
+| role | `role:` | semantic role (`button`, `heading`, `link`, `alert`, `dialog`, `navigation`, `search`, `textbox`, `checkbox`, `radio`, `switch`, `listbox`, `option`, `tab`, `tablist`, `menu`, `menuitem`, `img`, `separator`) |
 
 ---
 
@@ -1146,35 +1127,35 @@ If any visible feature is omitted, merged, ignored, or confused with another ele
 
 ## Line types by prefix / first token:
 
-| First token                                                | Meaning                 |
-| ---------------------------------------------------------- | ----------------------- |
-| `canvas`                                                   | Root canvas (exactly 1) |
-| `@tokens`                                                  | Design tokens block     |
-| `div`                                                      | Container               |
-| `text`                                                     | Text node               |
-| `btn`                                                      | Button                  |
-| `input`                                                    | Text input              |
-| `select`                                                   | Dropdown                |
-| `chk`                                                      | Checkbox                |
-| `rad`                                                      | Radio button            |
-| `tgl`                                                      | Toggle switch           |
-| `img`                                                      | Image                   |
-| `icon`                                                     | Icon                    |
-| `card`                                                     | Card container          |
-| `table`                                                    | Table                   |
-| `tr`                                                       | Table row               |
-| `td`                                                       | Table cell              |
-| `nav` / `header` / `footer` / `sidebar` / `main` / `aside` | Semantic containers     |
-| `list`                                                     | List container          |
-| `li`                                                       | List item               |
-| `badge`                                                    | Badge/tag               |
-| `prog`                                                     | Progress bar            |
-| `tip`                                                      | Tooltip                 |
-| `avt`                                                      | Avatar                  |
-| `tabs`                                                     | Tab container           |
-| `tab`                                                      | Tab item                |
-| `modal`                                                    | Modal/dialog            |
-| `spacer`                                                   | Flex spacer             |
-| `sep`                                                      | Separator               |
-| `scroll`                                                   | Scrollbar               |
-| `~` (tilde prefix)                                         | Annotation              |
+| First token | Meaning |
+|---|---|
+| `canvas` | Root canvas (exactly 1) |
+| `@tokens` | Design tokens block |
+| `div` | Container |
+| `text` | Text node |
+| `btn` | Button |
+| `input` | Text input |
+| `select` | Dropdown |
+| `chk` | Checkbox |
+| `rad` | Radio button |
+| `tgl` | Toggle switch |
+| `img` | Image |
+| `icon` | Icon |
+| `card` | Card container |
+| `table` | Table |
+| `tr` | Table row |
+| `td` | Table cell |
+| `nav` / `header` / `footer` / `sidebar` / `main` / `aside` | Semantic containers |
+| `list` | List container |
+| `li` | List item |
+| `badge` | Badge/tag |
+| `prog` | Progress bar |
+| `tip` | Tooltip |
+| `avt` | Avatar |
+| `tabs` | Tab container |
+| `tab` | Tab item |
+| `modal` | Modal/dialog |
+| `spacer` | Flex spacer |
+| `sep` | Separator |
+| `scroll` | Scrollbar |
+| `~` (tilde prefix) | Annotation |

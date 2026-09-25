@@ -27,7 +27,7 @@
   "copies": [
     {
       "template": "templates/agents/planner.agent.md",
-      "sha256": "32b1f26c7440424e30ec47b25c0b7e81baf2896f754416cad1abc10c8656b65c",
+      "sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
       "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -63,7 +63,7 @@
     },
     {
       "template": "templates/agents/implementor.agent.md",
-      "sha256": "f2e0e4253626e133cb5af1d1d40b31f7d456f0cedcb657eaec6237e6988b5952",
+      "sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
       "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -100,7 +100,7 @@
     },
     {
       "template": "templates/agents/direct-implementor.agent.md",
-      "sha256": "de3511eb3f682deb040c2a8947db92f7e20667b40aa1795473b8e531ace42c44",
+      "sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
       "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -139,7 +139,7 @@
     },
     {
       "template": "templates/agents/integration-tester.agent.md",
-      "sha256": "6daeb71a57391e14e6d22e95ecfa6e5afe7045effa70081d6aebfe913fbd3feb",
+      "sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
       "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -160,7 +160,7 @@
     },
     {
       "template": "templates/agents/knowledge-builder.agent.md",
-      "sha256": "90a1b34f6faae82deb13d863d507b798f951dfe651005c1f0d6a8f5ee8bbe8b5",
+      "sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
       "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
       "values": {
         "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
@@ -195,7 +195,7 @@
     },
     {
       "template": "templates/agents/ask.agent.md",
-      "sha256": "ca9f17d10484cf99bb524e1229591e273365d171787b68b5c192604abb63a778",
+      "sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
       "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -224,7 +224,7 @@
     },
     {
       "template": "templates/agents/vision.agent.md",
-      "sha256": "9138a887b992cb69a9fea8748b9a797348048845b807dcb0cc45995e7783622b",
+      "sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
       "output": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
       "values": {
         "SESSION_ROOT": "sessions",
@@ -238,7 +238,7 @@
     },
     {
       "template": "templates/agents/planner.agent.md",
-      "sha256": "32b1f26c7440424e30ec47b25c0b7e81baf2896f754416cad1abc10c8656b65c",
+      "sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
       "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -274,7 +274,7 @@
     },
     {
       "template": "templates/agents/implementor.agent.md",
-      "sha256": "f2e0e4253626e133cb5af1d1d40b31f7d456f0cedcb657eaec6237e6988b5952",
+      "sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
       "output": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -311,7 +311,7 @@
     },
     {
       "template": "templates/agents/direct-implementor.agent.md",
-      "sha256": "de3511eb3f682deb040c2a8947db92f7e20667b40aa1795473b8e531ace42c44",
+      "sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
       "output": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -350,7 +350,7 @@
     },
     {
       "template": "templates/agents/integration-tester.agent.md",
-      "sha256": "6daeb71a57391e14e6d22e95ecfa6e5afe7045effa70081d6aebfe913fbd3feb",
+      "sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
       "output": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -371,7 +371,7 @@
     },
     {
       "template": "templates/agents/knowledge-builder.agent.md",
-      "sha256": "90a1b34f6faae82deb13d863d507b798f951dfe651005c1f0d6a8f5ee8bbe8b5",
+      "sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
       "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
       "values": {
         "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
@@ -406,7 +406,7 @@
     },
     {
       "template": "templates/agents/ask.agent.md",
-      "sha256": "ca9f17d10484cf99bb524e1229591e273365d171787b68b5c192604abb63a778",
+      "sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
       "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -435,7 +435,7 @@
     },
     {
       "template": "templates/agents/vision.agent.md",
-      "sha256": "9138a887b992cb69a9fea8748b9a797348048845b807dcb0cc45995e7783622b",
+      "sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
       "output": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
       "values": {
         "SESSION_ROOT": "sessions",
