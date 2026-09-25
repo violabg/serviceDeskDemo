@@ -1,25 +1,6 @@
 ---
 description: "Planning-Orchestrator Agent for the application development workflow"
-tools:
-  [
-    "vscode/askQuestions",
-    "read/readFile",
-    "search/fileSearch",
-    "search/listDirectory",
-    "search/textSearch",
-    "search/usages",
-    "web/fetch",
-    "neondatabase/mcp-server-neon/list_docs_resources",
-    "neondatabase/mcp-server-neon/get_doc_resource",
-    "neondatabase/mcp-server-neon/get_database_tables",
-    "neondatabase/mcp-server-neon/describe_table_schema",
-    "neondatabase/mcp-server-neon/list_branches",
-    "neondatabase/mcp-server-neon/compare_database_schema",
-    "io.github.vercel/next-devtools-mcp/init",
-    "io.github.vercel/next-devtools-mcp/nextjs_docs",
-    "io.github.vercel/next-devtools-mcp/nextjs_index",
-    "io.github.vercel/next-devtools-mcp/nextjs_call",
-  ]
+tools: ["vscode/askQuestions", "read/readFile", "search/fileSearch", "search/listDirectory", "search/textSearch", "search/usages", "web/fetch", "neondatabase/mcp-server-neon/list_docs_resources", "neondatabase/mcp-server-neon/get_doc_resource", "neondatabase/mcp-server-neon/get_database_tables", "neondatabase/mcp-server-neon/describe_table_schema", "neondatabase/mcp-server-neon/list_branches", "neondatabase/mcp-server-neon/compare_database_schema", "io.github.vercel/next-devtools-mcp/init", "io.github.vercel/next-devtools-mcp/nextjs_docs", "io.github.vercel/next-devtools-mcp/nextjs_index", "io.github.vercel/next-devtools-mcp/nextjs_call"]
 disable-model-invocation: true
 name: "demo-ask"
 ---
@@ -27,33 +8,31 @@ name: "demo-ask"
 # Source Mapping
 
 ## Repository Knowledge Binding
-
 - Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).
 - Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.
 - Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.
 - Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.
 
 ## Bootstrap Template Repository Search
-
 - Use `the current client's bounded native repository search listed in docs/agents/integration-bindings.md` for repository discovery when the workflow requires codebase evidence.
-  Cleaned into canonical agent `ask.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
+Cleaned into canonical agent `ask.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
 
 The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
-| Capability                           | Substitute in the generated system                                                                                                                                                             |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Capability | Substitute in the generated system |
+| --- | --- |
 | `#capability:agent-workflow-service` | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
-| `#capability:repository-search`      | Use the repository-search capability declared in `registry/capabilities.yaml`.                                                                                                                 |
+| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
 
 ## Role Tooling Intent
 
 Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
 
-| Target capability category   | Source capability evidence           | Bootstrap discovery guidance                                                                                                                                               |
-| ---------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repository discovery         | `#capability:repository-search`      | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service.                                   |
+| Target capability category | Source capability evidence | Bootstrap discovery guidance |
+| --- | --- | --- |
+| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
 | Broad workflow-service grant | `#capability:agent-workflow-service` | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool. |
 
 <critical>

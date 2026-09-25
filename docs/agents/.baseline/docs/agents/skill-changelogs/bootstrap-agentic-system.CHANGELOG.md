@@ -4,13 +4,14 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `5.1.1` (repository-local contract correction)
+- `5.2.0`
 
 ## 2026-09-25
 
-### 5.1.1
+### 5.2.0
 
-- Resolve repository-search without a cluster-producing MCP by deriving bounded clusters, filenames and terms from native workspace search. Stop only if native search is also unavailable; preserve the role's evidence and search-budget gates.
+- Permit bounded workspace file/path and text search in every role needing repository discovery when cluster-aware search is absent; Planner and Direct Implementor no longer stop at Gate 5 for missing cluster metadata.
+- Verify that selected visual roles can fetch and inspect remote issue images with effective repository permissions, or request the inaccessible image from the user.
 
 ## 2026-09-19
 

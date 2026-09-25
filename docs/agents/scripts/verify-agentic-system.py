@@ -132,7 +132,7 @@ def main():
             meta=decode_toml(text);body=meta['developer_instructions']
             check(all(k in meta for k in ['name','description','developer_instructions']),'Codex required metadata: '+adapter['path'])
             check(meta['sandbox_mode']==('read-only' if adapter['role']=='ask' else 'workspace-write'),'Codex sandbox choice: '+adapter['path'])
-            wanted_model='gpt-5.6-luna' if adapter['role']=='vision' else None
+            wanted_model='gpt-6-luna' if adapter['role']=='vision' else None
             check(meta.get('model')==wanted_model,'Codex exact model/inheritance: '+adapter['path'])
             for server,config in meta['mcp_servers'].items():
                 tool_items=answers['capabilities']['codex'][adapter['role']]
@@ -142,7 +142,10 @@ def main():
             meta,body=decode_md(text)
             wanted=dict(canonical_meta)
             wanted['name']='demo-'+(adapter['role'] if adapter['role']!='skill' else canonical_meta['name'])
-            if adapter['role']=='vision': wanted['disable-model-invocation']=False
+            if adapter['role']=='vision':
+                wanted['disable-model-invocation']=False
+                wanted['model']='GPT-6 Luna (copilot)'
+                wanted['tools']=canonical_meta['tools']+['web','github/*']
             check(meta==wanted,'Only approved native metadata changes: '+adapter['path'])
         check(body==canonical_body and digest(body)==adapter['body_sha256'],'Complete decoded body: '+adapter['path'])
         if adapter['role']=='skill':
