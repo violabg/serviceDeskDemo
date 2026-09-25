@@ -28,3 +28,9 @@ Discovery: 2026-09-18. Installation: 2026-09-19. Selected targets: Codex and Git
 6. Verify the connected Neon and GitHub tools on the exact intended context before using those dependent workflows. Do not mutate data merely to test connectivity.
 
 Until these checks succeed, both installations have status **unverified**, not fully compatible. A missing required tool blocks only operations that depend on it. Canonical preservation and native instruction-body equality are separate structural checks.
+
+## 2026-09-25 Maintenance Evidence
+
+- Selected targets remain Codex and GitHub Copilot in VS Code. Official Codex subagent documentation (`https://learn.chatgpt.com/docs/agent-configuration/subagents`, retrieved 2026-09-25) documents project TOML registrations, per-agent model selection and inherited tools. The GPT-6 Luna model page (`https://developers.openai.com/api/docs/models/gpt-6-luna`, retrieved 2026-09-25) lists image input. The Codex Vision registration now selects `gpt-6-luna`; its actual discovery and native image-viewing access are unverified.
+- Official VS Code custom-agent documentation (`https://code.visualstudio.com/docs/agent-customization/custom-agents`, retrieved 2026-09-25) documents `model`, `tools` and `disable-model-invocation`, and warns that unavailable tools can be ignored. The user-selected Copilot Vision model and repository retrieval tools require a live model/tool picker check; no image processing has been verified in that role.
+- The repository-local Bootstrap 5.1.1 search correction and `docs/agents/integration-bindings.md` define derived cluster records from bounded native file/text search for both selected targets. The fallback requires no MCP but is not yet verified in the generated Planner. Test the Gate 5 cluster/filename/term report and Gate 6 evidence log in a disposable fixture outside existing session folders. Missing native search or image viewing blocks only its dependent operation.

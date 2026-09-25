@@ -1,5 +1,15 @@
 # Structural Validation Report
 
+## Maintenance Verification: 2026-09-25
+
+- Canonical preservation: PASS, 22 copies with the installed Node verifier.
+- Bootstrap registry and changelog snapshots: byte-identical to the locally corrected 5.1.1 sources. Six approved compliant baseline copies match their files. The two native Vision baselines retain the pre-override metadata deliberately; C001, C007 and C008 document the exceptions.
+- Native repository-search procedure: bounded path grouping and filename-scoped text search exercised against agent-system files; Copilot file/path search returned candidate Planner paths. Generated-role execution in Codex and Copilot remains unverified.
+- Codex Vision TOML: decoded model is `gpt-6-luna` and embedded instructions match the canonical body. Copilot Vision frontmatter decodes, retains the user-selected model and has unique tool names. Neither delegate has been verified to view a repository image in its actual client.
+- Full `python3 docs/agents/scripts/verify-agentic-system.py`: BLOCKED. Its restricted YAML decoder rejects pre-existing multiline tool arrays in five other Copilot adapters. Its hard-coded Vision model and strict baseline-equality assertions also predate the approved native metadata overrides. Do not treat the 2026-09-19 result below as current full validation.
+
+The following report remains the 2026-09-19 installation record.
+
 Date: 2026-09-19. Result: **PASS** for structural checks.
 
 616 checks passed; 0 failed. Canonical copies: 22. Native adapters: 19. Primary/baseline files: 93.
