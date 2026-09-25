@@ -14,6 +14,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { CaretRightIcon } from "@phosphor-icons/react"
 import Link from "next/link"
@@ -36,6 +37,7 @@ export function NavMain({
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
   >({})
+  const { state } = useSidebar()
 
   React.useEffect(() => {
     setOpenSections((current) => {
@@ -57,43 +59,59 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>Service Desk</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            open={openSections[item.title] ?? Boolean(item.isActive)}
-            onOpenChange={(open) =>
-              setOpenSections((current) => ({
-                ...current,
-                [item.title]: open,
-              }))
-            }
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger
-                render={<SidebarMenuButton tooltip={item.title} />}
+        {state === "collapsed"
+          ? items
+              .flatMap((item) => item.items ?? [])
+              .map((subItem) => (
+                <SidebarMenuItem key={subItem.url}>
+                  <SidebarMenuButton
+                    isActive={subItem.isActive}
+                    tooltip={subItem.title}
+                    aria-label={subItem.title}
+                    render={<Link href={subItem.url} />}
+                  >
+                    {subItem.icon}
+                    <span>{subItem.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))
+          : items.map((item) => (
+              <Collapsible
+                key={item.title}
+                open={openSections[item.title] ?? Boolean(item.isActive)}
+                onOpenChange={(open) =>
+                  setOpenSections((current) => ({
+                    ...current,
+                    [item.title]: open,
+                  }))
+                }
+                className="group/collapsible"
               >
-                <span>{item.title}</span>
-                <CaretRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        isActive={subItem.isActive}
-                        render={<Link href={subItem.url} />}
-                      >
-                        {subItem.icon}
-                        <span>{subItem.title}</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
+                <SidebarMenuItem>
+                  <CollapsibleTrigger
+                    render={<SidebarMenuButton tooltip={item.title} />}
+                  >
+                    <span>{item.title}</span>
+                    <CaretRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {item.items?.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton
+                            isActive={subItem.isActive}
+                            render={<Link href={subItem.url} />}
+                          >
+                            {subItem.icon}
+                            <span>{subItem.title}</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            ))}
       </SidebarMenu>
     </SidebarGroup>
   )
