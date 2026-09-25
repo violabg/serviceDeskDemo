@@ -50,7 +50,7 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 | --- | --- | --- |
 | Work-item tracker access | `#capability:work-item-retrieval`, `#capability:work-item-type-retrieval` | Read issue, story, type, or comment evidence. Seek a read-only target tracker integration or the local tracker fallback. |
 | Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
-| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service. |
+| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
 | Planning-session persistence | `#capability:execution-report-read`, `#capability:implementation-plan-list`, `#capability:implementation-plan-load`, `#capability:implementation-plan-save`, `#capability:implementation-plan-schema`, `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write`, `#capability:session-event-log`, `#capability:session-list`, `#capability:session-memory-append`, `#capability:session-memory-read` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
 
 # Agent Role
@@ -411,11 +411,7 @@ Whenever the execution context changes, re-evaluate the applicable `PerContext` 
 
 ## Gate 5 - Codebase cold start understanding
 
-Invoke `#capability:repository-search` to retrieve the available codebase clusters.
-Analyze the returned clusters and determine which clusters are the most probable starting points for the user's request.
-For every selected cluster, invoke `#capability:repository-search` to retrieve the relevant filenames associated with that cluster.
-Select exploration filenames exclusively from the filenames returned for each selected cluster.
-Construct regex queries using only the selected cluster filenames. Never introduce filenames that are not present in the retrieved cluster filenames.
+Use the approved `#capability:repository-search` binding to identify likely codebase areas, their filenames, and relevant terms. If no cluster-aware search exists, use native workspace file/path and text search instead: start with terms from the request, group observed matching paths into candidate areas, and select filenames and terms only from those observed results. Do not invent cluster metadata or require an MCP. Construct bounded regex queries from the selected filenames and observed terms.
 
 Produce a structured exploration plan using exactly the following format:
 ```
@@ -426,9 +422,7 @@ Produce a structured exploration plan using exactly the following format:
 
 Explicitly identify the selected clusters, the selected filenames, and the rationale for each selection before proceeding.
 
-Do not explore the codebase by any means—including tools, command-line commands, scripts, or searches—until the cluster selection, relevant terms, and regex queries have been completed and reported.
-Do not construct regex queries using not selected cluster terms. 
-Do not introduce terms that are not present in the retrieved cluster terms.
+Do not begin Gate 6 code exploration until the selected areas, filenames, observed terms, and bounded queries have been reported. Gate 5 file/path and text searches needed to establish those selections are allowed. Do not introduce terms absent from the request or observed search results.
 
 **Continue:** proceed immediately to Gate 6 - Codebase Reconnaissance in the same turn. Do not stop, do not wait for user prompt.
 
