@@ -2,8 +2,24 @@
   "version": 2,
   "bootstrap": {
     "skill_version": "5.0.0",
-    "contract_applied_through": "5.1.0",
+    "contract_applied_through": "5.1.1 (repository-local)",
     "generated_on": "2026-09-19"
+  },
+  "maintenance_decisions": {
+    "repository_search": {
+      "source": "user-approved native fallback, 2026-09-25",
+      "procedure": "docs/agents/integration-bindings.md#repository-and-native-operations",
+      "codex": "bounded rg --files and rg via functions.exec; derive clusters by parent directory and terms from observed filenames/hits",
+      "copilot": "search/fileSearch and search/textSearch; derive clusters by parent directory and terms from observed filenames/hits",
+      "scope": "all selected roles using repository-search; no MCP prerequisite; exclude session contents",
+      "status": "unverified in generated-role runtime"
+    },
+    "visual_evidence": {
+      "source": "user-approved repository image intake, 2026-09-25",
+      "codex": "gpt-6-luna; require an available native image-viewing tool for the exact local image path",
+      "copilot": "GPT-6 Luna (copilot); preserve user-selected repository retrieval toolset",
+      "status": "unverified in generated-role runtime"
+    }
   },
   "execution_host": "Codex in VS Code Insiders; SDK environment path 0.153.0",
   "environments": {
@@ -676,12 +692,12 @@
     {
       "id": "vision",
       "value": {
-        "codex": "gpt-5.6-luna",
-        "copilot": "GPT-5.6 Luna",
+        "codex": "gpt-6-luna",
+        "copilot": "GPT-6 Luna (copilot)",
         "conditional": "inline if image-capable; otherwise spawn Vision"
       },
       "source": "user",
-      "evidence": "User: use vision with luna; planner can spin a vision agent as subagent if current model lack vision capabilities"
+      "evidence": "2026-09-25 user-approved maintenance: apply the repository-image Vision mode to Codex; preserve the user's Copilot GPT-6 Luna selection. Canonical Vision slot history remains unchanged."
     },
     {
       "id": "approval",
@@ -4449,7 +4465,7 @@
         "copilot"
       ],
       "template": "registry/capabilities.yaml",
-      "source_sha256": "991231296ec8c5aa3f00aac0987b2857f64f894411af26dc9f2aebf023fba6d5",
+      "source_sha256": "a8446c6aca2037b3ca731c0be1eff65c3d1c72f9436819ebce2484ecec77f73b",
       "baseline": "docs/agents/.baseline/docs/agents/sources/registry/capabilities.yaml"
     },
     {
@@ -4779,7 +4795,7 @@
       "baseline": "docs/agents/.baseline/.codex/agents/demo-vision.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
       "loading": "lossless-embedding",
-      "approved_override": "none"
+      "approved_override": "Codex Vision model=gpt-6-luna; image viewing requires a verified native image tool"
     },
     {
       "path": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
@@ -4954,7 +4970,7 @@
       "baseline": "docs/agents/.baseline/.github/agents/demo-vision.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
       "loading": "lossless-embedding",
-      "approved_override": "Vision disable-model-invocation=false"
+      "approved_override": "Vision disable-model-invocation=false; user-selected model=GPT-6 Luna (copilot), tools include web and github/*"
     },
     {
       "path": "docs/agents/sources/templates/skills/author-repo-skill/SKILL.md",

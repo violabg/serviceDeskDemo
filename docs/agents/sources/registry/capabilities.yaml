@@ -24,7 +24,16 @@ capabilities:
   - id: repository-search
     essential: true
     why: Bounded discovery of code, symbols, and call sites under a search budget.
-    fallback: Ask the user for the exact search tool name and record it in the manifest before generating agents.
+    fallback: >-
+      When no cluster-producing repository-search tool is bound, use the selected
+      client's available native file/path and text search, or a bounded workspace
+      shell search such as rg. Group returned paths by parent directory into
+      candidate clusters, retrieve filenames within the selected clusters, and
+      derive terms only from returned filenames or observed search hits. Report
+      those clusters as locally derived and record the exact tool invocations,
+      scope, exclusions and verification status in the bindings and answers.
+      Do not require an MCP. If native file/path or text search is also absent,
+      stop the dependent operation and ask for a working search binding.
 
   - id: file-editing
     essential: true

@@ -1,7 +1,7 @@
 ---
 description: "This custom agent analyzes images and produces a detailed JSON representation of the visual content."
-tools: ["read/readFile", "edit/createFile", "edit/editFiles"]
-model: "GPT-5.6 Luna"
+tools: ["read/readFile", "edit/createFile", "edit/editFiles", "web", "github/*"]
+model: "GPT-6 Luna (copilot)"
 disable-model-invocation: false
 name: "demo-vision"
 ---
