@@ -49,7 +49,7 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 | Target capability category | Source capability evidence | Bootstrap discovery guidance |
 | --- | --- | --- |
 | Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
-| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Prefer the target platform's repository-search tools or an already configured search service. |
+| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
 | Planning-session persistence | `#capability:execution-report-read`, `#capability:execution-report-write`, `#capability:implementation-plan-list`, `#capability:implementation-plan-load`, `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-event-log`, `#capability:session-list`, `#capability:session-memory-append`, `#capability:session-memory-read`, `#capability:test-plan-list`, `#capability:test-plan-load`, `#capability:test-plan-save`, `#capability:test-plan-schema` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
 
 # Agent Role

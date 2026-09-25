@@ -198,7 +198,7 @@ placeholders:
     question: How should the Planner process visual evidence?
     fill_from: discovery
     capability: visual-evidence
-    recommend: Invoke the selected visual agent with approved target syntax, or process the same task inline using approved visual tools. If no visual capability exists, require user-supplied textual evidence before making image-dependent claims. Introduce the following evidence task in the replacement instruction.
+    recommend: For each local image or remote issue image URL, fetch the bytes with approved access (including private repository authentication when needed), then invoke the selected visual agent with approved target syntax or inspect the image inline with approved visual tools. If the image is unreadable, request it from the user; do not make image-dependent claims from its URL. Introduce the following evidence task in the replacement instruction.
     infer_from:
       - approved Vision decision and target delegation tools
       - available image tools or user-supplied visual evidence
@@ -240,7 +240,7 @@ placeholders:
     question: Which tool performs bounded repository search on the target platform?
     fill_from: discovery
     capability: repository-search
-    recommend: The exact search binding verified for this environment and role from current official documentation and effective target tools; the capability registry has no tool defaults.
+    recommend: Use a verified bounded search binding for this environment and role; native workspace file/path and text search are a valid fallback when cluster-aware repository search is absent. Record actual filenames and observed terms, not invented clusters. The capability registry has no platform tool defaults.
     infer_from:
       - resolved TARGET_PLATFORM
       - search tools referenced by existing agent files
