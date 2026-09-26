@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { DashboardBreadcrumbs } from "@/components/dashboard-breadcrumbs"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   SidebarInset,
   SidebarProvider,
@@ -18,9 +19,31 @@ export default function DashboardLayout({
   children: React.ReactNode
 }>) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<DashboardLayoutSkeleton />}>
       <DashboardLayoutContent>{children}</DashboardLayoutContent>
     </Suspense>
+  )
+}
+
+function DashboardLayoutSkeleton() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading dashboard"
+      className="flex min-h-svh w-full"
+    >
+      <div className="hidden w-64 shrink-0 flex-col gap-4 border-r p-4 md:flex">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </div>
+      <div className="flex flex-1 flex-col gap-6 p-6">
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+      <span className="sr-only">Loading dashboard...</span>
+    </div>
   )
 }
 

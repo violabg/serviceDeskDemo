@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { NavMain } from "@/components/nav-main"
@@ -195,5 +195,42 @@ describe("NavMain", () => {
     )
 
     expect(screen.queryAllByRole("link")).toHaveLength(0)
+  })
+
+  it("opens the newly active group after navigation and preserves other toggles", () => {
+    const initialItems = navigationItems.map((item, index) => ({
+      ...item,
+      isActive: index === 0,
+    }))
+    const { rerender } = render(
+      <SidebarProvider>
+        <NavMain items={initialItems} />
+      </SidebarProvider>
+    )
+
+    fireEvent.click(screen.getByRole("button", { name: "Operations" }))
+    expect(screen.getByRole("button", { name: "Operations" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    )
+
+    rerender(
+      <SidebarProvider>
+        <NavMain
+          items={initialItems.map((item, index) => ({
+            ...item,
+            isActive: index === 1,
+          }))}
+        />
+      </SidebarProvider>
+    )
+
+    expect(
+      screen.getByRole("button", { name: "Access Management" })
+    ).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByRole("button", { name: "Operations" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    )
   })
 })

@@ -2,7 +2,7 @@ import { NeonAuthUiProvider } from "@/components/auth/neon-auth-ui-provider"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
-import { AuthView } from "@neondatabase/auth/react"
+import { AuthView } from "@neondatabase/auth-ui"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
 import { Suspense } from "react"
@@ -29,8 +29,8 @@ export async function LoginPageContent() {
   }
 
   return (
-    <main className="place-items-center grid p-6 min-h-svh">
-      <div className="space-y-4 w-full max-w-md">
+    <main className="grid min-h-svh place-items-center p-6">
+      <div className="w-full max-w-md space-y-4">
         <NeonAuthUiProvider>
           <AuthView path="sign-in" />
         </NeonAuthUiProvider>
@@ -41,10 +41,10 @@ export async function LoginPageContent() {
 
 function LoginPageSkeleton() {
   return (
-    <main className="place-items-center grid p-6 min-h-svh">
-      <div className="space-y-3 w-full max-w-md">
-        <Skeleton className="w-full h-10" />
-        <Skeleton className="w-full h-72" />
+    <main className="grid min-h-svh place-items-center p-6">
+      <div className="w-full max-w-md space-y-3">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-72 w-full" />
       </div>
     </main>
   )

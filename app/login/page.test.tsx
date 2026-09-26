@@ -31,7 +31,7 @@ vi.mock("@/components/auth/neon-auth-ui-provider", () => ({
     <>{children}</>
   ),
 }))
-vi.mock("@neondatabase/auth/react", () => ({
+vi.mock("@neondatabase/auth-ui", () => ({
   AuthView: ({ path }: { path: string }) => <div>Auth view: {path}</div>,
 }))
 

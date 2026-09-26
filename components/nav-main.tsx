@@ -36,10 +36,16 @@ export function NavMain({
 }) {
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
-  >({})
+  >(() =>
+    Object.fromEntries(
+      items.filter((item) => item.isActive).map((item) => [item.title, true])
+    )
+  )
+  const [previousItems, setPreviousItems] = React.useState(items)
   const { state } = useSidebar()
 
-  React.useEffect(() => {
+  if (items !== previousItems) {
+    setPreviousItems(items)
     setOpenSections((current) => {
       let hasChanged = false
       const next = { ...current }
@@ -53,7 +59,7 @@ export function NavMain({
 
       return hasChanged ? next : current
     })
-  }, [items])
+  }
 
   return (
     <SidebarGroup>
