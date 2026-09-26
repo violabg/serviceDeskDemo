@@ -25,7 +25,7 @@ async function getRoleDetailData(actorUserId: string, roleId: string) {
   "use cache"
 
   cacheLife("days")
-  cacheTag(adminRoleDetailTag(actorUserId, roleId))
+  cacheTag(adminRoleDetailTag(roleId))
 
   return getRoleForManagement({
     actorUserId,

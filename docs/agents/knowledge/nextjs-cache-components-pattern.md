@@ -7,24 +7,27 @@ states, or must opt out of full dynamic rendering per request.
 
 ## Last verified
 
-2026-07-22, dirty worktree. Evidence from repository files:
+2026-09-26, dirty worktree. Evidence from repository files and the Next.js 16.3.6 caching, revalidation, and instant-navigation guides:
 
 - `next.config.ts` — `cacheComponents: true` and custom `days` life preset
 - `app/(dashboard)/admin/_lib/cache-tags.ts` — tag factory functions
 - `app/(dashboard)/tickets/_lib/cache-tags.ts` — ticket tag factory functions
-- `app/(dashboard)/admin/roles/page.tsx` and `[roleId]/page.tsx` — full page pattern
-- `app/(dashboard)/admin/users/page.tsx` and `[userId]/page.tsx` — full page pattern
+- `app/(dashboard)/(admin)/roles/page.tsx` and `[roleId]/page.tsx` — full page pattern
+- `app/(dashboard)/(admin)/users/page.tsx` and `[userId]/page.tsx` — full page pattern
 - `app/(dashboard)/layout.tsx` — layout Suspense shell
-- `app/(dashboard)/admin/actions.ts` — `revalidateTag` after mutations
-- `app/(dashboard)/tickets/actions.ts` — `revalidateTag` after ticket mutations
+- `app/(dashboard)/admin/_lib/current-application-user.ts` — request and access boundary
+- `app/(dashboard)/(admin)/actions.ts` — `updateTag` after mutations
+- `app/(dashboard)/tickets/actions.ts` — `updateTag` after ticket mutations
+- `app/(dashboard)/tickets/new/page.tsx` — separately cached reference data
 - `app/login/page.tsx`, `app/page.tsx`, `app/pending-access/page.tsx` — public page pattern
+- Next.js 16.3.6 docs: [Caching](https://nextjs.org/docs/app/getting-started/caching), [Revalidating](https://nextjs.org/docs/app/getting-started/revalidating), [Instant Navigation](https://nextjs.org/docs/app/guides/instant-navigation), and [Partial Prefetching](https://nextjs.org/docs/app/guides/adopting-partial-prefetching).
 
 ## Evidence
 
 - `next.config.ts` sets `cacheComponents: true` and defines a `days` preset (stale: 7d, revalidate: 7d, expire: 30d).
-- All admin and public pages replaced `export const dynamic = "force-dynamic"` with a sync Suspense shell + `connection()` inside the async content component.
-- Data-fetching functions use the `"use cache"` directive with `cacheLife("days")` and `cacheTag(...)` for tagged invalidation.
-- Server actions call `revalidateTag` (not `revalidatePath`) after writes.
+- Admin pages put access-gated content behind Suspense; `requireCurrentApplicationAccess()` calls `connection()` before checking the session. Public pages call `connection()` in their async content components.
+- Admin and ticket data-fetching functions use `"use cache"`, `cacheLife("days")`, and shared `cacheTag(...)` values; new-ticket reference data uses `cacheLife("minutes")`.
+- Server actions call `updateTag` for immediately fresh data after writes.
 - Cache tag factories are feature-local under route-domain `_lib/cache-tags.ts` modules, with separate factories for admin and tickets.
 
 ## Static-First Principle
@@ -33,7 +36,7 @@ The primary goal is to render as much content as possible as static HTML at serv
 
 Rules:
 
-- Page headings, breadcrumbs, section labels, and layout chrome go **outside** Suspense — they render instantly as static HTML.
+- Put page headings and other request-independent page chrome outside the page-level Suspense boundary when possible. The protected dashboard layout has its own auth boundary; do not claim its chrome is prerendered outside Suspense.
 - Data-dependent tables, lists, forms populated from the database, and permission-gated sections go **inside** a Suspense boundary.
 - Each Suspense boundary has a collocated skeleton that mirrors the loaded content's layout dimensions.
 - Nest Suspense boundaries to isolate independent data sections so one slow fetch does not block another.
@@ -57,7 +60,7 @@ export default function SomePage() {
 }
 ```
 
-## Three-Layer Page Structure
+## Route Shell, Access, and Cached Data
 
 ### Layer 1 — Route export shell (sync, prerenderable)
 
@@ -76,20 +79,20 @@ export default function SomePage() {
 }
 ```
 
-### Layer 2 — Content component (async, dynamic)
+### Access-gated content (async, dynamic)
 
 ```tsx
 async function SomePageContent() {
-  await connection()   // from "next/server" — opts subtree into dynamic rendering
   const access = await requireCurrentApplicationAccess()
-  // permission gating and redirect live here
-  // passes actorUserId and derived flags down as props
+  // Check this section's read permission before fetching protected data.
+  const data = await getSomeData(access.user.id)
+  return <SomeView data={data} />
 }
 ```
 
-`connection()` signals that this subtree requires a live request. Auth and permission checks live here, not in the shell.
+`requireCurrentApplicationAccess()` calls `connection()` and performs session and dashboard access checks. The page checks its section permission before rendering protected data. Do not add a duplicate `connection()` to every page.
 
-### Layer 3 — Cached data component (async, cached)
+### Cached data (within content or a separate section)
 
 ```tsx
 async function SomeDataSection({ actorUserId }: { actorUserId: string }) {
@@ -98,7 +101,7 @@ async function SomeDataSection({ actorUserId }: { actorUserId: string }) {
 }
 ```
 
-The data fetch is delegated to a collocated `"use cache"` function (see below).
+The content component may call a collocated `"use cache"` function directly. Extract an independent server component and nested Suspense boundary when separate data sections benefit from streaming independently.
 
 ### Skeleton components
 
@@ -111,7 +114,7 @@ async function getAdminData(actorUserId: string) {
   "use cache"
 
   cacheLife("days")
-  cacheTag(someTag(actorUserId))
+  cacheTag(adminRolesListTag())
 
   return someServiceCall({ actorUserId })
 }
@@ -119,7 +122,8 @@ async function getAdminData(actorUserId: string) {
 
 - `"use cache"` goes at the top of the function body.
 - `cacheLife("days")` uses the repo's custom preset: stale 7d, revalidate 7d, expire 30d.
-- `cacheTag(...)` takes a string from the tag factory — always actor-scoped.
+- Actor inputs remain part of the cache key and access-aware service call. The tag is shared across actor-keyed entries backed by the same records, so a write invalidates other authorized viewers' cached entries too.
+- New-ticket Customer, Asset, and technician options have a separate `ticketReferenceTag()` and use `cacheLife("minutes")`; ticket mutations do not invalidate unrelated reference data.
 - These functions are module-level and not exported outside their page file unless the component is shared across routes.
 
 ## Component-Level Data Ownership
@@ -129,7 +133,7 @@ Shared components that need server data own their own data fetch. They do not ac
 When a server component is reused across multiple pages:
 
 - It defines its own `"use cache"` data-fetching function internally.
-- The parent passes only identity props (such as `actorUserId`) needed to scope the cache tag.
+- The parent passes only identity props (such as `actorUserId`) needed for the access-aware cache key and service call.
 - This keeps the component independently cacheable and avoids duplicating fetch logic in every consuming page.
 
 ```tsx
@@ -186,34 +190,40 @@ The server component is placed inside a Suspense boundary by the page. The clien
 
 ## Cache Tag Conventions
 
-Tag factories live in feature-local `_lib/cache-tags.ts` modules under the route domain. Every factory takes at minimum `actorUserId` to scope cached data per actor.
+Tag factories live in feature-local `_lib/cache-tags.ts` modules. Shared records use shared invalidation tags even when the cached function's actor input produces a distinct cache entry.
 
 | Factory | Tag pattern | Scope |
 | --- | --- | --- |
-| `adminRolesListTag(actorUserId)` | `admin:roles:{uid}` | All roles visible to actor |
-| `adminRoleDetailTag(actorUserId, roleId)` | `admin:roles:{uid}:{roleId}` | Single role |
-| `adminUsersListTag(actorUserId)` | `admin:users:{uid}` | All users visible to actor |
-| `adminUserDetailTag(actorUserId, targetId)` | `admin:users:{uid}:{targetId}` | Single user |
-| `ticketListTag(actorUserId)` | `tickets:list:{uid}` | Ticket list visible to actor |
-| `ticketDetailTag(actorUserId, ticketId)` | `tickets:detail:{uid}:{ticketId}` | Single ticket |
+| `adminRolesListTag()` | `admin:roles` | Roles list and permission choices |
+| `adminRoleDetailTag(roleId)` | `admin:roles:{roleId}` | Single role |
+| `adminUsersListTag()` | `admin:users` | User list |
+| `adminUserDetailTag(targetUserId)` | `admin:users:{targetUserId}` | Single user detail |
+| `adminUserRoleOptionsTag()` | `admin:user-role-options` | User detail views listing assignable roles |
+| `ticketListTag()` | `tickets:list` | Ticket list |
+| `ticketDetailTag(ticketId)` | `tickets:detail:{ticketId}` | Single ticket |
+| `ticketReferenceTag()` | `tickets:reference` | New-ticket Customer, Asset, and technician choices |
 
 ## Invalidating Cache After Mutations
 
-Server actions use `revalidateTag` (not `revalidatePath`) after writes:
+Server Actions use `updateTag` for read-your-writes after successful mutations:
 
 ```ts
-revalidateTag(adminUserDetailTag(access.user.id, targetUserId), "max")
-revalidateTag(adminUsersListTag(access.user.id), "max")
+updateTag(adminUserDetailTag(targetUserId))
+updateTag(adminUsersListTag())
 ```
 
-Pass `"max"` as the second argument to revalidate across all cache layers. Invalidate both the detail tag and the list tag when the mutation can affect both.
+Role creation invalidates the roles list and user role options; role updates additionally invalidate that role's detail. Ticket creation invalidates the list before redirect; status, priority, and technician changes invalidate detail and list; notes invalidate only detail. Invalidate each affected data dependency, not every tag in the feature. `revalidateTag(tag, "max")` allows stale content while refreshing and is suitable only when that delay is acceptable. `revalidatePath` remains supported with Cache Components for route-wide invalidation, but known tags are more precise. Source: the action modules listed above and the Next.js 16.3.6 revalidation guide.
+
+## Instant Navigation Check
+
+`next.config.ts` enables Cache Components and Partial Prefetching. Page-level Suspense boundaries below a shared layout can provide fallbacks on client transitions; a boundary above an already-mounted shared layout cannot cover content changing beneath it. Automatic link prefetch does not run in `next dev`, so a clean development error report or visible skeleton does not prove instant navigation. Inspect the initial UI and navigation in a production build before promising instant transitions. Source: `next.config.ts`, the dashboard pages and layout, and the Next.js 16.3.6 instant-navigation and partial-prefetching guides.
 
 ## Pitfalls to avoid
 
 - Do not use `export const dynamic = "force-dynamic"` on new pages; use the Suspense + `connection()` shell instead.
-- Do not put static headings, breadcrumbs, or layout chrome inside a Suspense boundary; they must render as static HTML.
-- Do not call `revalidatePath` for tagged admin or ticket mutations; use `revalidateTag` with the feature-local tag factory.
-- Do not put `connection()` in the route shell; it belongs inside the async `Content` component inside the Suspense boundary.
+- Do not move request-independent page headings inside a page-level Suspense boundary unnecessarily; protected layout chrome may still depend on the layout's auth boundary.
+- Do not use actor-specific invalidation tags for shared records or substitute stale-while-revalidate for `updateTag` when an immediate read-after-write is required.
+- Do not put `connection()` in the route shell or duplicate the call already made by `requireCurrentApplicationAccess()`.
 - Do not call service functions directly in the content component when they should be cached; wrap them in a `"use cache"` function first.
 - Do not pass pre-fetched data as props to shared server components; let the component own its `"use cache"` fetch.
 - Do not give the client donut shell any data-fetching responsibility; pass server-rendered JSX as `children` instead.

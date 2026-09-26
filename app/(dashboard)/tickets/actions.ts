@@ -19,7 +19,7 @@ import {
   updateTicketPriority,
   updateTicketStatus,
 } from "@/lib/tickets/service"
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import { redirect } from "next/navigation"
 
 type TicketActionResult = {
@@ -99,8 +99,7 @@ export async function createTicketAction(formData: FormData) {
     access.user.id
   )
 
-  revalidateTag(ticketListTag(access.user.id), "max")
-  revalidateTag(ticketDetailTag(access.user.id, ticket.id), "max")
+  updateTag(ticketListTag())
   redirect(`/tickets/${ticket.id}`)
 }
 
@@ -153,8 +152,8 @@ export async function updateTicketStatusAction(formData: FormData) {
 
   await updateTicketStatus(ticketId, status, access.user.id)
 
-  revalidateTag(ticketDetailTag(access.user.id, ticketId), "max")
-  revalidateTag(ticketListTag(access.user.id), "max")
+  updateTag(ticketDetailTag(ticketId))
+  updateTag(ticketListTag())
 
 }
 
@@ -175,8 +174,8 @@ export async function updateTicketPriorityAction(formData: FormData) {
 
   await updateTicketPriority(ticketId, priority, access.user.id)
 
-  revalidateTag(ticketDetailTag(access.user.id, ticketId), "max")
-  revalidateTag(ticketListTag(access.user.id), "max")
+  updateTag(ticketDetailTag(ticketId))
+  updateTag(ticketListTag())
 
 }
 
@@ -197,8 +196,8 @@ export async function assignTechnicianAction(formData: FormData) {
 
   await assignTechnician(ticketId, technicianId, access.user.id)
 
-  revalidateTag(ticketDetailTag(access.user.id, ticketId), "max")
-  revalidateTag(ticketListTag(access.user.id), "max")
+  updateTag(ticketDetailTag(ticketId))
+  updateTag(ticketListTag())
 
 }
 
@@ -219,7 +218,6 @@ export async function addTicketNoteAction(formData: FormData) {
 
   await addTicketNote(ticketId, content, access.user.id)
 
-  revalidateTag(ticketDetailTag(access.user.id, ticketId), "max")
-  revalidateTag(ticketListTag(access.user.id), "max")
+  updateTag(ticketDetailTag(ticketId))
 
 }

@@ -28,7 +28,7 @@ async function getTicketListData(
   "use cache"
 
   cacheLife("days")
-  cacheTag(ticketListTag(actorUserId))
+  cacheTag(ticketListTag())
 
   const page = Math.max(1, Number(searchParams.page) || 1)
   const search = searchParams.q?.trim() || undefined
@@ -60,12 +60,12 @@ export default function TicketsPage({
   searchParams: Promise<TicketListSearchParams>
 }) {
   return (
-    <main className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <main className="flex flex-col flex-1 gap-6 p-4 pt-0">
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="font-medium text-muted-foreground text-sm">
           Ticket Management
         </p>
-        <h1 className="font-heading text-3xl font-semibold tracking-normal">
+        <h1 className="font-heading font-semibold text-3xl tracking-normal">
           Tickets
         </h1>
       </div>
@@ -97,7 +97,7 @@ async function TicketsPageContent({
   const list = await getTicketListData(access.user.id, resolvedSearchParams)
 
   return (
-    <section className="grid gap-4">
+    <section className="gap-4 grid">
       <TicketFiltersForm
         initialValues={{
           q: resolvedSearchParams.q,
@@ -106,8 +106,8 @@ async function TicketsPageContent({
         }}
         canCreate={canCreate}
       />
-      <section className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
-        <div className="grid grid-cols-[1.2fr_0.8fr_0.7fr_0.8fr_auto] gap-4 border-b bg-muted/50 px-4 py-3 text-sm font-medium text-muted-foreground">
+      <section className="bg-card shadow-sm border rounded-lg overflow-hidden text-card-foreground">
+        <div className="gap-4 grid grid-cols-[1.2fr_0.8fr_0.7fr_0.8fr_auto] bg-muted/50 px-4 py-3 border-b font-medium text-muted-foreground text-sm">
           <span>Ticket</span>
           <span>Status</span>
           <span>Priority</span>
@@ -119,11 +119,11 @@ async function TicketsPageContent({
             list.items.map((ticket) => (
               <article
                 key={ticket.id}
-                className="grid grid-cols-[1.2fr_0.8fr_0.7fr_0.8fr_auto] items-center gap-4 px-4 py-3 text-sm"
+                className="items-center gap-4 grid grid-cols-[1.2fr_0.8fr_0.7fr_0.8fr_auto] px-4 py-3 text-sm"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-medium">{ticket.title}</p>
-                  <p className="truncate text-muted-foreground">
+                  <p className="font-medium truncate">{ticket.title}</p>
+                  <p className="text-muted-foreground truncate">
                     {ticket.customer.name}
                   </p>
                 </div>
@@ -151,13 +151,13 @@ async function TicketsPageContent({
               </article>
             ))
           ) : (
-            <p className="px-4 py-6 text-sm text-muted-foreground">
+            <p className="px-4 py-6 text-muted-foreground text-sm">
               No tickets found.
             </p>
           )}
         </div>
       </section>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-xs">
         Showing page {list.page} with {list.items.length} of {list.total}{" "}
         tickets.
       </p>
@@ -167,20 +167,20 @@ async function TicketsPageContent({
 
 function TicketsPageSkeleton() {
   return (
-    <div className="grid gap-4">
-      <section className="rounded-lg border bg-card p-4">
-        <div className="grid gap-3 md:grid-cols-[1fr_12rem_12rem_auto]">
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
+    <div className="gap-4 grid">
+      <section className="bg-card p-4 border rounded-lg">
+        <div className="gap-3 grid md:grid-cols-[1fr_12rem_12rem_auto]">
+          <Skeleton className="w-full h-9" />
+          <Skeleton className="w-full h-9" />
+          <Skeleton className="w-full h-9" />
+          <Skeleton className="w-full h-9" />
         </div>
       </section>
-      <section className="rounded-lg border bg-card p-4">
+      <section className="bg-card p-4 border rounded-lg">
         <div className="space-y-3">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="w-full h-12" />
+          <Skeleton className="w-full h-12" />
+          <Skeleton className="w-full h-12" />
         </div>
       </section>
     </div>

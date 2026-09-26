@@ -1,5 +1,5 @@
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
-import { ticketListTag } from "@/app/(dashboard)/tickets/_lib/cache-tags"
+import { ticketReferenceTag } from "@/app/(dashboard)/tickets/_lib/cache-tags"
 import { NewTicketForm } from "@/app/(dashboard)/tickets/new/new-ticket-form"
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
@@ -12,11 +12,11 @@ import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { Suspense, ViewTransition } from "react"
 
-async function getNewTicketReferenceData(actorUserId: string) {
+async function getNewTicketReferenceData() {
   "use cache"
 
-  cacheLife("days")
-  cacheTag(ticketListTag(actorUserId))
+  cacheLife("minutes")
+  cacheTag(ticketReferenceTag())
 
   const [customers, assets, technicians] = await Promise.all([
     getCustomers(),
@@ -69,7 +69,7 @@ export async function NewTicketPageContent() {
     )
   }
 
-  const referenceData = await getNewTicketReferenceData(access.user.id)
+  const referenceData = await getNewTicketReferenceData()
 
   return (
     <NewTicketForm

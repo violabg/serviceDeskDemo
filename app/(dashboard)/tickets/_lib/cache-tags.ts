@@ -1,7 +1,11 @@
-export function ticketListTag(actorUserId: string) {
-  return `tickets:list:${actorUserId}`
+export function ticketListTag() {
+  return "tickets:list"
 }
 
-export function ticketDetailTag(actorUserId: string, ticketId: string) {
-  return `tickets:detail:${actorUserId}:${ticketId}`
+export function ticketDetailTag(ticketId: string) {
+  return `tickets:detail:${ticketId}`
+}
+
+export function ticketReferenceTag() {
+  return "tickets:reference"
 }
