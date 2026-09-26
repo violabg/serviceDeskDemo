@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Fragment } from "react"
 
 const segmentLabelMap: Record<string, string> = {
   dashboard: "Dashboard",
@@ -52,18 +53,18 @@ export function DashboardBreadcrumbs() {
     <Breadcrumb>
       <BreadcrumbList>
         {crumbs.map((crumb, index) => (
-          <BreadcrumbItem key={crumb.href}>
-            {crumb.isLast ? (
-              <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-            ) : (
-              <>
+          <Fragment key={crumb.href}>
+            <BreadcrumbItem>
+              {crumb.isLast ? (
+                <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+              ) : (
                 <BreadcrumbLink render={<Link href={crumb.href} />}>
                   {crumb.label}
                 </BreadcrumbLink>
-                {index < crumbs.length - 1 ? <BreadcrumbSeparator /> : null}
-              </>
-            )}
-          </BreadcrumbItem>
+              )}
+            </BreadcrumbItem>
+            {index < crumbs.length - 1 ? <BreadcrumbSeparator /> : null}
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>

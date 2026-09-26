@@ -19,33 +19,6 @@ vi.mock("next/link", () => ({
     children: React.ReactNode
   }) => <a href={href}>{children}</a>,
 }))
-vi.mock("@/components/ui/breadcrumb", () => ({
-  Breadcrumb: ({ children }: { children: React.ReactNode }) => (
-    <nav>{children}</nav>
-  ),
-  BreadcrumbList: ({ children }: { children: React.ReactNode }) => (
-    <ol>{children}</ol>
-  ),
-  BreadcrumbItem: ({ children }: { children: React.ReactNode }) => (
-    <li>{children}</li>
-  ),
-  BreadcrumbSeparator: () => <span>/</span>,
-  BreadcrumbPage: ({ children }: { children: React.ReactNode }) => (
-    <span data-testid="current-crumb">{children}</span>
-  ),
-  BreadcrumbLink: ({
-    children,
-    render,
-  }: {
-    children: React.ReactNode
-    render?: React.ReactElement
-  }) =>
-    render && React.isValidElement(render) ? (
-      React.cloneElement(render, undefined, children)
-    ) : (
-      <a>{children}</a>
-    ),
-}))
 
 describe("DashboardBreadcrumbs", () => {
   it("renders mapped labels and humanized fallback labels", () => {
@@ -57,9 +30,15 @@ describe("DashboardBreadcrumbs", () => {
       "href",
       "/users"
     )
-    expect(screen.getByTestId("current-crumb")).toHaveTextContent(
-      "User Settings"
+    expect(screen.getByText("User Settings")).toHaveAttribute(
+      "aria-current",
+      "page"
     )
+    const list = screen.getByRole("list")
+    expect(list.querySelector("li li")).toBeNull()
+    expect(
+      Array.from(list.children).every((item) => item.tagName === "LI")
+    ).toBe(true)
   })
 
   it("renders nothing for the root path", () => {

@@ -1,9 +1,8 @@
 "use client"
 
+import * as React from "react"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
-import * as React from "react"
-
 import { cn } from "@/lib/utils"
 import { CaretRightIcon, DotsThreeIcon } from "@phosphor-icons/react"
 
@@ -78,18 +77,17 @@ function BreadcrumbSeparator({
   children,
   className,
   ...props
-}: React.ComponentProps<"span">) {
+}: React.ComponentProps<"li">) {
   return (
-    <span
+    <li
       data-slot="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
-      suppressHydrationWarning
       className={cn("[&>svg]:size-3.5", className)}
       {...props}
     >
       {children ?? <CaretRightIcon />}
-    </span>
+    </li>
   )
 }
 
@@ -116,10 +114,10 @@ function BreadcrumbEllipsis({
 
 export {
   Breadcrumb,
-  BreadcrumbEllipsis,
+  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
+  BreadcrumbEllipsis,
 }

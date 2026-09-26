@@ -1,5 +1,13 @@
 packages: []
 
+# Match the Better Auth family pinned by Neon Auth 0.5.0-beta.
+overrides:
+  '@better-auth/core': 1.6.23
+  '@better-auth/api-key': 1.6.23
+  # Keep JSX and experimental React.Key augmentations on one type identity.
+  '@types/react': 19.3.0
+  '@types/react-dom': 19.3.0
+
 allowBuilds:
   sharp: true
   unrs-resolver: true
