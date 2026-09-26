@@ -10,7 +10,7 @@ import {
 } from "@/lib/tickets/service"
 import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 async function getNewTicketReferenceData(actorUserId: string) {
   "use cache"
@@ -42,9 +42,11 @@ export default function NewTicketPage() {
           Nuovo Ticket
         </h1>
       </div>
-      <Suspense fallback={<NewTicketPageSkeleton />}>
-        <NewTicketPageContent />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<NewTicketPageSkeleton />}>
+          <NewTicketPageContent />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }

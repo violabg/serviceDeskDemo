@@ -6,7 +6,7 @@ import { hasPermission } from "@/lib/access-control"
 import { getAvailableTechnicians, getTicketById } from "@/lib/tickets/service"
 import { cacheLife, cacheTag } from "next/cache"
 import { notFound, redirect } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 async function getTicketDetailData(actorUserId: string, ticketId: string) {
   "use cache"
@@ -37,9 +37,11 @@ export default function TicketDetailPage({
           Ticket Management
         </p>
       </div>
-      <Suspense fallback={<TicketDetailPageSkeleton />}>
-        <TicketDetailPageContent params={params} />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<TicketDetailPageSkeleton />}>
+          <TicketDetailPageContent params={params} />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }

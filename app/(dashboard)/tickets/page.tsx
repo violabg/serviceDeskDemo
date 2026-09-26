@@ -12,7 +12,7 @@ import {
 import { cacheLife, cacheTag } from "next/cache"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 type TicketListSearchParams = {
   q?: string
@@ -69,9 +69,11 @@ export default function TicketsPage({
           Tickets
         </h1>
       </div>
-      <Suspense fallback={<TicketsPageSkeleton />}>
-        <TicketsPageContent searchParams={searchParams} />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<TicketsPageSkeleton />}>
+          <TicketsPageContent searchParams={searchParams} />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }

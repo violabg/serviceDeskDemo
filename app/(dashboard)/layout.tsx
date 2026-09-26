@@ -11,7 +11,7 @@ import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 export default function DashboardLayout({
   children,
@@ -93,7 +93,9 @@ async function DashboardLayoutContent({
             <DashboardBreadcrumbs />
           </div>
         </header>
-        {children}
+        <ViewTransition default="none" update="content-fade">
+          {children}
+        </ViewTransition>
       </SidebarInset>
     </SidebarProvider>
   )
