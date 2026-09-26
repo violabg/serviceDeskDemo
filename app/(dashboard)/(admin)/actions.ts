@@ -1,19 +1,20 @@
 "use server"
 
 import {
-    adminRoleDetailTag,
-    adminRolesListTag,
-    adminUserDetailTag,
-    adminUsersListTag,
+  adminRoleDetailTag,
+  adminRolesListTag,
+  adminUserDetailTag,
+  adminUserRoleOptionsTag,
+  adminUsersListTag,
 } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import {
-    assignRoleToUser,
-    createRoleForManagement,
-    removeRoleFromUser,
-    updateRoleForManagement,
+  assignRoleToUser,
+  createRoleForManagement,
+  removeRoleFromUser,
+  updateRoleForManagement,
 } from "@/lib/access-control/server"
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import { redirect } from "next/navigation"
 
 function getFormString(formData: FormData, name: string) {
@@ -33,8 +34,8 @@ export async function assignUserRoleAction(formData: FormData) {
     roleId,
   })
 
-  revalidateTag(adminUserDetailTag(access.user.id, targetUserId), "max")
-  revalidateTag(adminUsersListTag(access.user.id), "max")
+  updateTag(adminUserDetailTag(targetUserId))
+  updateTag(adminUsersListTag())
 }
 
 export async function removeUserRoleAction(formData: FormData) {
@@ -48,8 +49,8 @@ export async function removeUserRoleAction(formData: FormData) {
     roleId,
   })
 
-  revalidateTag(adminUserDetailTag(access.user.id, targetUserId), "max")
-  revalidateTag(adminUsersListTag(access.user.id), "max")
+  updateTag(adminUserDetailTag(targetUserId))
+  updateTag(adminUsersListTag())
 }
 
 export async function createRoleAction(formData: FormData) {
@@ -63,7 +64,8 @@ export async function createRoleAction(formData: FormData) {
       .filter((value): value is string => typeof value === "string"),
   })
 
-  revalidateTag(adminRolesListTag(access.user.id), "max")
+  updateTag(adminRolesListTag())
+  updateTag(adminUserRoleOptionsTag())
   redirect(`/roles/${role.id}`)
 }
 
@@ -82,6 +84,7 @@ export async function updateRoleAction(formData: FormData) {
     permissionIds,
   })
 
-  revalidateTag(adminRolesListTag(access.user.id), "max")
-  revalidateTag(adminRoleDetailTag(access.user.id, roleId), "max")
+  updateTag(adminRolesListTag())
+  updateTag(adminRoleDetailTag(roleId))
+  updateTag(adminUserRoleOptionsTag())
 }

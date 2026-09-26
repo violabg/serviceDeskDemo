@@ -1,15 +1,19 @@
-export function adminRolesListTag(actorUserId: string) {
-  return `admin:roles:${actorUserId}`
+export function adminRolesListTag() {
+  return "admin:roles"
 }
 
-export function adminRoleDetailTag(actorUserId: string, roleId: string) {
-  return `admin:roles:${actorUserId}:${roleId}`
+export function adminRoleDetailTag(roleId: string) {
+  return `admin:roles:${roleId}`
 }
 
-export function adminUsersListTag(actorUserId: string) {
-  return `admin:users:${actorUserId}`
+export function adminUsersListTag() {
+  return "admin:users"
 }
 
-export function adminUserDetailTag(actorUserId: string, targetUserId: string) {
-  return `admin:users:${actorUserId}:${targetUserId}`
+export function adminUserDetailTag(targetUserId: string) {
+  return `admin:users:${targetUserId}`
+}
+
+export function adminUserRoleOptionsTag() {
+  return "admin:user-role-options"
 }

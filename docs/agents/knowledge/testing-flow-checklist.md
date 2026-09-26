@@ -10,12 +10,13 @@ Do not use this for broad app architecture or UI composition decisions that do n
 
 ## Last verified
 
-2026-07-22, dirty worktree. Evidence from repository files:
+2026-09-26, dirty worktree. Evidence from repository files:
 
 - Historical Demo agent and test-strategy references from the 2026-07-22 verification no longer exist. Current role bindings: `docs/agents/integration-bindings.md`; agents: `.github/agents/demo-planner.agent.md`, `.github/agents/demo-implementor.agent.md`, `.github/agents/demo-integration-tester.agent.md`.
 - Bootstrap repaired these references on 2026-09-19; this is not a new product-behavior verification.
 - `package.json`
 - `vitest.config.ts`
+- `AGENTS.md` (diagnostics, typecheck, scoped lint, then focused tests)
 
 ## Evidence
 
@@ -35,8 +36,8 @@ Do not use this for broad app architecture or UI composition decisions that do n
 
 - First check affected files for editor diagnostics.
 - Fix in-scope diagnostics before running tests.
-- Run the narrowest lint or typecheck step available for the affected files or affected scope before tests.
-- If the repo has no meaningful narrow lint step, use diagnostics plus `pnpm typecheck` before tests.
+- Run `pnpm typecheck` and scoped ESLint for the affected files before tests; `pnpm exec eslint <affected-files>` is available even without a separate narrow lint script.
+- Use `pnpm exec vitest run <affected-test-files>` to constrain the Vitest run to specific files. Confirm the command selects only the intended tests in the active package-manager version.
 - Run only new or directly affected tests first.
 - Broaden to grouped regression or full-suite runs only after focused checks pass.
 

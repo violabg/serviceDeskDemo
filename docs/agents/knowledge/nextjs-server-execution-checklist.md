@@ -4,15 +4,16 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 
 ## Last verified
 
-2026-07-22, dirty worktree. Evidence from repository files:
+2026-09-26, dirty worktree. Evidence from repository files:
 
 - AGENTS.md
-- app/(dashboard)/admin/actions.ts
+- app/(dashboard)/(admin)/actions.ts
 - app/(dashboard)/layout.tsx
-- app/(dashboard)/admin/roles/page.tsx
-- app/(dashboard)/admin/roles/[roleId]/page.tsx
-- app/(dashboard)/admin/users/[userId]/page.tsx
+- app/(dashboard)/(admin)/roles/page.tsx
+- app/(dashboard)/(admin)/roles/[roleId]/page.tsx
+- app/(dashboard)/(admin)/users/[userId]/page.tsx
 - app/(dashboard)/tickets/actions.ts
+- app/(dashboard)/admin/_lib/current-application-user.ts
 - app/(dashboard)/tickets/new/new-ticket-form.tsx
 - app/(dashboard)/tickets/[id]/ticket-detail-forms.tsx
 - components/app-sidebar.tsx
@@ -23,8 +24,8 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 
 ## Evidence
 
-- Server actions are centralized in one module with "use server": app/(dashboard)/admin/actions.ts.
-- Admin pages invoke server actions via form action handlers: app/(dashboard)/admin/roles/page.tsx, app/(dashboard)/admin/roles/[roleId]/page.tsx, app/(dashboard)/admin/users/[userId]/page.tsx.
+- Admin server actions are centralized in one module with "use server": app/(dashboard)/(admin)/actions.ts.
+- Admin pages invoke server actions via form action handlers: app/(dashboard)/(admin)/roles/page.tsx, app/(dashboard)/(admin)/roles/[roleId]/page.tsx, app/(dashboard)/(admin)/users/[userId]/page.tsx.
 - Ticket forms invoke server actions from client submit handlers when react-hook-form state and `useTransition` orchestration are needed: app/(dashboard)/tickets/new/new-ticket-form.tsx, app/(dashboard)/tickets/[id]/ticket-detail-forms.tsx, app/(dashboard)/tickets/actions.ts.
 - Dashboard layout is server-first and performs session plus permission gating before render: app/(dashboard)/layout.tsx.
 - Client-only auth helper is isolated behind "use client": lib/auth/client.ts, while server auth is separate in lib/auth/server.ts.
@@ -37,7 +38,7 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 - Choose the form trigger pattern that matches the UI boundary:
   - Use `action={serverAction}` for server-rendered forms that can submit directly without client-side orchestration.
   - Use client `onSubmit` handlers plus `startTransition(async () => serverAction(formData))` when react-hook-form state, optimistic/pending UI, or client-only orchestration is required.
-- After write actions, refresh affected data with `revalidateTag` (admin sections) or `revalidatePath` (simple path-based cases), and redirect when route transition is required. See `nextjs-cache-components-pattern.md` for when to use each.
+- After successful writes, call `updateTag` for affected cached data when the user needs to read their change immediately, and redirect when navigation is required. `revalidateTag(tag, "max")` permits stale content; `revalidatePath` remains valid for broad route invalidation when tags are not known. See `nextjs-cache-components-pattern.md` for the current tag and dependency rules.
 - Keep auth and permission checks on the server before protected UI is rendered.
 - Keep browser auth APIs in client-only modules and server auth APIs in server modules.
 
@@ -51,7 +52,7 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 
 - Server action module pattern:
   - Use one domain action file under the route domain (example: admin actions).
-  - Parse FormData on server, call domain service methods, then revalidate paths.
+  - Parse FormData on server, call domain service methods, then expire only affected cache tags.
 - Server form pattern:
   - Use direct `<form action={serverAction}>` wiring when the form can stay server-first.
 - Client-orchestrated form pattern:
@@ -70,4 +71,4 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 - Do not call server-side auth utilities from client files.
 - Do not place mutation logic directly inside client components when a server action can own it.
 - Do not force direct `action={serverAction}` wiring in forms that already need client-side state orchestration.
-- Do not forget to revalidate (via `revalidateTag` for admin sections) after role, user, or permission changes.
+- Do not forget to expire affected list, detail, and role-option tags with `updateTag` after role, user, or permission changes.

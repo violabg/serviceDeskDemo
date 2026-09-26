@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
-    addTicketNoteAction,
-    assignTechnicianAction,
-    checkDuplicateTicketAction,
-    createTicketAction,
-    updateTicketPriorityAction,
-    updateTicketStatusAction,
+  ticketDetailTag,
+  ticketListTag,
+} from "@/app/(dashboard)/tickets/_lib/cache-tags"
+import {
+  addTicketNoteAction,
+  assignTechnicianAction,
+  checkDuplicateTicketAction,
+  createTicketAction,
+  updateTicketPriorityAction,
+  updateTicketStatusAction,
 } from "@/app/(dashboard)/tickets/actions"
 import { permissionKey } from "@/lib/access-control"
 
@@ -26,14 +30,14 @@ const serviceMock = vi.hoisted(() => ({
   updateTicketPriority: vi.fn(),
   updateTicketStatus: vi.fn(),
 }))
-const revalidateTagMock = vi.hoisted(() => vi.fn())
+const updateTagMock = vi.hoisted(() => vi.fn())
 const redirectMock = vi.hoisted(() => vi.fn())
 
 vi.mock("@/app/(dashboard)/admin/_lib/current-application-user", () => ({
   requireCurrentApplicationAccess: accessMock,
 }))
 vi.mock("@/lib/tickets/service", () => serviceMock)
-vi.mock("next/cache", () => ({ revalidateTag: revalidateTagMock }))
+vi.mock("next/cache", () => ({ updateTag: updateTagMock }))
 vi.mock("next/navigation", () => ({ redirect: redirectMock }))
 
 function makeFormData(values: Record<string, string>) {
@@ -74,7 +78,7 @@ describe("ticket actions", () => {
     )
 
     expect(serviceMock.createTicket).not.toHaveBeenCalled()
-    expect(revalidateTagMock).not.toHaveBeenCalled()
+    expect(updateTagMock).not.toHaveBeenCalled()
     expect(redirectMock).not.toHaveBeenCalled()
   })
 
@@ -141,7 +145,8 @@ describe("ticket actions", () => {
       },
       "user-1"
     )
-    expect(revalidateTagMock).toHaveBeenCalledTimes(2)
+    expect(updateTagMock).toHaveBeenCalledWith(ticketListTag())
+    expect(updateTagMock).toHaveBeenCalledTimes(1)
     expect(redirectMock).toHaveBeenCalledWith("/tickets/ticket-1")
   })
 
@@ -153,7 +158,7 @@ describe("ticket actions", () => {
     )
 
     expect(serviceMock.updateTicketStatus).not.toHaveBeenCalled()
-    expect(revalidateTagMock).not.toHaveBeenCalled()
+    expect(updateTagMock).not.toHaveBeenCalled()
   })
 
   it("revalidates after a successful status update", async () => {
@@ -168,7 +173,9 @@ describe("ticket actions", () => {
       "Resolved",
       "user-1"
     )
-    expect(revalidateTagMock).toHaveBeenCalledTimes(2)
+    expect(updateTagMock).toHaveBeenCalledWith(ticketDetailTag("ticket-1"))
+    expect(updateTagMock).toHaveBeenCalledWith(ticketListTag())
+    expect(updateTagMock).toHaveBeenCalledTimes(2)
   })
 
   it("revalidates after priority, assignee, and note mutations", async () => {
@@ -197,6 +204,29 @@ describe("ticket actions", () => {
       "Investigating outage",
       "user-1"
     )
-    expect(revalidateTagMock).toHaveBeenCalledTimes(6)
+    expect(updateTagMock).toHaveBeenCalledWith(ticketDetailTag("ticket-1"))
+    expect(updateTagMock).toHaveBeenCalledWith(ticketListTag())
+    expect(updateTagMock).toHaveBeenCalledTimes(5)
+  })
+
+  it("expires the same list tag for writes by different users", async () => {
+    await updateTicketPriorityAction(
+      makeFormData({ ticketId: "ticket-1", priority: "High" })
+    )
+
+    accessMock.mockResolvedValue({
+      user: { id: "user-2" },
+      effectivePermissionKeys: [permissionKey("tickets", "write")],
+    })
+    await updateTicketPriorityAction(
+      makeFormData({ ticketId: "ticket-1", priority: "High" })
+    )
+
+    expect(updateTagMock.mock.calls.map(([tag]) => tag)).toEqual([
+      ticketDetailTag("ticket-1"),
+      ticketListTag(),
+      ticketDetailTag("ticket-1"),
+      ticketListTag(),
+    ])
   })
 })

@@ -34,7 +34,7 @@ async function getRolesData(actorUserId: string) {
   "use cache"
 
   cacheLife("days")
-  cacheTag(adminRolesListTag(actorUserId))
+  cacheTag(adminRolesListTag())
 
   return getRolesForManagement({ actorUserId })
 }
@@ -46,7 +46,7 @@ async function getAvailablePermissions(
   "use cache"
 
   cacheLife("days")
-  cacheTag(adminRolesListTag(actorUserId))
+  cacheTag(adminRolesListTag())
 
   if (!canWriteRoles) {
     return []

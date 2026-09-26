@@ -12,7 +12,7 @@ async function getUsersData(actorUserId: string) {
   "use cache"
 
   cacheLife("days")
-  cacheTag(adminUsersListTag(actorUserId))
+  cacheTag(adminUsersListTag())
 
   return getUsersForManagement({ actorUserId })
 }

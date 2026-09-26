@@ -2,7 +2,10 @@ import {
   assignUserRoleAction,
   removeUserRoleAction,
 } from "@/app/(dashboard)/(admin)/actions"
-import { adminUserDetailTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
+import {
+  adminUserDetailTag,
+  adminUserRoleOptionsTag,
+} from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
@@ -25,7 +28,7 @@ async function getUserDetailData(actorUserId: string, targetUserId: string) {
   "use cache"
 
   cacheLife("days")
-  cacheTag(adminUserDetailTag(actorUserId, targetUserId))
+  cacheTag(adminUserDetailTag(targetUserId), adminUserRoleOptionsTag())
 
   return getUserForManagement({
     actorUserId,
