@@ -3,8 +3,10 @@ import { AuthView } from "@neondatabase/auth-ui"
 
 export default function AuthCallbackPage() {
   return (
-    <NeonAuthUiProvider>
-      <AuthView path="callback" />
-    </NeonAuthUiProvider>
+    <main className="grid min-h-svh place-items-center p-6">
+      <NeonAuthUiProvider>
+        <AuthView path="callback" />
+      </NeonAuthUiProvider>
+    </main>
   )
 }
