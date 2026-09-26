@@ -6,7 +6,7 @@ import { getUsersForManagement } from "@/lib/access-control/server"
 import { cacheLife, cacheTag } from "next/cache"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 async function getUsersData(actorUserId: string) {
   "use cache"
@@ -28,9 +28,11 @@ export default function UsersPage() {
           Users
         </h1>
       </div>
-      <Suspense fallback={<UsersContentSkeleton />}>
-        <UsersPageContent />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<UsersContentSkeleton />}>
+          <UsersPageContent />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }

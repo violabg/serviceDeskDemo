@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 export default function DashboardPage() {
   return (
@@ -10,9 +10,11 @@ export default function DashboardPage() {
           Dashboard
         </h1>
       </div>
-      <Suspense fallback={<DashboardPageSkeleton />}>
-        <DashboardPageContent />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<DashboardPageSkeleton />}>
+          <DashboardPageContent />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }

@@ -15,7 +15,7 @@ import {
 import { getRoleForManagement } from "@/lib/access-control/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 const operationOrder = new Map<string, number>(
   ACCESS_OPERATIONS.map((operation, index) => [operation, index])
@@ -43,9 +43,11 @@ export default function RoleDetailPage({
       <div className="space-y-1">
         <p className="font-medium text-muted-foreground text-sm">Roles</p>
       </div>
-      <Suspense fallback={<RoleDetailPageSkeleton />}>
-        <RoleDetailPageContent params={params} />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<RoleDetailPageSkeleton />}>
+          <RoleDetailPageContent params={params} />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }

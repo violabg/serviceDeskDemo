@@ -5,6 +5,41 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Animate opted-in content while keeping the dashboard chrome stationary. */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+}
+
+::view-transition-group(.content-fade) {
+    animation-duration: 160ms;
+    animation-timing-function: ease-out;
+}
+
+::view-transition-old(.content-fade) {
+    animation: 160ms ease-out both content-fade-out;
+}
+
+::view-transition-new(.content-fade) {
+    animation: 160ms ease-out both content-fade-in;
+}
+
+@keyframes content-fade-out {
+    to { opacity: 0; }
+}
+
+@keyframes content-fade-in {
+    from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);

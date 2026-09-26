@@ -24,7 +24,7 @@ import { prisma } from "@/lib/prisma"
 import { cacheLife, cacheTag } from "next/cache"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 const operationOrder = new Map<string, number>(
   ACCESS_OPERATIONS.map((operation, index) => [operation, index])
@@ -85,9 +85,11 @@ export default function RolesPage() {
           Roles
         </h1>
       </div>
-      <Suspense fallback={<RolesContentSkeleton />}>
-        <RolesPageContent />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<RolesContentSkeleton />}>
+          <RolesPageContent />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }
@@ -104,15 +106,19 @@ async function RolesPageContent() {
 
   return (
     <div className="gap-4 grid lg:grid-cols-[1fr_22rem]">
-      <Suspense fallback={<RolesListSkeleton />}>
-        <RolesListSection actorUserId={access.user.id} />
-      </Suspense>
-      <Suspense fallback={<CreateRoleSkeleton />}>
-        <CreateRoleSection
-          actorUserId={access.user.id}
-          canWriteRoles={canWriteRoles}
-        />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<RolesListSkeleton />}>
+          <RolesListSection actorUserId={access.user.id} />
+        </Suspense>
+      </ViewTransition>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<CreateRoleSkeleton />}>
+          <CreateRoleSection
+            actorUserId={access.user.id}
+            canWriteRoles={canWriteRoles}
+          />
+        </Suspense>
+      </ViewTransition>
     </div>
   )
 }

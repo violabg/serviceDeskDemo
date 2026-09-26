@@ -19,7 +19,7 @@ import { hasPermission } from "@/lib/access-control"
 import { getUserForManagement } from "@/lib/access-control/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
-import { Suspense } from "react"
+import { Suspense, ViewTransition } from "react"
 
 async function getUserDetailData(actorUserId: string, targetUserId: string) {
   "use cache"
@@ -40,9 +40,11 @@ export default function UserDetailPage({
 }) {
   return (
     <main className="flex flex-col flex-1 gap-6 p-4 pt-0">
-      <Suspense fallback={<UserDetailContentSkeleton />}>
-        <UserDetailPageContent params={params} />
-      </Suspense>
+      <ViewTransition default="none" update="content-fade">
+        <Suspense fallback={<UserDetailContentSkeleton />}>
+          <UserDetailPageContent params={params} />
+        </Suspense>
+      </ViewTransition>
     </main>
   )
 }
