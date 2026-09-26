@@ -5,5 +5,6 @@ export default auth.middleware({
 })
 
 export const config = {
-  matcher: ["/account/:path*"],
+  // Complete the OAuth verifier exchange before rendering the callback UI.
+  matcher: ["/auth/callback", "/account/:path*"],
 }
