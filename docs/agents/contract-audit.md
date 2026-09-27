@@ -1,30 +1,84 @@
 # Contract Audit
 
-## Result
+## Result: 2026-09-27
 
-Pass for the approved file inventory and structural Bootstrap contract checks. Native runtime compatibility remains unverified.
+Approved Bootstrap 5.3.0 upgrade operations are applied. Canonical preservation and complete native-body checks pass. Full generated-system conformance is not certified: known baseline debt remains and both selected native environments remain unverified.
 
-## Checks
+The reference contract is `.agents/skills/bootstrap-agentic-system/contracts/audit-and-handoff.md`, Phase G. This report cites affected checks instead of restating the checklist.
 
-| Check | Result | Evidence | Fix Needed |
-| --- | --- | --- | --- |
-| Required first-batch roles | Pass | Seven generated roles per target, including Planner, Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask and Vision | None |
-| Selected skills | Pass | Five `demo-` skills generated; business-logic gap detector recorded as deferred | None |
-| Canonical preservation | Pass | 22 source-hash and exact-copy checks in `validation-report.md` | None |
-| Planner schema/index gates | Pass | Both Planner copies name the existing index and plan schema before their use | None |
-| Tracker/session contract | Pass | `github-issues-adapter.md` distinguishes issue and session IDs, bounds linked-issue retrieval and requires direct resume | None |
-| Knowledge/glossary separation | Pass | Existing index is preserved; glossary is separate and vocabulary-focused | None |
-| Maintenance baseline | Pass | 93 generated entries have matching pristine files under `.baseline/` | None |
-| Vision decision | Pass | Luna registrations are present; Copilot adapter carries the explicit invocation override and it is in the customization register | None |
-| Client and MCP behavior | Unverified | `compatibility.md` lists reload, discovery, role, tool, handoff and live-MCP checks still required | Run the listed disposable-fixture checks in each selected client |
+## Approved Scope And Merge Outcomes
 
-## Approved Exceptions And Deferrals
+- Mode: upgrade, 5.2.0 to installed 5.3.0. Manifest, version-2 answers and baseline are present; all 93 generated inventory entries exist.
+- Ask and Knowledge Builder: four environment-specific canonical copies take upstream in Capability Substitutions and Role Tooling Intent; current copies matched BASE before application. Other canonical regions are unchanged. Four corresponding native bodies are regenerated verbatim without new tool/MCP grants.
+- New slots: Ask in both environments uses SESSION_ROOT=sessions, PLAN_SCHEMA_PATH=docs/agents/plan-schema.md, TEST_PLAN_SCHEMA_PATH=docs/agents/test-plan-schema.md and KNOWLEDGE_INDEX_PATH=docs/agents/knowledge/README.md. Knowledge Builder in both environments adds those same PLAN_SCHEMA_PATH and TEST_PLAN_SCHEMA_PATH values. Answers and preservation recipes agree.
+- Explicit operation records replace broad agent-workflow-service evidence for these two roles. Ask remains read-only Q&A without session, memory or logging operations. Knowledge Builder writes knowledge/index and owning-session evidence only; plan-save/load operations are out of scope; read-only plan evidence inspection uses file-read. Role restrictions govern discovery evidence.
+- Both planning skill deltas were already applied in rendered content; changed source-only marker hashes are refreshed in snapshots, recipes and generated inventory source hashes.
+- Vision recommendation is superseded by explicit C007/C008 Luna choices. Native metadata exceptions C001/C007/C008 remain visible; no new model choice is inferred. Placeholder provenance is refreshed. The retained compatibility contract gains the already-applied 5.2 search/remote-image verification requirement; its source snapshot and hash are refreshed without changing role behavior.
+- Copilot Integration Tester: user approved restoring exact canonical body and recorded frontmatter rather than absorbing repository formatting into a baseline.
+- Repository-only knowledge changes are kept (C011/C012). Their baselines are not refreshed. Five orphan baselines remain unresolved, with approval to retain them visibly.
+- Approval: user `approved all` after the concrete plan; 2026-09-27. Session-folder contents were excluded from discovery and edits.
 
-- `demo-vision` may be callable as a Copilot subagent because the user explicitly overrode the canonical `disable-model-invocation` value in its native adapter. The canonical copy remains unchanged.
-- Planner and Direct Implementor process images inline when their active model supports image input. Otherwise, they require a discovered `demo-vision` role using Luna. The pre-install Codex host did not expose custom roles, so it must be reloaded and verified before that delegation path is used.
-- The business-logic gap detector skill is deferred.
-- No free-form or local-Markdown planning adapter, tracker-write grant, Neon project-management grant or Next.js upgrade grant is installed.
+## Classified Deltas
 
-## Validation Limits
+| Delta | Final classification | Evidence |
+| --- | --- | --- |
+| Ask explicit per-role capability discovery | applied | Both canonical/native copies, answers operation records and scoped integration bindings |
+| Knowledge Builder explicit per-role capability discovery | applied | Both canonical/native copies and explicit knowledge/session-output boundaries |
+| Vision recommendation | superseded for model choice; applied for source provenance | C007/C008 retained; placeholders snapshot matches installed source |
+| Portable bug/story evidence gathering | applied | Unchanged rendered skills, refreshed source templates and SHA-256 recipes |
+| Search and remote-image recommendation text | applied | Existing C009 behavior and refreshed placeholders snapshot |
+| Actual native role operation verification | unknown | Compatibility evidence records bounded client/role/operation verification steps; status stays unverified |
 
-The independent Python verifier passed 616 structural checks. The shipped Node verifier could not run because this sandbox blocked Node, including the requested elevation. Product lint, typecheck, tests and build were not run because the approved changes are limited to agent-system files and documentation.
+## Phase G Findings
+
+| Affected check | Result | Evidence / next step |
+| --- | --- | --- |
+| Complete canonical preservation and native body loading content | structural PASS | 22 Node comparisons and 19 decoded full bodies; actual native loading remains unverified |
+| Answers/recipe/generated inventory and approved paths | structural PASS | Exact recorded fills and 93 existing primary files; baseline exceptions below |
+| Pristine baseline equality | unresolved, retained with approval | Two knowledge changes recorded as C011/C012; do not absorb repository drift |
+| No baseline entries outside generated inventory | unresolved, retained with approval | Five legacy orphan baselines; no deletions approved |
+| Tool configuration, role authority and effective operations | static configuration retained; runtime unverified | No grants broadened; compatibility.md lists required client checks |
+| Vision selection | registered exception retained | Explicit Luna native metadata and conditional image-input rules |
+
+## Validation And Rollback
+
+Node preservation passed for 22 copies; native decoding/body/hash checks passed for 19 adapters. Python structural verification passed 625 checks and failed only the 3 retained baseline-debt checks. git diff --check passed. Product checks are not applicable. The read-only Contract Auditor reviewed the final file list and identified a Knowledge Builder plan-load binding ambiguity, resolved by marking source-defined read-and-edit load operations out of scope. Changed compliant baseline copies are refreshed only after approval and preservation checks; unrelated drift remains untouched.
+
+A pre-change backup of changed primary files and refreshed baseline files is available in the temporary maintenance backup recorded by the execution handoff. Roll back only those operations; never reset unrelated repository edits or session folders.
+
+## Remaining Work
+
+- In each selected client, verify role discovery, complete loading, effective native/MCP prerequisites, question routing, handoffs and actual image input using disposable fixtures outside existing sessions.
+- Review baseline orphan ownership and reconcile knowledge baseline history in a separately approved maintenance operation.
+- Run topic-scoped demo-knowledge-builder after structural changes. Use create-work-item-from-description for authorized ticket creation and demo-author-repo-skill for repeatable repository procedures.
+
+## Changed Files
+
+- `docs/agents/sources/templates/agents/knowledge-builder.agent.md`
+- `docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md`
+- `docs/agents/sources/templates/agents/ask.agent.md`
+- `docs/agents/canonical/codex/agents/demo-ask.agent.md`
+- `docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md`
+- `docs/agents/canonical/copilot/agents/demo-ask.agent.md`
+- `docs/agents/sources/templates/skills/plan-bug-from-id/SKILL.md`
+- `docs/agents/sources/templates/skills/plan-user-story-from-id/SKILL.md`
+- `.codex/agents/demo-knowledge-builder.toml`
+- `.codex/agents/demo-ask.toml`
+- `.github/agents/demo-knowledge-builder.agent.md`
+- `.github/agents/demo-ask.agent.md`
+- `.github/agents/demo-integration-tester.agent.md`
+- `docs/agents/sources/registry/placeholders.yaml`
+- `docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md`
+- `docs/agents/preservation-plan.json`
+- `docs/agents/native-adapters.json`
+- `docs/agents/agentic-system.answers.yaml`
+- `docs/agents/integration-bindings.md`
+- `docs/agents/agentic-system-manifest.md`
+- `docs/agents/compatibility.md`
+- `docs/agents/validation-report.md`
+- `docs/agents/contract-audit.md`
+- `docs/agents/sources/contracts/platform-compatibility.md`
+
+Corresponding changed compliant baseline copies were refreshed at their answers-declared paths. The restored Tester adapter already matched its existing baseline, so that baseline required no write.
+
+Rollback backup: `/var/folders/6f/yk1wsf6s55sclc88hkjc2r640000gn/T/agent-system-5.3-WputgI`; `changed.json` lists primary paths. The backup also retains each replaced baseline at its repository-relative path.

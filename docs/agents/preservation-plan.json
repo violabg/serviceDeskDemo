@@ -160,7 +160,7 @@
     },
     {
       "template": "templates/agents/knowledge-builder.agent.md",
-      "sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
+      "sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
       "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
       "values": {
         "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
@@ -183,7 +183,9 @@
         ],
         "PLATFORM_TOOLS": "\"functions.exec\", \"collaboration.spawn_agent\", \"collaboration.send_message\", \"collaboration.wait_agent\"",
         "KNOWLEDGE_DISCOVERY_DELEGATION": "Use collaboration.spawn_agent with agent_type=\"default\" in this host, up to 10 evidence tasks within the runtime concurrency limit; receive results through collaboration.wait_agent. Other Codex contexts must verify their native spawn/wait bindings before delegating.",
-        "REPO_KNOWLEDGE_PATHS": "docs/agents/knowledge/"
+        "REPO_KNOWLEDGE_PATHS": "docs/agents/knowledge/",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+        "TEST_PLAN_SCHEMA_PATH": "docs/agents/test-plan-schema.md"
       },
       "blocks": [
         {
@@ -195,7 +197,7 @@
     },
     {
       "template": "templates/agents/ask.agent.md",
-      "sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
+      "sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
       "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -212,7 +214,11 @@
           "mcp__next_devtools__nextjs_call"
         ],
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "PLATFORM_TOOLS": "\"functions.exec\""
+        "PLATFORM_TOOLS": "\"functions.exec\"",
+        "SESSION_ROOT": "sessions",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "TEST_PLAN_SCHEMA_PATH": "docs/agents/test-plan-schema.md"
       },
       "blocks": [
         {
@@ -371,7 +377,7 @@
     },
     {
       "template": "templates/agents/knowledge-builder.agent.md",
-      "sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
+      "sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
       "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
       "values": {
         "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
@@ -394,7 +400,9 @@
         ],
         "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"edit/createDirectory\", \"edit/createFile\", \"edit/editFiles\", \"edit/rename\", \"agent\", \"web/fetch\"",
         "KNOWLEDGE_DISCOVERY_DELEGATION": "Use bounded agent/runSubagent calls to the built-in agent, up to 10 evidence tasks within the runtime concurrency limit. Run as the foreground Knowledge Builder; delegate questions return to it. Do not rely on nested delegation being enabled.",
-        "REPO_KNOWLEDGE_PATHS": "docs/agents/knowledge/"
+        "REPO_KNOWLEDGE_PATHS": "docs/agents/knowledge/",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+        "TEST_PLAN_SCHEMA_PATH": "docs/agents/test-plan-schema.md"
       },
       "blocks": [
         {
@@ -406,7 +414,7 @@
     },
     {
       "template": "templates/agents/ask.agent.md",
-      "sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
+      "sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
       "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -423,7 +431,11 @@
           "io.github.vercel/next-devtools-mcp/nextjs_call"
         ],
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"web/fetch\""
+        "PLATFORM_TOOLS": "\"vscode/askQuestions\", \"read/readFile\", \"search/fileSearch\", \"search/listDirectory\", \"search/textSearch\", \"search/usages\", \"web/fetch\"",
+        "SESSION_ROOT": "sessions",
+        "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
+        "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
+        "TEST_PLAN_SCHEMA_PATH": "docs/agents/test-plan-schema.md"
       },
       "blocks": [
         {
@@ -461,7 +473,7 @@
     },
     {
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "sha256": "6c9f6959e924ec5c4e27a28bc860e47fe05da65bc6aa2b40c4609f406fbfb619",
+      "sha256": "213d502ad896ec0795956086024bfd0ee51b42cabd6bac0b3c28c412412967fc",
       "output": "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
       "values": {
         "SESSION_ROOT": "sessions",
@@ -475,7 +487,7 @@
     },
     {
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "sha256": "b915cf9b299fc89b7bfb88277410020ebeaf909ffd7e35b249064db20314ecb5",
+      "sha256": "d25fa707cc39d86ee2705df2b7ed28a960a068c0d67d61aac66100a4f1cfe9ff",
       "output": "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
       "values": {
         "SESSION_ROOT": "sessions",

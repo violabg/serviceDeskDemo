@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Plan User Story From Id
 
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:9a99ab62835cba14 lines=25 -->
+<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:93d9238364d70e3a lines=25 -->
 ## Work-Item Planning Contract
 
 Require one External Issue ID matching `{{WORK_ITEM_ID_FORMAT}}`. External Issue ID identifies tracker ticket; it is never Planning Session ID.

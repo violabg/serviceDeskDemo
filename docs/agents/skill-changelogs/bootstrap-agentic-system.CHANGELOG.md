@@ -4,7 +4,15 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `5.2.0`
+- `5.3.0`
+
+## 2026-09-27
+
+### 5.3.0
+
+- Discover Ask and Knowledge Builder bindings from explicit per-role capability evidence, retaining each role's workflow restrictions.
+- Recommend `gpt-5.6-luna-pro` for Vision when supported by the selected environment; retain explicit model choice or approved platform-default omission.
+- Align bug and user-story planning mirrors with portable evidence-gathering invocation while preserving approved delegated or inline execution.
 
 ## 2026-09-25
 
