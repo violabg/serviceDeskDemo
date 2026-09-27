@@ -12,11 +12,11 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 5.2.0 with the explicit Vision native-metadata exceptions below
+- Bootstrap Contract Applied Through: 5.3.0 with the explicit Vision native-metadata exceptions below
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Available: 3.0.0
 - Maintain Skill Version Last Applied: 3.0.0
-- Last Maintenance Date: 2026-09-25
+- Last Maintenance Date: 2026-09-27
 
 ## Generated System Paths
 
@@ -49,7 +49,7 @@
 - Compatibility Evidence: `docs/agents/compatibility.md`
 - Canonical Source Snapshots: `docs/agents/sources/` (outside skill/agent discovery roots)
 - Preservation Plan: `docs/agents/preservation-plan.json`
-- Preservation Plan SHA-256: 0bc4fd64fd1d37b5bea06fbc3345b11d31e753126c30163013aef1f4ca5ccc87
+- Preservation Plan SHA-256: 0c20a5181e7423cdd7bfd3f2cd3740b06ff8d9a3db8c1697b0807565907cdb28
 - Native Body Mapping: `docs/agents/native-adapters.json`
 - Structural Verification: `docs/agents/validation-report.md`
 - Contract Audit: `docs/agents/contract-audit.md`
@@ -73,6 +73,8 @@
 | C008 | `.codex/agents/demo-vision.toml` | model metadata | modified-rule | User approved the Codex counterpart for repository image analysis with GPT-6 Luna; native image viewing still requires runtime verification | overrides-canonical native metadata | always; recheck model and image tool at runtime |
 | C009 | `docs/agents/integration-bindings.md`, `docs/agents/agentic-system.answers.yaml` | repository-search resolution and visual binding | added-section | Gate 5 must continue with derived, bounded clusters from native workspace search when a cluster-producing tool is absent; Codex image viewing must receive actual image input | extends-canonical through existing search slot and native operation binding | always; re-evaluate if native search/image tools change |
 | C010 | `docs/agents/sources/registry/capabilities.yaml` | repository-search fallback | modified-rule | Approved repository-local 5.1.1 correction was superseded by the 5.2.0 upstream fallback; retained source now matches upstream, while C009 keeps concrete native bindings | superseded by upstream 5.2.0 | drop-when-superseded; resolved in 5.2.0 |
+| C011 | `docs/agents/knowledge/testing-flow-checklist.md` | verification evidence and validation commands | modified-rule | Preserve repository-only 2026-09-26 knowledge updates; user approved preservation during 2026-09-27 upgrade; product evidence not reverified | independent repository documentation | always; last verified merge classification 5.3.0; baseline mismatch remains visible |
+| C012 | `docs/agents/knowledge/dashboard-navigation-boundaries.md` | verification evidence, vocabulary and breadcrumb behavior | modified-rule | Preserve repository-only 2026-09-26 knowledge updates; user approved preservation during 2026-09-27 upgrade; product evidence not reverified | independent repository documentation | always; last verified merge classification 5.3.0; baseline mismatch remains visible |
 
 Canonical copies remain exact after approved slots and marker stripping. The native Vision metadata overrides are not described as unchanged canonical translations. No other non-slot canonical edits are authorized.
 
@@ -86,6 +88,16 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 - Every inline fill and replaced block is in the preservation recipe and answers; all source-only markers are stripped. Native adapters and their complete-body hashes are inventoried separately.
 - Five legacy baseline files outside the current generated inventory remain preserved (`.github/skills/` four copies and `CONTEXT.md`); the structural no-orphan-baseline check remains unresolved. Runtime search and remote-image access are also unverified in the generated roles.
 
+## Bootstrap 5.3.0 Approved Upgrade
+
+- Approval: user `approved all`, 2026-09-27, including the proposed per-file path values and Copilot Integration Tester restoration.
+- Ask/Knowledge Builder canonical capability and tooling regions take upstream; unchanged baseline proves no overlapping repository edits. Native bodies are regenerated losslessly with existing tool grants. Explicit operation evidence preserves read-only Ask and knowledge-only editing.
+- Planning gathering outputs already satisfy the release; only source marker hashes and snapshots change. Vision C001/C007/C008 explicit choices remain authoritative over the recommendation. Existing customization rows remain in force; C004 repository bindings now include explicit 5.3.0 operation scope.
+- Copilot Integration Tester formatting drift is resolved by restoring the exact recorded body/frontmatter, not by baselining the drift.
+- C011/C012 preserve the two repository-only knowledge updates without refreshing their pristine baselines. Five orphan baselines remain approved deferred debt; full structural validation is not certified as passing.
+- Both selected environments remain unverified for generated-role discovery, effective tools, MCP prerequisites, handoffs and image operations. No client-version upgrade is implied.
+- Session-folder contents were excluded from discovery and edits. Product code, runtime configuration and tests were outside scope.
+
 ## Maintenance History
 
 | Date | Bootstrap contract | Maintain version applied | Summary |
@@ -95,5 +107,6 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 | 2026-09-19 | 5.1.0 | 3.0.0 | Applied the Bootstrap 5.1.0 implementation-plan schema delta; refreshed schema and changelog provenance; runtime verification remains outstanding |
 | 2026-09-25 | 5.1.1 (repository-local) | 3.0.0 | Evolved native repository-search fallback for Copilot and Codex, retained the user's Copilot Vision metadata, updated Codex Vision model, and corrected local Bootstrap source fallback; generated-role runtime verification remains outstanding |
 | 2026-09-25 | 5.2.0 | 3.0.0 | Upgraded seven canonical role mirrors and their native bodies; took upstream search fallback for C010, retained C009 native bindings, and added remote issue-image byte/permission guidance. Native search and image workflows remain unverified in generated roles. |
+| 2026-09-27 | 5.3.0 | 3.0.0 | Approved upgrade of Ask/Knowledge Builder capability tables and native bodies; refreshed explicit operation provenance and source hashes; restored Copilot Integration Tester canonical formatting; preserved Luna and knowledge drift, with baseline debt and native runtime verification deferred. |
 
 After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, demo-author-repo-skill for reusable procedures, and create-work-item-from-description when ticket creation is explicitly requested.

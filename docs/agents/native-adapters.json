@@ -35,7 +35,7 @@
     "path": ".codex/agents/demo-knowledge-builder.toml",
     "canonical_copy": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
     "format": "toml",
-    "body_sha256": "0734d05c4514cbfcf832cee4375aa8bd2286c4bea93c44f09c432a39ec157221",
+    "body_sha256": "a8aa1ea1f5eef9139f0500dcc6b58ad6ac88639ffce104872484d0d3d03986d2",
     "role": "knowledge-builder",
     "environment": "codex"
   },
@@ -43,7 +43,7 @@
     "path": ".codex/agents/demo-ask.toml",
     "canonical_copy": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
     "format": "toml",
-    "body_sha256": "991b442024fca064ea714dba9ab88424ba6734eb3ac5f76750905c5f848d3987",
+    "body_sha256": "2ab1069e1cba55df52f9f2dfd10d2be494b4ce82307e2e32d02aa5cc9501eb5e",
     "role": "ask",
     "environment": "codex"
   },
@@ -91,7 +91,7 @@
     "path": ".github/agents/demo-knowledge-builder.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
     "format": "markdown",
-    "body_sha256": "3eeba7cf0eb52c9207b43803756902531270b59e37701fbd03268467c610aa7b",
+    "body_sha256": "36824a3618d202a139c516af1c75b507105a647e62f7ebbb492bea36e54f0e44",
     "role": "knowledge-builder",
     "environment": "copilot"
   },
@@ -99,7 +99,7 @@
     "path": ".github/agents/demo-ask.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
     "format": "markdown",
-    "body_sha256": "991b442024fca064ea714dba9ab88424ba6734eb3ac5f76750905c5f848d3987",
+    "body_sha256": "2ab1069e1cba55df52f9f2dfd10d2be494b4ce82307e2e32d02aa5cc9501eb5e",
     "role": "ask",
     "environment": "copilot"
   },

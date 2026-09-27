@@ -2,7 +2,7 @@
   "version": 2,
   "bootstrap": {
     "skill_version": "5.0.0",
-    "contract_applied_through": "5.2.0",
+    "contract_applied_through": "5.3.0",
     "generated_on": "2026-09-19"
   },
   "maintenance_decisions": {
@@ -19,6 +19,22 @@
       "codex": "gpt-6-luna; require an available native image-viewing tool for the exact local image path",
       "copilot": "GPT-6 Luna (copilot); preserve user-selected repository retrieval toolset",
       "status": "unverified in generated-role runtime"
+    },
+    "bootstrap_5_3_upgrade": {
+      "approved": true,
+      "date": "2026-09-27",
+      "evidence": "User: approved all; upgrade plan including exact path values and separate Tester restoration.",
+      "mode": "upgrade",
+      "regions": [
+        "Capability Substitutions",
+        "Role Tooling Intent"
+      ],
+      "role_scope": "Ask read-only Q&A without sessions; Knowledge Builder knowledge/index and owning-session artifacts only; no new MCP or global permission grants.",
+      "preserved_drift": [
+        "docs/agents/knowledge/testing-flow-checklist.md",
+        "docs/agents/knowledge/dashboard-navigation-boundaries.md"
+      ],
+      "deferred_baseline_debt": "Five pre-existing orphan entries and two retained knowledge baseline mismatches; do not absorb as pristine generated baseline."
     }
   },
   "execution_host": "Codex in VS Code Insiders; SDK environment path 0.153.0",
@@ -88,7 +104,9 @@
         "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md": "sessions",
         "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md": "sessions",
         ".github/instructions/planning-sessions.instructions.md": "sessions",
-        "AGENTS.md": "sessions"
+        "AGENTS.md": "sessions",
+        "docs/agents/canonical/codex/agents/demo-ask.agent.md": "sessions",
+        "docs/agents/canonical/copilot/agents/demo-ask.agent.md": "sessions"
       },
       "source": "user/recommend-accepted/discovery per decision-register.json",
       "evidence": "Approved master plan and accepted defaults; exact per-file substitution map"
@@ -98,7 +116,11 @@
         "docs/agents/canonical/codex/agents/demo-planner.agent.md": "docs/agents/plan-schema.md",
         "docs/agents/canonical/copilot/agents/demo-planner.agent.md": "docs/agents/plan-schema.md",
         ".github/instructions/planning-sessions.instructions.md": "docs/agents/plan-schema.md",
-        "AGENTS.md": "docs/agents/plan-schema.md"
+        "AGENTS.md": "docs/agents/plan-schema.md",
+        "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md": "docs/agents/plan-schema.md",
+        "docs/agents/canonical/codex/agents/demo-ask.agent.md": "docs/agents/plan-schema.md",
+        "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md": "docs/agents/plan-schema.md",
+        "docs/agents/canonical/copilot/agents/demo-ask.agent.md": "docs/agents/plan-schema.md"
       },
       "source": "user/recommend-accepted/discovery per decision-register.json",
       "evidence": "Approved master plan and accepted defaults; exact per-file substitution map"
@@ -116,7 +138,9 @@
         "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md": "docs/agents/knowledge/README.md",
         "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md": "docs/agents/knowledge/README.md",
         ".github/instructions/knowledge-guard.instructions.md": "docs/agents/knowledge/README.md",
-        "AGENTS.md": "docs/agents/knowledge/README.md"
+        "AGENTS.md": "docs/agents/knowledge/README.md",
+        "docs/agents/canonical/codex/agents/demo-ask.agent.md": "docs/agents/knowledge/README.md",
+        "docs/agents/canonical/copilot/agents/demo-ask.agent.md": "docs/agents/knowledge/README.md"
       },
       "source": "user/recommend-accepted/discovery per decision-register.json",
       "evidence": "Approved master plan and accepted defaults; exact per-file substitution map"
@@ -364,7 +388,11 @@
     "TEST_PLAN_SCHEMA_PATH": {
       "value": {
         "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md": "docs/agents/test-plan-schema.md",
-        "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md": "docs/agents/test-plan-schema.md"
+        "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md": "docs/agents/test-plan-schema.md",
+        "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md": "docs/agents/test-plan-schema.md",
+        "docs/agents/canonical/codex/agents/demo-ask.agent.md": "docs/agents/test-plan-schema.md",
+        "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md": "docs/agents/test-plan-schema.md",
+        "docs/agents/canonical/copilot/agents/demo-ask.agent.md": "docs/agents/test-plan-schema.md"
       },
       "source": "user/recommend-accepted/discovery per decision-register.json",
       "evidence": "Approved master plan and accepted defaults; exact per-file substitution map"
@@ -1992,41 +2020,32 @@
         }
       },
       "knowledge-builder": {
-        "agent-workflow-service": {
-          "capability": "audit-only",
-          "binding": "local-contract",
-          "invocation": "No broad service grant; resolve concrete token operations only",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
-          "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
-        },
         "knowledge-document-write": {
-          "capability": "knowledge-retrieval",
+          "capability": "knowledge-document-write",
           "binding": "local-contract",
-          "invocation": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "repository-search": {
           "capability": "repository-search",
-          "binding": "native-tool",
+          "binding": "local-contract",
           "invocation": "functions.exec / tools.exec_command: rg and targeted reads",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "inputs_outputs": "Use the repository-search capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "session-artifact-write": {
-          "capability": "agent-session-persistence",
+          "capability": "session-artifact-write",
           "binding": "local-contract",
-          "invocation": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "file-read": {
           "capability": "file-read",
@@ -2187,26 +2206,206 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "execution-report-read": {
+          "capability": "execution-report-read",
+          "binding": "local-contract",
+          "invocation": "Read `sessions/<planning-session-id>/execution-report.md`. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "execution-report-write": {
+          "capability": "execution-report-write",
+          "binding": "local-contract",
+          "invocation": "Write `sessions/<planning-session-id>/execution-report.md`. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "file-editing": {
+          "capability": "file-editing",
+          "binding": "local-contract",
+          "invocation": "Use the file-editing capability declared in `registry/capabilities.yaml`, within this role's file-operation scope. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Use the file-editing capability declared in `registry/capabilities.yaml`, within this role's file-operation scope.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-list": {
+          "capability": "implementation-plan-list",
+          "binding": "local-contract",
+          "invocation": "List the implementation plans already present in the current Planning Session folder. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "List the implementation plans already present in the current Planning Session folder.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-load": {
+          "capability": "implementation-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: source-defined load includes editing a plan in place, outside Knowledge Builder authority. Read-only evidence inspection uses file-read without plan editing.",
+          "inputs_outputs": "Open the existing implementation plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Knowledge Builder may read existing evidence but never edits or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-save": {
+          "capability": "implementation-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the implementation plan to its path in the current Planning Session folder.",
+          "prerequisites": "Knowledge Builder writes knowledge/index and current-session evidence only; it never implements code or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-schema": {
+          "capability": "implementation-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/plan-schema.md` and obey it as the plan contract. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read `docs/agents/plan-schema.md` and obey it as the plan contract.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-document-read": {
+          "capability": "knowledge-document-read",
+          "binding": "local-contract",
+          "invocation": "Read the knowledge document the index points to. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read the knowledge document the index points to.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-read": {
+          "capability": "knowledge-index-read",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-activate": {
+          "capability": "session-activate",
+          "binding": "local-contract",
+          "invocation": "Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-list": {
+          "capability": "session-artifact-list",
+          "binding": "local-contract",
+          "invocation": "List `sessions/<planning-session-id>/artifacts/`. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "List `sessions/<planning-session-id>/artifacts/`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-read": {
+          "capability": "session-artifact-read",
+          "binding": "local-contract",
+          "invocation": "Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-event-log": {
+          "capability": "session-event-log",
+          "binding": "local-contract",
+          "invocation": "Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-list": {
+          "capability": "session-list",
+          "binding": "local-contract",
+          "invocation": "Read only the current Planning Session folder under `sessions`. Never enumerate other sessions. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read only the current Planning Session folder under `sessions`. Never enumerate other sessions.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-append": {
+          "capability": "session-memory-append",
+          "binding": "local-contract",
+          "invocation": "Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-read": {
+          "capability": "session-memory-read",
+          "binding": "local-contract",
+          "invocation": "Read `sessions/<planning-session-id>/session-memory.md`. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/session-memory.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-list": {
+          "capability": "test-plan-list",
+          "binding": "local-contract",
+          "invocation": "List the test plans already present in the current Planning Session folder. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "List the test plans already present in the current Planning Session folder.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-load": {
+          "capability": "test-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: source-defined load includes editing a plan in place, outside Knowledge Builder authority. Read-only evidence inspection uses file-read without plan editing.",
+          "inputs_outputs": "Open the existing test plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Knowledge Builder may read existing evidence but never edits or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-save": {
+          "capability": "test-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the test plan to its path in the current Planning Session folder.",
+          "prerequisites": "Knowledge Builder writes knowledge/index and current-session evidence only; it never implements code or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-schema": {
+          "capability": "test-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "visual-evidence": {
+          "capability": "visual-evidence",
+          "binding": "local-contract",
+          "invocation": "Use the visual-evidence capability declared in `registry/capabilities.yaml`. Native procedure: functions.exec / tools.view_image on actual local image bytes; remote authorization prerequisite",
+          "inputs_outputs": "Use the visual-evidence capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         }
       },
       "ask": {
-        "agent-workflow-service": {
-          "capability": "audit-only",
-          "binding": "local-contract",
-          "invocation": "No broad service grant; resolve concrete token operations only",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
-          "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
-        },
         "repository-search": {
           "capability": "repository-search",
-          "binding": "native-tool",
+          "binding": "local-contract",
           "invocation": "functions.exec / tools.exec_command: rg and targeted reads",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "inputs_outputs": "Use the repository-search capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "file-read": {
           "capability": "file-read",
@@ -2330,6 +2529,213 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "execution-report-read": {
+          "capability": "execution-report-read",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "execution-report-write": {
+          "capability": "execution-report-write",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "file-editing": {
+          "capability": "file-editing",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Use the file-editing capability declared in `registry/capabilities.yaml`, within this role's file-operation scope.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-list": {
+          "capability": "implementation-plan-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "List the implementation plans already present in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-load": {
+          "capability": "implementation-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Open the existing implementation plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-save": {
+          "capability": "implementation-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the implementation plan to its path in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-schema": {
+          "capability": "implementation-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/plan-schema.md` and obey it as the plan contract. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read `docs/agents/plan-schema.md` and obey it as the plan contract.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-document-read": {
+          "capability": "knowledge-document-read",
+          "binding": "local-contract",
+          "invocation": "Read the knowledge document the index points to. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read the knowledge document the index points to.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-document-write": {
+          "capability": "knowledge-document-write",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-read": {
+          "capability": "knowledge-index-read",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-activate": {
+          "capability": "session-activate",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-list": {
+          "capability": "session-artifact-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "List `sessions/<planning-session-id>/artifacts/`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-read": {
+          "capability": "session-artifact-read",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-write": {
+          "capability": "session-artifact-write",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-event-log": {
+          "capability": "session-event-log",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-list": {
+          "capability": "session-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read only the current Planning Session folder under `sessions`. Never enumerate other sessions.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-append": {
+          "capability": "session-memory-append",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-read": {
+          "capability": "session-memory-read",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/session-memory.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-list": {
+          "capability": "test-plan-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "List the test plans already present in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-load": {
+          "capability": "test-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Open the existing test plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-save": {
+          "capability": "test-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the test plan to its path in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-schema": {
+          "capability": "test-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML. Native procedure: functions.exec / tools.exec_command for bounded reads; tools.apply_patch for authorized edits only",
+          "inputs_outputs": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "visual-evidence": {
+          "capability": "visual-evidence",
+          "binding": "local-contract",
+          "invocation": "Use the visual-evidence capability declared in `registry/capabilities.yaml`. Native procedure: functions.exec / tools.view_image on actual local image bytes; remote authorization prerequisite",
+          "inputs_outputs": "Use the visual-evidence capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         }
       },
       "vision": {
@@ -3931,41 +4337,32 @@
         }
       },
       "knowledge-builder": {
-        "agent-workflow-service": {
-          "capability": "audit-only",
-          "binding": "local-contract",
-          "invocation": "No broad service grant; resolve concrete token operations only",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
-          "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
-        },
         "knowledge-document-write": {
-          "capability": "knowledge-retrieval",
+          "capability": "knowledge-document-write",
           "binding": "local-contract",
-          "invocation": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "repository-search": {
           "capability": "repository-search",
-          "binding": "native-tool",
+          "binding": "local-contract",
           "invocation": "search/fileSearch, search/listDirectory, search/textSearch, search/usages",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "inputs_outputs": "Use the repository-search capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "session-artifact-write": {
-          "capability": "agent-session-persistence",
+          "capability": "session-artifact-write",
           "binding": "local-contract",
-          "invocation": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "file-read": {
           "capability": "file-read",
@@ -4166,26 +4563,206 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "execution-report-read": {
+          "capability": "execution-report-read",
+          "binding": "local-contract",
+          "invocation": "Read `sessions/<planning-session-id>/execution-report.md`. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "execution-report-write": {
+          "capability": "execution-report-write",
+          "binding": "local-contract",
+          "invocation": "Write `sessions/<planning-session-id>/execution-report.md`. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "file-editing": {
+          "capability": "file-editing",
+          "binding": "local-contract",
+          "invocation": "Use the file-editing capability declared in `registry/capabilities.yaml`, within this role's file-operation scope. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Use the file-editing capability declared in `registry/capabilities.yaml`, within this role's file-operation scope.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-list": {
+          "capability": "implementation-plan-list",
+          "binding": "local-contract",
+          "invocation": "List the implementation plans already present in the current Planning Session folder. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "List the implementation plans already present in the current Planning Session folder.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-load": {
+          "capability": "implementation-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: source-defined load includes editing a plan in place, outside Knowledge Builder authority. Read-only evidence inspection uses file-read without plan editing.",
+          "inputs_outputs": "Open the existing implementation plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Knowledge Builder may read existing evidence but never edits or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-save": {
+          "capability": "implementation-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the implementation plan to its path in the current Planning Session folder.",
+          "prerequisites": "Knowledge Builder writes knowledge/index and current-session evidence only; it never implements code or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-schema": {
+          "capability": "implementation-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/plan-schema.md` and obey it as the plan contract. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read `docs/agents/plan-schema.md` and obey it as the plan contract.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-document-read": {
+          "capability": "knowledge-document-read",
+          "binding": "local-contract",
+          "invocation": "Read the knowledge document the index points to. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read the knowledge document the index points to.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-read": {
+          "capability": "knowledge-index-read",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-activate": {
+          "capability": "session-activate",
+          "binding": "local-contract",
+          "invocation": "Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-list": {
+          "capability": "session-artifact-list",
+          "binding": "local-contract",
+          "invocation": "List `sessions/<planning-session-id>/artifacts/`. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "List `sessions/<planning-session-id>/artifacts/`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-read": {
+          "capability": "session-artifact-read",
+          "binding": "local-contract",
+          "invocation": "Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-event-log": {
+          "capability": "session-event-log",
+          "binding": "local-contract",
+          "invocation": "Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-list": {
+          "capability": "session-list",
+          "binding": "local-contract",
+          "invocation": "Read only the current Planning Session folder under `sessions`. Never enumerate other sessions. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read only the current Planning Session folder under `sessions`. Never enumerate other sessions.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-append": {
+          "capability": "session-memory-append",
+          "binding": "local-contract",
+          "invocation": "Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-read": {
+          "capability": "session-memory-read",
+          "binding": "local-contract",
+          "invocation": "Read `sessions/<planning-session-id>/session-memory.md`. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/session-memory.md`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-list": {
+          "capability": "test-plan-list",
+          "binding": "local-contract",
+          "invocation": "List the test plans already present in the current Planning Session folder. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "List the test plans already present in the current Planning Session folder.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-load": {
+          "capability": "test-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: source-defined load includes editing a plan in place, outside Knowledge Builder authority. Read-only evidence inspection uses file-read without plan editing.",
+          "inputs_outputs": "Open the existing test plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Knowledge Builder may read existing evidence but never edits or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-save": {
+          "capability": "test-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the test plan to its path in the current Planning Session folder.",
+          "prerequisites": "Knowledge Builder writes knowledge/index and current-session evidence only; it never implements code or authors implementation/test plans.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-schema": {
+          "capability": "test-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "visual-evidence": {
+          "capability": "visual-evidence",
+          "binding": "local-contract",
+          "invocation": "Use the visual-evidence capability declared in `registry/capabilities.yaml`. Native procedure: native image-capable input; authorized byte retrieval prerequisite; inspect active tool surface",
+          "inputs_outputs": "Use the visual-evidence capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         }
       },
       "ask": {
-        "agent-workflow-service": {
-          "capability": "audit-only",
-          "binding": "local-contract",
-          "invocation": "No broad service grant; resolve concrete token operations only",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
-          "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
-        },
         "repository-search": {
           "capability": "repository-search",
-          "binding": "native-tool",
+          "binding": "local-contract",
           "invocation": "search/fileSearch, search/listDirectory, search/textSearch, search/usages",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "inputs_outputs": "Use the repository-search capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         },
         "file-read": {
           "capability": "file-read",
@@ -4327,6 +4904,213 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "execution-report-read": {
+          "capability": "execution-report-read",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "execution-report-write": {
+          "capability": "execution-report-write",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/execution-report.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "file-editing": {
+          "capability": "file-editing",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Use the file-editing capability declared in `registry/capabilities.yaml`, within this role's file-operation scope.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-list": {
+          "capability": "implementation-plan-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "List the implementation plans already present in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-load": {
+          "capability": "implementation-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Open the existing implementation plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-save": {
+          "capability": "implementation-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the implementation plan to its path in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "implementation-plan-schema": {
+          "capability": "implementation-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/plan-schema.md` and obey it as the plan contract. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read `docs/agents/plan-schema.md` and obey it as the plan contract.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-document-read": {
+          "capability": "knowledge-document-read",
+          "binding": "local-contract",
+          "invocation": "Read the knowledge document the index points to. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read the knowledge document the index points to.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-document-write": {
+          "capability": "knowledge-document-write",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-read": {
+          "capability": "knowledge-index-read",
+          "binding": "local-contract",
+          "invocation": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-activate": {
+          "capability": "session-activate",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-list": {
+          "capability": "session-artifact-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "List `sessions/<planning-session-id>/artifacts/`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-read": {
+          "capability": "session-artifact-read",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-artifact-write": {
+          "capability": "session-artifact-write",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-event-log": {
+          "capability": "session-event-log",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-list": {
+          "capability": "session-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read only the current Planning Session folder under `sessions`. Never enumerate other sessions.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-append": {
+          "capability": "session-memory-append",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "session-memory-read": {
+          "capability": "session-memory-read",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Read `sessions/<planning-session-id>/session-memory.md`.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-list": {
+          "capability": "test-plan-list",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "List the test plans already present in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-load": {
+          "capability": "test-plan-load",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Open the existing test plan in the current Planning Session folder and edit it in place.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-save": {
+          "capability": "test-plan-save",
+          "binding": "out-of-scope",
+          "invocation": "Unavailable: outside this role's approved workflow; the source table does not grant authority.",
+          "inputs_outputs": "Save the test plan to its path in the current Planning Session folder.",
+          "prerequisites": "Ask performs Q&A without sessions, memory, logging or file writes.",
+          "status": "blocked",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "test-plan-schema": {
+          "capability": "test-plan-schema",
+          "binding": "local-contract",
+          "invocation": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML. Native procedure: read/readFile and search/fileSearch/search/textSearch for bounded reads; edit/createDirectory/edit/createFile/edit/editFiles only for authorized knowledge and session artifacts",
+          "inputs_outputs": "Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "visual-evidence": {
+          "capability": "visual-evidence",
+          "binding": "local-contract",
+          "invocation": "Use the visual-evidence capability declared in `registry/capabilities.yaml`. Native procedure: native image-capable input; authorized byte retrieval prerequisite; inspect active tool surface",
+          "inputs_outputs": "Use the visual-evidence capability declared in `registry/capabilities.yaml`.",
+          "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
+          "status": "unverified",
+          "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
         }
       },
       "vision": {
@@ -4419,7 +5203,7 @@
   },
   "preservation": {
     "plan": "docs/agents/preservation-plan.json",
-    "plan_sha256": "fb7c2c856489975f9633a9c0569b1fe48fe83a22415b14c48d201b234aca0c77",
+    "plan_sha256": "0c20a5181e7423cdd7bfd3f2cd3740b06ff8d9a3db8c1697b0807565907cdb28",
     "sources": "docs/agents/sources",
     "verification": "python3 docs/agents/scripts/verify-agentic-system.py; see validation-report.md"
   },
@@ -4476,7 +5260,7 @@
         "copilot"
       ],
       "template": "registry/placeholders.yaml",
-      "source_sha256": "b7eff4232eeb6521505705397b871960f9352b09035c5ad3860155d860015fa6",
+      "source_sha256": "2c9bddc02e8ee65a579f1ca78ecabedb385f95d6525a9893ab09fc2b0ad6a83b",
       "baseline": "docs/agents/.baseline/docs/agents/sources/registry/placeholders.yaml"
     },
     {
@@ -4542,7 +5326,7 @@
         "copilot"
       ],
       "template": "contracts/platform-compatibility.md",
-      "source_sha256": "168979788345d374cab0b1b90ef81b879bcb16146d49c0d0b8d3e5be2cced566",
+      "source_sha256": "f1f22f4633075974c560e42ae8a9162cd01fa8b9648d4f663a342bdbfc1420fd",
       "baseline": "docs/agents/.baseline/docs/agents/sources/contracts/platform-compatibility.md"
     },
     {
@@ -4697,7 +5481,7 @@
         "copilot"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
+      "source_sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/knowledge-builder.agent.md"
     },
     {
@@ -4707,7 +5491,7 @@
         "codex"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
+      "source_sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4733,7 +5517,7 @@
         "copilot"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
+      "source_sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/ask.agent.md"
     },
     {
@@ -4743,7 +5527,7 @@
         "codex"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
+      "source_sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-ask.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4904,7 +5688,7 @@
         "copilot"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
+      "source_sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4929,7 +5713,7 @@
         "copilot"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
+      "source_sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-ask.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5017,7 +5801,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "source_sha256": "6c9f6959e924ec5c4e27a28bc860e47fe05da65bc6aa2b40c4609f406fbfb619",
+      "source_sha256": "213d502ad896ec0795956086024bfd0ee51b42cabd6bac0b3c28c412412967fc",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/skills/plan-bug-from-id/SKILL.md"
     },
     {
@@ -5028,7 +5812,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "source_sha256": "6c9f6959e924ec5c4e27a28bc860e47fe05da65bc6aa2b40c4609f406fbfb619",
+      "source_sha256": "213d502ad896ec0795956086024bfd0ee51b42cabd6bac0b3c28c412412967fc",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5054,7 +5838,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "source_sha256": "b915cf9b299fc89b7bfb88277410020ebeaf909ffd7e35b249064db20314ecb5",
+      "source_sha256": "d25fa707cc39d86ee2705df2b7ed28a960a068c0d67d61aac66100a4f1cfe9ff",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/skills/plan-user-story-from-id/SKILL.md"
     },
     {
@@ -5065,7 +5849,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "source_sha256": "b915cf9b299fc89b7bfb88277410020ebeaf909ffd7e35b249064db20314ecb5",
+      "source_sha256": "d25fa707cc39d86ee2705df2b7ed28a960a068c0d67d61aac66100a4f1cfe9ff",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5303,7 +6087,7 @@
         "copilot"
       ],
       "template": "CHANGELOG.md",
-      "source_sha256": "10ca49b3d2540cac4ec23cc37dc307792463932d14bc1c4ac0d818d5d9f9e9c9",
+      "source_sha256": "1c92e50984bcab05f9ef4cac946f79129a1a2804e0362962460581d5eb733982",
       "baseline": "docs/agents/.baseline/docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md"
     },
     {

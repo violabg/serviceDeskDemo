@@ -27,10 +27,30 @@ The source agent called a private server for these operations. Each one keeps it
 
 | Capability | Substitute in the generated system |
 | --- | --- |
-| `#capability:agent-workflow-service` | The source granted this role broad private workflow-service access. Do not install an equivalent by default; resolve only the concrete role capabilities evidenced elsewhere in this contract. |
+| `#capability:execution-report-read` | Read `sessions/<planning-session-id>/execution-report.md`. |
+| `#capability:execution-report-write` | Write `sessions/<planning-session-id>/execution-report.md`. |
+| `#capability:file-editing` | Use the file-editing capability declared in `registry/capabilities.yaml`, within this role's file-operation scope. |
+| `#capability:implementation-plan-list` | List the implementation plans already present in the current Planning Session folder. |
+| `#capability:implementation-plan-load` | Open the existing implementation plan in the current Planning Session folder and edit it in place. |
+| `#capability:implementation-plan-save` | Save the implementation plan to its path in the current Planning Session folder. |
+| `#capability:implementation-plan-schema` | Read `docs/agents/plan-schema.md` and obey it as the plan contract. |
+| `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
 | `#capability:knowledge-document-write` | Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`. |
+| `#capability:knowledge-index-read` | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. |
 | `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
+| `#capability:session-activate` | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
+| `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
+| `#capability:session-artifact-read` | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
 | `#capability:session-artifact-write` | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
+| `#capability:session-event-log` | Append the event to `sessions/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries. |
+| `#capability:session-list` | Read only the current Planning Session folder under `sessions`. Never enumerate other sessions. |
+| `#capability:session-memory-append` | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last. |
+| `#capability:session-memory-read` | Read `sessions/<planning-session-id>/session-memory.md`. |
+| `#capability:test-plan-list` | List the test plans already present in the current Planning Session folder. |
+| `#capability:test-plan-load` | Open the existing test plan in the current Planning Session folder and edit it in place. |
+| `#capability:test-plan-save` | Save the test plan to its path in the current Planning Session folder. |
+| `#capability:test-plan-schema` | Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML. |
+| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
 
 ## Role Tooling Intent
 
@@ -38,10 +58,11 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 
 | Target capability category | Source capability evidence | Bootstrap discovery guidance |
 | --- | --- | --- |
-| Repository knowledge access | `#capability:knowledge-document-write` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-document-write`, `#capability:knowledge-index-read` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Repository file editing | `#capability:file-editing` | Patch repository files only within this role's permitted file-operation scope. |
 | Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
-| Planning-session persistence | `#capability:session-artifact-write` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
-| Broad workflow-service grant | `#capability:agent-workflow-service` | The source granted broad private service access. Treat this as audit evidence only; resolve concrete capabilities from the role contract before proposing any target tool. |
+| Planning-session persistence | `#capability:execution-report-read`, `#capability:execution-report-write`, `#capability:implementation-plan-list`, `#capability:implementation-plan-load`, `#capability:implementation-plan-save`, `#capability:implementation-plan-schema`, `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write`, `#capability:session-event-log`, `#capability:session-list`, `#capability:session-memory-append`, `#capability:session-memory-read`, `#capability:test-plan-list`, `#capability:test-plan-load`, `#capability:test-plan-save`, `#capability:test-plan-schema` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
+| Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. For remote issue images, discover an authorized way to fetch and view the image URL, including private repository attachments; URL text alone is not visual evidence. Add a visual service only when native tools cannot perform the selected workflow. |
 
 Your only task is to explore the codebase in search of symbols, concepts, and patterns related to a specific topic selected by the user, in order to build a knowledge that can be applied in practice by an agent with zero knowledge of the project and codebase. You are not allowed to write or modify code, your only purpose is to read and collect evidence in order to produce knowledge.
 
