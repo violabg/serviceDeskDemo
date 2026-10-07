@@ -42,8 +42,14 @@ capabilities:
 
   - id: knowledge-retrieval
     essential: true
-    why: Bounded knowledge loading through the generated knowledge index.
-    fallback: Read the knowledge index and the listed knowledge documents directly from the repository with the file-editing capability.
+    why: Bounded knowledge loading through the generated index, with index-rebuild and wiki catalog/page operations when needed by the selected role.
+    fallback: >-
+      Read the knowledge index and the listed documents directly from the repository with the
+      file-editing capability. For an approved index-rebuild operation, rebuild the index from
+      the approved knowledge source within the role's knowledge-operation scope. For selected
+      wiki operations, verify that the approved source supports catalog listing, page listing,
+      and page content retrieval; unavailable operations remain unresolved and block the affected
+      workflow. Do not add a service or automatic refresh trigger solely from grant evidence.
 
   - id: agent-session-persistence
     essential: true
@@ -55,8 +61,12 @@ capabilities:
 
   - id: work-item-retrieval
     essential: true
-    why: Planning skills need the External Issue ID payload from the tracker.
-    fallback: Use the local Markdown tracker contract declared in LOCAL_MARKDOWN_TRACKER_CONTRACT.
+    why: Planning skills need Markdown issue payloads, comments, and batch resolution of explicitly linked item titles, according to the selected skill's intake contract.
+    fallback: >-
+      Use the local Markdown tracker contract declared in LOCAL_MARKDOWN_TRACKER_CONTRACT.
+      Read the requested item and comments; resolve explicitly linked IDs through an approved
+      batch file-read procedure when the selected operation requires it. Preserve Markdown,
+      code blocks, image URLs, IDs, titles, and relation types required by that skill.
 
   - id: visual-evidence
     essential: false

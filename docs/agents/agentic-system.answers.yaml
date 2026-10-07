@@ -2,7 +2,7 @@
   "version": 2,
   "bootstrap": {
     "skill_version": "5.0.0",
-    "contract_applied_through": "5.3.0",
+    "contract_applied_through": "6.0.0",
     "generated_on": "2026-09-19"
   },
   "maintenance_decisions": {
@@ -35,6 +35,38 @@
         "docs/agents/knowledge/dashboard-navigation-boundaries.md"
       ],
       "deferred_baseline_debt": "Five pre-existing orphan entries and two retained knowledge baseline mismatches; do not absorb as pristine generated baseline."
+    },
+    "bootstrap_6_0_upgrade": {
+      "approved": true,
+      "date": "2026-10-07",
+      "evidence": "User: ok approved",
+      "mode": "upgrade",
+      "upstream_regions": [
+        "Capability Substitutions",
+        "Role Tooling Intent",
+        "Bug Information Gathering",
+        "Work-Item Planning Contract"
+      ],
+      "new_tool_grants": false,
+      "new_environment_versions": false,
+      "bug_intake_fields": [
+        "title",
+        "description",
+        "Images",
+        "comments"
+      ],
+      "story_intake_fields": [
+        "title",
+        "description",
+        "Images",
+        "comments",
+        "acceptance criteria",
+        "related work items"
+      ],
+      "dependency_evidence": "Separate artifact; every explicit link read once without recursion",
+      "consumers_reviewed": "Planner and artifact/plan schemas do not hard-code the obsolete six-field bug artifact",
+      "retained_baseline_debt": "Five pre-existing orphan entries and two retained knowledge baseline mismatches; do not absorb as pristine generated baseline.",
+      "native_compatibility": "unverified"
     }
   },
   "execution_host": "Codex in VS Code Insiders; SDK environment path 0.153.0",
@@ -181,17 +213,17 @@
     },
     "WORK_ITEM_RETRIEVAL": {
       "value": {
-        "docs/agents/canonical/codex/agents/demo-planner.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
-        "docs/agents/canonical/codex/agents/demo-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
-        "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
-        "docs/agents/canonical/copilot/agents/demo-planner.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
-        "docs/agents/canonical/copilot/agents/demo-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
-        "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
-        "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
-        "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md"
+        "docs/agents/canonical/codex/agents/demo-planner.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
+        "docs/agents/canonical/codex/agents/demo-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
+        "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
+        "docs/agents/canonical/copilot/agents/demo-planner.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
+        "docs/agents/canonical/copilot/agents/demo-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
+        "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
+        "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
+        "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal"
       },
-      "source": "user/recommend-accepted/discovery per decision-register.json",
-      "evidence": "Approved master plan and accepted defaults; exact per-file substitution map"
+      "source": "user-approved Bootstrap 6.0.0 maintenance plan, 2026-10-07",
+      "evidence": "User: ok approved; existing exact issue-read grants, adapter Markdown normalization and supplied-ID batch procedure"
     },
     "APPROVED_MCP_TOOLS": {
       "value": {
@@ -736,6 +768,21 @@
       },
       "source": "user",
       "evidence": "User final message: approved; after full file plan and amended roster"
+    },
+    {
+      "id": "bootstrap-6.0.0-maintenance",
+      "value": {
+        "approved": true,
+        "date": "2026-10-07",
+        "mode": "upgrade",
+        "contract": "6.0.0",
+        "supplied_id_batch": "Existing issue_read/get per supplied linked ID; reuse one-hop evidence; no search or recursion",
+        "knowledge_scope": "Knowledge Builder index rebuild only; wiki unavailable under repository-document source",
+        "native_names": "Retain C003 demo-prefixed names",
+        "retained_debt": "C011/C012 knowledge baseline differences and five orphan baseline entries"
+      },
+      "source": "user",
+      "evidence": "User: ok approved, following the complete maintenance plan"
     }
   ],
   "capabilities": {
@@ -888,7 +935,7 @@
         "work-item-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "mcp__github__issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "mcp__github__issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -897,7 +944,7 @@
         "work-item-type-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "mcp__github__issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "mcp__github__issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -1071,6 +1118,73 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
+        },
+        "wiki-catalog-read": {
+          "capability": "knowledge-retrieval",
+          "binding": "unavailable-source",
+          "invocation": "No wiki binding is approved. Read repository knowledge through its index; if the task requires an actual wiki operation, stop and report the missing source/binding.",
+          "inputs_outputs": "Wiki catalog, selected-wiki page listing or page content, respectively; no wiki source or service granted.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "The approved knowledge source is repository documents only; a wiki-dependent workflow is blocked pending an explicitly approved source and verified procedure.",
+          "applicability": "not applicable to the current repository-document workflow"
+        },
+        "wiki-page-list": {
+          "capability": "knowledge-retrieval",
+          "binding": "unavailable-source",
+          "invocation": "No wiki binding is approved. Read repository knowledge through its index; if the task requires an actual wiki operation, stop and report the missing source/binding.",
+          "inputs_outputs": "Wiki catalog, selected-wiki page listing or page content, respectively; no wiki source or service granted.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "The approved knowledge source is repository documents only; a wiki-dependent workflow is blocked pending an explicitly approved source and verified procedure.",
+          "applicability": "not applicable to the current repository-document workflow"
+        },
+        "wiki-page-read": {
+          "capability": "knowledge-retrieval",
+          "binding": "unavailable-source",
+          "invocation": "No wiki binding is approved. Read repository knowledge through its index; if the task requires an actual wiki operation, stop and report the missing source/binding.",
+          "inputs_outputs": "Wiki catalog, selected-wiki page listing or page content, respectively; no wiki source or service granted.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "The approved knowledge source is repository documents only; a wiki-dependent workflow is blocked pending an explicitly approved source and verified procedure.",
+          "applicability": "not applicable to the current repository-document workflow"
+        },
+        "work-item-batch-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "approved-procedure",
+          "invocation": "mcp__github__issue_read with method=get for each exact supplied ID, owner/repo from the explicit link; aggregate ID/title/relation as Markdown using github-issues-adapter.md; reuse existing one-hop evidence and perform no recursive expansion.",
+          "inputs_outputs": "Exact supplied linked issue IDs -> Markdown ID/title/relation rows. Missing, duplicate, unreadable or invalid IDs fail closed.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
+        },
+        "work-item-comment-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "integration",
+          "invocation": "mcp__github__issue_read with method=get_comments and explicit pagination; normalize to Markdown inside github-issues-adapter.md.",
+          "inputs_outputs": "Exact issue identity -> all comments, preserving code blocks and image URLs.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "implementor": {
@@ -1230,16 +1344,17 @@
         "work-item-comment-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "mcp__github__issue_read (get/get_comments/get_labels for exact issue IDs)",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "mcp__github__issue_read with method=get_comments and explicit pagination; normalize to Markdown inside github-issues-adapter.md.",
+          "inputs_outputs": "Exact issue identity -> all comments, preserving code blocks and image URLs.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         },
         "work-item-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "mcp__github__issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "mcp__github__issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -1423,6 +1538,27 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
+        },
+        "work-item-batch-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "approved-procedure",
+          "invocation": "mcp__github__issue_read with method=get for each exact supplied ID, owner/repo from the explicit link; aggregate ID/title/relation as Markdown using github-issues-adapter.md; reuse existing one-hop evidence and perform no recursive expansion.",
+          "inputs_outputs": "Exact supplied linked issue IDs -> Markdown ID/title/relation rows. Missing, duplicate, unreadable or invalid IDs fail closed.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "direct-implementor": {
@@ -1555,16 +1691,17 @@
         "work-item-comment-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "mcp__github__issue_read (get/get_comments/get_labels for exact issue IDs)",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "mcp__github__issue_read with method=get_comments and explicit pagination; normalize to Markdown inside github-issues-adapter.md.",
+          "inputs_outputs": "Exact issue identity -> all comments, preserving code blocks and image URLs.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         },
         "work-item-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "mcp__github__issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "mcp__github__issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -1573,7 +1710,7 @@
         "work-item-type-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "mcp__github__issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "mcp__github__issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -1783,6 +1920,16 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "work-item-batch-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "approved-procedure",
+          "invocation": "mcp__github__issue_read with method=get for each exact supplied ID, owner/repo from the explicit link; aggregate ID/title/relation as Markdown using github-issues-adapter.md; reuse existing one-hop evidence and perform no recursive expansion.",
+          "inputs_outputs": "Exact supplied linked issue IDs -> Markdown ID/title/relation rows. Missing, duplicate, unreadable or invalid IDs fail closed.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "integration-tester": {
@@ -2017,6 +2164,17 @@
           "prerequisites": "Active client tool surface and role permissions",
           "status": "unverified",
           "evidence": "Documented or host-exposed tools; native generated-role execution pending."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
         }
       },
       "knowledge-builder": {
@@ -2395,6 +2553,16 @@
           "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
           "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "local-contract",
+          "invocation": "Rebuild docs/agents/knowledge/README.md from the approved repository knowledge source using functions.exec with tools.exec_command for bounded reads and tools.apply_patch for authorized knowledge/index writes; preserve the index schema, bounded evidence and canonical Knowledge Builder approval gates.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "ask": {
@@ -2736,6 +2904,17 @@
           "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
           "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
         }
       },
       "vision": {
@@ -2968,7 +3147,7 @@
         "work-item-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "github/issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "github/issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -2977,7 +3156,7 @@
         "work-item-type-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "github/issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "github/issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -3191,6 +3370,73 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
+        },
+        "wiki-catalog-read": {
+          "capability": "knowledge-retrieval",
+          "binding": "unavailable-source",
+          "invocation": "No wiki binding is approved. Read repository knowledge through its index; if the task requires an actual wiki operation, stop and report the missing source/binding.",
+          "inputs_outputs": "Wiki catalog, selected-wiki page listing or page content, respectively; no wiki source or service granted.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "The approved knowledge source is repository documents only; a wiki-dependent workflow is blocked pending an explicitly approved source and verified procedure.",
+          "applicability": "not applicable to the current repository-document workflow"
+        },
+        "wiki-page-list": {
+          "capability": "knowledge-retrieval",
+          "binding": "unavailable-source",
+          "invocation": "No wiki binding is approved. Read repository knowledge through its index; if the task requires an actual wiki operation, stop and report the missing source/binding.",
+          "inputs_outputs": "Wiki catalog, selected-wiki page listing or page content, respectively; no wiki source or service granted.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "The approved knowledge source is repository documents only; a wiki-dependent workflow is blocked pending an explicitly approved source and verified procedure.",
+          "applicability": "not applicable to the current repository-document workflow"
+        },
+        "wiki-page-read": {
+          "capability": "knowledge-retrieval",
+          "binding": "unavailable-source",
+          "invocation": "No wiki binding is approved. Read repository knowledge through its index; if the task requires an actual wiki operation, stop and report the missing source/binding.",
+          "inputs_outputs": "Wiki catalog, selected-wiki page listing or page content, respectively; no wiki source or service granted.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "The approved knowledge source is repository documents only; a wiki-dependent workflow is blocked pending an explicitly approved source and verified procedure.",
+          "applicability": "not applicable to the current repository-document workflow"
+        },
+        "work-item-batch-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "approved-procedure",
+          "invocation": "github/issue_read with method=get for each exact supplied ID, owner/repo from the explicit link; aggregate ID/title/relation as Markdown using github-issues-adapter.md; reuse existing one-hop evidence and perform no recursive expansion.",
+          "inputs_outputs": "Exact supplied linked issue IDs -> Markdown ID/title/relation rows. Missing, duplicate, unreadable or invalid IDs fail closed.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
+        },
+        "work-item-comment-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "integration",
+          "invocation": "github/issue_read with method=get_comments and explicit pagination; normalize to Markdown inside github-issues-adapter.md.",
+          "inputs_outputs": "Exact issue identity -> all comments, preserving code blocks and image URLs.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "implementor": {
@@ -3350,16 +3596,17 @@
         "work-item-comment-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "github/issue_read (get/get_comments/get_labels for exact issue IDs)",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "github/issue_read with method=get_comments and explicit pagination; normalize to Markdown inside github-issues-adapter.md.",
+          "inputs_outputs": "Exact issue identity -> all comments, preserving code blocks and image URLs.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         },
         "work-item-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "github/issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "github/issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -3615,6 +3862,27 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
+        },
+        "work-item-batch-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "approved-procedure",
+          "invocation": "github/issue_read with method=get for each exact supplied ID, owner/repo from the explicit link; aggregate ID/title/relation as Markdown using github-issues-adapter.md; reuse existing one-hop evidence and perform no recursive expansion.",
+          "inputs_outputs": "Exact supplied linked issue IDs -> Markdown ID/title/relation rows. Missing, duplicate, unreadable or invalid IDs fail closed.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "direct-implementor": {
@@ -3747,16 +4015,17 @@
         "work-item-comment-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "github/issue_read (get/get_comments/get_labels for exact issue IDs)",
-          "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
-          "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
+          "invocation": "github/issue_read with method=get_comments and explicit pagination; normalize to Markdown inside github-issues-adapter.md.",
+          "inputs_outputs": "Exact issue identity -> all comments, preserving code blocks and image URLs.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
           "status": "unverified",
-          "evidence": "Declared operation mapping; isolated file-contract checks in validation report. Actual generated-role execution has not been verified."
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         },
         "work-item-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "github/issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "github/issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -3765,7 +4034,7 @@
         "work-item-type-retrieval": {
           "capability": "work-item-retrieval",
           "binding": "integration",
-          "invocation": "github/issue_read (get/get_comments/get_labels for exact issue IDs)",
+          "invocation": "github/issue_read with the permitted get/get_comments/get_labels methods and Markdown adapter contract in docs/agents/github-issues-adapter.md",
           "inputs_outputs": "Current explicit session/issue and task-selected evidence; outputs defined in canonical role table.",
           "prerequisites": "Correct role, complete contract, native tool availability, current-session path and any MCP authentication; no secrets in evidence.",
           "status": "unverified",
@@ -4050,6 +4319,16 @@
           "prerequisites": "Configured transport, authenticated account, required role grant; implementation authorization for mutations",
           "status": "unverified",
           "evidence": "Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session."
+        },
+        "work-item-batch-retrieval": {
+          "capability": "work-item-retrieval",
+          "binding": "approved-procedure",
+          "invocation": "github/issue_read with method=get for each exact supplied ID, owner/repo from the explicit link; aggregate ID/title/relation as Markdown using github-issues-adapter.md; reuse existing one-hop evidence and perform no recursive expansion.",
+          "inputs_outputs": "Exact supplied linked issue IDs -> Markdown ID/title/relation rows. Missing, duplicate, unreadable or invalid IDs fail closed.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "integration-tester": {
@@ -4334,6 +4613,17 @@
           "prerequisites": "Active client tool surface and role permissions",
           "status": "unverified",
           "evidence": "Documented or host-exposed tools; native generated-role execution pending."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
         }
       },
       "knowledge-builder": {
@@ -4752,6 +5042,16 @@
           "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
           "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "local-contract",
+          "invocation": "Rebuild docs/agents/knowledge/README.md from the approved repository knowledge source using read/readFile, search/fileSearch and search/textSearch; edit/createDirectory/edit/createFile/edit/editFiles for authorized knowledge/index writes; preserve the index schema, bounded evidence and canonical Knowledge Builder approval gates.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "unverified",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07"
         }
       },
       "ask": {
@@ -5111,6 +5411,17 @@
           "prerequisites": "Complete selected-role contract, active native tools, explicit current-session identity for session operations, approved path scope, and actual image input for visual operations.",
           "status": "unverified",
           "evidence": "Bootstrap 5.3.0 explicit per-role capability table; user approved all maintenance operations 2026-09-27; target generated-role execution not verified."
+        },
+        "knowledge-index-rebuild": {
+          "capability": "knowledge-retrieval",
+          "binding": "out-of-scope",
+          "invocation": "Do not rebuild or write repository knowledge in this role; use an explicitly user-selected demo-knowledge-builder workflow.",
+          "inputs_outputs": "Approved repository knowledge documents -> schema-compliant knowledge index; no automatic refresh trigger.",
+          "prerequisites": "Complete selected-role contract; existing native/MCP grants and authentication; bounded approved source and explicit IDs; role authority governs operation.",
+          "status": "blocked",
+          "evidence": "User approved the Bootstrap 6.0.0 plan on 2026-10-07. Structural mapping checked; effective generated-role execution not verified.",
+          "date": "2026-10-07",
+          "reason": "Capability-table evidence does not expand this role's knowledge-editing authority."
         }
       },
       "vision": {
@@ -5203,7 +5514,7 @@
   },
   "preservation": {
     "plan": "docs/agents/preservation-plan.json",
-    "plan_sha256": "0c20a5181e7423cdd7bfd3f2cd3740b06ff8d9a3db8c1697b0807565907cdb28",
+    "plan_sha256": "7ff4ff26cd8b8b43ff9deeee1c55aedef4fd9f53ad7043ca5a9fbb153b141713",
     "sources": "docs/agents/sources",
     "verification": "python3 docs/agents/scripts/verify-agentic-system.py; see validation-report.md"
   },
@@ -5249,7 +5560,7 @@
         "copilot"
       ],
       "template": "registry/capabilities.yaml",
-      "source_sha256": "f842dc8e2f03b8a5914577cb4699b108604a76d9bdffc922f151ae35ac43d215",
+      "source_sha256": "0dc5f5d4aff68efda218a15350087784b2c5876a5fad7830ad460a14248de756",
       "baseline": "docs/agents/.baseline/docs/agents/sources/registry/capabilities.yaml"
     },
     {
@@ -5260,7 +5571,7 @@
         "copilot"
       ],
       "template": "registry/placeholders.yaml",
-      "source_sha256": "2c9bddc02e8ee65a579f1ca78ecabedb385f95d6525a9893ab09fc2b0ad6a83b",
+      "source_sha256": "4a28b31bee2ab2defb14545259e8cb91485c589ce61fe78743ab0e3d07922f1d",
       "baseline": "docs/agents/.baseline/docs/agents/sources/registry/placeholders.yaml"
     },
     {
@@ -5337,7 +5648,7 @@
         "copilot"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
+      "source_sha256": "5c9283a79078de2df34bab6696904e106b06c47c9dd5e78fc314e7862e88bd77",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/planner.agent.md"
     },
     {
@@ -5347,7 +5658,7 @@
         "codex"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
+      "source_sha256": "5c9283a79078de2df34bab6696904e106b06c47c9dd5e78fc314e7862e88bd77",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-planner.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5359,7 +5670,7 @@
         "codex"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
+      "source_sha256": "5c9283a79078de2df34bab6696904e106b06c47c9dd5e78fc314e7862e88bd77",
       "baseline": "docs/agents/.baseline/.codex/agents/demo-planner.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
       "loading": "lossless-embedding",
@@ -5373,7 +5684,7 @@
         "copilot"
       ],
       "template": "templates/agents/implementor.agent.md",
-      "source_sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
+      "source_sha256": "44d7db79e6d764425c5edc8331358929234d26f90c629392a39c99a5fd7734e5",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/implementor.agent.md"
     },
     {
@@ -5383,7 +5694,7 @@
         "codex"
       ],
       "template": "templates/agents/implementor.agent.md",
-      "source_sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
+      "source_sha256": "44d7db79e6d764425c5edc8331358929234d26f90c629392a39c99a5fd7734e5",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-implementor.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5395,7 +5706,7 @@
         "codex"
       ],
       "template": "templates/agents/implementor.agent.md",
-      "source_sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
+      "source_sha256": "44d7db79e6d764425c5edc8331358929234d26f90c629392a39c99a5fd7734e5",
       "baseline": "docs/agents/.baseline/.codex/agents/demo-implementor.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
       "loading": "lossless-embedding",
@@ -5409,7 +5720,7 @@
         "copilot"
       ],
       "template": "templates/agents/direct-implementor.agent.md",
-      "source_sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
+      "source_sha256": "a708b3699199601ef56c5cc100fd96f2a2be7087dbc127e580266251f27d5c02",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/direct-implementor.agent.md"
     },
     {
@@ -5419,7 +5730,7 @@
         "codex"
       ],
       "template": "templates/agents/direct-implementor.agent.md",
-      "source_sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
+      "source_sha256": "a708b3699199601ef56c5cc100fd96f2a2be7087dbc127e580266251f27d5c02",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5431,7 +5742,7 @@
         "codex"
       ],
       "template": "templates/agents/direct-implementor.agent.md",
-      "source_sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
+      "source_sha256": "a708b3699199601ef56c5cc100fd96f2a2be7087dbc127e580266251f27d5c02",
       "baseline": "docs/agents/.baseline/.codex/agents/demo-direct-implementor.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
       "loading": "lossless-embedding",
@@ -5445,7 +5756,7 @@
         "copilot"
       ],
       "template": "templates/agents/integration-tester.agent.md",
-      "source_sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
+      "source_sha256": "55a7d9bc99013f4d68b066c99d4ccbd0a0f87aaa42abdbf00f8af41c2b17d7e7",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/integration-tester.agent.md"
     },
     {
@@ -5455,7 +5766,7 @@
         "codex"
       ],
       "template": "templates/agents/integration-tester.agent.md",
-      "source_sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
+      "source_sha256": "55a7d9bc99013f4d68b066c99d4ccbd0a0f87aaa42abdbf00f8af41c2b17d7e7",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5467,7 +5778,7 @@
         "codex"
       ],
       "template": "templates/agents/integration-tester.agent.md",
-      "source_sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
+      "source_sha256": "55a7d9bc99013f4d68b066c99d4ccbd0a0f87aaa42abdbf00f8af41c2b17d7e7",
       "baseline": "docs/agents/.baseline/.codex/agents/demo-integration-tester.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
       "loading": "lossless-embedding",
@@ -5481,7 +5792,7 @@
         "copilot"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
+      "source_sha256": "a10cf8250978f295f7d5387d3a19b8737bdeb60602caff6ac0326bd74bdd82b1",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/knowledge-builder.agent.md"
     },
     {
@@ -5491,7 +5802,7 @@
         "codex"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
+      "source_sha256": "a10cf8250978f295f7d5387d3a19b8737bdeb60602caff6ac0326bd74bdd82b1",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5503,7 +5814,7 @@
         "codex"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
+      "source_sha256": "a10cf8250978f295f7d5387d3a19b8737bdeb60602caff6ac0326bd74bdd82b1",
       "baseline": "docs/agents/.baseline/.codex/agents/demo-knowledge-builder.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
       "loading": "lossless-embedding",
@@ -5517,7 +5828,7 @@
         "copilot"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
+      "source_sha256": "3b7aada2d6e3aaece0deb4a5acf86d4af4a4da5fbb42afd13dde5e59eaa84160",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/ask.agent.md"
     },
     {
@@ -5527,7 +5838,7 @@
         "codex"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
+      "source_sha256": "3b7aada2d6e3aaece0deb4a5acf86d4af4a4da5fbb42afd13dde5e59eaa84160",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-ask.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5539,7 +5850,7 @@
         "codex"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
+      "source_sha256": "3b7aada2d6e3aaece0deb4a5acf86d4af4a4da5fbb42afd13dde5e59eaa84160",
       "baseline": "docs/agents/.baseline/.codex/agents/demo-ask.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
       "loading": "lossless-embedding",
@@ -5553,7 +5864,7 @@
         "copilot"
       ],
       "template": "templates/agents/vision.agent.md",
-      "source_sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
+      "source_sha256": "5df1d09c69a5f090a60799048764419a3a206562cb442d3b7d806bcfa57a0a06",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/agents/vision.agent.md"
     },
     {
@@ -5563,7 +5874,7 @@
         "codex"
       ],
       "template": "templates/agents/vision.agent.md",
-      "source_sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
+      "source_sha256": "5df1d09c69a5f090a60799048764419a3a206562cb442d3b7d806bcfa57a0a06",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/codex/agents/demo-vision.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5575,7 +5886,7 @@
         "codex"
       ],
       "template": "templates/agents/vision.agent.md",
-      "source_sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
+      "source_sha256": "5df1d09c69a5f090a60799048764419a3a206562cb442d3b7d806bcfa57a0a06",
       "baseline": "docs/agents/.baseline/.codex/agents/demo-vision.toml",
       "canonical_copy": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
       "loading": "lossless-embedding",
@@ -5588,7 +5899,7 @@
         "copilot"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
+      "source_sha256": "5c9283a79078de2df34bab6696904e106b06c47c9dd5e78fc314e7862e88bd77",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5600,7 +5911,7 @@
         "copilot"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
+      "source_sha256": "5c9283a79078de2df34bab6696904e106b06c47c9dd5e78fc314e7862e88bd77",
       "baseline": "docs/agents/.baseline/.github/agents/demo-planner.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "loading": "lossless-embedding",
@@ -5613,7 +5924,7 @@
         "copilot"
       ],
       "template": "templates/agents/implementor.agent.md",
-      "source_sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
+      "source_sha256": "44d7db79e6d764425c5edc8331358929234d26f90c629392a39c99a5fd7734e5",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5625,7 +5936,7 @@
         "copilot"
       ],
       "template": "templates/agents/implementor.agent.md",
-      "source_sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
+      "source_sha256": "44d7db79e6d764425c5edc8331358929234d26f90c629392a39c99a5fd7734e5",
       "baseline": "docs/agents/.baseline/.github/agents/demo-implementor.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
       "loading": "lossless-embedding",
@@ -5638,7 +5949,7 @@
         "copilot"
       ],
       "template": "templates/agents/direct-implementor.agent.md",
-      "source_sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
+      "source_sha256": "a708b3699199601ef56c5cc100fd96f2a2be7087dbc127e580266251f27d5c02",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5650,7 +5961,7 @@
         "copilot"
       ],
       "template": "templates/agents/direct-implementor.agent.md",
-      "source_sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
+      "source_sha256": "a708b3699199601ef56c5cc100fd96f2a2be7087dbc127e580266251f27d5c02",
       "baseline": "docs/agents/.baseline/.github/agents/demo-direct-implementor.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
       "loading": "lossless-embedding",
@@ -5663,7 +5974,7 @@
         "copilot"
       ],
       "template": "templates/agents/integration-tester.agent.md",
-      "source_sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
+      "source_sha256": "55a7d9bc99013f4d68b066c99d4ccbd0a0f87aaa42abdbf00f8af41c2b17d7e7",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5675,7 +5986,7 @@
         "copilot"
       ],
       "template": "templates/agents/integration-tester.agent.md",
-      "source_sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
+      "source_sha256": "55a7d9bc99013f4d68b066c99d4ccbd0a0f87aaa42abdbf00f8af41c2b17d7e7",
       "baseline": "docs/agents/.baseline/.github/agents/demo-integration-tester.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
       "loading": "lossless-embedding",
@@ -5688,7 +5999,7 @@
         "copilot"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
+      "source_sha256": "a10cf8250978f295f7d5387d3a19b8737bdeb60602caff6ac0326bd74bdd82b1",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5700,7 +6011,7 @@
         "copilot"
       ],
       "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "88dd3c7040f7d2940cd763394dcbf25dda8d86fe7952ed1055ac134e277bc9a1",
+      "source_sha256": "a10cf8250978f295f7d5387d3a19b8737bdeb60602caff6ac0326bd74bdd82b1",
       "baseline": "docs/agents/.baseline/.github/agents/demo-knowledge-builder.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
       "loading": "lossless-embedding",
@@ -5713,7 +6024,7 @@
         "copilot"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
+      "source_sha256": "3b7aada2d6e3aaece0deb4a5acf86d4af4a4da5fbb42afd13dde5e59eaa84160",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-ask.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5725,7 +6036,7 @@
         "copilot"
       ],
       "template": "templates/agents/ask.agent.md",
-      "source_sha256": "86949e27b5460c2ad4b922079219e29f85bf46ff4f77a4bc7779a028a57671e6",
+      "source_sha256": "3b7aada2d6e3aaece0deb4a5acf86d4af4a4da5fbb42afd13dde5e59eaa84160",
       "baseline": "docs/agents/.baseline/.github/agents/demo-ask.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
       "loading": "lossless-embedding",
@@ -5738,7 +6049,7 @@
         "copilot"
       ],
       "template": "templates/agents/vision.agent.md",
-      "source_sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
+      "source_sha256": "5df1d09c69a5f090a60799048764419a3a206562cb442d3b7d806bcfa57a0a06",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/copilot/agents/demo-vision.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5750,7 +6061,7 @@
         "copilot"
       ],
       "template": "templates/agents/vision.agent.md",
-      "source_sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
+      "source_sha256": "5df1d09c69a5f090a60799048764419a3a206562cb442d3b7d806bcfa57a0a06",
       "baseline": "docs/agents/.baseline/.github/agents/demo-vision.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
       "loading": "lossless-embedding",
@@ -5801,7 +6112,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "source_sha256": "213d502ad896ec0795956086024bfd0ee51b42cabd6bac0b3c28c412412967fc",
+      "source_sha256": "03ecc13b86647ec3f425b20cbdbce5e0e110209df93528542607b52b66322bd7",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/skills/plan-bug-from-id/SKILL.md"
     },
     {
@@ -5812,7 +6123,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "source_sha256": "213d502ad896ec0795956086024bfd0ee51b42cabd6bac0b3c28c412412967fc",
+      "source_sha256": "03ecc13b86647ec3f425b20cbdbce5e0e110209df93528542607b52b66322bd7",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5825,7 +6136,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "source_sha256": "6c9f6959e924ec5c4e27a28bc860e47fe05da65bc6aa2b40c4609f406fbfb619",
+      "source_sha256": "03ecc13b86647ec3f425b20cbdbce5e0e110209df93528542607b52b66322bd7",
       "baseline": "docs/agents/.baseline/.agents/skills/demo-plan-bug-from-id/SKILL.md",
       "canonical_copy": "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
       "loading": "lossless-embedding"
@@ -5838,7 +6149,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "source_sha256": "d25fa707cc39d86ee2705df2b7ed28a960a068c0d67d61aac66100a4f1cfe9ff",
+      "source_sha256": "a7b8521767a1f781f753263c38f6348e450365e9abbc4982d233b0c7a1cd204e",
       "baseline": "docs/agents/.baseline/docs/agents/sources/templates/skills/plan-user-story-from-id/SKILL.md"
     },
     {
@@ -5849,7 +6160,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "source_sha256": "d25fa707cc39d86ee2705df2b7ed28a960a068c0d67d61aac66100a4f1cfe9ff",
+      "source_sha256": "a7b8521767a1f781f753263c38f6348e450365e9abbc4982d233b0c7a1cd204e",
       "baseline": "docs/agents/.baseline/docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -5862,7 +6173,7 @@
         "copilot"
       ],
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "source_sha256": "b915cf9b299fc89b7bfb88277410020ebeaf909ffd7e35b249064db20314ecb5",
+      "source_sha256": "a7b8521767a1f781f753263c38f6348e450365e9abbc4982d233b0c7a1cd204e",
       "baseline": "docs/agents/.baseline/.agents/skills/demo-plan-user-story-from-id/SKILL.md",
       "canonical_copy": "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
       "loading": "lossless-embedding"
@@ -6087,7 +6398,7 @@
         "copilot"
       ],
       "template": "CHANGELOG.md",
-      "source_sha256": "1c92e50984bcab05f9ef4cac946f79129a1a2804e0362962460581d5eb733982",
+      "source_sha256": "5ca06bce12da4b33ce9e600ee76d072c836f3dfd9dc144d559c7d50726dfc316",
       "baseline": "docs/agents/.baseline/docs/agents/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md"
     },
     {

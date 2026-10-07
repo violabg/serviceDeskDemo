@@ -1,31 +1,36 @@
 # Structural Validation Report
 
-## Bootstrap 5.3.0 Maintenance Verification: 2026-09-27
+Date: 2026-10-07. Bootstrap 6.0.0 approved upgrade checks: **PASS**. Full structural conformance: **FAIL**, with the same three approved retained baseline-debt failures. Native runtime compatibility: **unverified** for Codex and Copilot.
 
-- User approved all operations in the 5.2.0 to 5.3.0 plan, including exact new path values and the separate Copilot Integration Tester restoration.
-- Node canonical preservation: PASS, all 22 canonical copies checked against retained sources and the approved substitution recipe.
-- Native body preservation: PASS, all 19 adapters decode to the complete canonical body and match their recorded body SHA-256. The Copilot Integration Tester formatting repair restores its exact recorded body and supported frontmatter.
-- Full Python structural verification: FAIL, 625 checks passed and 3 checks failed. The failures are exactly the two retained knowledge baseline mismatches and the no-orphan check covering five legacy entries; no new upgrade failure was found.
-- Source snapshots: Ask and Knowledge Builder templates, both planning skill templates, placeholder registry, compatibility contract snapshot and Bootstrap changelog updated to installed 5.3.0. Planning skill rendered bodies remain unchanged.
-- Native runtime compatibility: unverified for both selected environments. No generated-role discovery, effective MCP/tool authorization, handoff, private issue-image retrieval or image-input test was performed. Static parsing and host availability do not establish those properties.
-- Product diagnostics, typecheck, lint, tests and build are not applicable to this agent-system-only change. Required agent-system verification is listed below. No application code, runtime configuration or product tests changed.
-- Existing session-folder contents were excluded from discovery and edits. The Python verifier uses an isolated disposable fixture outside existing session folders.
+## Executed Checks
 
-## Commands
+| Check | Result | Scope |
+| --- | --- | --- |
+| Shipped Node canonical verifier | PASS | All 22 canonical copies exactly match retained templates after approved slot fills and marker removal |
+| Native decoded body/hash comparison | PASS | All 19 adapters embed the full canonical body in order |
+| Native metadata comparison against pre-change backup | PASS | Models, MCP filters, tools and native metadata unchanged; C003 demo names and Vision exceptions retained |
+| Focused source/inventory verification | PASS | 73 inventory source hashes match retained sources; 11 refreshed sources and the changelog snapshot match installed Bootstrap; answers and recipes agree |
+| Intake contract checks | PASS | Exactly four ordered bug fields, six story fields; separate dependency evidence and approved supplied-ID title resolution |
+| Role/environment boundary checks | PASS | Existing MCP grants and selected environments unchanged; Knowledge Builder rebuild unverified, other rebuilds and wiki operations blocked within recorded scope |
+| Independent Python structural verifier | FAIL: 625 passed, 3 failed | Only the retained baseline exceptions below; disposable fixtures outside existing sessions |
+| Scoped git diff --check | PASS | Approved agent-system paths |
 
-- `node docs/agents/scripts/verify-canonical-copies.mjs docs/agents/sources . docs/agents/preservation-plan.json`
-- Independent decoding and full-body/hash comparison for all native adapters using the retained Python decoder.
-- `python3 docs/agents/scripts/verify-agentic-system.py`
-- `git diff --check -- docs/agents .codex/agents .github/agents`
+Commands: `node .agents/skills/bootstrap-agentic-system/scripts/verify-canonical-copies.mjs docs/agents/sources . docs/agents/preservation-plan.json`; `python3 -B docs/agents/scripts/verify-agentic-system.py`; focused Python reconstruction, decoding, source/hash/intake/scope assertions; scoped `git diff --check`.
 
-## Preserved Baseline Debt
+Python's `-B` option prevents bytecode writes. An unintended bytecode update from the earlier read-only audit import was restored before application and excluded from the final changes. No verifier report-refresh option was used: its older fixed-date/host prose does not describe this run.
 
-- `docs/agents/knowledge/testing-flow-checklist.md`: keep repository-only verification and validation-command updates; baseline remains unchanged (C011).
-- `docs/agents/knowledge/dashboard-navigation-boundaries.md`: keep repository-only verification, vocabulary and breadcrumb behavior updates; baseline remains unchanged (C012).
-- Five orphan baseline entries: four legacy `.github/skills/` copies and `CONTEXT.md`. User approved preserving this unresolved debt, not silently deleting it or certifying inventory completeness.
+## Approved Retained Failures
 
-## Validation Limits
+1. Pristine baseline equality: `docs/agents/knowledge/testing-flow-checklist.md` (C011).
+2. Pristine baseline equality: `docs/agents/knowledge/dashboard-navigation-boundaries.md` (C012).
+3. No orphan or missing baseline entries: five legacy orphan files remain (`CONTEXT.md` and four legacy `.github/skills` copies); no current generated primary or baseline is missing.
 
-The upgrade applies the 5.3.0 contract deltas with registered Vision exceptions C001/C007/C008 retained. The complete generated-system validation is not a full pass while baseline debt and native runtime verification remain unresolved. The older Node/sandbox restrictions in installation history do not apply to this host.
+The user approved retaining this debt in the maintenance plan and replied `ok approved` on 2026-10-07. These results remain failures, not passing conformance. The knowledge files and their old baseline bytes were not changed. Canonical copies remain exact; native Vision exceptions remain explicitly registered rather than certified as unchanged canonical metadata.
 
-- `git diff --check` passed for the changed agent-system paths. Source snapshots and hashes match the installed sources; broad service bindings are removed and forbidden plan/session operations retain explicit role restrictions.
+## Verification Limits
+
+Static file/body/hash verification does not prove selected-client discovery, actual complete instruction loading, effective tool availability, authentication, image input or role handoffs. GitHub issue-read is not exposed in this maintenance host; no live issue was fetched. Markdown normalization and supplied-ID batch execution remain unverified in the generated roles. No external wiki source is approved; a wiki-dependent workflow is blocked. No native client/version upgrade was performed.
+
+Product diagnostics, typecheck, lint, tests and build were not run: the approved changes are agent-system-only. No application code, schema, migrations, product tests, runtime configuration or actual session contents were read or modified. The Python verifier's disposable file-contract fixture was outside the configured session root.
+
+Approved changed baselines were refreshed after canonical/body/hash verification. The final operation inventory, source scope, customization decisions and read-only auditor result are recorded in `docs/agents/contract-audit.md`. Compatibility follow-ups remain in `docs/agents/compatibility.md`.

@@ -27,7 +27,7 @@
   "copies": [
     {
       "template": "templates/agents/planner.agent.md",
-      "sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
+      "sha256": "5c9283a79078de2df34bab6696904e106b06c47c9dd5e78fc314e7862e88bd77",
       "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -35,7 +35,7 @@
         "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
         "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "APPROVED_MCP_TOOLS": [
           "mcp__github__issue_read",
           "mcp__neon__list_docs_resources",
@@ -63,14 +63,14 @@
     },
     {
       "template": "templates/agents/implementor.agent.md",
-      "sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
+      "sha256": "44d7db79e6d764425c5edc8331358929234d26f90c629392a39c99a5fd7734e5",
       "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
         "SESSION_ROOT": "sessions",
         "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "APPROVED_MCP_TOOLS": [
           "mcp__github__issue_read",
           "mcp__neon__list_docs_resources",
@@ -100,14 +100,14 @@
     },
     {
       "template": "templates/agents/direct-implementor.agent.md",
-      "sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
+      "sha256": "a708b3699199601ef56c5cc100fd96f2a2be7087dbc127e580266251f27d5c02",
       "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
         "SESSION_ROOT": "sessions",
         "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "APPROVED_MCP_TOOLS": [
           "mcp__github__issue_read",
           "mcp__neon__list_docs_resources",
@@ -139,7 +139,7 @@
     },
     {
       "template": "templates/agents/integration-tester.agent.md",
-      "sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
+      "sha256": "55a7d9bc99013f4d68b066c99d4ccbd0a0f87aaa42abdbf00f8af41c2b17d7e7",
       "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -160,7 +160,7 @@
     },
     {
       "template": "templates/agents/knowledge-builder.agent.md",
-      "sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
+      "sha256": "a10cf8250978f295f7d5387d3a19b8737bdeb60602caff6ac0326bd74bdd82b1",
       "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
       "values": {
         "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
@@ -197,7 +197,7 @@
     },
     {
       "template": "templates/agents/ask.agent.md",
-      "sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
+      "sha256": "3b7aada2d6e3aaece0deb4a5acf86d4af4a4da5fbb42afd13dde5e59eaa84160",
       "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -230,7 +230,7 @@
     },
     {
       "template": "templates/agents/vision.agent.md",
-      "sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
+      "sha256": "5df1d09c69a5f090a60799048764419a3a206562cb442d3b7d806bcfa57a0a06",
       "output": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
       "values": {
         "SESSION_ROOT": "sessions",
@@ -244,7 +244,7 @@
     },
     {
       "template": "templates/agents/planner.agent.md",
-      "sha256": "b5fb4332177aae4ed3066fd28a789a9177598d639d066f7d738fe51537c91b43",
+      "sha256": "5c9283a79078de2df34bab6696904e106b06c47c9dd5e78fc314e7862e88bd77",
       "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -252,7 +252,7 @@
         "PLAN_SCHEMA_PATH": "docs/agents/plan-schema.md",
         "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "APPROVED_MCP_TOOLS": [
           "github/issue_read",
           "neondatabase/mcp-server-neon/list_docs_resources",
@@ -280,14 +280,14 @@
     },
     {
       "template": "templates/agents/implementor.agent.md",
-      "sha256": "ea9a6ed92d88029bd19d5efa29e96acad400860bac4760c2575082a822d5ffa6",
+      "sha256": "44d7db79e6d764425c5edc8331358929234d26f90c629392a39c99a5fd7734e5",
       "output": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
         "SESSION_ROOT": "sessions",
         "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "APPROVED_MCP_TOOLS": [
           "github/issue_read",
           "neondatabase/mcp-server-neon/list_docs_resources",
@@ -317,14 +317,14 @@
     },
     {
       "template": "templates/agents/direct-implementor.agent.md",
-      "sha256": "d446926fe284dc0daf67435c04820cb470e1bec34d0d9a0e032c9520b462da5e",
+      "sha256": "a708b3699199601ef56c5cc100fd96f2a2be7087dbc127e580266251f27d5c02",
       "output": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
         "SESSION_ROOT": "sessions",
         "KNOWLEDGE_INDEX_PATH": "docs/agents/knowledge/README.md",
         "KNOWLEDGE_SOURCE": "docs/agents/knowledge/README.md",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "APPROVED_MCP_TOOLS": [
           "github/issue_read",
           "neondatabase/mcp-server-neon/list_docs_resources",
@@ -356,7 +356,7 @@
     },
     {
       "template": "templates/agents/integration-tester.agent.md",
-      "sha256": "a0d4bf71d849829f83d9b29e4c5f3001017c6ce164587ff944276036d5b241fd",
+      "sha256": "55a7d9bc99013f4d68b066c99d4ccbd0a0f87aaa42abdbf00f8af41c2b17d7e7",
       "output": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -377,7 +377,7 @@
     },
     {
       "template": "templates/agents/knowledge-builder.agent.md",
-      "sha256": "fe93df5a24dab75ba576088eef9cd1feb681f31b80974a3ffd9ac7c40df21658",
+      "sha256": "a10cf8250978f295f7d5387d3a19b8737bdeb60602caff6ac0326bd74bdd82b1",
       "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
       "values": {
         "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
@@ -414,7 +414,7 @@
     },
     {
       "template": "templates/agents/ask.agent.md",
-      "sha256": "5c6f945122ea1123fcda81ebe89c2c23f2b859c02ff93a78e3ffb6b0921c08fa",
+      "sha256": "3b7aada2d6e3aaece0deb4a5acf86d4af4a4da5fbb42afd13dde5e59eaa84160",
       "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
       "values": {
         "REPOSITORY_SEARCH_TOOL": "the current client's bounded native repository search listed in docs/agents/integration-bindings.md",
@@ -447,7 +447,7 @@
     },
     {
       "template": "templates/agents/vision.agent.md",
-      "sha256": "9aaf3db9984d2b5bc987c2ea3b818e3102e105a70a618026e78c785a700d7ebc",
+      "sha256": "5df1d09c69a5f090a60799048764419a3a206562cb442d3b7d806bcfa57a0a06",
       "output": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
       "values": {
         "SESSION_ROOT": "sessions",
@@ -473,11 +473,11 @@
     },
     {
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "sha256": "213d502ad896ec0795956086024bfd0ee51b42cabd6bac0b3c28c412412967fc",
+      "sha256": "03ecc13b86647ec3f425b20cbdbce5e0e110209df93528542607b52b66322bd7",
       "output": "docs/agents/canonical/shared/skills/plan-bug-from-id/SKILL.md",
       "values": {
         "SESSION_ROOT": "sessions",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "LOCAL_MARKDOWN_TRACKER_CONTRACT": "NOT APPLICABLE: GitHub Issues only; stop if GitHub retrieval is unavailable; no local or free-form fallback is approved",
         "WORK_ITEM_ID_FORMAT": "#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix",
         "WORK_ITEM_GATHERING": "When invoked as demo-planner, delegate this bounded gathering task to the built-in default agent using the current client's approved delegation tool from docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read tool, current session ID and this exact evidence task. On Copilot, use agent/runSubagent with agentName=\"agent\"; on the Codex execution host, use collaboration.spawn_agent with agent_type=\"default\". Delegate questions return to the parent. If delegation or the approved issue-read tool is unavailable, stop and report the missing binding; do not broaden access.",
@@ -487,11 +487,11 @@
     },
     {
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "sha256": "d25fa707cc39d86ee2705df2b7ed28a960a068c0d67d61aac66100a4f1cfe9ff",
+      "sha256": "a7b8521767a1f781f753263c38f6348e450365e9abbc4982d233b0c7a1cd204e",
       "output": "docs/agents/canonical/shared/skills/plan-user-story-from-id/SKILL.md",
       "values": {
         "SESSION_ROOT": "sessions",
-        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md",
+        "WORK_ITEM_RETRIEVAL": "Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal",
         "LOCAL_MARKDOWN_TRACKER_CONTRACT": "NOT APPLICABLE: GitHub Issues only; stop if GitHub retrieval is unavailable; no local or free-form fallback is approved",
         "WORK_ITEM_ID_FORMAT": "#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix",
         "WORK_ITEM_GATHERING": "When invoked as demo-planner, delegate this bounded gathering task to the built-in default agent using the current client's approved delegation tool from docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read tool, current session ID and this exact evidence task. On Copilot, use agent/runSubagent with agentName=\"agent\"; on the Codex execution host, use collaboration.spawn_agent with agent_type=\"default\". Delegate questions return to the parent. If delegation or the approved issue-read tool is unavailable, stop and report the missing binding; do not broaden access.",

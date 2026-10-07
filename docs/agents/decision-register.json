@@ -165,5 +165,20 @@
     },
     "source": "user",
     "evidence": "User final message: approved; after full file plan and amended roster"
+  },
+  {
+    "id": "bootstrap-6.0.0-maintenance",
+    "value": {
+      "approved": true,
+      "date": "2026-10-07",
+      "mode": "upgrade",
+      "contract": "6.0.0",
+      "supplied_id_batch": "Existing issue_read/get per supplied linked ID; reuse one-hop evidence; no search or recursion",
+      "knowledge_scope": "Knowledge Builder index rebuild only; wiki unavailable under repository-document source",
+      "native_names": "Retain C003 demo-prefixed names",
+      "retained_debt": "C011/C012 knowledge baseline differences and five orphan baseline entries"
+    },
+    "source": "user",
+    "evidence": "User: ok approved, following the complete maintenance plan"
   }
 ]
