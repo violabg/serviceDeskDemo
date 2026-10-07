@@ -21,7 +21,7 @@ Cleaned into canonical agent `planner.agent.md`. This canonical copy preserves w
 
 ## Capability Substitutions
 
-The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
+The source agent granted or called private tools for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
 | Capability | Substitute in the generated system |
 | --- | --- |
@@ -32,6 +32,7 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:implementation-plan-schema` | Read `docs/agents/plan-schema.md` and obey it as the plan contract. |
 | `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
 | `#capability:knowledge-index-read` | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. |
+| `#capability:knowledge-index-rebuild` | Rebuild `docs/agents/knowledge/README.md` from the approved knowledge source using the knowledge-retrieval and file-editing capabilities declared in `registry/capabilities.yaml`, within this role's knowledge-operation scope. |
 | `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
 | `#capability:session-activate` | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
 | `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
@@ -41,8 +42,13 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:session-list` | Read only the current Planning Session folder under `sessions`. Never enumerate other sessions. |
 | `#capability:session-memory-append` | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last. |
 | `#capability:session-memory-read` | Read `sessions/<planning-session-id>/session-memory.md`. |
-| `#capability:work-item-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md` for the requested External Issue ID. |
-| `#capability:work-item-type-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md` to determine the work item type. |
+| `#capability:wiki-catalog-read` | List the available wikis through the approved knowledge-retrieval capability declared in `registry/capabilities.yaml`. |
+| `#capability:wiki-page-list` | List pages in the selected wiki through the approved knowledge-retrieval capability declared in `registry/capabilities.yaml`. |
+| `#capability:wiki-page-read` | Read the selected wiki page through the approved knowledge-retrieval capability declared in `registry/capabilities.yaml`. |
+| `#capability:work-item-batch-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal` to retrieve the provided work item IDs as a batch. |
+| `#capability:work-item-comment-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal` to read the work item comments. |
+| `#capability:work-item-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal` for the requested External Issue ID. |
+| `#capability:work-item-type-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal` to determine the work item type. |
 
 ## Role Tooling Intent
 
@@ -50,8 +56,9 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 
 | Target capability category | Source capability evidence | Bootstrap discovery guidance |
 | --- | --- | --- |
-| Work-item tracker access | `#capability:work-item-retrieval`, `#capability:work-item-type-retrieval` | Read issue, story, type, or comment evidence. Seek a read-only target tracker integration or the local tracker fallback. |
-| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Work-item tracker access | `#capability:work-item-batch-retrieval`, `#capability:work-item-comment-retrieval`, `#capability:work-item-retrieval`, `#capability:work-item-type-retrieval` | Read issue, story, type, or comment evidence. Seek a read-only target tracker integration or the local tracker fallback. |
+| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read`, `#capability:knowledge-index-rebuild` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Wiki knowledge access | `#capability:wiki-catalog-read`, `#capability:wiki-page-list`, `#capability:wiki-page-read` | Discover and read wiki knowledge through an approved read-only documentation source. Preserve catalog, page-listing, and page-reading operations; do not require the upstream plugin or tracker service. |
 | Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
 | Planning-session persistence | `#capability:execution-report-read`, `#capability:implementation-plan-list`, `#capability:implementation-plan-load`, `#capability:implementation-plan-save`, `#capability:implementation-plan-schema`, `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write`, `#capability:session-event-log`, `#capability:session-list`, `#capability:session-memory-append`, `#capability:session-memory-read` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
 

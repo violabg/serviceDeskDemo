@@ -12,11 +12,11 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 5.3.0 with the explicit Vision native-metadata exceptions below
+- Bootstrap Contract Applied Through: 6.0.0 with the explicit Vision native-metadata exceptions below
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Available: 3.0.0
 - Maintain Skill Version Last Applied: 3.0.0
-- Last Maintenance Date: 2026-09-27
+- Last Maintenance Date: 2026-10-07
 
 ## Generated System Paths
 
@@ -49,7 +49,7 @@
 - Compatibility Evidence: `docs/agents/compatibility.md`
 - Canonical Source Snapshots: `docs/agents/sources/` (outside skill/agent discovery roots)
 - Preservation Plan: `docs/agents/preservation-plan.json`
-- Preservation Plan SHA-256: 0c20a5181e7423cdd7bfd3f2cd3740b06ff8d9a3db8c1697b0807565907cdb28
+- Preservation Plan SHA-256: 7ff4ff26cd8b8b43ff9deeee1c55aedef4fd9f53ad7043ca5a9fbb153b141713
 - Native Body Mapping: `docs/agents/native-adapters.json`
 - Structural Verification: `docs/agents/validation-report.md`
 - Contract Audit: `docs/agents/contract-audit.md`
@@ -65,8 +65,8 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | C001 | `.github/agents/demo-vision.agent.md` | disable-model-invocation | modified-rule | User explicitly requires Planner to spawn Vision when the active model lacks vision | overrides-canonical | always; retain until user changes it |
 | C002 | Planner and Direct Implementor copies | VISION_INVOCATION slot | slot-override | Inline extraction if capable, otherwise Luna delegate; parent JSON reference bridges Planner JSON intake and Vision SlimUI output | extends-canonical within declared slot | always |
-| C003 | Native skill adapters | name | native-registration | demo-prefixed invocation names distinguish configured skills from shipped source mirrors | independent; body exact | re-evaluate on discovery changes |
-| C004 | `.github/instructions/agent-integrations.instructions.md` and integration-bindings.md | repository bindings | added-section | GitHub-only planning, exact MCP grants, English, current-role routing, native authority limits | extends-canonical | always |
+| C003 | Native skill adapters | name | native-registration | demo-prefixed invocation names distinguish configured skills from shipped source mirrors | independent; body exact | re-evaluate on discovery changes; user approved retention 2026-10-07, structural name/body check at 6.0.0, runtime discovery unverified |
+| C004 | `.github/instructions/agent-integrations.instructions.md` and integration-bindings.md | repository bindings | added-section | GitHub-only planning, exact MCP grants, English, current-role routing, native authority limits; user-approved 6.0.0 Markdown/batch/index/wiki bindings 2026-10-07 | extends-canonical | always; last verified structure 6.0.0, runtime unverified |
 | C005 | two existing knowledge files and README | obsolete references and test ownership | modified-rule | Reconcile missing Demo agents/glossary, session identity and Integration Tester production-code boundary | independent repository documentation | always |
 | C006 | `docs/agents/context-glossary.md` | Customer/Client terminology normalization | modified-rule | User approved `Customer`/`Customers` as the canonical Service Desk term; normalize `Client`/`clients` from issue wording in user stories and bugs | independent repository documentation | always |
 | C007 | `.github/agents/demo-vision.agent.md` | model and tools frontmatter | modified-rule | User selected GPT-6 Luna (copilot) and web/GitHub retrieval for repository images; duplicate tool removed without changing granted tool set | overrides-canonical native metadata | always; recheck tool availability and scope |
@@ -75,6 +75,8 @@
 | C010 | `docs/agents/sources/registry/capabilities.yaml` | repository-search fallback | modified-rule | Approved repository-local 5.1.1 correction was superseded by the 5.2.0 upstream fallback; retained source now matches upstream, while C009 keeps concrete native bindings | superseded by upstream 5.2.0 | drop-when-superseded; resolved in 5.2.0 |
 | C011 | `docs/agents/knowledge/testing-flow-checklist.md` | verification evidence and validation commands | modified-rule | Preserve repository-only 2026-09-26 knowledge updates; user approved preservation during 2026-09-27 upgrade; product evidence not reverified | independent repository documentation | always; last verified merge classification 5.3.0; baseline mismatch remains visible |
 | C012 | `docs/agents/knowledge/dashboard-navigation-boundaries.md` | verification evidence, vocabulary and breadcrumb behavior | modified-rule | Preserve repository-only 2026-09-26 knowledge updates; user approved preservation during upgrade and full K4 source refresh via demo-knowledge-builder on 2026-09-27; routes, sidebar and breadcrumb sources/test assertions inspected, runtime not verified | independent repository documentation | always; last verified merge classification 5.3.0; baseline mismatch remains visible |
+| C013 | Planning/issue-reading canonical copies, planning skills and answers | WORK_ITEM_RETRIEVAL slot | slot-override | User approved exact-tool Markdown adapter and supplied-ID batch procedure on 2026-10-07 | extends-canonical within declared slot | always; last verified structure 6.0.0, runtime unverified |
+| C014 | integration-bindings.md and answers per-role operation records | index-rebuild and wiki source scope | added-section | User approved Knowledge Builder-only rebuild and repository-document-only source; wiki-dependent work blocked until approved and verified | extends-canonical within role authority | always; last verified structure 6.0.0, runtime unverified |
 
 Canonical copies remain exact after approved slots and marker stripping. The native Vision metadata overrides are not described as unchanged canonical translations. No other non-slot canonical edits are authorized.
 
@@ -98,6 +100,15 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 - Both selected environments remain unverified for generated-role discovery, effective tools, MCP prerequisites, handoffs and image operations. No client-version upgrade is implied.
 - Session-folder contents were excluded from discovery and edits. Product code, runtime configuration and tests were outside scope.
 
+## Bootstrap 6.0.0 Approved Upgrade
+
+- Approval: user `ok approved`, 2026-10-07, following the full maintenance plan including supplied-ID batch, role scope, C003 retention, C004 binding extension and legacy debt preservation.
+- Applied canonical deltas: four-field bug intake with separate linked-issue evidence; Markdown adapter and story six-field title resolution; role-specific batch/comment/index-rebuild/wiki evidence; registry and placeholder source refresh. All affected canonical regions were unchanged against BASE; take upstream with recorded fills and regenerate native bodies verbatim. No canonical conflict required a new resolution.
+- C013 records the WORK_ITEM_RETRIEVAL substitution; C014 records role/source boundaries. C003 names and C004 exact-tool authority are retained by explicit approval. C001/C007/C008 remain visible native Vision exceptions. No new service, model, platform version, permission or product behavior was selected.
+- Six stale native inventory source_sha256 records are corrected; body hashes and all source/recipe/inventory hashes are checked together. Canonical preservation remains distinct from native runtime compatibility.
+- C011/C012 knowledge baselines are not refreshed; five orphan baselines remain approved deferred debt. Full generated-system conformance is not certified. Both native environments remain unverified for discovery, full loading, effective tools, handoffs and images.
+- Session-folder contents were excluded from discovery and edits. Approved compliant baseline paths are refreshed only after approval and structural preservation checks. Installed Maintain version remains 3.0.0.
+
 ## Maintenance History
 
 | Date | Bootstrap contract | Maintain version applied | Summary |
@@ -109,5 +120,6 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 | 2026-09-25 | 5.2.0 | 3.0.0 | Upgraded seven canonical role mirrors and their native bodies; took upstream search fallback for C010, retained C009 native bindings, and added remote issue-image byte/permission guidance. Native search and image workflows remain unverified in generated roles. |
 | 2026-09-27 | 5.3.0 | 3.0.0 | Approved upgrade of Ask/Knowledge Builder capability tables and native bodies; refreshed explicit operation provenance and source hashes; restored Copilot Integration Tester canonical formatting; preserved Luna and knowledge drift, with baseline debt and native runtime verification deferred. |
 | 2026-09-27 | 5.3.0 | 3.0.0 | User-approved demo-knowledge-builder publication of K4 dashboard navigation refresh and focused index trigger; inspected route/sidebar/breadcrumb sources and existing test assertions; no product changes or native-runtime verification; knowledge baselines remain unchanged. |
+| 2026-10-07 | 6.0.0 | 3.0.0 | User-approved four-field bug/Markdown/story-batch upgrade; role-scoped index/wiki evidence; 16 canonical copies and native bodies, source hashes and provenance refreshed; C003/C004 retained, C013/C014 added; known baseline debt and native runtime verification remain deferred/unverified. |
 
 After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, demo-author-repo-skill for reusable procedures, and create-work-item-from-description when ticket creation is explicitly requested.
