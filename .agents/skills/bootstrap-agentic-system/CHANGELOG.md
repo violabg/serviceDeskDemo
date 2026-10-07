@@ -4,7 +4,15 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `5.3.0`
+- `6.0.0`
+
+## 2026-10-07
+
+### 6.0.0
+
+- Bug intake now stores only title, description, images, and comments; explicitly linked issue evidence remains separate. Upgrades must review consumers of the previous six-field bug artifact.
+- Planning adapters return Markdown with code blocks and image URLs preserved. User-story intake resolves every listed related ID's title through an approved batch retrieval operation before storing its six-field artifact.
+- Discover role-specific index-rebuild and wiki catalog/page bindings alongside single-item, comment, and batch tracker reads; retain body restrictions, approved source boundaries, and delegated or inline execution.
 
 ## 2026-09-27
 
