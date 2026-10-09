@@ -4,6 +4,7 @@ import { TicketFiltersForm } from "@/app/(dashboard)/tickets/ticket-filters-form
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
+import { getCustomerList } from "@/lib/customers/service"
 import {
   getTicketList,
   isTicketPriority,
@@ -18,6 +19,7 @@ type TicketListSearchParams = {
   q?: string
   status?: string
   priority?: string
+  customerId?: string
   page?: string
 }
 
@@ -40,12 +42,14 @@ async function getTicketListData(
     searchParams.priority && isTicketPriority(searchParams.priority)
       ? searchParams.priority
       : undefined
+  const customerId = searchParams.customerId?.trim() || undefined
 
   return getTicketList(
     {
       search,
       status,
       priority,
+      customerId,
     },
     {
       page,
@@ -94,7 +98,10 @@ async function TicketsPageContent({
   }
 
   const canCreate = hasPermission(effectivePermissions, "tickets", "write")
-  const list = await getTicketListData(access.user.id, resolvedSearchParams)
+  const [list, customers] = await Promise.all([
+    getTicketListData(access.user.id, resolvedSearchParams),
+    getCustomerList(),
+  ])
 
   return (
     <section className="gap-4 grid">
@@ -103,12 +110,15 @@ async function TicketsPageContent({
           q: resolvedSearchParams.q,
           status: resolvedSearchParams.status,
           priority: resolvedSearchParams.priority,
+          customerId: resolvedSearchParams.customerId,
         }}
         canCreate={canCreate}
+        customers={customers}
       />
       <section className="bg-card shadow-sm border rounded-lg overflow-hidden text-card-foreground">
-        <div className="gap-4 grid grid-cols-[1.2fr_0.8fr_0.7fr_0.8fr_auto] bg-muted/50 px-4 py-3 border-b font-medium text-muted-foreground text-sm">
+        <div className="gap-4 grid grid-cols-[1.2fr_1fr_0.8fr_0.7fr_0.8fr_auto] bg-muted/50 px-4 py-3 border-b font-medium text-muted-foreground text-sm">
           <span>Ticket</span>
+          <span>Customer</span>
           <span>Status</span>
           <span>Priority</span>
           <span>SLA</span>
@@ -119,14 +129,12 @@ async function TicketsPageContent({
             list.items.map((ticket) => (
               <article
                 key={ticket.id}
-                className="items-center gap-4 grid grid-cols-[1.2fr_0.8fr_0.7fr_0.8fr_auto] px-4 py-3 text-sm"
+                className="items-center gap-4 grid grid-cols-[1.2fr_1fr_0.8fr_0.7fr_0.8fr_auto] px-4 py-3 text-sm"
               >
                 <div className="min-w-0">
                   <p className="font-medium truncate">{ticket.title}</p>
-                  <p className="text-muted-foreground truncate">
-                    {ticket.customer.name}
-                  </p>
                 </div>
+                <span className="truncate">{ticket.customer.company ?? ticket.customer.name} · {ticket.customer.status}</span>
                 <span>{ticket.status}</span>
                 <span>{ticket.priority}</span>
                 <span>

@@ -4,7 +4,16 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `6.0.0`
+- `6.1.0`
+
+## 2026-10-08
+
+### 6.1.0
+
+- Isolate client tool identifiers, invocation syntax and loaded bindings by selected environment; shared workflows must stay neutral instead of combining client alternatives.
+- Verify default-delegate invocation against the intended client's schema and registrations; never infer a named agent or selector from a generic role description.
+- Prefer one discoverable complete skill source when loading and resources work for all consumers; require evidence for extra runtime copies or adapters.
+- Add a discovery-derived static runtime audit for foreign bindings, named delegate selectors, loaded-file ownership and inventory coverage, alongside native verification.
 
 ## 2026-10-07
 

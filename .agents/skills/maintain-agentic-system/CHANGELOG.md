@@ -4,7 +4,13 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.0.0`
+- `3.1.0`
+
+## 2026-10-08
+
+### 3.1.0
+
+- Audit existing substitutions and loaded dependencies using Bootstrap's shared isolation contract even when they match the original baseline; propose only demonstrated violations and justified skill consolidation.
 
 ## 2026-09-18
 

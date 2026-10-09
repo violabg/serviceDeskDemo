@@ -1,11 +1,13 @@
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { TicketDetailForms } from "@/app/(dashboard)/tickets/[id]/ticket-detail-forms"
 import { ticketDetailTag } from "@/app/(dashboard)/tickets/_lib/cache-tags"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
 import { getAvailableTechnicians, getTicketById } from "@/lib/tickets/service"
 import { cacheLife, cacheTag } from "next/cache"
 import { notFound, redirect } from "next/navigation"
+import Link from "next/link"
 import { Suspense, ViewTransition } from "react"
 
 async function getTicketDetailData(actorUserId: string, ticketId: string) {
@@ -109,6 +111,20 @@ async function TicketDetailPageContent({
             <dd className="whitespace-pre-wrap">{ticket.description}</dd>
           </div>
         </dl>
+      </section>
+
+      <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
+        <h2 className="font-heading font-semibold text-lg tracking-normal">
+          Customer
+        </h2>
+        <Button
+          variant="link"
+          render={<Link href={`/customers/${ticket.customer.id}`} />}
+          nativeButton={false}
+          className="h-auto p-0 text-left"
+        >
+          {ticket.customer.company ?? ticket.customer.name} · {ticket.customer.name} · {ticket.customer.email ?? "Email missing"} · {ticket.customer.status}
+        </Button>
       </section>
 
       <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">

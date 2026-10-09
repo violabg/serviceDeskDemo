@@ -163,7 +163,7 @@ placeholders:
     kind: value
     question: Which verified tool names implement this role in this selected environment and execution context?
     fill_from: discovery
-    recommend: Preserve supported source baseline tools; translate unsupported names to exact discovered equivalents for the same operations. Emit quoted YAML list items, or no items when approved manual fallbacks cover the role.
+    recommend: Resolve source baseline operations to exact discovered tools for this environment and role; source names are not target defaults. Emit quoted YAML list items, or no items when approved manual fallbacks cover the role. Never mix different clients' names in one filled copy.
     infer_from:
       - matching Baseline Tool Surface row in templates/agent-role-contracts.md
       - official documentation for the selected client/version
@@ -182,7 +182,7 @@ placeholders:
     question: How should work-item evidence gathering run?
     fill_from: discovery
     capability: subagent-delegation
-    recommend: Delegate the following gathering task to a default subagent through the exact approved target invocation, or execute it inline when delegation is unavailable. Preserve the retrieval scope and artifact output in either case.
+    recommend: Delegate the following gathering task through this environment's verified tool schema and default-agent invocation; never infer a registered name or selector from the word default. Use an approved inline procedure when delegation is unavailable. Preserve retrieval scope and artifact output, and keep other clients' syntax out of this value.
     infer_from:
       - target delegation tools and supported arguments
       - approved tracker adapter and capability bindings
@@ -192,7 +192,7 @@ placeholders:
     question: How should bounded knowledge discovery run?
     fill_from: discovery
     capability: subagent-delegation
-    recommend: Run up to 10 default subagents within the target's concurrency limit, or run the same bounded discovery tasks sequentially inline when delegation is unavailable.
+    recommend: Run up to 10 default subagents through this environment's verified default invocation within its concurrency limit; do not invent a named delegate. Use an approved sequential inline procedure for the same bounded discovery tasks when delegation is unavailable.
     infer_from:
       - target delegation tools and concurrency limits
 
@@ -395,7 +395,7 @@ placeholders:
     kind: value
     question: Where do generated repository skills live?
     fill_from: user
-    recommend: A shared skill source with native discovery verified for every consuming environment; use tracked copies or adapters when necessary.
+    recommend: One directly discoverable complete skill source when its neutral content, discovery and relative resources work for every consumer. Use environment-specific copies or native adapters only for a verified binding or discovery need; never share mixed client syntax.
     infer_from:
       - existing skill folders in the platform customization directory
       - resolved TARGET_PLATFORM

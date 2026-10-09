@@ -2,14 +2,16 @@
 applyTo: "**"
 ---
 
-# Service Desk Agent Integration Routing
+# Agent Integration Routing
 
-Use English. When a request selects a `demo-` role, load its complete environment-specific contract and current-role bindings from `docs/agents/integration-bindings.md` before acting. Preserve the role's authority boundaries.
+Owner: copilot. Load only docs/agents/bindings/copilot.md and the complete selected role contract under docs/agents/canonical/copilot/agents/.
 
-Planner uses GitHub Issues only via `docs/agents/github-issues-adapter.md`. Direct Implementor is an explicitly selected separate route and does not require a plan document. Never reinterpret a planning approval as product implementation approval.
+Scope: all selected agent-system workflows. Use English and preserve the selected role's authority boundaries. Load the current role's full contract and only its already selected environment binding before acting.
 
-Before image-dependent work, inspect the active model's image capability. Planner and Direct Implementor handle images inline when supported; otherwise delegate to `demo-vision` using Luna. The Vision adapter's invocation override is user-approved and recorded in the manifest.
+Planner uses GitHub Issues through docs/agents/github-issues-adapter.md. Direct Implementor is an explicitly selected separate route and does not require a plan document. Planning approval never authorizes product implementation.
 
-For this repository's generated skills, use the `demo-` names under `.agents/skills/demo-*/SKILL.md`; similarly named files under Bootstrap's `templates/` are source mirrors, not configured runtime skills. Planning skills belong to `demo-planner`.
+Before image-dependent work, inspect actual image capability. Extract inline when supported; otherwise delegate to demo-vision only through the verified selected-environment binding and approved Luna model.
 
-The shared root router loads modular instructions only for matching request paths. Copilot applies declared `applyTo` globs through its native loader. Codex uses the root router's explicit matching-and-read procedure; do not claim Copilot-style automatic `applyTo` enforcement in Codex.
+Configured skills are the complete original-name copies under .agents/skills: author-repo-skill, plan-bug-from-id, plan-user-story-from-id, user-story-analysis and integration-test-knowledge-checklist. Packaged Bootstrap templates are source mirrors; always resolve configured skills by their exact path. Planning skills belong to demo-planner.
+
+Native scoped rules apply through applyTo globs. Never load a foreign environment binding.

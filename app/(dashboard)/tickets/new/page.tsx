@@ -6,7 +6,7 @@ import { hasPermission } from "@/lib/access-control"
 import {
   getAssets,
   getAvailableTechnicians,
-  getCustomers,
+  getActiveCustomers,
 } from "@/lib/tickets/service"
 import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
@@ -19,7 +19,7 @@ async function getNewTicketReferenceData() {
   cacheTag(ticketReferenceTag())
 
   const [customers, assets, technicians] = await Promise.all([
-    getCustomers(),
+    getActiveCustomers(),
     getAssets(),
     getAvailableTechnicians(),
   ])

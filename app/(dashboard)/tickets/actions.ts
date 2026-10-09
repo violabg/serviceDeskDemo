@@ -11,6 +11,7 @@ import {
   assignTechnician,
   checkDuplicateTicket,
   createTicket,
+  getActiveCustomerById,
   getTicketById,
   isIntakeChannel,
   isTicketCategory,
@@ -83,6 +84,9 @@ export async function createTicketAction(formData: FormData) {
   ) {
     return
   }
+
+  const customer = await getActiveCustomerById(customerId)
+  if (!customer) return { success: false, error: "Select a valid active Customer." }
 
   const ticket = await createTicket(
     {

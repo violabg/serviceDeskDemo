@@ -4,13 +4,17 @@ Route the current request through this file, then load only what that request ne
 
 ## Agents
 
-- `demo-planner`: GitHub-issue planning and clarification. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.
-- `demo-implementor`: approved-plan implementation. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.
-- `demo-direct-implementor`: explicit direct implementation without a plan document; no test creation. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.
-- `demo-integration-tester`: integration-test planning and execution. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.
-- `demo-knowledge-builder`: evidence-backed repository knowledge. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.
-- `demo-ask`: read-only Q&A. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.
-- `demo-vision`: Luna image extraction, delegated only when the caller lacks vision. Load its complete contract under `docs/agents/canonical/<environment>/agents/` and its role bindings in `docs/agents/integration-bindings.md`.
+Resolve the active environment from the client/session identity first: use `codex` or `copilot`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below.
+
+- `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.
+- `demo-implementor`: approved-plan implementation. Load `docs/agents/canonical/<environment>/agents/demo-implementor.agent.md`.
+- `demo-direct-implementor`: explicit implementation without a plan document; no test creation. Load `docs/agents/canonical/<environment>/agents/demo-direct-implementor.agent.md`.
+- `demo-integration-tester`: integration-test planning and execution. Load `docs/agents/canonical/<environment>/agents/demo-integration-tester.agent.md`.
+- `demo-knowledge-builder`: evidence-backed repository knowledge. Load `docs/agents/canonical/<environment>/agents/demo-knowledge-builder.agent.md`.
+- `demo-ask`: read-only Q&A. Load `docs/agents/canonical/<environment>/agents/demo-ask.agent.md`.
+- `demo-vision`: Luna image extraction; delegated only when the caller lacks vision. Load `docs/agents/canonical/<environment>/agents/demo-vision.agent.md`.
+
+Shared skills use only the already selected environment binding. Invoke the complete configured skill at `.agents/skills/<skill-name>/SKILL.md`; packaged Bootstrap templates are source mirrors, never configured runtime skills.
 
 Full role contracts live in `docs/agents/canonical/<environment>/agents (codex or copilot)`. Do not restate them here.
 
@@ -20,7 +24,7 @@ Repository skills live in `.agents/skills`. Read a skill's `SKILL.md` before run
 
 ## Instructions
 
-Modular rules live in `.github/instructions`. Each file declares the paths it applies to; load one only when the current request touches those paths.
+Modular rules live in `docs/agents/instructions; skip a shared rule already loaded by the active environment's native adapter`. Each file declares the paths it applies to; load one only when the current request touches those paths.
 
 ## Knowledge
 

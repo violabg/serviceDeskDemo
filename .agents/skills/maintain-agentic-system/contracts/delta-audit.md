@@ -11,6 +11,8 @@ An upgrade delta is anything that changed between the Bootstrap contract the rep
 
 Classify the cause of each delta as canonical-contract, platform-compatibility, or repository-customization. Record affected environment IDs; unselected platforms create no work. Use the sibling Bootstrap compatibility contract for research and preservation checks.
 
+Apply that contract's runtime environment audit to the existing files and loaded dependencies, including substitutions unchanged since generation. A matching baseline hash does not establish a valid binding. Map each demonstrated violation and any justified skill consolidation to a proposed operation; keep correct files and required discovery copies unchanged.
+
 The package `CHANGELOG.md` is supporting context only, and only when the installed skill-local changelog is unavailable.
 
 Never declare a delta missing from changelog text alone. A repository can satisfy a later release without any record of it. Check the files first.

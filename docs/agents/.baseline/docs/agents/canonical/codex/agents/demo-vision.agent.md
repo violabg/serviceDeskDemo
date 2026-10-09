@@ -15,7 +15,7 @@ Cleaned into canonical agent `vision.agent.md`. This canonical copy preserves wo
 
 ## Capability Substitutions
 
-The source agent granted or called private tools for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
+The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
 | Capability | Substitute in the generated system |
 | --- | --- |

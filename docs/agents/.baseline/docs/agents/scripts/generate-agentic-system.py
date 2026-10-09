@@ -86,6 +86,7 @@ def fill(source, values, blocks):
             (region[2] if region else out).append(line)
     if region or len(used) != len(blocks): raise ValueError('unmatched slot')
     s = '\n'.join(out)
+    if s.endswith('\n\n'): s = s[:-1]
     if '"{{APPROVED_MCP_TOOLS}}"' in s:
         tools = ', '.join(json.dumps(t) for t in values['APPROVED_MCP_TOOLS'])
         if values.get('PLATFORM_TOOLS') == '': s = s.replace('{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"', tools)
@@ -124,17 +125,36 @@ def frontmatter(s):
 def yaml_front(d, body):
     return '---\n' + ''.join(k + ': ' + json.dumps(v, ensure_ascii=False) + '\n' for k,v in d.items()) + '---\n' + body
 
-def mcp_map(role):
+def mcp_map(role, env):
     d = {}
-    if role in TRACKER_ROLES: d['github'] = ['issue_read']
+    if role in TRACKER_ROLES and env == 'copilot': d['github'] = ['issue_read']
     if role in MCP_ROLES:
         d['neon'] = NEON_READ + (NEON_WRITE if role in IMPL else [])
         d['next-devtools'] = NEXT_READ + (['browser_eval'] if role in IMPL else [])
     return d
 
+def github_app_tools(role):
+    return ['github_fetch_issue', 'github_fetch_issue_comments'] if role in TRACKER_ROLES else []
+
+def work_item_tools(env, role):
+    if role not in TRACKER_ROLES: return []
+    if env == 'codex': return ['mcp__codex_apps__' + tool for tool in github_app_tools(role)]
+    return ['github/issue_read']
+
 def qualified(env, server, tool):
     if env == 'codex': return 'mcp__' + server.replace('-', '_') + '__' + tool
     return {'github':'github', 'neon':'neondatabase/mcp-server-neon', 'next-devtools':'io.github.vercel/next-devtools-mcp'}[server] + '/' + tool
+
+def approved_tools(env, role):
+    tools = [qualified(env, server, tool) for server, names in mcp_map(role, env).items() for tool in names]
+    if env == 'codex':
+        return ['mcp__codex_apps__' + tool for tool in github_app_tools(role)] + tools
+    return tools
+
+def work_item_retrieval(env):
+    if env == 'codex':
+        return 'Codex Apps: mcp__codex_apps__github_fetch_issue and mcp__codex_apps__github_fetch_issue_comments for exact issue IDs; paginate comments explicitly; use type or labels only when returned by issue fetch; follow docs/agents/github-issues-adapter.md'
+    return 'Copilot: github/issue_read; methods get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md'
 
 def native_tools(env, role):
     if env == 'codex':
@@ -173,7 +193,7 @@ COMMON = {
     'WORK_ITEM_ID_FORMAT':'#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix',
     'TRACKER_ADAPTER':'GitHub Issues via docs/agents/github-issues-adapter.md; invoked only by demo-planner for these planning skills',
     'LOCAL_MARKDOWN_TRACKER_CONTRACT':'NOT APPLICABLE: GitHub Issues only; stop if GitHub retrieval is unavailable; no local or free-form fallback is approved',
-    'WORK_ITEM_RETRIEVAL':'Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md',
+    'WORK_ITEM_RETRIEVAL':'the active client\'s selected binding, which lists the exact issue-fetch and issue-comments operations; retrieve comments with explicit pagination and stop if all pages cannot be retrieved; use issue type or labels only when returned by those operations, ask if type is missing or conflicting, and never search, list, or write tracker data',
     'WORK_ITEM_GATHERING':'When invoked as demo-planner, delegate this bounded gathering task to the built-in default agent using the current client\'s approved delegation tool from docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read tool, current session ID and this exact evidence task. On Copilot, use agent/runSubagent with agentName="agent"; on the Codex execution host, use collaboration.spawn_agent with agent_type="default". Delegate questions return to the parent. If delegation or the approved issue-read tool is unavailable, stop and report the missing binding; do not broaden access.',
     'VALIDATION_COMMANDS':'diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 docs/agents/scripts/verify-agentic-system.py',
     'INTEGRATION_TEST_SCOPE':'Vitest tests of connected repo-owned modules, actions, routes and feature components with real internal wiring and stubbed Neon/auth/third-party boundaries; exclude live vendor systems, unit and e2e tests, and direct components/ui/** tests unless the user overrides that exclusion',
@@ -206,7 +226,7 @@ def main():
         for role in ROLES:
             values = dict(COMMON)
             values.update(PLATFORM_TOOLS=', '.join(json.dumps(t) for t in native_tools(env,role)),
-                APPROVED_MCP_TOOLS=[qualified(env,s,t) for s,ts in mcp_map(role).items() for t in ts],
+                APPROVED_MCP_TOOLS=approved_tools(env, role), WORK_ITEM_RETRIEVAL=work_item_retrieval(env),
                 QUESTION_TOOL=('vscode/askQuestions in a foreground role; delegates return questions to the parent, which asks and reinvokes with the answers' if env == 'copilot' else 'the foreground user-facing chat channel; delegates return questions to the parent, which asks the user and returns the answers through the active native delegate messaging or reinvocation mechanism'),
                 KNOWLEDGE_DISCOVERY_DELEGATION=('Use bounded agent/runSubagent calls to the built-in agent, up to 10 evidence tasks within the runtime concurrency limit. Run as the foreground Knowledge Builder; delegate questions return to it. Do not rely on nested delegation being enabled.' if env == 'copilot' else 'Use collaboration.spawn_agent with agent_type="default" in this host, up to 10 evidence tasks within the runtime concurrency limit; receive results through collaboration.wait_agent. Other Codex contexts must verify their native spawn/wait bindings before delegating.'),
                 VISION_MODEL=('gpt-5.6-luna' if env == 'codex' else 'GPT-5.6 Luna'),
@@ -229,9 +249,19 @@ def main():
                 if role=='vision': text+='model = "gpt-5.6-luna"\n'
                 text+='sandbox_mode = '+json.dumps('read-only' if role=='ask' else 'workspace-write')+'\n'
                 text+='developer_instructions = '+json.dumps(body,ensure_ascii=False)+'\n'
-                for server in ['github','neon','next-devtools']:
-                    raw=mcp_map(role).get(server,[])
+                text+='\n[apps.github]\n'
+                text+='default_tools_enabled = false\n'
+                for tool in github_app_tools(role):
+                    text+='\n[apps.github.tools.'+tool+']\n'
+                    text+='enabled = true\n'
+                for server in ['neon','next-devtools']:
+                    raw=mcp_map(role,'codex').get(server,[])
                     text+='\n[mcp_servers.'+json.dumps(server)+']\n'
+                    if server=='neon':
+                        text+='url = "https://mcp.neon.tech/mcp"\n'
+                    else:
+                        text+='command = "npx"\n'
+                        text+='args = ["next-devtools-mcp@0.3.6"]\n'
                     text+='enabled = '+str(bool(raw)).lower()+'\n'
                     if raw: text+='enabled_tools = '+json.dumps(raw)+'\n'
             write(native,text,'native-adapter',f'templates/agents/{role}.agent.md',[env],canonical_copy=path,loading='lossless-embedding',
@@ -300,9 +330,9 @@ Issue/session terminology lives in `docs/agents/github-issues-adapter.md`. Knowl
 Repository: `violabg/serviceDeskDemo`. Planning is GitHub-issue-only. The two ID-planning skills are invoked only by `demo-planner`; they never implement code.
 
 - External input: `#[1-9][0-9]*`. Parse the digits as a positive integer for the API. Missing, invalid, ambiguous or unreadable IDs stop the workflow; do not search for a replacement.
-- Exact tools: Codex `mcp__github__issue_read`; Copilot `github/issue_read`. Allowed methods: `get`, `get_comments`, `get_labels`. Pass owner `violabg`, repo `serviceDeskDemo`, the exact issue_number, and explicit pagination for all comments.
-- Retrieve the issue title, body, type/labels, comments, acceptance criteria, image links and explicit dependencies. Preserve fenced code, rich text meaning and attachment URLs when normalizing to Markdown. Missing acceptance criteria are a gap, not invented requirements.
-- Use an explicit bug/story type or unambiguous labels. If type is missing or conflicting, ask before choosing a type-dependent session ID.
+- Exact tools: Codex uses the issue-fetch and issue-comments operations in the already selected `docs/agents/bindings/codex.md`; Copilot retains `github/issue_read`. For Codex, pass the exact issue number and paginate comments explicitly. If the comments schema cannot support complete pagination, stop and report the limitation.
+- Retrieve issue title, body, comments, acceptance criteria, image links and explicit dependencies. Use issue type or labels only when returned by Codex issue fetch; their response coverage is unverified. Preserve fenced code, rich text meaning and attachment URLs when normalizing to Markdown. Missing acceptance criteria are a gap, not invented requirements.
+- Use an explicit bug/story type or unambiguous returned labels. If type is missing or conflicting, ask before choosing a type-dependent session ID; never infer it from issue text.
 - Read every issue directly linked by the current issue once, record its repository/ID and retrieval reason, then stop traversal. Do not recurse, search/list issues, follow arbitrary URLs, or fetch unrelated items. A cross-repository issue explicitly linked by the current issue may be retrieved only as dependency evidence through the same exact tool; it never changes the owning repository/session.
 - Recommend `sessions/bug-<number>/` or `sessions/us-<number>/` only after type retrieval. Existing explicit user-approved IDs remain valid. Resume only a supplied or already active session ID; never enumerate sessions or choose a folder by similarity.
 - Reject traversal, absolute paths and separators in custom session IDs. A custom prefix must be lowercase `[a-z0-9_-]` with a trailing `-`; record the approved prefix and resulting ID in `session-identity.md`.
@@ -311,22 +341,25 @@ Repository: `violabg/serviceDeskDemo`. Planning is GitHub-issue-only. The two ID
 - No local Markdown tracker, free-form Planner workflow, issue search or tracker-write tool is enabled by this adapter. Ask remains available for Q&A.
 ''')
     tool_rows=[]
-    for role in ROLES:
-        for server,ts in mcp_map(role).items():
-            tool_rows.append('| demo-'+role+' | '+server+' | '+', '.join('`'+t+'`' for t in ts)+' |')
+    for env in ENVS:
+        for role in ROLES:
+            for server,ts in mcp_map(role,env).items():
+                tool_rows.append('| demo-'+role+' | '+env+' | '+server+' | '+', '.join('`'+t+'`' for t in ts)+' |')
+            if env == 'codex' and github_app_tools(role):
+                tool_rows.append('| demo-'+role+' | codex | github app | '+', '.join('`'+t+'`' for t in github_app_tools(role))+' |')
     write('docs/agents/integration-bindings.md', '''# Agent Integration Bindings
 
 These bindings implement the approved role operations. Read only the current role's rows and the common rules required by the task. Output language: English. Never treat a configured tool as evidence that authentication or runtime access works.
 
-## Exact MCP assignments
+## Exact integration assignments
 
-| Role | Server | Raw tool names |
-| --- | --- | --- |
+| Role | Environment | Server or app | Raw tool names |
+| --- | --- | --- | --- |
 '''+'\n'.join(tool_rows)+'''
 
-Codex qualified names use `mcp__github__<tool>`, `mcp__neon__<tool>` and `mcp__next_devtools__<tool>`. Copilot uses `github/<tool>`, `neondatabase/mcp-server-neon/<tool>` and `io.github.vercel/next-devtools-mcp/<tool>`. Raw names are used in Codex `enabled_tools`. Existing user MCP configuration supplies the transport and authentication; native agent overlays narrow each named server's tools. No credentials are copied here.
+Codex GitHub retrieval uses the `github` app with `github_fetch_issue` and `github_fetch_issue_comments`; these are not MCP-server tools. Other Codex MCP tools use `mcp__neon__<tool>` and `mcp__next_devtools__<tool>`. Codex role layers repeat each server's connection transport and endpoint/command, then apply the role's exact `enabled_tools` allowlist; Neon OAuth remains in the user's Codex configuration. Copilot uses `github/<tool>`, `neondatabase/mcp-server-neon/<tool>` and `io.github.vercel/next-devtools-mcp/<tool>`. No credentials are copied here.
 
-Neon raw names were confirmed against its public catalog. Qualified Neon names are configuration bindings, not verified tools in this session. Copilot qualified names likewise require the actual client tool picker/diagnostics check. If the required bound tool is missing, report the missing binding and stop that dependent operation. Continue independent work that does not need it. Do not silently switch services.
+The Codex GitHub issue-fetch and issue-comments schema, comment pagination support, and connected-account access remain unverified. Neon raw names were confirmed against its public catalog. Neon uses the Streamable HTTP endpoint `https://mcp.neon.tech/mcp`; role definitions include its endpoint while OAuth credentials remain in Codex's user configuration. Qualified Neon names still require a live connection and role-tool check. Copilot qualified names likewise require the actual client tool picker/diagnostics check. If the required bound tool is missing, report the missing binding and stop that dependent operation. Continue independent work that does not need it. Do not silently switch services.
 
 ## Repository and native operations
 
@@ -434,7 +467,7 @@ def capability_register():
             entries={}
             for token in tokens:
                 if 'work-item' in token:
-                    invoke=qualified(env,'github','issue_read')+' (get/get_comments/get_labels for exact issue IDs)'; cap='work-item-retrieval'; binding='integration'
+                    invoke=' and '.join('`'+tool+'`' for tool in work_item_tools(env, role))+' (exact issue IDs; see docs/agents/github-issues-adapter.md)'; cap='work-item-retrieval'; binding='integration'
                 elif token=='visual-evidence':
                     invoke='native image read if supported; otherwise demo-vision with Luna; SlimUI plus parent JSON reference';cap='visual-evidence';binding='native-tool'
                 elif token=='repository-search':
@@ -454,9 +487,12 @@ def capability_register():
             for operation in ['file-read','artifact-edit','terminal-execution','question-routing','delegation','web-documentation']:
                 applicable=not (operation=='artifact-edit' and role=='ask') and not (operation=='terminal-execution' and role not in IMPL+['integration-tester']) and not (operation=='delegation' and role not in ['planner','direct-implementor','integration-tester','knowledge-builder']) and not (operation=='web-documentation' and role not in ['planner','knowledge-builder','ask'])
                 if applicable: entries[operation]=dict(capability=operation,binding='native-tool',invocation=native_tools(env,role),inputs_outputs='Operation-specific inputs and outputs per integration-bindings.md',prerequisites='Active client tool surface and role permissions',status='unverified',evidence='Documented or host-exposed tools; native generated-role execution pending.')
-            for server,tools in mcp_map(role).items():
+            for server,tools in mcp_map(role,env).items():
                 for tool in tools:
                     entries[server+'/'+tool]=dict(capability=server+'-integration',binding='integration',invocation=qualified(env,server,tool),inputs_outputs='Explicit project/branch/database or exact issue; sanitized task evidence; operation-specific catalog schema',prerequisites='Configured transport, authenticated account, required role grant; implementation authorization for mutations',status='unverified',evidence='Exact raw tool catalog and configuration observed 2026-09-18; runtime access not verified in this installation session.')
+            if env == 'codex':
+                for tool in github_app_tools(role):
+                    entries['github-app/'+tool]=dict(capability='github-app-integration',binding='integration',invocation='mcp__codex_apps__'+tool,inputs_outputs='Exact issue ID; response schema remains unverified',prerequisites='GitHub app configured and authenticated; comment pagination schema must be verified before claiming complete comments',status='unverified',evidence='Approved Codex Apps operation names; connected-account schema and runtime access not verified.')
             result[env][role]=entries
     return result
 
@@ -481,7 +517,7 @@ Discovery: 2026-09-18. Installation: 2026-09-19. Selected targets: Codex and Git
 | https://code.visualstudio.com/docs/agents/reference/ai-features-cheat-sheet | Built-in file/search/execution tools | Source baseline preserved; client can silently ignore absent tools, so diagnostics required |
 | https://docs.github.com/en/copilot/reference/ai-models/supported-models | GPT-5.6 Luna, minimum VS Code 1.128.0 | Previous stable VS Code version meets minimum; account access and current Insiders picker unverified |
 | https://developers.openai.com/api/docs/models/gpt-5.6-luna | Image input support | Previous local Codex model catalog listed gpt-5.6-luna with text/image input; generated delegate execution unverified |
-| https://github.com/github/github-mcp-server | issue_read operation | Configured GitHub server; tool was exposed during discovery but is not exposed in current installation inventory |
+| Official Codex app configuration | Per-app default and per-tool enablement in custom-agent config layers | GitHub app defaults off; only issue-fetch/comments are assigned to the three approved roles; connected schema and runtime remain unverified |
 | https://mcp.neon.tech/api/list-tools | Exact raw Neon tools and migration lifecycle | Public catalog confirmed; configured server not exposed in this session; qualified names unverified |
 | https://github.com/vercel/next-devtools-mcp/blob/v0.3.6/src/tools/nextjs-docs.ts | Pinned v0.3.6 documentation tool | Existing config version preserved; Next tools exposed in host, per-role execution not performed |
 
@@ -490,7 +526,7 @@ Discovery: 2026-09-18. Installation: 2026-09-19. Selected targets: Codex and Git
 1. Reload each selected client; confirm seven demo agents and five demo skills. Do not select similarly named Bootstrap source templates.
 2. Inspect Copilot Chat Diagnostics and the tool picker: exact configured MCP names, full agent loading, AGENTS.md and applicable instruction loading. Missing tools are not silently accepted.
 3. In a disposable fixture outside sessions, test one read/search, one authorized artifact write, question/coordinator routing and an approved handoff. Test Ask's effective read-only boundary separately.
-4. Verify Codex role-layer MCP inheritance actually narrows existing server definitions without losing transports; verify no unrelated inherited tool is mistaken for a granted role capability.
+4. Verify Codex role-layer app policy inheritance leaves GitHub tools off by default and enables only the approved issue-fetch/comments tools in the three selected roles.
 5. Verify Luna availability and conditional invocation from a model lacking image input. Verify inline image processing from an image-capable model. Keep test images and artifacts in the disposable fixture.
 6. Verify the connected Neon and GitHub tools on the exact intended context before using those dependent workflows. Do not mutate data merely to test connectivity.
 
@@ -502,7 +538,8 @@ Until these checks succeed, both installations have status **unverified**, not f
         dict(id='tracker',value='GitHub Issues only',source='user',evidence='User: Solo GitHub Issues'),
         dict(id='defaults',value={k:COMMON[k] for k in ['AGENT_PREFIX','OUTPUT_LANGUAGE','SESSION_ROOT','KNOWLEDGE_INDEX_PATH','CONTEXT_GLOSSARY_PATH','PLAN_SCHEMA_PATH','TEST_PLAN_SCHEMA_PATH']},source='recommend-accepted',evidence='User accepted naming and storage defaults'),
         dict(id='skills',value=SKILLS,source='recommend-accepted',evidence='Recommended five skills; defer gap detector'),
-        dict(id='mcp',value={r:mcp_map(r) for r in ROLES},source='user',evidence='User added Neon/Next to Ask, Planner, Implementor, then Knowledge Builder; Direct Implementor added with same implementation grants in approved roster'),
+        dict(id='mcp',value={env:{r:mcp_map(r,env) for r in ROLES} for env in ENVS},source='user',evidence='User approved environment-specific Codex Apps issue reads; Copilot retains its existing GitHub MCP binding; Neon/Next grants are unchanged'),
+        dict(id='github-app',value={'app_id':'github','default_tools_enabled':False,'roles':{role:github_app_tools(role) for role in ROLES},'prohibited':['mcp__codex_apps__github_search_issues','issue listing','tracker writes']},source='user',evidence='User approved only issue-fetch and issue-comments tools for Planner, Implementor, and Direct Implementor'),
         dict(id='vision',value={'codex':'gpt-5.6-luna','copilot':'GPT-5.6 Luna','conditional':'inline if image-capable; otherwise spawn Vision'},source='user',evidence='User: use vision with luna; planner can spin a vision agent as subagent if current model lack vision capabilities'),
         dict(id='approval',value={'approved':True,'owner':'user','batches':'combined installation including seventh agent and later MCP additions'},source='user',evidence='User final message: approved; after full file plan and amended roster')]
     write('docs/agents/decision-register.json',dump(decisions),'provenance')

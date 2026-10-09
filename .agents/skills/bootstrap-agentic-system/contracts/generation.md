@@ -59,7 +59,7 @@ After approval, apply only the approved batch.
 For every generated agent or skill with a matching mirror:
 
 - read the mirror from `templates/agents/` or `templates/skills/`,
-- copy the mirror into the planned canonical-copy path; share identical filled copies and create environment-specific copies only when bindings differ,
+- copy the mirror into the planned canonical-copy path; apply the compatibility contract's environment isolation and skill-sharing rules before choosing shared or client-specific outputs,
 - replace inline placeholders from the approved decision register,
 - fill or remove approved block slots,
 - strip `CANONICAL-TEMPLATE-SLOT` marker comments from final generated runtime files,
@@ -78,7 +78,7 @@ For generated work-item planning skills:
 - do not add skill-level `tools:` frontmatter,
 - name the selected external tracker adapter or local Markdown adapter in the body,
 - preserve Planner-only invocation,
-- fill `WORK_ITEM_GATHERING` with the approved target invocation or an explicit inline gathering instruction; preserve the following evidence task and its artifact contract,
+- fill `WORK_ITEM_GATHERING` with the approved target invocation or an explicit inline gathering instruction; verify any named delegate and selector in the intended client, preserve the following evidence task and its artifact contract, and never combine different clients' invocations in a shared skill,
 - define adapter name, exact approved retrieval tools when available, supported issue types, External Issue ID format, required retrieved fields, rich-content and attachment Markdown conversion, missing/duplicate/unreadable/invalid-ID behavior, and local lookup rules when applicable,
 - retrieve only requested External Issue ID by default. Read each issue explicitly referenced or linked by the current issue before deciding relevance; record retrieval reason as dependency evidence and do not recurse,
 - distinguish External Issue ID from Planning Session ID. Determine issue type before recommending `bug-<external-issue-id>` or `us-<external-issue-id>`, allow approved custom prefix, and record resulting identity in current-session artifact,

@@ -1,6 +1,6 @@
 ---
 description: "Implementation Executor Agent for the application development workflow"
-tools: ["functions.exec", "mcp__github__issue_read", "mcp__neon__list_docs_resources", "mcp__neon__get_doc_resource", "mcp__neon__get_database_tables", "mcp__neon__describe_table_schema", "mcp__neon__list_branches", "mcp__neon__compare_database_schema", "mcp__neon__prepare_database_migration", "mcp__neon__run_sql", "mcp__neon__complete_database_migration", "mcp__next_devtools__init", "mcp__next_devtools__nextjs_docs", "mcp__next_devtools__nextjs_index", "mcp__next_devtools__nextjs_call", "mcp__next_devtools__browser_eval"]
+tools: ["functions.exec", "mcp__codex_apps__github_fetch_issue", "mcp__codex_apps__github_fetch_issue_comments", "mcp__neon__list_docs_resources", "mcp__neon__get_doc_resource", "mcp__neon__get_database_tables", "mcp__neon__describe_table_schema", "mcp__neon__list_branches", "mcp__neon__compare_database_schema", "mcp__neon__prepare_database_migration", "mcp__neon__run_sql", "mcp__neon__complete_database_migration", "mcp__next_devtools__init", "mcp__next_devtools__nextjs_docs", "mcp__next_devtools__nextjs_index", "mcp__next_devtools__nextjs_call", "mcp__next_devtools__browser_eval"]
 disable-model-invocation: true
 ---
 
@@ -10,15 +10,15 @@ disable-model-invocation: true
 - Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).
 - Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.
 - Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.
-- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/integration-bindings.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.
+- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/bindings/codex.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.
 
 ## Bootstrap Template Repository Search
-- Use `the current client's bounded native repository search listed in docs/agents/integration-bindings.md` for repository discovery when the workflow requires codebase evidence.
+- Use `the current client's bounded native repository search listed in docs/agents/bindings/codex.md` for repository discovery when the workflow requires codebase evidence.
 Cleaned into canonical agent `implementor.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
 
-The source agent granted or called private tools for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
+The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
 | Capability | Substitute in the generated system |
 | --- | --- |
@@ -29,7 +29,6 @@ The source agent granted or called private tools for these operations. Each one 
 | `#capability:implementation-plan-save` | Save the implementation plan to its path in the current Planning Session folder. |
 | `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
 | `#capability:knowledge-index-read` | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. |
-| `#capability:knowledge-index-rebuild` | Rebuild `docs/agents/knowledge/README.md` from the approved knowledge source using the knowledge-retrieval and file-editing capabilities declared in `registry/capabilities.yaml`, within this role's knowledge-operation scope. |
 | `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
 | `#capability:session-activate` | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
 | `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
@@ -40,9 +39,8 @@ The source agent granted or called private tools for these operations. Each one 
 | `#capability:session-memory-append` | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last. |
 | `#capability:session-memory-read` | Read `sessions/<planning-session-id>/session-memory.md`. |
 | `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
-| `#capability:work-item-batch-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal` to retrieve the provided work item IDs as a batch. |
-| `#capability:work-item-comment-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal` to read the work item comments. |
-| `#capability:work-item-retrieval` | Use `Codex: mcp__github__issue_read; Copilot: github/issue_read; only get, get_comments and get_labels for exact issue IDs; use the Markdown adapter and supplied-ID batch-title procedure in docs/agents/github-issues-adapter.md; batch means one get per supplied linked ID with reuse of already retrieved evidence, never issue search or recursive traversal` for the requested External Issue ID. |
+| `#capability:work-item-comment-retrieval` | Use `Codex Apps: mcp__codex_apps__github_fetch_issue and mcp__codex_apps__github_fetch_issue_comments for exact issue IDs; paginate comments explicitly; use type or labels only when returned by issue fetch; follow docs/agents/github-issues-adapter.md` to read the work item comments. |
+| `#capability:work-item-retrieval` | Use `Codex Apps: mcp__codex_apps__github_fetch_issue and mcp__codex_apps__github_fetch_issue_comments for exact issue IDs; paginate comments explicitly; use type or labels only when returned by issue fetch; follow docs/agents/github-issues-adapter.md` for the requested External Issue ID. |
 
 ## Role Tooling Intent
 
@@ -50,8 +48,8 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 
 | Target capability category | Source capability evidence | Bootstrap discovery guidance |
 | --- | --- | --- |
-| Work-item tracker access | `#capability:work-item-batch-retrieval`, `#capability:work-item-comment-retrieval`, `#capability:work-item-retrieval` | Read issue, story, type, or comment evidence. Seek a read-only target tracker integration or the local tracker fallback. |
-| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read`, `#capability:knowledge-index-rebuild` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Work-item tracker access | `#capability:work-item-comment-retrieval`, `#capability:work-item-retrieval` | Read issue, story, type, or comment evidence. Seek a read-only target tracker integration or the local tracker fallback. |
+| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
 | Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
 | Planning-session persistence | `#capability:execution-report-read`, `#capability:execution-report-write`, `#capability:implementation-plan-list`, `#capability:implementation-plan-load`, `#capability:implementation-plan-save`, `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write`, `#capability:session-event-log`, `#capability:session-list`, `#capability:session-memory-append`, `#capability:session-memory-read` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
 | Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. For remote issue images, discover an authorized way to fetch and view the image URL, including private repository attachments; URL text alone is not visual evidence. Add a visual service only when native tools cannot perform the selected workflow. |

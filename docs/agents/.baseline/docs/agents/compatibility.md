@@ -1,3 +1,5 @@
+> Earlier dated sections are historical installation evidence. Current ownership and limitations are in the 2026-10-08 maintenance sections and answers. Historical tool names and skill aliases are not runtime bindings.
+
 # Environment Compatibility Evidence
 
 Discovery: 2026-09-18. Installation: 2026-09-19. Selected targets: Codex and GitHub Copilot in VS Code. Execution host for installation: Codex in a VS Code Insiders agent host (environment SDK path reports 0.153.0); the previously inspected standalone Codex CLI was 0.155.0 and VS Code stable 1.138.0. Do not conflate those clients. The current sandbox blocks Node and Git even after escalation requests; Python file operations remain available.
@@ -14,7 +16,7 @@ Discovery: 2026-09-18. Installation: 2026-09-19. Selected targets: Codex and Git
 | https://code.visualstudio.com/docs/agents/reference/ai-features-cheat-sheet | Built-in file/search/execution tools | Source baseline preserved; client can silently ignore absent tools, so diagnostics required |
 | https://docs.github.com/en/copilot/reference/ai-models/supported-models | GPT-5.6 Luna, minimum VS Code 1.128.0 | Previous stable VS Code version meets minimum; account access and current Insiders picker unverified |
 | https://developers.openai.com/api/docs/models/gpt-5.6-luna | Image input support | Previous local Codex model catalog listed gpt-5.6-luna with text/image input; generated delegate execution unverified |
-| https://github.com/github/github-mcp-server | issue_read operation | Configured GitHub server; tool was exposed during discovery but is not exposed in current installation inventory |
+| https://github.com/github/github-mcp-server | Historical 2026-09-18 issue_read catalog inspection | Historical evidence only; this is not the current Codex binding. Copilot's existing binding remains separate. |
 | https://mcp.neon.tech/api/list-tools | Exact raw Neon tools and migration lifecycle | Public catalog confirmed; configured server not exposed in this session; qualified names unverified |
 | https://github.com/vercel/next-devtools-mcp/blob/v0.3.6/src/tools/nextjs-docs.ts | Pinned v0.3.6 documentation tool | Existing config version preserved; Next tools exposed in host, per-role execution not performed |
 
@@ -23,11 +25,17 @@ Discovery: 2026-09-18. Installation: 2026-09-19. Selected targets: Codex and Git
 1. Reload each selected client; confirm seven demo agents and five demo skills. Do not select similarly named Bootstrap source templates.
 2. Inspect Copilot Chat Diagnostics and the tool picker: exact configured MCP names, full agent loading, AGENTS.md and applicable instruction loading. Missing tools are not silently accepted.
 3. In a disposable fixture outside sessions, test one read/search, one authorized artifact write, question/coordinator routing and an approved handoff. Test Ask's effective read-only boundary separately.
-4. Verify Codex role-layer MCP inheritance actually narrows existing server definitions without losing transports; verify no unrelated inherited tool is mistaken for a granted role capability.
+4. Verify Codex role-layer app policy inheritance leaves GitHub tools off by default and enables only the approved issue-fetch/comments tools in the three selected roles.
 5. Verify Luna availability and conditional invocation from a model lacking image input. Verify inline image processing from an image-capable model. Keep test images and artifacts in the disposable fixture.
 6. Verify the connected Neon and GitHub tools on the exact intended context before using those dependent workflows. Do not mutate data merely to test connectivity.
 
 Until these checks succeed, both installations have status **unverified**, not fully compatible. A missing required tool blocks only operations that depend on it. Canonical preservation and native instruction-body equality are separate structural checks.
+
+## Codex GitHub Apps Binding (2026-10-08)
+
+Codex agent layers use app ID `github`, default app tools off, and enable only `github_fetch_issue` plus `github_fetch_issue_comments` for Planner, Implementor, and Direct Implementor. GitHub issue search, listing, and writes are not configured. The two tool names and app policy follow the approved Codex binding; connected-account availability and effective layer inheritance remain unverified.
+
+The issue-comments input schema and support for explicit pagination remain unknown. The issue-fetch response's type/label coverage is also unknown. The adapter requires complete explicit comment pagination and permits type/labels only when returned; otherwise the workflow stops or asks rather than inferring. No runtime operation was performed.
 
 ## 2026-09-25 Maintenance Evidence
 
@@ -43,10 +51,30 @@ Until these checks succeed, both installations have status **unverified**, not f
 - Node and Git are available in this maintenance host. The older installation record's sandbox limitations are historical. Neither selected generated-role runtime was executed by this upgrade; model/tool availability, authorization, full loading and handoffs remain unverified.
 - User approved preservation of GPT-6 Luna selections, repository-only knowledge drift and unresolved baseline inventory debt. No private issue image or actual generated-role image input was tested.
 
-## 2026-10-07 Maintenance Evidence
+## 2026-10-08 Maintenance Evidence
 
-- Selected environments and recorded target versions remain Codex and GitHub Copilot in VS Code; no client-version migration was approved. Current official documentation was retrieved during the pre-approval audit: [OpenAI subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents), [VS Code custom agents](https://code.visualstudio.com/docs/agent-customization/custom-agents), and [GitHub MCP server](https://github.com/github/github-mcp-server). These sources support project TOML/Markdown registrations and issue-read operations; they do not verify the older recorded clients' effective tool access. VS Code explicitly warns that unavailable configured tools can be ignored.
-- Bootstrap 6.0.0 canonical bodies are preserved and adapters embed them losslessly. Existing native metadata, Vision exceptions, models, MCP filters and user-only role-routing instructions are retained. C003 native skill names were explicitly approved for retention.
-- Supplied-ID batch title retrieval uses the existing issue-read tool in an approved adapter procedure. Markdown normalization, pagination, private-issue access and effective generated-role execution remain unverified. Required unavailable access blocks the dependent workflow.
-- Knowledge Builder index rebuild uses its existing knowledge/index authority. Other roles' rebuild operations are blocked/out of scope. Wiki operations are not applicable to the repository-document source and remain blocked if a wiki-dependent task is requested; no external wiki integration was selected.
-- Follow Required client verification above using disposable fixtures outside existing sessions. Test Markdown/code/image preservation, every supplied linked title, missing-ID failure and one-hop reuse in the selected planning role; verify Knowledge Builder index scope and Ask's read-only boundary. No live role, MCP, issue, private image or client handoff was executed by maintenance. Both environments remain **unverified**.
+Selected targets remain codex and copilot; observed CLI 0.160.0 does not upgrade the recorded target selection. User approved environment isolation, original-name complete canonical skill discovery, bounded inline evidence when delegation is unavailable, and deferral of Bootstrap 6.0. Answers retain unverified role operations and effective permissions.
+
+Official documentation retrieved 2026-10-08:
+
+- [Codex skill discovery](https://learn.chatgpt.com/docs/build-skills): repositories use .agents/skills; duplicate names are not merged; full SKILL.md is read after discovery.
+- [VS Code skills](https://code.visualstudio.com/docs/agent-customization/agent-skills): .agents/skills is supported; directory/name agreement is required; experimental Codex Agent Host can also discover .github/skills. Relative supporting resources must remain resolvable. These five relocated skills use repository-relative references and no skill-local resources.
+- [VS Code subagents](https://code.visualstudio.com/docs/agents/run/subagents): delegation depends on harness and effective tool availability. This documentation does not establish the running Copilot client's selector schema.
+
+Host evidence: collaboration.spawn_agent accepts task_name/message and optional fork_turns, with no agent_type argument. Bounded evidence agents successfully ran during maintenance. Custom demo role registration, native post-move discovery, MCP authentication, image access and Copilot selector/default invocation remain unverified. The supplied Copilot error establishes that agentName="agent" is not registered in the reported client; no replacement name is guessed. The approved inline procedure preserves the exact evidence task and artifacts while avoiding dependence on an unavailable default selector.
+
+The initial host catalog recursively exposes Bootstrap template skills with the same original names as configured runtime skills. Required source mirrors were preserved in their installed package; source-template catalog collisions remain unresolved native-discovery debt. Root/role routing identifies exact configured skill paths and rejects templates as runtime workflows. A later discovery-specific change must prove safe source package exclusion or relocation before claiming one visible entry per skill.
+
+Static verification: 22 exact canonical copies and all decoded native bodies pass. Complete runtime audit coverage is 55 files; the full foreign-binding audit fails on the inherited diagnostics source-slot gap described below. Audit plan and hash are in answers/manifest. Static results do not establish actual registration or effective permissions. No target version, global settings, credentials or MCP grants were changed.
+
+## Inherited Diagnostics Source Contract Gap
+
+Status: **BLOCKED** for Codex Implementor and Integration Tester diagnostics. The saved 5.3.0 source mirrors and installed 6.1.0 mirrors hardcode `read/problems` outside a declared tooling slot (Implementor one occurrence, Integration Tester four). The Codex canonical copies and their decoded TOML embeddings retain these exact source lines. The new full audit correctly rejects this Copilot binding in all four runtime outputs; no waiver or invented Codex tool was added. The other 51 direct runtime file scans found no foreign binding; the full audit remains failing rather than certifying partial coverage. A follow-up source-contract proposal should add a declared `DIAGNOSTICS_TOOL` placeholder to those mirrors and bind each environment to its actual diagnostics procedure. Until approved and applied, preserve the gap and block the affected diagnostic operation.
+
+
+## Codex Neon MCP Verification (2026-10-08)
+
+- Fixed the Codex Neon server URL from the legacy `/sse` route to Streamable HTTP `https://mcp.neon.tech/mcp`, completed OAuth, and saved a user-level `enabled_tools` allowlist containing the nine workflow operations. Project-level authorization is restricted to `wild-salad-95156534`; the consent grant selected Docs, Schema, Branches and Querying with read/write scope because migration operations are part of the Implementor workflow. Role-level tool filters further restrict each agent.
+- `codex mcp get neon` reports the server enabled, Streamable HTTP transport, correct URL, OAuth auth, and nine allowed operation names. A fresh `codex exec --ephemeral --sandbox read-only` trace called `neon.list_branches` successfully and returned `main` (branch `br-sweet-dream-af0d75vt`, archived). No data was changed.
+- The initial fast call raced MCP startup and reported the tool missing; a subsequent trace showed the Neon call completing successfully. Codex workflows should allow the optional server to finish startup before deciding a tool is unavailable. The active ChatGPT session does not inherit the local user's Codex MCP configuration.
+- The seven Codex role TOMLs parse with complete transport configuration and exact per-role allowlists. Generated-role invocation/inheritance remains unverified, so this proves local Codex CLI MCP access and static role configuration, not every custom role's runtime behavior. Copilot was not changed.

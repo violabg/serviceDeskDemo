@@ -106,12 +106,19 @@ enum ActivityType {
   AssetLinked
 }
 
+enum CustomerStatus {
+  Active
+  Deactivated
+}
+
 model Customer {
   id        String   @id @default(cuid())
   name      String
-  email     String?  @unique
+  email     String?
   phone     String?
   company   String?
+  status    CustomerStatus @default(Active)
+  notes     String?
   tickets   Ticket[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -19,7 +19,7 @@ Cleaned into canonical agent `integration-tester.agent.md`. This canonical copy 
 
 ## Capability Substitutions
 
-The source agent granted or called private tools for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
+The source agent called a private server for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
 
 | Capability | Substitute in the generated system |
 | --- | --- |
@@ -29,7 +29,6 @@ The source agent granted or called private tools for these operations. Each one 
 | `#capability:implementation-plan-load` | Open the existing implementation plan in the current Planning Session folder and edit it in place. |
 | `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
 | `#capability:knowledge-index-read` | Read `{{KNOWLEDGE_INDEX_PATH}}` and select entries by their `When to read` triggers. |
-| `#capability:knowledge-index-rebuild` | Rebuild `{{KNOWLEDGE_INDEX_PATH}}` from the approved knowledge source using the knowledge-retrieval and file-editing capabilities declared in `registry/capabilities.yaml`, within this role's knowledge-operation scope. |
 | `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
 | `#capability:session-activate` | Create or resume the current Planning Session folder under `{{SESSION_ROOT}}`. Session identity is a directory, not a service. |
 | `#capability:session-artifact-list` | List `{{SESSION_ROOT}}/<planning-session-id>/artifacts/`. |
@@ -49,7 +48,7 @@ Use this profile during Bootstrap discovery. It describes target capability cate
 
 | Target capability category | Source capability evidence | Bootstrap discovery guidance |
 | --- | --- | --- |
-| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read`, `#capability:knowledge-index-rebuild` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
+| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
 | Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
 | Planning-session persistence | `#capability:execution-report-read`, `#capability:execution-report-write`, `#capability:implementation-plan-list`, `#capability:implementation-plan-load`, `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-event-log`, `#capability:session-list`, `#capability:session-memory-append`, `#capability:session-memory-read`, `#capability:test-plan-list`, `#capability:test-plan-load`, `#capability:test-plan-save`, `#capability:test-plan-schema` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
 
