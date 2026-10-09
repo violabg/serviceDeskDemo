@@ -359,8 +359,13 @@ export function getAvailableTechnicians() {
   })
 }
 
-export function getCustomers() {
+export function getActiveCustomers() {
   return prisma.customer.findMany({
+    where: {
+      status: "Active",
+      company: { not: null },
+      email: { not: null },
+    },
     orderBy: [{ name: "asc" }],
     select: {
       id: true,
@@ -368,6 +373,13 @@ export function getCustomers() {
       email: true,
       company: true,
     },
+  })
+}
+
+export function getActiveCustomerById(id: string) {
+  return prisma.customer.findFirst({
+    where: { id, status: "Active", company: { not: null }, email: { not: null } },
+    select: { id: true },
   })
 }
 

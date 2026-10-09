@@ -54,6 +54,7 @@ Required checks:
 - Generated work-item planning skills preserve tracker/local adapter, session, evidence, Planner-only, no-skill-tools-frontmatter, and approved native-or-inline gathering requirements.
 - Generated Planner and work-item planning skills ask clarification only for genuine blocking uncertainty; otherwise complete mandatory gates, artifacts, and implementation plan before requesting review or approval.
 - Compatibility verification from `contracts/platform-compatibility.md` covers every selected environment, including discovery collisions, complete instruction loading, and effective operations. Installed files alone do not establish compatibility.
+- The compatibility contract's environment audit covers runtime bodies, native adapters, shared resources, and loaded dependencies; client-specific syntax remains isolated, named delegate selectors match inspected registrations, and extra runtime skill copies have a verified discovery or binding reason.
 - Validation commands from the file plan were run where available, or each skipped command has a reason.
 
 Treat missing required contract elements as blocking failures. An approved narrower selection or deferral must remain explicit; it cannot turn canonical drift or an unavailable required operation into a passing compatibility result.

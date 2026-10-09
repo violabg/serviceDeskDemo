@@ -10,6 +10,7 @@ import json
 import re
 import sys
 import tempfile
+import subprocess
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[3]
@@ -61,10 +62,21 @@ def decode_toml(s):
         if not line.strip(): continue
         if line.startswith('['):
             match=re.fullmatch(r'\[mcp_servers\.("(?:[^"\\]|\\.)+")\]',line)
-            if not match: raise ValueError('Unsupported/invalid TOML table: '+line)
-            name=json.loads(match[1]); servers=root.setdefault('mcp_servers',{})
-            if name in servers: raise ValueError('Duplicate TOML table')
-            current={}; servers[name]=current
+            app_match=re.fullmatch(r'\[apps\.([A-Za-z_][A-Za-z0-9_-]*)(?:\.tools\.([A-Za-z_][A-Za-z0-9_-]*))?\]',line)
+            if match:
+                name=json.loads(match[1]); servers=root.setdefault('mcp_servers',{})
+                if name in servers: raise ValueError('Duplicate TOML table')
+                current={}; servers[name]=current
+            elif app_match:
+                app=root.setdefault('apps',{}).setdefault(app_match[1],{})
+                if app_match[2] is None:
+                    if app: raise ValueError('Duplicate TOML table')
+                    current=app
+                else:
+                    tools=app.setdefault('tools',{})
+                    if app_match[2] in tools: raise ValueError('Duplicate TOML table')
+                    current={}; tools[app_match[2]]=current
+            else: raise ValueError('Unsupported/invalid TOML table: '+line)
         else:
             key,raw=line.split(' = ',1)
             if not re.fullmatch(r'[a-z_]+',key) or key in current: raise ValueError('Invalid/duplicate TOML key')
@@ -138,19 +150,22 @@ def main():
                 tool_items=answers['capabilities']['codex'][adapter['role']]
                 names=sorted(k.split('/',1)[1] for k in tool_items if k.startswith(server+'/'))
                 check(config['enabled']==bool(names) and sorted(config.get('enabled_tools',[]))==names,'Codex exact MCP filter: '+adapter['path']+' '+server)
+            app=meta.get('apps',{}).get('github',{})
+            expected_tools={'github_fetch_issue','github_fetch_issue_comments'} if adapter['role'] in ['planner','implementor','direct-implementor'] else set()
+            enabled_tools={name for name,config in app.get('tools',{}).items() if config.get('enabled') is True}
+            check(app.get('default_tools_enabled') is False,'Codex GitHub app defaults off: '+adapter['path'])
+            check(enabled_tools==expected_tools,'Codex exact GitHub Apps tool allowlist: '+adapter['path'])
         else:
             meta,body=decode_md(text)
             wanted=dict(canonical_meta)
-            wanted['name']='demo-'+(adapter['role'] if adapter['role']!='skill' else canonical_meta['name'])
+            if adapter['role']!='instruction':
+                wanted['name']='demo-'+adapter['role']
             if adapter['role']=='vision':
                 wanted['disable-model-invocation']=False
                 wanted['model']='GPT-6 Luna (copilot)'
                 wanted['tools']=canonical_meta['tools']+['web','github/*']
             check(meta==wanted,'Only approved native metadata changes: '+adapter['path'])
         check(body==canonical_body and digest(body)==adapter['body_sha256'],'Complete decoded body: '+adapter['path'])
-        if adapter['role']=='skill':
-            check('tools' not in meta,'No skill tools frontmatter: '+adapter['path'])
-            check((ROOT/adapter['path']).parent.name==meta['name'],'Skill directory/name match: '+adapter['path'])
     for path,item in inventory.items():
         actual=ROOT/path; baseline=ROOT/item['baseline']
         check(actual.is_file() and baseline.is_file(),'Primary and baseline exist: '+path)
@@ -160,7 +175,7 @@ def main():
     check(baseline_files==set(inventory),'No orphan or missing baseline entries')
     roles=['planner','implementor','direct-implementor','integration-tester','knowledge-builder','ask','vision']
     for env in ['codex','copilot']:
-        names={a['role'] for a in adapters if a['environment']==env}
+        names={a['role'] for a in adapters if a['environment']==env and a['role']!='instruction'}
         check(names==set(roles),'Seven-role roster: '+env)
         planner=(DOCS/f'canonical/{env}/agents/demo-planner.agent.md').read_text()
         check(all(x in planner for x in ['docs/agents/knowledge/README.md','docs/agents/plan-schema.md','When to read','never bulk-load','Schema compliance overrides Markdown cleanup']),'Planner schema and index gates: '+env)
@@ -169,7 +184,25 @@ def main():
     check(len(root.splitlines())<80,'Root router under 80 lines')
     for path in ['docs/agents/knowledge/README.md','docs/agents/context-glossary.md','docs/agents/plan-schema.md','docs/agents/artifact-gates.md','docs/agents/agentic-system-manifest.md']:
         check(path in root and (ROOT/path).exists(),'Root navigation path: '+path)
-    check(len([a for a in adapters if a['role']=='skill'])==5,'Exactly five native generated skills')
+    skill_names={'author-repo-skill','plan-bug-from-id','plan-user-story-from-id','user-story-analysis','integration-test-knowledge-checklist'}
+    skills={p for p,i in inventory.items() if i['kind']=='canonical-copy' and p.startswith('.agents/skills/')}
+    check(skills=={f'.agents/skills/{name}/SKILL.md' for name in skill_names},'Exactly five directly discoverable canonical skills')
+    check(not any(a['role']=='skill' for a in adapters),'No duplicate native skill adapters')
+    for path in sorted(skills):
+        meta,_=decode_md((ROOT/path).read_text(),True)
+        check('tools' not in meta and meta['name']==(ROOT/path).parent.name,'Direct skill metadata: '+path)
+    retired=answers['maintenance_decisions']['environment_isolation_2026_10_08']['retired']
+    check(all(not (ROOT/p).is_file() and not (DOCS/'.baseline'/p).is_file() for p in retired),'Retired skill outputs and baselines absent')
+    audit=load(DOCS/'environment-audit.json')
+    check(digest((DOCS/'environment-audit.json').read_bytes())==answers['preservation']['environment_audit_sha256'],'Environment audit hash')
+    runtime={p for p,i in inventory.items() if i['kind'] in ['canonical-copy','native-adapter','native-instruction-adapter','shared-resource']}
+    runtime.update(answers['maintenance_decisions']['environment_isolation_2026_10_08']['runtime_source_resources'])
+    check(set(audit['runtime_outputs'])==runtime,'Complete runtime environment audit coverage')
+    try:
+        result=subprocess.run(['node',str(DOCS/'scripts/verify-environment-bindings.mjs'),str(ROOT),str(DOCS/'environment-audit.json')],capture_output=True,text=True,check=False)
+        check(result.returncode==0,'Runtime environment isolation: '+(result.stdout or result.stderr).strip())
+    except FileNotFoundError:
+        check(False,'Environment audit blocked: Node unavailable')
     for schema in ['plan-schema','test-plan-schema','artifact-gates']:
         check((DOCS/f'{schema}.md').read_bytes()==(DOCS/f'sources/templates/{schema}.md').read_bytes(),'Unmodified shipped schema: '+schema)
     index=(DOCS/'knowledge/README.md').read_text()
@@ -187,10 +220,10 @@ def main():
         check(sorted(p.name for p in (fixture/'sessions').iterdir())==['bug-123'],'Fixture confined to owning session')
     count=len(CHECKS)
     report='# Structural Validation Report\n\n'
-    report+='Date: 2026-09-19. Result: **'+('FAIL' if ERRORS else 'PASS')+'** for structural checks.\n\n'
+    report+='Date: 2026-10-08. Result: **'+('FAIL' if ERRORS else 'PASS')+'** for structural checks.\n\n'
     report+=f'{count} checks passed; {len(ERRORS)} failed. Canonical copies: {len(plan["copies"])}. Native adapters: {len(adapters)}. Primary/baseline files: {len(inventory)}.\n\n'
     report+='Method: independent Python reconstruction of the declared slot recipe, SHA-256 source checks, exact canonical/body comparisons, constrained generated YAML/TOML syntax checks, schema/index/roster checks, baseline equality and a disposable file-contract fixture outside existing sessions. No native model, client handoff or live MCP operation was tested.\n\n'
-    report+='The shipped Node verifier could not run: Node was blocked by the current sandbox, including the requested escalation. Git status was similarly unavailable because Git could not read its user configuration. Python verification is the equivalent deterministic comparison allowed by Bootstrap; generated native execution remains **unverified**. General YAML/TOML features outside the emitted JSON-compatible subset were not tested.\n\n'
+    report+='Node canonical preservation passed. The full environment audit is BLOCKED by inherited read/problems calls outside declared tooling slots in Codex Implementor and Integration Tester; their canonical and native copies retain the source exactly. Direct per-file audit found these four copies and no other foreign bindings. Git status and scoped diff checks were available. Generated-role native execution remains **unverified**. General YAML/TOML features outside the emitted JSON-compatible subset were not tested. Full TOML registrations were additionally parsed with Python tomllib. The two preserved knowledge baseline differences (C011/C012) and legacy CONTEXT.md orphan remain approved deferred debt.\n\n'
     report+='Product lint, typecheck, tests and build were skipped because changes are confined to agent-system instructions, scripts and documentation. No product, database or runtime mutation was performed.\n\n'
     if ERRORS: report+='## Failures\n\n'+'\n'.join('- '+x for x in ERRORS)+'\n\n'
     report+='## Passed checks\n\n'+'\n'.join('- '+x for x in CHECKS)+'\n'

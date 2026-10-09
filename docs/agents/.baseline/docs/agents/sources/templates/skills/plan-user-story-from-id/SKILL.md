@@ -6,7 +6,8 @@ disable-model-invocation: true
 
 # Plan User Story From Id
 
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:742b897d07a5392c lines=23 -->
+<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:93d9238364d70e3a lines=25 -->
+
 ## Work-Item Planning Contract
 
 Require one External Issue ID matching `{{WORK_ITEM_ID_FORMAT}}`. External Issue ID identifies tracker ticket; it is never Planning Session ID.
@@ -18,7 +19,7 @@ Create or resume only `{{SESSION_ROOT}}/<Planning Session ID>`. Store evidence, 
 Treat acceptance criteria, explicit dependencies, ambiguities, and missing requirements as plan evidence.
 Run normal Planner gates after evidence is stored. Ask one evidence-backed blocking clarification at a time only when required evidence leaves a material planning decision unresolved. When no blocking clarification remains, complete all mandatory gates, artifacts, and implementation plan uninterrupted, then ask only for plan review or approval. Never present incomplete artifacts as approval-ready plan.
 
-You need to plan an implementation based the on the work item id provided by the user.
+You need to plan an implamentation based the on the work item id provided by the user.
 If user don't provide an work item id, ask for it.
 
 {{WORK_ITEM_GATHERING}}
@@ -26,20 +27,19 @@ Use the following evidence task:
 
 ```text
 Activate agent session with id `<sessionId>`.
-For the work item <WORK_ITEM_ID>, gather the information from the current issue only through the approved work item integration tools in `{{WORK_ITEM_RETRIEVAL}}`, which already return Markdown:
-1. call `#capability:work-item-retrieval` with the work item id to get the title, the description, the URLs of the images, the acceptance criteria and the related work items;
-2. call `#capability:work-item-comment-retrieval` with the work item id to get the comments;
-3. for every id listed in the "Related Work Items" table, call `#capability:work-item-batch-retrieval` to resolve its title.
+For the work item <WORK_ITEM_ID>, retrieve the title, description, comments, acceptance criteria, image references, and relevant discussion evidence from the current issue only. Read every issue explicitly referenced or linked by the current issue through the approved tracker adapter, and record each issue plus its retrieval reason as dependency evidence. Do not decide whether a referenced issue is relevant before retrieving it. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
 
-Read every issue the current issue explicitly references or links to through the approved tracker adapter, and record each issue plus its retrieval reason as separate dependency evidence. Do not decide whether a referenced issue is relevant before retrieving it. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
-
-Attach to the session a new artifact with the Markdown returned by the tools, in this order:
+Attach to the session a new artifact contains all the information you have gathered in the following format:
 - title
 - description
+  [convert from html to markdown format, and preserve any code blocks formatting in the description]
 - Images
+  [the url of the images attached to the description of the work item, if any]
 - comments
+  [convert from html to markdown format, and preserve any code blocks formatting in the comments]
 - acceptance criteria
-- related work items (with their id, title, and relation type)
+  [convert from html to markdown format, and preserve any code blocks formatting in the acceptance criteria]
+- related work items (with their id, title, relation type, and retrieval reason) only when the current issue explicitly references or links to them
 
 then tell me the name of the artifact you created, so I can read it and create the plan.
 ```

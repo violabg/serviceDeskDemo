@@ -22,18 +22,22 @@ type TicketFilterValues = {
   q: string
   status: string
   priority: string
+  customerId: string
 }
 
 export function TicketFiltersForm({
   initialValues,
   canCreate,
+  customers,
 }: {
   initialValues: {
     q?: string
     status?: string
     priority?: string
+    customerId?: string
   }
   canCreate: boolean
+  customers: Array<{ id: string; name: string; company: string | null; status: string }>
 }) {
   const router = useRouter()
   const { register, handleSubmit, control } = useForm<TicketFilterValues>({
@@ -41,6 +45,7 @@ export function TicketFiltersForm({
       q: initialValues.q ?? "",
       status: initialValues.status ?? ALL_VALUE,
       priority: initialValues.priority ?? ALL_VALUE,
+      customerId: initialValues.customerId ?? ALL_VALUE,
     },
   })
 
@@ -59,6 +64,10 @@ export function TicketFiltersForm({
       query.set("priority", values.priority)
     }
 
+    if (values.customerId !== ALL_VALUE) {
+      query.set("customerId", values.customerId)
+    }
+
     const queryString = query.toString()
     router.push(queryString ? `/tickets?${queryString}` : "/tickets")
   })
@@ -66,7 +75,7 @@ export function TicketFiltersForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="gap-3 grid md:grid-cols-[1fr_12rem_12rem_auto] bg-card shadow-sm p-4 border rounded-lg"
+      className="gap-3 grid md:grid-cols-[1fr_12rem_12rem_14rem_auto] bg-card shadow-sm p-4 border rounded-lg"
     >
       <FieldGroup className="md:contents">
         <Field>
@@ -117,6 +126,30 @@ export function TicketFiltersForm({
                     {TICKET_PRIORITIES.map((priority) => (
                       <SelectItem key={priority} value={priority}>
                         {priority}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="tickets-filter-customer">Customer</FieldLabel>
+          <Controller
+            name="customerId"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger id="tickets-filter-customer" className="w-full">
+                  <SelectValue placeholder="All Customers" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={ALL_VALUE}>All Customers</SelectItem>
+                    {customers.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.id}>
+                        {customer.company ?? customer.name}{customer.status === "Deactivated" ? " (Deactivated)" : ""}
                       </SelectItem>
                     ))}
                   </SelectGroup>

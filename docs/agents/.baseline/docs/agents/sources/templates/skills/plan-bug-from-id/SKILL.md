@@ -6,7 +6,8 @@ disable-model-invocation: true
 
 # Plan Bug From Id
 
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:ef7335b04fea8a6a lines=70 -->
+<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:8172a410357e38c0 lines=73 -->
+
 ## Work-Item Planning Contract
 
 Require one External Issue ID matching `{{WORK_ITEM_ID_FORMAT}}`. External Issue ID identifies tracker ticket; it is never Planning Session ID.
@@ -30,16 +31,19 @@ Use the following evidence task:
 
 ```text
 Activate agent session with id `<sessionId>`.
-For the bug <WORK_ITEM_BUG_ID>, gather the information from the current issue only through the approved work item integration tools in `{{WORK_ITEM_RETRIEVAL}}`, which already return Markdown: call `#capability:work-item-retrieval` with the bug id for the title, the description, the URLs of the images and the acceptance criteria, then call `#capability:work-item-comment-retrieval` with the bug id for the comments.
-Do not include related work items in the bug intake artifact.
+For the bug <WORK_ITEM_BUG_ID>, retrieve the title, description, comments, acceptance criteria, image references, and relevant discussion evidence from the current issue only. Read every issue explicitly referenced or linked by the current issue through the approved tracker adapter, and record each issue plus its retrieval reason as dependency evidence. Do not decide whether a referenced issue is relevant before retrieving it. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
 
-Read every issue the current issue explicitly references or links to through the approved tracker adapter, and record each issue plus its retrieval reason as separate dependency evidence. Do not decide whether a referenced issue is relevant before retrieving it. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
-
-Attach to the session a new artifact with the Markdown returned by the tools, in this order:
+Attach to the session a new artifact contains all the information you have gathered in the following format:
 - title
 - description
+  [convert from html to markdown format, and preserve any code blocks formatting in the description]
 - Images
+  [the url of the images attached to the description of the work item, if any]
 - comments
+  [convert from html to markdown format, and preserve any code blocks formatting in the comments]
+- acceptance criteria
+  [convert from html to markdown format, and preserve any code blocks formatting in the acceptance criteria]
+- related work items (with their id, title, relation type, and retrieval reason) only when the current issue explicitly references or links to them
 
 then tell me the name of the artifact you created, so I can read it and create the plan.
 ```

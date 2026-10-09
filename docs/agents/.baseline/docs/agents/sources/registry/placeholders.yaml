@@ -78,15 +78,13 @@ placeholders:
 
   - name: WORK_ITEM_RETRIEVAL
     kind: both
-    question: Which exact read-only tools or procedures return work items, comments, and linked-item titles as Markdown?
+    question: Which exact retrieval tools are approved for reading a work item?
     fill_from: user
     capability: work-item-retrieval
-    recommend: Approve only the selected adapter's single-item, comment, and batch-ID retrieval operations needed by the selected role. Bind them to Markdown output that preserves code blocks and image URLs; normalize source HTML inside the approved adapter when necessary. The local Markdown contract may supply an approved batch file-read procedure. No search or write tools.
+    recommend: The exact issue-read tool of the selected adapter only; no search or write tools.
     infer_from:
       - configured MCP servers in .vscode/mcp.json, .mcp.json, or .cursor/mcp.json
       - tracker chosen for TRACKER_ADAPTER
-      - selected planning skill's Markdown output fields and batch-title-resolution requirements
-      - verified adapter output formats and exact single-item, comment, and batch operations
 
   - name: SESSION_ACTIVATION
     kind: block
@@ -120,11 +118,10 @@ placeholders:
     question: Where do generated agents read repository knowledge from?
     fill_from: discovery
     capability: knowledge-retrieval
-    recommend: Start with the knowledge documents listed in the generated knowledge index, read through the file-reading capability. When a selected role needs index rebuild or wiki catalog, page-listing, or page-reading operations, resolve the approved source and procedure for each evidenced operation within that role's scope.
+    recommend: The knowledge documents listed in the generated knowledge index, read through the file-reading capability.
     infer_from:
       - docs/, ADR folders, CONTEXT.md, architecture sections of README.md
       - any knowledge or documentation MCP server in the platform config
-      - selected role's knowledge-index-rebuild and wiki capability evidence
 
   - name: KNOWLEDGE_INDEX_PATH
     kind: both

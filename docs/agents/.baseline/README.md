@@ -62,6 +62,6 @@ Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approv
 
 Codex registrations live in `.codex/agents/`; Copilot registrations live in `.github/agents/`. Their full preserved contracts and maintenance evidence live in `docs/agents/`.
 
-Generated skills use explicit `demo-` invocation names: `demo-author-repo-skill`, `demo-plan-bug-from-id`, `demo-plan-user-story-from-id`, `demo-user-story-analysis`, and `demo-integration-test-knowledge-checklist`. The two issue-planning skills run within `demo-planner`. The gap-detector skill is deferred.
+Generated skills are complete canonical copies with original invocation names: `author-repo-skill`, `plan-bug-from-id`, `plan-user-story-from-id`, `user-story-analysis`, and `integration-test-knowledge-checklist`, directly under `.agents/skills/<name>/SKILL.md`. Exact tools and delegation procedures are separate in `docs/agents/bindings/{codex,copilot}.md`; shared workflows load only the active environment binding. The two issue-planning skills run within `demo-planner`. The gap-detector skill is deferred.
 
 Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. Read [compatibility evidence](docs/agents/compatibility.md) for verified and outstanding client checks. Reload the client after installation and confirm role and skill discovery before relying on an unverified operation.

@@ -1,86 +1,10 @@
-# Agent Integration Bindings
+# Environment Binding Router
 
-These bindings implement the approved role operations. Read only the current role's rows and the common rules required by the task. Output language: English. Never treat a configured tool as evidence that authentication or runtime access works.
+Resolve the active agent environment from the client/session identity before any native operation. A directory, installed configuration, or visible tool name never selects a different client. If identity is ambiguous, request the client identity and stop binding-dependent work.
 
-## Exact MCP assignments
+- For the codex environment, load only docs/agents/bindings/codex.md.
+- For the copilot environment, load only docs/agents/bindings/copilot.md.
 
-| Role | Server | Raw tool names |
-| --- | --- | --- |
-| demo-planner | github | `issue_read` |
-| demo-planner | neon | `list_docs_resources`, `get_doc_resource`, `get_database_tables`, `describe_table_schema`, `list_branches`, `compare_database_schema` |
-| demo-planner | next-devtools | `init`, `nextjs_docs`, `nextjs_index`, `nextjs_call` |
-| demo-implementor | github | `issue_read` |
-| demo-implementor | neon | `list_docs_resources`, `get_doc_resource`, `get_database_tables`, `describe_table_schema`, `list_branches`, `compare_database_schema`, `prepare_database_migration`, `run_sql`, `complete_database_migration` |
-| demo-implementor | next-devtools | `init`, `nextjs_docs`, `nextjs_index`, `nextjs_call`, `browser_eval` |
-| demo-direct-implementor | github | `issue_read` |
-| demo-direct-implementor | neon | `list_docs_resources`, `get_doc_resource`, `get_database_tables`, `describe_table_schema`, `list_branches`, `compare_database_schema`, `prepare_database_migration`, `run_sql`, `complete_database_migration` |
-| demo-direct-implementor | next-devtools | `init`, `nextjs_docs`, `nextjs_index`, `nextjs_call`, `browser_eval` |
-| demo-knowledge-builder | neon | `list_docs_resources`, `get_doc_resource`, `get_database_tables`, `describe_table_schema`, `list_branches`, `compare_database_schema` |
-| demo-knowledge-builder | next-devtools | `init`, `nextjs_docs`, `nextjs_index`, `nextjs_call` |
-| demo-ask | neon | `list_docs_resources`, `get_doc_resource`, `get_database_tables`, `describe_table_schema`, `list_branches`, `compare_database_schema` |
-| demo-ask | next-devtools | `init`, `nextjs_docs`, `nextjs_index`, `nextjs_call` |
+GitHub issue reads are limited to Planner, Implementor, and Direct Implementor. Codex uses the `github` app's issue-fetch and issue-comments tools; Copilot retains its existing GitHub binding. Issue search, listing, and tracker writes are prohibited.
 
-Codex qualified names use `mcp__github__<tool>`, `mcp__neon__<tool>` and `mcp__next_devtools__<tool>`. Copilot uses `github/<tool>`, `neondatabase/mcp-server-neon/<tool>` and `io.github.vercel/next-devtools-mcp/<tool>`. Raw names are used in Codex `enabled_tools`. Existing user MCP configuration supplies the transport and authentication; native agent overlays narrow each named server's tools. No credentials are copied here.
-
-Neon raw names were confirmed against its public catalog. Qualified Neon names are configuration bindings, not verified tools in this session. Copilot qualified names likewise require the actual client tool picker/diagnostics check. If the required bound tool is missing, report the missing binding and stop that dependent operation. Continue independent work that does not need it. Do not silently switch services.
-
-## Repository and native operations
-
-- `#capability:repository-search` does not require an MCP or a server that supplies clusters. When such a search is available and verified for the current role, use its returned clusters, filenames and terms. Otherwise use the current role's native workspace search: Copilot `search/fileSearch` and `search/textSearch` (or `search/listDirectory`); Codex `functions.exec` with bounded `rg --files` and `rg`. First list paths within the task's likely scope, excluding session contents, generated output and dependencies. Group the returned paths by their relative parent directories into candidate clusters. For each selected cluster, list its returned filenames and derive search terms from those filenames or actual search hits; label clusters and terms as locally derived, not server-returned. Report the selected clusters, filenames, terms and filename-scoped regex queries before opening code or continuing to reconnaissance. Use only the selected filenames and observed terms for subsequent queries; record the exact search hits and opened lines as required by the role. If neither a cluster-producing search nor native file/path and text search is available, report the missing operation and stop the dependent gate.
-- Codex execution-host tools: `functions.exec` invokes `tools.exec_command` for targeted reads, `rg`, file listing and approved commands, and `tools.apply_patch` for edits. `tools.view_image` reads local images. Native web access is `tools.web__run`. Native wrappers may differ in the CLI: inspect the active tool surface before use, and do not invent identifiers.
-- Foreground Codex questions use plain user-facing chat. The discovery host exposed `collaboration.spawn_agent`, `collaboration.wait_agent` and messages for built-in evidence agents. Other Codex clients must inspect their active native delegation surface before use. Pass the exact current session and smallest evidence task. Delegates return blocking questions to the coordinator. A custom demo role is callable only after native discovery confirms it; the pre-install host did not expose those roles.
-- Copilot reads/searches use `read/readFile`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages`. Artifact/code writes use the role's `edit/*` tools. Implementor/Direct Implementor/Integration Tester use `execute/runInTerminal`, `execute/getTerminalOutput`, `read/problems` for approved verification. Documentation retrieval uses `web/fetch` for Ask, Planner and Knowledge Builder.
-- Copilot delegation uses `agent/runSubagent` (tool set `agent`), with `agentName="agent"` for bounded general evidence tasks or `agentName="demo-vision"` for the approved visual case. Foreground questions use `vscode/askQuestions`. Delegates cannot ask directly: return questions to the coordinator, which asks and reinvokes with answers. Do not depend on nested delegation being enabled.
-- Source baseline editor capabilities on implementation roles remain available only for tasks justified by approved implementation scope. Their presence is not authorization to install extensions or alter global settings.
-- Source capability tokens resolve to the schema/index paths and, only for roles using sessions, current-session files in the canonical tables. Bootstrap 5.3.0 replaces Ask/Knowledge Builder broad service evidence with explicit operation records in the answers file. `#capability:agent-workflow-service` remains audit history, not a server requirement. `registry/capabilities.yaml` references resolve to `docs/agents/sources/registry/capabilities.yaml`.
-- Filesystem tools are broad: Planner and Knowledge Builder restrictions against application edits are instruction boundaries, not a per-path tool allowlist. Codex Ask requests the native read-only sandbox. Effective client policy must still be verified; tool frontmatter alone is not proof of enforcement.
-- Explicitly select the named role. Planner, Implementor, Direct Implementor, Tester, Knowledge Builder and Ask are user-invoked workflows; do not automatically delegate a complete role when the user has not selected it. Built-in evidence scouts are allowed where the canonical contract delegates them. Codex lacks the Copilot user-only metadata equivalent; this restriction is instruction-level there.
-
-## Neon operation boundaries
-
-- Ask, Planner and Knowledge Builder have only the six catalog/schema/documentation tools. They do not run arbitrary SQL or mutate cloud resources.
-- Use the linked project in `.neon`; that file currently provides project/org context, not a branch selection. Resolve the task's exact branch and database before schema calls. Do not assume the default branch is a disposable development branch.
-- Discover documentation with `list_docs_resources` before `get_doc_resource`. Bound table/schema reads to the evidence question.
-- Implementor and Direct Implementor may use their three additional tools only for the current implementation's validated, authorized database work. Preserve the repository's Prisma schema/migration source of truth; do not create unexplained schema drift through ad hoc SQL.
-- `prepare_database_migration` creates a temporary branch. Validate using the returned branch ID, never by omitting the branch ID or falling back to production. Before calling `complete_database_migration`, satisfy its explicit user-approval requirement for the concrete migration. Pass `apply_changes` explicitly: `true` applies, `false` discards. Omission is not a safe default. Never infer destructive approval from generic implementation permission.
-- Schema/SQL results may contain sensitive data: store only necessary, sanitized evidence in artifacts. Do not store connection strings or secrets.
-- Existing Neon skills provide relevant task guidance, but do not install/update skills, run checkout, pull environment files or create resources merely to answer a question or perform Bootstrap.
-
-## Next.js operation boundaries
-
-- The repository config pins `next-devtools-mcp@0.3.6`. Call `init` before its documentation workflow; use `nextjs_docs` for the applicable App Router contract.
-- Use `nextjs_index` to discover the intended development server and its available runtime tool names. Do not guess a port or use another project's server.
-- Ask, Planner and Knowledge Builder may call `nextjs_call` only for operations documented by that discovered server as read-only diagnostics, routes, errors, logs or metadata. Inspect the operation before calling it; the generic dispatcher is not intrinsically read-only.
-- Implementor and Direct Implementor additionally have `browser_eval` for validation within authorized scope. Browser actions that submit forms or alter data require the same implementation authorization and scoped test environment as other mutations.
-- Upgrade and cache-component migration MCP tools are intentionally omitted. Tool availability does not expand the approved feature scope.
-
-## Conditional visual processing
-
-- Inspect the active model's actual image-input capability. If supported, Planner or Direct Implementor performs the image extraction inline using the complete demo-vision body. If unsupported, spawn `demo-vision`, whose registered model is Luna. Unknown capability must be resolved; do not guess from a model name.
-- Delegated model: Codex `gpt-6-luna`; Copilot `GPT-6 Luna (copilot)`. No substitute model is approved. If Luna is unavailable, stop the image-dependent operation and report it.
-- For a repository-local image, pass its exact path to the delegate. Codex Vision must use its available native image-viewing tool (`tools.view_image` in the recorded host), not a text file reader or a claim inferred from the filename; inspect the active tool surface before invoking it. Copilot Vision may use its configured repository read or GitHub retrieval tools, but must obtain actual image input before extraction. If the client cannot expose the image to the delegate, stop the image-dependent operation and report the missing capability. Neither path requires an image-search MCP.
-- For a remote issue image, fetch the image bytes using authorized repository access or obtain a local copy, then inspect those bytes with the active image-capable tool. Verify both fetch permission and image inspection for the selected role; issue text or an attachment URL alone is insufficient. If the image cannot be accessed, request it from the user and stop the image-dependent operation until it is available.
-- Every image produces SlimUI under the current session's `artifacts/visual/`. The parent writes a JSON reference with session_id, image, artifact_path and format, then reads that reference and the SlimUI. The Vision agent preserves its SlimUI-only output contract.
-- The user explicitly overrode the source Vision `disable-model-invocation: true`. Its Copilot adapter sets false; the pristine canonical copy retains true. This is recorded as `overrides-canonical`, not an unmodified metadata translation.
-
-## Validation scope
-
-For product work, check diagnostics and run scoped lint/typecheck before focused tests. Preserve the existing exclusion for direct `components/ui/**` tests unless explicitly overridden. Integration Tester covers connected repo-owned wiring with external services stubbed; Direct Implementor never creates unit or integration tests. Broader lint, tests and builds run only when required by the approved change. This Bootstrap installs only agent-system files and does not execute database or product changes.
-
-## Ask and Knowledge Builder capability scope (5.3.0)
-
-- Capability Substitutions and Role Tooling Intent are source evidence for discovery, not blanket grants. The canonical workflow and the role's approved operations determine authority. No native tool or MCP grant is added by this upgrade.
-- Ask is read-only Q&A and does not use sessions, memory or logging. Session read/write/list/activation, project file editing, knowledge writes and plan save/load/list operations in its source capability table are explicitly out of scope; their answer records are blocked rather than represented as working bindings. Schema/index reads and bounded repository discovery use its existing read/search tools.
-- Knowledge Builder may read repository evidence, write repository knowledge and index entries, and persist evidence/memory/logs in its explicitly identified owning session. Its file-editing binding is restricted to these outputs. Implementation-plan and test-plan save/load operations are outside its knowledge-building workflow because the source-defined load includes editing in place. Existing plan evidence may be inspected read-only through file-read; that does not grant plan-editing authority. It must never implement or modify product code.
-- Codex targeted reads and workspace search use functions.exec with tools.exec_command; authorized Knowledge Builder writes use tools.apply_patch. Copilot uses read/readFile, search/fileSearch and search/textSearch; authorized writes use its existing edit/createDirectory, edit/createFile and edit/editFiles tools. These are instruction boundaries except for Ask's requested native read-only sandbox; effective enforcement remains unverified.
-- Visual evidence requires actual image input under the conditional visual-processing rules above. Configured tools, URL strings and source tokens do not verify fetch permission or inspection. The expanded operation records remain unverified until exercised in the selected generated role.
-
-## Bootstrap 6.0.0 Operation Scope
-
-User approval: `ok approved`, 2026-10-07. C004's GitHub-only, exact-tool and authority restrictions remain in force. No MCP grant, model choice, environment version or global permission changes.
-
-- Planner, Implementor and Direct Implementor resolve single-item, comment and supplied-ID batch retrieval through their existing exact `issue_read` binding and `docs/agents/github-issues-adapter.md`. Batch is one `get` per supplied linked ID, reusing already retrieved one-hop evidence; the adapter returns Markdown preserving code blocks and image URLs. This does not authorize searching, unrelated intake or recursive retrieval. ID-planning skills remain Planner-only and keep their approved gathering route.
-- Knowledge Builder may rebuild `docs/agents/knowledge/README.md` from the approved repository knowledge source using existing bounded native reads and its knowledge/index write binding. Follow its canonical evidence, interview and approval gates, preserve the index schema, and record only its owning-session artifacts when a session is required. No automatic rebuild trigger is installed.
-- Ask, Planner, Implementor and Integration Tester have no knowledge-index-rebuild authority in their current workflows. Their table tokens are discovery evidence; operation records are blocked/out of scope. An explicitly selected Knowledge Builder workflow owns this work.
-- Planner's wiki-catalog-read, wiki-page-list and wiki-page-read have no approved source. Current knowledge is repository documents selected through the knowledge index, not an external wiki. These operations are not applicable to that source and are recorded blocked; if a task requires an actual wiki operation, stop until a source and complete catalog/page procedures are approved and verified. Do not add a wiki MCP or relabel repository reads as verified wiki access.
-- C003's unique `demo-` native skill names were re-evaluated and approved for retention. Runtime discovery and effective role operations remain unverified; static registration and exact-body preservation do not prove client execution.
+Read only the current role's entries plus docs/agents/integration-policy.md. Shared workflows use this already selected binding. Never load both binding files, mix native syntax, guess delegate selectors, or copy another client's tools. Shared skill bodies are environment-neutral; exact calls belong in the selected binding.

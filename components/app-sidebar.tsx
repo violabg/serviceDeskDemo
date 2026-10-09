@@ -28,6 +28,7 @@ import { usePathname } from "next/navigation"
 
 const navigationIcons: Record<ServiceDeskNavigationId, React.ReactNode> = {
   tickets: <RowsIcon />,
+  customers: <IdentificationBadgeIcon />,
   users: <IdentificationCardIcon />,
   roles: <ShieldCheckIcon />,
 }

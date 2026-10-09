@@ -29,6 +29,7 @@ A `recommend` value is a proposal, never an approval. Essential operations are n
 
 - `contracts/platform-compatibility.md`: shared runtime research, preservation, registration, and verification procedure for Bootstrap and Maintainer.
 - `scripts/verify-canonical-copies.mjs`: dependency-free mechanical comparison of repo-local canonical copies with hashed mirrors and approved substitutions. Its plan and source snapshots are maintenance evidence.
+- `scripts/verify-environment-bindings.mjs`: dependency-free static audit of runtime ownership, discovery-derived client literals, references, and named delegate selectors. Its limitations and plan shape are in the compatibility contract.
 
 ## Provenance Input
 

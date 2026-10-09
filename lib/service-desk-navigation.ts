@@ -26,6 +26,12 @@ export const SERVICE_DESK_NAVIGATION = [
     title: "Ticket Management",
     items: [
       {
+        id: "customers",
+        title: "Customers",
+        url: "/customers",
+        requiredPermission: { section: "customers", operation: "read" },
+      },
+      {
         id: "tickets",
         title: "Tickets",
         url: "/tickets",
