@@ -4,7 +4,7 @@ Every file change Maintainer proposes goes through the same three-way merge. The
 
 ## The Three Inputs
 
-- `BASE` is the pristine copy in the baseline directory recorded by the answers file, normally `docs/agents/.baseline/<repository-relative-path>`.
+- `BASE` is the pristine copy in the baseline directory recorded by the answers file, normally `.agentic-system-maintenance/.baseline/<repository-relative-path>`; recorded legacy locations remain valid merge inputs until migration is approved.
 - `THEIRS` is the current template for that file, re-filled with the slot values recorded in `agentic-system.answers.yaml`. For an upgrade, the template comes from the currently installed `bootstrap-agentic-system/templates/`. For a repository-driven change without revised slot or adapter decisions, the template is unchanged and `THEIRS` equals `BASE`. For approved binding or native-format changes, reconstruct `THEIRS` from that same source and the new recorded decisions, keeping the old baseline for the comparison.
 - `MINE` is the file as it exists in the repository right now.
 
@@ -55,6 +55,8 @@ Register rows change the merge:
 - A region marked `overrides-canonical` never takes `THEIRS` silently, regardless of the other rules.
 
 Any region the user changes during this maintenance run gets a new or updated row before the run ends. A customization with no row is a customization that the next upgrade will have to re-litigate.
+
+For path changes, use the sibling context-boundary contract to retain old comparison inputs, re-key records/references, verify the relocated result, and only then refresh provenance. A relocation never makes a customized current file pristine.
 
 ## After Approved Changes
 

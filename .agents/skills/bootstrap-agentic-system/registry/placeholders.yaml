@@ -130,15 +130,15 @@ placeholders:
     kind: both
     question: What is the generated knowledge index path?
     fill_from: user
-    recommend: "`docs/agents/knowledge-index.md`."
+    recommend: "`knowledge/knowledge-index.md` at the project root; project knowledge only, excluding installation and maintenance material."
     infer_from:
-      - existing docs/agents/ or equivalent agent documentation folder
+      - existing top-level knowledge/ and its project documentation sources
 
   - name: CONTEXT_GLOSSARY_PATH
     kind: both
     question: What is the context glossary path?
     fill_from: user
-    recommend: The existing `CONTEXT.md` or `GLOSSARY.md` when present; otherwise `docs/agents/context-glossary.md`.
+    recommend: The existing `CONTEXT.md` or `GLOSSARY.md` when present; otherwise `CONTEXT.md` at the project root; never place domain vocabulary in the maintenance area.
     infer_from:
       - CONTEXT.md, GLOSSARY.md, docs/glossary.md
 
@@ -146,9 +146,9 @@ placeholders:
     kind: both
     question: What is the implementation plan schema path?
     fill_from: user
-    recommend: "`docs/agents/plan-schema.md`, beside the knowledge index."
+    recommend: "`docs/agents/plan-schema.md` as a runtime resource outside knowledge and maintenance roots."
     infer_from:
-      - resolved KNOWLEDGE_INDEX_PATH folder
+      - approved runtime resource root outside knowledge and maintenance areas
 
   - name: TEST_PLAN_SCHEMA_PATH
     kind: value
@@ -292,9 +292,9 @@ placeholders:
     kind: both
     question: Which paths hold repository knowledge documents?
     fill_from: discovery
-    recommend: The documentation folders that already carry durable rules, such as docs/ and the ADR folder; exclude changelogs and generated output.
+    recommend: Top-level knowledge/ plus existing authoritative project documentation such as docs/ and ADRs. Exclude MAINTENANCE_ROOT, installed Bootstrap/Maintainer bodies and resources, aliases, baselines, template snapshots, changelogs, and generated output before discovery or retrieval.
     infer_from:
-      - docs/, adr/, rfc/, architecture/ folders
+      - knowledge/, docs/, adr/, rfc/, architecture/ folders
       - documentation paths referenced from README.md
 
   - name: TEST_STACK_CONVENTIONS
@@ -409,37 +409,50 @@ placeholders:
       - official selected-client instruction-loading documentation and existing scoped instructions
       - resolved TARGET_PLATFORM
 
+  - name: MAINTENANCE_ROOT
+    kind: both
+    question: Which dedicated top-level folder holds installation and maintenance material?
+    fill_from: user
+    recommend: "`.agentic-system-maintenance/`, disjoint from project knowledge, runtime discovery, documentation, and sessions. Ordinary requests must exclude it before search or loading; access only during initial Bootstrap or explicitly requested maintenance."
+    infer_from:
+      - existing manifest and answers locations for legacy migration
+      - selected-client discovery and automatic loading evidence
+      - top-level path collisions and approved runtime/session roots
+
   - name: MANIFEST_PATH
     kind: value
     question: Where is the agentic-system manifest stored?
     fill_from: user
-    recommend: "`docs/agents/agentic-system-manifest.md`, beside the knowledge index."
+    recommend: "`{{MAINTENANCE_ROOT}}/agentic-system-manifest.md`, accessed only during installation or explicit agent-system maintenance."
     infer_from:
-      - resolved KNOWLEDGE_INDEX_PATH folder
+      - resolved MAINTENANCE_ROOT
 
   - name: KNOWLEDGE_FILE_GLOB
     kind: value
     question: Which paths does the knowledge-file guard apply to?
     fill_from: user
-    recommend: The glob covering the knowledge files listed in the knowledge index, for example `docs/knowledge/**/*.md`.
+    recommend: The glob covering the knowledge files listed in the knowledge index, for example `knowledge/**/*.md`, with maintenance-only roots excluded.
     infer_from:
       - folders holding the files listed in the knowledge index
-      - existing *.knowledge.md or docs/knowledge/ conventions
+      - top-level knowledge/ and existing authoritative project docs
 
 # Placeholders each Canonical Template Mirror must expose after overlay.
 required:
   agents:
     default:
+      - MAINTENANCE_ROOT
       - APPROVED_MCP_TOOLS
       - REPOSITORY_SEARCH_TOOL
       - KNOWLEDGE_SOURCE
     planner.agent.md:
+      - MAINTENANCE_ROOT
       - APPROVED_MCP_TOOLS
       - KNOWLEDGE_INDEX_PATH
       - PLAN_SCHEMA_PATH
       - REPOSITORY_SEARCH_TOOL
       - KNOWLEDGE_SOURCE
     knowledge-builder.agent.md:
+      - MAINTENANCE_ROOT
       - APPROVED_MCP_TOOLS
       - KNOWLEDGE_INDEX_PATH
       - CONTEXT_GLOSSARY_PATH
@@ -447,11 +460,13 @@ required:
       - REPOSITORY_SEARCH_TOOL
       - KNOWLEDGE_SOURCE
     vision.agent.md:
+      - MAINTENANCE_ROOT
       - APPROVED_MCP_TOOLS
       - VISION_MODEL
       - VISUAL_ARTIFACT_FORMAT
       - VISUAL_ARTIFACT_STORAGE
     direct-implementor.agent.md:
+      - MAINTENANCE_ROOT
       - APPROVED_MCP_TOOLS
       - KNOWLEDGE_SOURCE
       - REPOSITORY_SEARCH_TOOL
@@ -459,26 +474,31 @@ required:
       - VISION_INVOCATION
   skills:
     default:
+      - MAINTENANCE_ROOT
       - KNOWLEDGE_SOURCE
       - REPOSITORY_SEARCH_TOOL
     author-repo-skill:
+      - MAINTENANCE_ROOT
       - SKILL_ROOT
       - REPOSITORY_SEARCH_TOOL
       - KNOWLEDGE_SOURCE
       - VALIDATION_COMMANDS
     plan-bug-from-id:
+      - MAINTENANCE_ROOT
       - TRACKER_ADAPTER
       - LOCAL_MARKDOWN_TRACKER_CONTRACT
       - WORK_ITEM_ID_FORMAT
       - WORK_ITEM_RETRIEVAL
       - SESSION_ROOT
     plan-user-story-from-id:
+      - MAINTENANCE_ROOT
       - TRACKER_ADAPTER
       - LOCAL_MARKDOWN_TRACKER_CONTRACT
       - WORK_ITEM_ID_FORMAT
       - WORK_ITEM_RETRIEVAL
       - SESSION_ROOT
     integration-test-knowledge-checklist:
+      - MAINTENANCE_ROOT
       - VALIDATION_COMMANDS
       - TEST_STACK_CONVENTIONS
       - INTEGRATION_TEST_SCOPE
@@ -486,6 +506,7 @@ required:
   instructions:
     default: []
     AGENTS.md:
+      - MAINTENANCE_ROOT
       - REPO_NAME
       - AGENT_ROSTER
       - AGENT_ROOT
@@ -499,6 +520,7 @@ required:
       - VALIDATION_COMMANDS
       - MANIFEST_PATH
     knowledge-guard.instructions.md:
+      - MAINTENANCE_ROOT
       - KNOWLEDGE_FILE_GLOB
       - KNOWLEDGE_SOURCE
       - KNOWLEDGE_INDEX_PATH

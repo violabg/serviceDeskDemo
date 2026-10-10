@@ -13,6 +13,15 @@ bootstrap:
   contract_applied_through: <x.y.z>
   generated_on: <YYYY-MM-DD>
 execution_host: <client-running-this-workflow>
+layout:
+  knowledge_root: knowledge
+  knowledge_index: knowledge/knowledge-index.md
+  runtime_roots: [<approved-shared-and-native-roots>]
+  maintenance_root: .agentic-system-maintenance
+  excluded_roots: [<maintenance-root-and-other-local-maintenance-skill-roots>]
+  context_audit: <maintenance-root>/context-audit.json
+  context_audit_sha256: <approved-plan-hash>
+  verification: <static-and-native-method-result-date-limitations>
 
 # Only explicitly selected environments. Keys are open user-defined IDs.
 environments:
@@ -30,6 +39,16 @@ environments:
         applies_to: <client-version>
         claim: <format-loading-or-tool-behavior>
         local_result: <observed-result | unverified>
+    integrations:
+      <integration-id>:
+        transport: <documented-transport-or-not-applicable>
+        registration: <config-path-scope-startup-reload-and-official-evidence>
+        authentication: <documented-method-login-refresh-logout-and-non-secret-credential-reference>
+        required_scopes: <least-privilege-scopes-and-effective-role-access>
+        configuration_status: <configured | missing | unverified>
+        authentication_status: <verified | missing | expired | unverified | not-required-with-evidence>
+        verification: <per-role-tool-discovery-and-bounded-operation-result-date-limitations>
+        setup_evidence: <maintenance-root>/evidence/<integration-id>.md
     compatibility: <verified-native | verified-fallback | blocked | unverified>
     verification: <method-result-date-and-limitations-or-evidence-path>
 
@@ -63,6 +82,7 @@ preservation:
 generated:
   - path: <repo-relative-path>
     kind: <canonical-copy | native-adapter | shared-resource | provenance>
+    context: <runtime | knowledge | maintenance | maintenance-entrypoint>
     environments: [<environment-id>]
     template: <templates/...-path | authored>
     source_sha256: <hash | not-applicable>

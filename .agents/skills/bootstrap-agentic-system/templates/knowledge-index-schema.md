@@ -9,6 +9,10 @@ Use this schema for generated agentic systems that need repository knowledge wit
 
 Help planning agents choose the smallest useful knowledge set for a task.
 
+## Project Knowledge Boundary
+
+This index and generated project knowledge live under project-root `knowledge/`. Index only project code, domain, architecture, testing, and operating conventions. Existing authoritative project documentation may remain in place. Exclude maintenance-only locations and aliases before discovery or retrieval.
+
 ## Token Budget Rule
 
 - Read this index before loading knowledge files.

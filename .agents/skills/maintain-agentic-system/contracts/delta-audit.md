@@ -63,6 +63,7 @@ After the approved changes are written, validate:
 - Every delta collected in this run carries a final classification, and no `requires update` entry is left without an operation or an approved deferral.
 - Every region where `MINE` and `THEIRS` both changed was resolved by an explicit user decision, not by a default.
 - The baseline copy of every changed file was refreshed after approval, and no baseline copy was refreshed for a file the user did not approve.
+- The shared context-boundary and compatibility checks cover migrated paths, excluded discovery roots, actual index entries, and documented integration authentication; unresolved results remain visible in the delta classification.
 - The answers file matches the files that now exist: one entry per generated file, no entry for a file that was removed, and updated values for any slot that changed.
 - Every deliberate deviation confirmed in this run has a customization register row with a survives-upgrade policy.
 - The manifest records the new applied-through version, the maintain skill version, the maintenance date, and a maintenance history row.

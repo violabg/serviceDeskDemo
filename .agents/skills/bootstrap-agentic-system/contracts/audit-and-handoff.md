@@ -24,6 +24,8 @@ Validate the generated files against the approved file plan, the user's decision
 Required checks:
 
 - Every approved file operation was completed, skipped with an approved reason, or reported as blocked.
+- The context-boundary contract passes: knowledge and maintenance areas are separate, the approved context inventory matches actual index paths and physical targets, and ordinary runtime loading/search/delegation excludes maintenance. Native maintenance entrypoints require explicit invocation; report unverified or blocked clients separately.
+- Registration and authentication evidence follows the compatibility contract for each integration/client/role; configured, authenticated, and operational states are distinguished without storing credentials.
 - Root `AGENTS.md` generated from `templates/instructions/AGENTS.md` exists, or the approved platform-equivalent root instruction file exists with the reason for not creating `AGENTS.md`.
 - Each modular canonical instruction copy retains its declared scope; any native adapter applies the same scope using documented loading rules.
 - Root instructions name generated agents, generated skills or skill directory, session rules, validation expectations, context glossary path when one exists, knowledge-index path, schema paths, and manifest path without duplicating full agent contracts.
@@ -32,8 +34,8 @@ Required checks:
 - Manifest exists at the approved path and follows `templates/agentic-system-manifest.md` or an approved equivalent.
 - Manifest records Bootstrap skill version used, Bootstrap contract applied through, installed Bootstrap changelog path, repo-local Bootstrap changelog snapshot path, answers file path, baseline directory path, generated paths, slot decisions, marker stripping, generated/skipped/deferred mirrors, and maintenance history.
 - Answers file exists at the approved path and records every slot the generated system uses, how each value was settled, every capability resolution including fallback substitutions, and one generated-to-baseline path pair per generated file.
-- Baseline directory contains one pristine copy per generated file, at the matching repository-relative path, taken before any post-generation hand edit.
-- Every generated file appears in both the answers file and the baseline directory, and neither contains an entry for a file Bootstrap did not generate.
+- Baseline directory contains one pre-baseline pristine copy per generated output at its repository-relative path; snapshot companions are excluded from generated outputs to avoid recursive baselines.
+- Answers and baseline coverage agree for every generated output; no pre-existing file or baseline snapshot companion is falsely recorded as a generated output.
 - Customization register exists in the manifest, with a row for every deliberate deviation approved during this run, or an explicit statement that this install has none.
 - Repo-local Bootstrap changelog snapshot exists when the installed changelog was available, or the manifest records why the baseline was inferred or unknown.
 - Generated runtime files from mirrors contain no `CANONICAL-TEMPLATE-SLOT` markers.
@@ -69,6 +71,7 @@ The final handoff must include:
 - generated/skipped/deferred mirrors,
 - validation results,
 - Bootstrap contract version applied through,
+- project-root knowledge path and maintenance root, other excluded locations, context audit path/result, and per-client native exclusion/entrypoint verification,
 - manifest path,
 - answers file path,
 - baseline directory path,
@@ -84,6 +87,6 @@ Always recommend:
 - run the generated Knowledge Builder agent to scan repository knowledge, refine the knowledge index, suggest context-glossary terms, and ask bounded questions for missing knowledge boundaries,
 - use `create-work-item-from-description` when the team wants repeatable creation of user-story or bug tickets from clarified work,
 - use the installed `author-repo-skill` when the team wants a new repository-local skill, or wants to rework a generated one such as `plan-bug-from-id` or `plan-user-story-from-id`,
-- keep the answers file, baseline directory, and customization register updated whenever the generated system is edited by hand, so the next maintenance run can still classify the change.
+- invoke explicit agent-system maintenance after hand edits to refresh answers, baseline, and customization records coherently; ordinary runtime work reports that need without accessing maintenance material.
 
 Future upstream, schema, template, or changelog changes belong to `maintain-agentic-system`. Maintainer must classify each Bootstrap contract delta as `applied`, `not applicable`, `deferred`, `superseded`, `unknown`, or `requires update` using the manifest, answers file, baseline directory, customization register, repo-local snapshot, current installed changelog, and direct repository evidence.

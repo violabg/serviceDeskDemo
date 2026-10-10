@@ -6,6 +6,11 @@ disable-model-invocation: true
 
 # Plan User Story From Id
 
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
+## Repository Context Boundary
+- Exclude `{{MAINTENANCE_ROOT}}` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
+- Keep generated project knowledge under top-level `knowledge/`; report provenance maintenance needed after runtime system edits instead of accessing the maintenance area.
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
 <!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:742b897d07a5392c lines=23 -->
 ## Work-Item Planning Contract
 

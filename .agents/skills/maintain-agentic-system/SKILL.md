@@ -34,6 +34,8 @@ This file is a router. Load the contract for the gate you are in; do not load th
 | `contracts/merge-model.md`     | Gates 3-5: three-way merge, regions, conflicts, customization register, baseline refresh. |
 | `contracts/delta-audit.md`     | Gates 3-6: delta collection and classification, plan shape, final validation.             |
 
+For layout isolation, maintenance entrypoints, and relocation of old mixed systems, load sibling `bootstrap-agentic-system/contracts/context-boundaries.md`. Maintenance invocation authorizes its scoped evidence reads; audit mode still writes nothing.
+
 For environment selection, current documentation research, native adapters, preservation checks, and version-1 answers migration, load the sibling `bootstrap-agentic-system/contracts/platform-compatibility.md`. Reuse this contract rather than maintaining platform-specific instructions here.
 
 The generated-system contract itself is not duplicated here. Load the sibling `bootstrap-agentic-system/contracts/audit-and-handoff.md` when you need to know what a complete generated system requires.

@@ -170,12 +170,24 @@ Record any stronger repo-local equivalent or adaptation in the manifest, includi
 - Package Changelog Path For Context: none | `<path>`
 - Bootstrap Baseline Notes:
 - Unknown Version Or Snapshot Gaps:
-- Root Instructions Reference Manifest: yes | no
+- Root Instructions Reference Manifest Only Behind Explicit Maintenance Guard: yes | no
+
+## Context Boundaries And Integration Setup
+
+- Project Knowledge Root And Index: `knowledge/` / `knowledge/knowledge-index.md`
+- Dedicated Top-Level Maintenance Root: `.agentic-system-maintenance/` | `<approved-top-level-path>`
+- Other Maintenance-Only Locations And Aliases:
+- File Kinds, Loaded References, And Explicit Maintenance Routers:
+- Search / Knowledge Source Exclusions Before Retrieval:
+- Native Automatic Loading And Maintenance EntryPoint Evidence:
+- Context Audit Inventory, Plan Hash, Command, And Native Fixture Results:
+- Per-Environment Integration Transport, Registration Scope, Authentication Method, Credential References (No Secrets), Required Scopes, Login / Reload Steps, And Per-Role Read-Only Verification:
+- Legacy Path Migration, Preserved Merge Inputs, Collisions, Rollback, And Deferred Gaps:
 
 ## Maintenance Baseline
 
-- Answers File Path: `<docs-agents-dir>/agentic-system.answers.yaml`
-- Baseline Directory Path: `<docs-agents-dir>/.baseline/`
+- Answers File Path: `<maintenance-root>/agentic-system.answers.yaml`
+- Baseline Directory Path: `<maintenance-root>/.baseline/`
 - Operation: NEW | MODIFIED | UNMODIFIED
 - Slots Recorded: `<count>` of `<slots-used-by-the-generated-system>`
 - Capabilities Recorded: `<count>`, including every fallback substitution

@@ -4,7 +4,14 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.1.0`
+- `3.2.0`
+
+## 2026-10-10
+
+### 3.2.0
+
+- Discover dedicated maintenance records while retaining legacy locations as merge inputs; use Bootstrap's shared context-boundary contract to split mixed layouts after approval.
+- Preserve customizations and baseline identity during relocation, repair references and audit plans together, and leave unresolved isolation/authentication evidence visible.
 
 ## 2026-10-08
 

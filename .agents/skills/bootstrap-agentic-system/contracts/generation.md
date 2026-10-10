@@ -14,10 +14,10 @@ The proposal must cover:
 - root instruction strategy,
 - tracker/session contract,
 - context glossary decision,
-- knowledge-index strategy,
+- project-root knowledge and maintenance isolation strategy, including ordinary search/loading exclusions and explicitly invoked maintenance entrypoints,
 - visual artifact strategy,
 - selected Canonical Template Mirror agents and skills,
-- tool and integration assignment register,
+- tool and integration assignment register, native registration/authentication setup, non-secret prerequisites, and per-role verification,
 - agentic-system manifest, answers file, baseline directory, and Bootstrap changelog snapshot strategy,
 - staged batch plan,
 - validation commands,
@@ -26,6 +26,7 @@ The proposal must cover:
 The file plan must include:
 
 - generated path map with environment ownership and shared-file consumers,
+- context classification and loaded references for every file, plus the context audit plan and native loading/search checks from `contracts/context-boundaries.md`,
 - preservation plan with hashed sources and exact approved substitutions, following `contracts/platform-compatibility.md`,
 - preservation matrix for this run,
 - source template path for every generated mirror,
@@ -90,6 +91,7 @@ For generated instruction files:
 - preserve selected instruction mirrors and their scope values; when native instruction discovery uses another format, encode the same scope in a verified registration adapter instead of rewriting the copy,
 - fill the roster slot with only the agents approved in the generation batch, one line each, naming the request type that should reach the agent,
 - omit unselected targets within the declared roster slot; do not delete fixed non-slot routing lines,
+- fill `MAINTENANCE_ROOT` in all selected mirrors and preserve their exclusion guard; the root manifest locator and update instruction apply only during explicit maintenance,
 - keep the root instruction file navigational: move any repository-specific rule into a modular instruction file or a knowledge file instead of expanding the router.
 
 For generated runtime schema files:
@@ -102,12 +104,18 @@ For generated runtime schema files:
 
 For generated files without a mirror, adapt `templates/agent-role-contracts.md`, `templates/agent-contracts.md`, or a user-approved local equivalent. Non-mirrored additions may use partial files, but partials must not replace mirrored canonical content. Native adapters follow `contracts/platform-compatibility.md` and cannot become alternative workflow definitions.
 
+## Integration Setup
+
+Apply only the approved agent-client configuration changes and documented authentication procedure from `contracts/platform-compatibility.md`. Preserve existing server entries and configuration ownership. Record user-required login steps as pending when they cannot be completed; do not fabricate authentication or require secrets in chat. Confirm exact role-visible tools and a bounded required operation after startup/reload before reporting a binding verified. Keep setup evidence in the maintenance root and the minimum invocation/recovery guidance needed to operate an integration in its runtime binding.
+
 ## Maintenance Baseline Writes
+
+Apply the layout and snapshot rules in `contracts/context-boundaries.md`. Store provenance and reports exclusively in the dedicated maintenance area, with active contracts and schemas outside it.
 
 Write the maintenance baseline from `templates/agentic-system-answers.md` and the manifest template once the generated files exist.
 
-- Write the answers file at the approved path. For a slot whose value differs by role or file, store its `value` as a map keyed by generated repository-relative path; otherwise store a scalar. Resolve the exact file entry during future template filling. Use answers schema version 2. Record the Bootstrap skill version, execution host, selected environments and their roots/evidence, shared sources and adapters, every slot the generated system uses with its value, `source`, and evidence, every required environment/role/operation with its binding, prerequisites, evidence, verification status, and installed fallback, every generated path paired with its baseline path, and every deferred decision.
-- Copy each generated file into the baseline directory under its repository-relative path, byte for byte, before any post-generation hand edit. A baseline copy taken after a manual edit silently turns a customization into part of the baseline.
+- Write the answers file at the approved path. For a slot whose value differs by role or file, store its `value` as a map keyed by generated repository-relative path; otherwise store a scalar. Resolve the exact file entry during future template filling. Use answers schema version 2 with the rendered layout/integration extensions; missing legacy fields remain unknown until discovered and approved. Record the Bootstrap skill version, execution host, selected environments and their roots/evidence, shared sources and adapters, every slot the generated system uses with its value, `source`, and evidence, every required environment/role/operation with its binding, prerequisites, evidence, verification status, and installed fallback, every generated path paired with its baseline path, and every deferred decision.
+- Copy each generated pre-baseline output into the baseline directory under its repository-relative path, byte for byte, before any post-generation hand edit. Baseline snapshot files are companions, not new generated outputs; never snapshot `.baseline/` recursively. A baseline copy taken after a manual edit silently turns a customization into part of the baseline.
 - Do not copy files Bootstrap did not generate. The baseline describes what Bootstrap produced, not the repository.
 - Initialize the customization register in the manifest. A first install normally has no rows; add one row for every deliberate deviation approved during this run, including slot overrides that contradict a template default and separate repo-local extensions. A non-slot change in a canonical copy is a blocking preservation failure, not an accepted platform adaptation.
 - Record the answers file path and baseline directory path in the manifest under Generated System Paths.

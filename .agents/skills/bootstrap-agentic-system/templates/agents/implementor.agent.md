@@ -14,6 +14,12 @@ disable-model-invocation: true
 ## Bootstrap Template Repository Search
 - Use `{{REPOSITORY_SEARCH_TOOL}}` for repository discovery when the workflow requires codebase evidence.
 <!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
+## Repository Context Boundary
+- During ordinary questions, planning, implementation, testing, and knowledge building, never read, search, index, summarize, or load `{{MAINTENANCE_ROOT}}` or installed Bootstrap/Maintainer bodies and resources. Exclude their paths and aliases before retrieval; pass exclusions to delegates.
+- These locations are accessible only during initial Bootstrap or explicitly requested agent-system maintenance. Runtime system edits report the need for maintenance instead of opening or updating its provenance.
+- Keep generated project knowledge under top-level `knowledge/`; do not use maintenance material as knowledge or as a runtime contract.
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
 Cleaned into canonical agent `implementor.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
 
 ## Capability Substitutions
