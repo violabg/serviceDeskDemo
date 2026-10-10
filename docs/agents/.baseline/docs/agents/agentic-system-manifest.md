@@ -16,7 +16,7 @@
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Available: 3.1.0
 - Maintain Skill Version Last Applied: 3.1.0
-- Last Maintenance Date: 2026-10-08
+- Last Maintenance Date: 2026-10-10
 
 ## Generated System Paths
 
@@ -84,6 +84,7 @@
 | C015 | Canonical skills, instruction inventory and verifier | direct discovery and native scope adapters | modified-rule | User approved consolidation and necessary lossless instruction adapters on 2026-10-08; source snapshots/baselines remain maintenance evidence | independent registration; canonical bytes preserved | always; re-evaluate on discovery changes; last checked 5.3.0 plus 6.1 isolation |
 | C016 | Codex GitHub Apps binding, three role contracts and seven Codex agent layers | issue retrieval and default-off app policy | modified-rule | User approved app `github`, only issue-fetch and issue-comments tools for Planner, Implementor and Direct Implementor; search/list/write prohibited; pagination and response schemas remain unverified | extends-canonical through Codex-only environment binding | always; re-evaluate on client/schema changes; runtime access unverified |
 | C017 | Codex Neon MCP user config, generator and seven Codex agent layers | Neon Streamable HTTP transport, OAuth and exact operation allowlists | modified-rule | User approved Codex-only workflow repair; live read-only branch listing verified for the linked project on 2026-10-08; generated-role invocation remains unverified | extends-canonical through Codex-only environment binding | always; re-evaluate on client/schema changes; no credentials stored in repository |
+| C018 | `docs/agents/integration-policy.md` | Database migration and privilege bootstrap workflow | added-section | User approved explicit Planner Section 4 operations and Implementor execution/verification gates for conditional schema migrations and idempotent Admin privilege seeding; preserve exact target authorization and explicit migration approval | extends-canonical through shared role-binding policy | always; re-evaluate when schema/migration or privilege-seed workflow changes |
 
 Canonical copies remain exact after approved slots and marker stripping. The native Vision metadata overrides are not described as unchanged canonical translations. No other non-slot canonical edits are authorized.
 
@@ -121,6 +122,7 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 
 | 2026-10-08 | 5.3.0 | 3.1.0 | Approved Codex-only GitHub Apps correction; enabled only issue fetch/comments for three roles, defaulted the app off in all seven Codex layers, preserved Copilot and prohibited search/list/write; runtime schema and access remain unverified. |
 | 2026-10-08 | 5.3.0 | 3.1.0 | Repaired Codex Neon MCP endpoint, OAuth and per-role transport/allowlists; verified a read-only branch listing for the linked project; custom-role invocation remains unverified. |
+| 2026-10-10 | 5.3.0 | 3.1.0 | Evolved shared database workflow policy: Planner must include conditional migration, privilege seed and Admin verification steps; Implementor must confirm plan coverage, exact target authorization, and apply/verify only when needed. Session contents and product code were excluded. |
 
 After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, demo-author-repo-skill for reusable procedures, and create-work-item-from-description when ticket creation is explicitly requested.
 
