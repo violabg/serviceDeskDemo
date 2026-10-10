@@ -1,12 +1,12 @@
 ---
 name: create-work-item-from-description
-description: "Use when: creating a bug or user story from a clarified description through a configured tracker or local Markdown record."
+description: "Use when: the user explicitly invokes this workflow to clarify and create a bug or user story through an authorized issue-creation tool in the active client."
 disable-model-invocation: true
 ---
 
 # Create Work Item From Description
 
-Use this public skill when a user wants to create a bug or user story that will later be planned by `plan-bug-from-id` or `plan-user-story-from-id`.
+Use this public skill only when the user explicitly invokes `create-work-item-from-description` by name. This is a standalone workflow: bypass the normal agentic role routing and Planner flow. Do not create or resume a Planning Session, invoke a Planner, or start implementation planning.
 
 ## Contract
 
@@ -15,15 +15,13 @@ Support two modes:
 - `bug`
 - `user-story`
 
-Clarify the type, required fields, scope, acceptance criteria or reproduction details, and target adapter before creation. Ask for explicit approval before creating or saving the work item.
+Clarify the type, required fields, scope, acceptance criteria or reproduction details, and the target issue system before creation. Continue clarification until the proposed work item is specific enough to review. Then present the complete proposed type, title, description, acceptance criteria or reproduction details, and target issue system, and wait for the user's explicit approval before creating it. Approval of the workflow or earlier discussion is not approval of the final proposal.
 
 ## Persistence
 
-When a tracker adapter or MCP integration is configured, create the work item in the selected issue-tracking system and record the returned ID, type, adapter, and source link in the creation result.
+After approval, create the work item only by using an issue-creation tool that is authorized and available in the active client for the selected issue system. Use the tool's supported fields and report its result. Never substitute a local Markdown record, shell command, API call, guessed tool, or another client's tool. If no suitable authorized tool is available, explain the blocker and ask the user to configure or select an available integration; do not create anything.
 
-When no tracker is configured, save a local Markdown work-item record using the configured local-tracker path and assign a stable ID. The record must contain the type, ID, title, description, acceptance criteria or reproduction details, created timestamp, and status.
-
-This skill must never create or resume a Planner session folder. It returns the ID so the user can later invoke the appropriate Planner-owned skill.
+The explicit invocation is the authorization to run this workflow, but it does not authorize creation; the final proposal still requires explicit approval. This skill must never create or resume a Planner session folder. It returns the ID so the user can later invoke the appropriate Planner-owned skill.
 
 ## Handoff
 
