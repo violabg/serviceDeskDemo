@@ -23,7 +23,7 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
 | `#capability:session-artifact-read` | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
 | `#capability:session-artifact-write` | Write `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
-| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
+| `#capability:visual-evidence` | Use the visual-evidence capability declared by the selected environment binding. |
 
 ## Role Tooling Intent
 

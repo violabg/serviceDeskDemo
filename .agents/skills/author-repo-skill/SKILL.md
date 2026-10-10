@@ -25,7 +25,7 @@ Two skills that differ only in a noun are one skill with a parameter.
 
 ## Gather Before Writing
 
-Read relevant project knowledge through `docs/agents/knowledge/README.md` before writing a procedure that depends on repository conventions.
+Read relevant project knowledge through `knowledge/knowledge-index.md` before writing a procedure that depends on repository conventions.
 Use `the current client's bounded native repository search listed in docs/agents/integration-bindings.md` to confirm that every path, command, and role the skill names exists in this repository.
 Collect the repository facts the procedure depends on, and cite where each came from:
 
@@ -71,7 +71,7 @@ When the repository has a customization register, record the new or changed skil
 
 ## Approval And Validation
 
-Validate the written skill with the repository commands `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 docs/agents/scripts/verify-agentic-system.py` where they apply, and record a reason for each command that was skipped.
+Validate the written skill with the repository commands `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 .agentic-system-maintenance/scripts/verify-agentic-system.py` where they apply, and record a reason for each command that was skipped.
 Propose the file plan and wait for explicit approval before writing. Approval is false by default.
 
 After writing, verify:

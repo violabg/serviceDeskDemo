@@ -1,0 +1,130 @@
+[
+  {
+    "path": ".codex/agents/demo-planner.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+    "format": "toml",
+    "body_sha256": "97287d6eccf6cd0611a996cb7af0056381dbc849e335061810c2cc92b477cd18",
+    "role": "planner",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-implementor.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+    "format": "toml",
+    "body_sha256": "c5b28ca497f9f929c176b0a36faea939b12128dd9cf100bcf660bf8f28f48353",
+    "role": "implementor",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-direct-implementor.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+    "format": "toml",
+    "body_sha256": "d3c83d3b82dbaf5365a6e2a4fad13b049d0815f605783cab8fe0de41e16f9a85",
+    "role": "direct-implementor",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-integration-tester.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+    "format": "toml",
+    "body_sha256": "f95c22e9c2db92fe48686657608e220ac86c866c668df3933a48e8b2020f2afe",
+    "role": "integration-tester",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-knowledge-builder.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+    "format": "toml",
+    "body_sha256": "95cf45a38c647c6d87a94f2a3de42a781d93d51a23e38f9a7608b15d4699e9a3",
+    "role": "knowledge-builder",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-ask.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+    "format": "toml",
+    "body_sha256": "987a214f972b50e76fa43e075e8943ac515b04d275895ebb1d5b788d77eb046d",
+    "role": "ask",
+    "environment": "codex"
+  },
+  {
+    "path": ".codex/agents/demo-vision.toml",
+    "canonical_copy": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
+    "format": "toml",
+    "body_sha256": "d0396af6c4a27b798a9f3d17d272bc6e9892c7ce738ad21b4090729dd09a61c9",
+    "role": "vision",
+    "environment": "codex"
+  },
+  {
+    "path": ".github/agents/demo-planner.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+    "format": "markdown",
+    "body_sha256": "c02e8062b59887b4db0a5c393e245946b98ae3be2094aa26597bcbe22f3e7e04",
+    "role": "planner",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-implementor.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+    "format": "markdown",
+    "body_sha256": "7a8ff5bfd43810db10acf04577d83b8b0e626588551abdad99c438cdcf256ab1",
+    "role": "implementor",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-direct-implementor.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+    "format": "markdown",
+    "body_sha256": "f7fdf263569a262851dc893c0c9dab310f4652048d97d1aec2f25063a51cd89c",
+    "role": "direct-implementor",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-integration-tester.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+    "format": "markdown",
+    "body_sha256": "59511b1a1a7933d70a83575d2ee0bd6ac7e8aea56a057d0aa3921a244fcf9eff",
+    "role": "integration-tester",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-knowledge-builder.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+    "format": "markdown",
+    "body_sha256": "2b384e293689f6e9fae36ea2eab41e54ec2a2a023072e5340d1f34e48196d53b",
+    "role": "knowledge-builder",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-ask.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+    "format": "markdown",
+    "body_sha256": "3442a32ad67b3240205467e86ae86665f3ed04fd2386fa6afc1f61aae6b9d777",
+    "role": "ask",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/agents/demo-vision.agent.md",
+    "canonical_copy": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+    "format": "markdown",
+    "body_sha256": "d0396af6c4a27b798a9f3d17d272bc6e9892c7ce738ad21b4090729dd09a61c9",
+    "role": "vision",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/instructions/knowledge-guard.instructions.md",
+    "canonical_copy": "docs/agents/instructions/knowledge-guard.instructions.md",
+    "format": "markdown",
+    "body_sha256": "2a60acdd574855cc2d8c4d378f0e7e638b0d31ab3fdc93f7a39231237df296ae",
+    "role": "instruction",
+    "environment": "copilot"
+  },
+  {
+    "path": ".github/instructions/planning-sessions.instructions.md",
+    "canonical_copy": "docs/agents/instructions/planning-sessions.instructions.md",
+    "format": "markdown",
+    "body_sha256": "84c89a3742f44216f6ae18cfbf129e5f9023f4dbab7972832c5f5f27db48ad60",
+    "role": "instruction",
+    "environment": "copilot"
+  }
+]

@@ -28,7 +28,7 @@ Modular rules live in `docs/agents/instructions; skip a shared rule already load
 
 ## Knowledge
 
-- Select knowledge through `docs/agents/knowledge/README.md`. Match the request against the `When to read` triggers and load only the entries that match.
+- Select knowledge through `knowledge/knowledge-index.md`. Match the request against the `When to read` triggers and load only the entries that match.
 - Resolve repository vocabulary in `docs/agents/context-glossary.md`.
 - Never bulk-load knowledge files.
 
@@ -39,8 +39,9 @@ Modular rules live in `docs/agents/instructions; skip a shared rule already load
 
 ## Validation
 
-Validate every change with `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 docs/agents/scripts/verify-agentic-system.py` before handing work back.
+Validate every change with `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 .agentic-system-maintenance/scripts/verify-agentic-system.py` before handing work back.
 
 ## Provenance
 
-`docs/agents/agentic-system-manifest.md` records what was generated, which slots were filled, and which decisions were approved. Update it whenever this system changes.
+During initial Bootstrap or explicitly requested agent-system maintenance only, access `.agentic-system-maintenance/` and the complete Bootstrap/Maintainer skills at `.agents/skills/bootstrap-agentic-system/` and `.agents/skills/maintain-agentic-system/`. For ordinary work, exclude these paths and their aliases before search, indexing, knowledge retrieval, or delegation; do not load their contents. If ordinary work changes an agent-system file, report that maintenance evidence needs refreshing; do not open or update the evidence ledger.
+`.agentic-system-maintenance/agentic-system-manifest.md` records what was generated, which slots were filled, and which decisions were approved. Update it during explicitly approved maintenance.

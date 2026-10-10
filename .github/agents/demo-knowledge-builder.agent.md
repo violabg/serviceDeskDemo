@@ -8,15 +8,15 @@ name: "demo-knowledge-builder"
 # Source Mapping
 
 ## Bootstrap Template Knowledge Sources
-- Evaluate `docs/agents/knowledge/` as candidate source material before proposing knowledge-index entries.
+- Evaluate `knowledge/` as candidate source material before proposing knowledge-index entries.
 ## Bootstrap Template Context Glossary Target
 - Use `docs/agents/context-glossary.md` only for resolved repository code/domain vocabulary and source-of-truth boundaries.
 - Do not treat the context glossary as a knowledge index.
 ## Repository Knowledge Binding
-- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).
+- Before loading repository knowledge, read `knowledge/knowledge-index.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/knowledge-index-schema.md`).
 - Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.
 - Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.
-- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/bindings/copilot.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.
+- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/bindings/copilot.md`. Capability tokens resolve through the selected role binding and `docs/agents/integration-policy.md`; registry snapshots are maintenance evidence, not runtime inputs.
 
 ## Bootstrap Template Repository Search
 - Use `the current client's bounded native repository search listed in docs/agents/bindings/copilot.md` for repository discovery when the workflow requires codebase evidence.
@@ -36,9 +36,9 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:implementation-plan-save` | Save the implementation plan to its path in the current Planning Session folder. |
 | `#capability:implementation-plan-schema` | Read `docs/agents/plan-schema.md` and obey it as the plan contract. |
 | `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
-| `#capability:knowledge-document-write` | Write the knowledge document and update its entry in `docs/agents/knowledge/README.md`. |
-| `#capability:knowledge-index-read` | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. |
-| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
+| `#capability:knowledge-document-write` | Write the knowledge document and update its entry in `knowledge/knowledge-index.md`. |
+| `#capability:knowledge-index-read` | Read `knowledge/knowledge-index.md` and select entries by their `When to read` triggers. |
+| `#capability:repository-search` | Use the repository-search capability declared by the selected environment binding. |
 | `#capability:session-activate` | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
 | `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
 | `#capability:session-artifact-read` | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
@@ -51,7 +51,7 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:test-plan-load` | Open the existing test plan in the current Planning Session folder and edit it in place. |
 | `#capability:test-plan-save` | Save the test plan to its path in the current Planning Session folder. |
 | `#capability:test-plan-schema` | Read the approved test-plan schema at `docs/agents/test-plan-schema.md` before drafting YAML. |
-| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
+| `#capability:visual-evidence` | Use the visual-evidence capability declared by the selected environment binding. |
 
 ## Role Tooling Intent
 

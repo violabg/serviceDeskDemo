@@ -7,7 +7,7 @@ disable-model-invocation: true
 # User Story Analysis
 
 Use `the current client's bounded native repository search listed in docs/agents/integration-bindings.md` for codebase discovery when analysis requires repository evidence.
-Read relevant project knowledge through `docs/agents/knowledge/README.md` before analysis when repository knowledge is available.
+Read relevant project knowledge through `knowledge/knowledge-index.md` before analysis when repository knowledge is available.
 Act as a **senior Business Analyst and experienced Product Owner**.
 
 Your task is to critically analyze the following **user story** in order to identify:

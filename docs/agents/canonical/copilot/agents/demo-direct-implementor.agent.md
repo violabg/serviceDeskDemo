@@ -8,10 +8,10 @@ disable-model-invocation: true
 # Source Mapping
 
 ## Repository Knowledge Binding
-- Before loading repository knowledge, read `docs/agents/knowledge/README.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/sources/templates/knowledge-index-schema.md`).
+- Before loading repository knowledge, read `knowledge/knowledge-index.md`, the existing index derived from the Bootstrap knowledge-index schema (snapshot: `docs/agents/knowledge-index-schema.md`).
 - Select the smallest set by `When to read`; never bulk-load knowledge. Record selected and skipped related entries and the reasons in the current planning artifacts.
 - Resolve code/domain vocabulary through `docs/agents/context-glossary.md`.
-- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/bindings/copilot.md`. Source references to `registry/capabilities.yaml` mean the retained registry at `docs/agents/sources/registry/capabilities.yaml`.
+- Before using integrations or resolving capability tokens, read the current role's entries in `docs/agents/bindings/copilot.md`. Capability tokens resolve through the selected role binding and `docs/agents/integration-policy.md`; registry snapshots are maintenance evidence, not runtime inputs.
 
 ## Bootstrap Template Repository Search
 - Use `the current client's bounded native repository search listed in docs/agents/bindings/copilot.md` for repository discovery when the workflow requires codebase evidence.
@@ -26,8 +26,8 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:execution-report-read` | Read `sessions/<planning-session-id>/execution-report.md`. |
 | `#capability:execution-report-write` | Write `sessions/<planning-session-id>/execution-report.md`. |
 | `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
-| `#capability:knowledge-index-read` | Read `docs/agents/knowledge/README.md` and select entries by their `When to read` triggers. |
-| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
+| `#capability:knowledge-index-read` | Read `knowledge/knowledge-index.md` and select entries by their `When to read` triggers. |
+| `#capability:repository-search` | Use the repository-search capability declared by the selected environment binding. |
 | `#capability:session-activate` | Create or resume the current Planning Session folder under `sessions`. Session identity is a directory, not a service. |
 | `#capability:session-artifact-list` | List `sessions/<planning-session-id>/artifacts/`. |
 | `#capability:session-artifact-read` | Read `sessions/<planning-session-id>/artifacts/<artifact-name>.md`. |
@@ -36,7 +36,7 @@ The source agent called a private server for these operations. Each one keeps it
 | `#capability:session-list` | Read only the current Planning Session folder under `sessions`. Never enumerate other sessions. |
 | `#capability:session-memory-append` | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last. |
 | `#capability:session-memory-read` | Read `sessions/<planning-session-id>/session-memory.md`. |
-| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
+| `#capability:visual-evidence` | Use the visual-evidence capability declared by the selected environment binding. |
 | `#capability:work-item-comment-retrieval` | Use `github/issue_read; methods get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md and docs/agents/bindings/copilot.md` to read the work item comments. |
 | `#capability:work-item-retrieval` | Use `github/issue_read; methods get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md and docs/agents/bindings/copilot.md` for the requested External Issue ID. |
 | `#capability:work-item-type-retrieval` | Use `github/issue_read; methods get, get_comments and get_labels for exact issue IDs, following docs/agents/github-issues-adapter.md and docs/agents/bindings/copilot.md` to determine the work item type. |

@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 # Integration Test Knowledge Checklist
 
-Read relevant integration-test knowledge through `docs/agents/knowledge/README.md` before drafting project-specific test guidance.
+Read relevant integration-test knowledge through `knowledge/knowledge-index.md` before drafting project-specific test guidance.
 Document the integration-test scope and out-of-scope boundaries: `Vitest tests of connected repo-owned modules, actions, routes and feature components with real internal wiring and stubbed Neon/auth/third-party boundaries; exclude live vendor systems, unit and e2e tests, and direct components/ui/** tests unless the user overrides that exclusion`.
-Document the target repository validation commands: `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 docs/agents/scripts/verify-agentic-system.py`.
+Document the target repository validation commands: `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 .agentic-system-maintenance/scripts/verify-agentic-system.py`.
 # Integration Test Knowledge Checklist for Integration Tester
 
 Use this checklist to generate a project-specific integration-test knowledge for Integration Tester.
