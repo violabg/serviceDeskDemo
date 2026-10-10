@@ -14,6 +14,10 @@ Owner: codex. Load this file only in that environment, then load docs/agents/int
 | demo-ask | `functions.exec`, `mcp__neon__list_docs_resources`, `mcp__neon__get_doc_resource`, `mcp__neon__get_database_tables`, `mcp__neon__describe_table_schema`, `mcp__neon__list_branches`, `mcp__neon__compare_database_schema`, `mcp__next_devtools__init`, `mcp__next_devtools__nextjs_docs`, `mcp__next_devtools__nextjs_index`, `mcp__next_devtools__nextjs_call` |
 | demo-vision | `functions.exec` |
 
+## Explicit Skill Operations
+
+Only when the user explicitly invokes `.agents/skills/create-work-item-from-description/SKILL.md` in the default Codex agent, the skill may use a GitHub issue-creation operation exposed by that active session, with create behavior only and after explicit user approval. Inspect the actual tool name, schema, authentication, and target-repository authorization at runtime; do not infer access from a custom role's tool list or from another client. The current configured Codex `github` App binding exposes no issue-write operation, so if the default session also exposes none, report the operation as blocked and do not substitute another integration. This exception does not add tools to any role above. If a screenshot attachment is required, proceed only when a separate upload operation is actually available; otherwise ask before creating without it.
+
 ## Native operations
 
 - The recorded execution host uses functions.exec with tools.exec_command for bounded reads, rg --files and rg, and tools.apply_patch for authorized edits. tools.view_image obtains actual local image input; tools.web__run supplies native documentation access. CLI and other clients must inspect their active wrappers before use.
@@ -25,7 +29,7 @@ Owner: codex. Load this file only in that environment, then load docs/agents/int
 
 ## Tracker and bounded gathering
 
-- GitHub read binding: `mcp__codex_apps__github_fetch_issue` and `mcp__codex_apps__github_fetch_issue_comments` through app `github`. Use exact issue IDs and explicit comment pagination; if the connected schema cannot paginate completely, stop. Use type/labels only when the issue-fetch response includes them; otherwise ask rather than infer. Follow docs/agents/github-issues-adapter.md. Search, listing, and tracker writes are prohibited.
+- GitHub read binding for role workflows: `mcp__codex_apps__github_fetch_issue` and `mcp__codex_apps__github_fetch_issue_comments` through app `github`. Use exact issue IDs and explicit comment pagination; if the connected schema cannot paginate completely, stop. Use type/labels only when the issue-fetch response includes them; otherwise ask rather than infer. Follow docs/agents/github-issues-adapter.md. These roles do not authorize search, listing or tracker writes; see the separate explicit skill operation above.
 - Use verified default evidence delegation where available. When delegation is unavailable or unverified, the user-approved 2026-10-08 fallback performs the exact same bounded planning evidence task inline, including current-session artifact persistence and directly linked dependency reads. Missing approved tracker access still stops retrieval. Delegate questions return to the parent. This does not authorize full-role delegation or extra issue access.
 - Knowledge Builder discovery may use up to ten bounded evidence tasks within runtime concurrency limits under the inspected default procedure; otherwise gather the same evidence inline. Preserve knowledge/index-only editing and owning-session boundaries. Native execution of generated roles, MCP access, custom role registrations and visual handoffs remains unverified.
 
