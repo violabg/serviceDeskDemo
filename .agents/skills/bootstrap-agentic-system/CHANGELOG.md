@@ -4,9 +4,13 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `7.0.1`
+- `7.1.0`
 
 ## 2026-10-10
+
+### 7.1.0
+
+- Add a root-instructions route for explicit standalone work-item creation that bypasses normal agent and Planner routing and requires clarification, final proposal approval, and an authorized issue-creation tool in the active client.
 
 ### 7.0.1
 
