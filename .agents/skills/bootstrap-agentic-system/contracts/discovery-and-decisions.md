@@ -4,7 +4,7 @@ Covers Phase A through Phase C. No files are written in these phases.
 
 ## Phase A: Intake And Scope
 
-Confirm the request is agent-system design or installation. Stop or redirect if the user asks for application implementation, product testing, database work, runtime configuration, or approval bypass.
+Confirm the request is agent-system design or installation. Stop or redirect if the user asks for application implementation, product testing, database work, application runtime configuration, or approval bypass.
 
 Capture these initial facts:
 
@@ -23,9 +23,9 @@ Run read-only discovery. Use bounded hidden subagents when the platform supports
 
 Discovery lanes:
 
-- Platform and Tooling: execute selected-environment discovery from `contracts/platform-compatibility.md`; research only chosen clients and record official sources, versions, discovery/loading rules, native formats, tool access, and limitations.
+- Platform and Tooling: execute selected-environment discovery from `contracts/platform-compatibility.md`; research only chosen clients and record official sources, versions, discovery/loading rules, native formats, tool access, transport/registration, authentication setup and effective scopes, automatic loading of maintenance entrypoints, and limitations. Apply the shared context-boundary contract before ordinary knowledge discovery.
 - Tracker and Session: GitHub, Jira, Linear, Azure DevOps, Notion, local Markdown issue models, session roots, ID patterns, and current-session-only restrictions.
-- Knowledge and Glossary: `CONTEXT.md`, glossaries, ADRs, docs, source-of-truth boundaries, repeated repository vocabulary, aliases, and ambiguous terms.
+- Knowledge and Glossary: follow `contracts/context-boundaries.md`; inspect top-level `knowledge/`, `CONTEXT.md`, glossaries, ADRs, project docs, source-of-truth boundaries, aliases, and ambiguous terms. Separate installation/maintenance material before discovery and record any mixed legacy layout for explicit maintenance.
 - Visual Artifacts: screenshots, mockups, diagrams, UI snapshots, image assets, issue attachments, browser screenshots, annotated QA evidence, and whether image evidence affects planning or testing.
 - Remote Image Access: when Vision or another selected role processes issue images, identify how that role can fetch and view the actual image bytes from repository issue URLs, including private attachments, redirects, and required authorization. A URL string or issue metadata alone does not verify visual access.
 - Validation Surface: package scripts, CI, lint/test commands, PR templates, contribution docs, and commands generated agents should run.
@@ -52,13 +52,13 @@ Required decisions for the selected workflow (mark conditional items not applica
 - External Issue ID format, validation, required retrieved fields, and current-issue-only scope, only for ID-based planning,
 - Planning Session ID prefix: for ID-based planning, recommend `bug-<external-issue-id>` and `us-<external-issue-id>` after type retrieval; for free-form planning use a user-approved request slug; record any user-approved custom prefix,
 - local Markdown issue root, ID format, and lookup/index rule only when ID-based planning is selected without an external tracker,
-- approved MCP and platform integration assignments by exact tool name,
+- approved MCP and platform integration assignments by exact tool name, with per-client registration scope, authentication method, non-secret credential references, required scopes, user login steps, and verification status,
 - context glossary action: create, update, no change, or defer,
 - terminology normalization for competing or ambiguous repository terms,
-- knowledge-index path and first-install contents,
+- top-level `knowledge/`, its index path and project-only first-install contents, preserving existing authoritative docs in place,
 - plan-schema destination path, and a compatible test-plan schema path when Integration Tester is selected,
 - session root and current-session-only restriction,
-- maintenance baseline location: the `docs/agents/` root that will hold the manifest, the answers file, and the `.baseline/` directory,
+- dedicated top-level maintenance root (default `.agentic-system-maintenance/`) for provenance, maintenance skills/resources, baselines, research, and reports; runtime discovery exclusions and any guarded native entrypoint, following `contracts/context-boundaries.md`,
 - Vision support: Vision agent, smaller visual-intake skill, defer, or no change,
 - Vision model: the approved exact model for the generated Vision agent, or an explicit platform-default/omitted-model decision when Vision is selected,
 - Canonical Template Mirror skills to generate, skip, or defer,

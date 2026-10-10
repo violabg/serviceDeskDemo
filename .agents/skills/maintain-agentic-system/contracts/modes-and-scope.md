@@ -31,12 +31,16 @@ An existing Agentic System requires at least one root instruction file plus at l
 Look for:
 
 - repository instruction files, canonical copies, native adapters, and their declared instruction scopes,
-- `docs/agents/agentic-system-manifest.md` or an equivalent provenance ledger,
-- `docs/agents/agentic-system.answers.yaml` and `docs/agents/.baseline/`,
+- `.agentic-system-maintenance/agentic-system-manifest.md` or the recorded dedicated maintenance root; legacy `docs/agents/agentic-system-manifest.md` remains detection evidence,
+- answers and `.baseline/` under that maintenance root, with legacy `docs/agents/` companions retained as merge inputs until an approved migration,
 - selected-environment roots recorded in the answers and manifest, plus evidence-backed discovery locations when provenance is missing; folder presence does not select a platform,
 - governance docs, knowledge indexes, artifact templates, and at most a session-root README that documents session rules without exposing session contents.
 
 The manifest, the answers file, and the baseline directory are the maintenance baseline. Record which of the three are present in the plan, because their absence degrades the merge. See `contracts/merge-model.md`.
+
+## Context Layout And Migration
+
+Load sibling Bootstrap `contracts/context-boundaries.md` when inspecting legacy locations, maintenance-skill discovery, or a layout change. Follow its relocation and verification procedure without treating a path move as a baseline reset. Use the current manifest/answers locations to discover the old system, then classify mixed content by actual purpose and consumers. Include the old/new mapping and preserved comparison inputs in the plan; a read-only audit reports gaps and proposes no writes. Missing context-audit or authentication fields are unknown evidence, not grounds to discard earlier decisions.
 
 ## Environment Compatibility
 

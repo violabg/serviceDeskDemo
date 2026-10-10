@@ -4,7 +4,17 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `6.1.0`
+- `7.0.0`
+
+## 2026-10-10
+
+### 7.0.0
+
+- Create project-root `knowledge/` for project knowledge and isolate Bootstrap/Maintainer records and resources in `.agentic-system-maintenance/` or an approved separate top-level root. Runtime schemas and bindings remain outside that area.
+- Exclude maintenance locations and aliases before ordinary reading, search, indexing, retrieval, and delegation; native maintenance entrypoints load complete resources only after explicit invocation.
+- Require per-client/provider documentation for MCP transport, registration scope, secure authentication, login/reload, credential references, and effective role permissions. Distinguish configured, authenticated, and verified operations without storing secrets.
+- Ship a context boundary verifier for approved inventories, actual knowledge-index entries, physical paths, and guarded references. Native loading/search checks remain required.
+- Define legacy mixed-layout migration that retains pristine merge inputs, updates path-keyed decisions/references together, and avoids recursive baseline snapshots.
 
 ## 2026-10-08
 

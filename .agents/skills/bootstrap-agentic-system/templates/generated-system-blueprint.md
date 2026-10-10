@@ -96,14 +96,22 @@ Choose directories using the selected-environment research in `contracts/platfor
     agents/
     skills/
     instructions/
+  templates/                       # runtime schemas and artifact contracts
+knowledge/                         # project-root knowledge; no installation/maintenance material
   knowledge-index.md
-  templates/                       # shared schemas and artifact contracts
+  <project-knowledge>.md
+.agentic-system-maintenance/        # initial Bootstrap or explicit maintenance only
   agentic-system-manifest.md
-  agentic-system.answers.yaml      # selected environments, per-role operations, and evidence
+  agentic-system.answers.yaml      # selected environments, decisions, and setup evidence
   preservation-plan.json
+  environment-audit.json
+  context-audit.json
   sources/                         # hashed mirrors, excluded from native discovery
-  .baseline/                       # pristine generated files by repository-relative path
+  .baseline/                       # pre-baseline copies; never recursively snapshot itself
   skill-changelogs/
+  skills/                          # maintenance skill bodies/resources if copied locally
+  evidence/                        # compatibility, authentication setup, native checks; no secrets
+  plans/                           # installation and maintenance reports
 <environment-native-roots>/         # discovered only for selected clients/versions
   <native-registrations>            # direct copies or minimal verified adapters
 <session-root>/                     # shared contract; access only the current session

@@ -29,6 +29,7 @@ Keep Bootstrap as one public orchestrator. Use internal scout lanes, decision re
 - Before writing files, produce a file plan and wait for explicit approval. Use one master plan and ask for approval before each write batch unless the user explicitly approves collapsed batches.
 - Preserve required baseline operations using `PLATFORM_TOOLS` and the declared invocation slots; preserve delegated-agent frontmatter when the target platform supports it. Add only exact discovered or user-approved MCP or platform tools.
 - Every `tools:` frontmatter item in generated Markdown agents must be a string. When filling `"{{APPROVED_MCP_TOOLS}}"`, replace it with zero or more exact quoted tool-name strings, or remove the placeholder item when no additional tool is approved.
+- Apply `contracts/context-boundaries.md`: create project-root `knowledge/`, isolate installation/maintenance material under `.agentic-system-maintenance/` or an approved dedicated top-level root, and enforce ordinary-context exclusions.
 - Keep context glossary and knowledge index separate. A context glossary stores stable repository code/domain vocabulary; a knowledge index controls task-specific knowledge selection.
 - Keep schema enforcement in generated runtime contracts. The enriched Planner template already contains slots for knowledge-index and plan-schema paths; Bootstrap must fill and verify those paths in generated files. The Planner also carries the clarification-question format in its own body, so no generated file may restate it.
 - Keep root instructions short, navigational, and prompt-sensitive. Generate them from `templates/instructions/AGENTS.md`. Root instructions must route to generated agents, skills, schemas, knowledge index, glossary, and prompt-specific partials when relevant; they must not become a monolithic fact dump or duplicate full agent contracts for every request.
@@ -46,6 +47,7 @@ This file is a router. Load the contract for the phase you are in; do not load t
 | `contracts/source-model.md`            | Any phase, before reading templates or the registry. Defines the source assets and the shared vocabulary. |
 | `contracts/discovery-and-decisions.md` | Phases A-C: intake, bounded discovery, decision register.                                                 |
 | `contracts/platform-compatibility.md` | Selected-environment research, canonical preservation, native registration, and compatibility verification; shared with Maintainer. |
+| `contracts/context-boundaries.md` | Project knowledge, maintenance isolation, guarded discovery, static verification, and legacy layout migration; shared with Maintainer. |
 | `contracts/generation.md`              | Phases D-E: proposal, file plan, copy-first generation, maintenance baseline writes.                      |
 | `contracts/audit-and-handoff.md`       | Phases F-H: schema enforcement, contract audit, maintenance handoff.                                      |
 

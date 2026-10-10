@@ -33,4 +33,7 @@ Validate every change with `{{VALIDATION_COMMANDS}}` before handing work back.
 
 ## Provenance
 
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
+Access `{{MAINTENANCE_ROOT}}` and installed Bootstrap/Maintainer bodies and resources only during initial Bootstrap or explicitly requested agent-system maintenance. For ordinary requests, never read, search, index, summarize, or load them; exclude paths and aliases before retrieval and pass exclusions to delegates. The provenance update below runs only in maintenance; ordinary runtime edits report the need for maintenance.
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
 `{{MANIFEST_PATH}}` records what was generated, which slots were filled, and which decisions were approved. Update it whenever this system changes.
