@@ -23,6 +23,12 @@ Environment-neutral authority and evidence rules. Exact calls, permissions, mode
 
 If a required approved integration is unavailable, stop its dependent operation and report it. Continue independent work. Do not silently switch services or broaden grants.
 
+## Explicit Skill Operations
+
+- In the default GitHub Copilot or Codex agent only, explicit invocation of `.agents/skills/create-work-item-from-description/SKILL.md` enables its separately scoped GitHub issue-creation workflow. This is not a role grant and does not authorize any other skill or custom role to write issues.
+- The skill must use the active client's documented issue-creation operation, restricted to create behavior, and must obtain the skill's explicit user approval before creation. The configured tool must actually be available and authenticated for the target repository; skill instructions do not create host permissions. Copilot's binding names `issue_write(method: create)`. The current repository Codex GitHub Apps binding does not configure a write tool; Codex can proceed only if its default session independently exposes an authorized GitHub issue-creation operation, whose exact schema must be checked at runtime.
+- The issue-write operation does not accept screenshot bytes. Attach a screenshot only if a separate image-upload capability is available. If the user requested an attachment and upload is unavailable, ask whether to proceed without it; never claim an attachment was added when it was not.
+
 ## Ordinary context boundary
 
 - Generated project knowledge lives under `knowledge/`; authoritative project documents may remain in place and be indexed by repository-relative path.

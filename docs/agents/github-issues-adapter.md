@@ -11,4 +11,12 @@ Repository: `violabg/serviceDeskDemo`. Planning is GitHub-issue-only. The two ID
 - Reject traversal, absolute paths and separators in custom session IDs. A custom prefix must be lowercase `[a-z0-9_-]` with a trailing `-`; record the approved prefix and resulting ID in `session-identity.md`.
 - Keep identity, tracker/dependency evidence, decisions, memory, logs, plan and handoffs within the owning session. Do not access other sessions. Store general artifacts in its `artifacts/` directory; keep session-memory.md, session-log.md and execution-report.md as distinct state files at the session root.
 - Plan approval must be recorded in the plan artifact before `demo-implementor` changes code. `demo-direct-implementor` is a separate explicit user-selected route from validated requirements and never requires a plan document; it retains session and knowledge gates.
-- No local Markdown tracker, free-form Planner workflow, issue search or tracker-write tool is enabled by this adapter. Ask remains available for Q&A.
+- No local Markdown tracker or free-form Planner workflow is enabled by this adapter. Ask remains available for Q&A.
+
+## Explicit Work-Item Creation Skill
+
+- This creation path is separate from planning and role workflows. It is enabled only by explicit invocation of `.agents/skills/create-work-item-from-description/SKILL.md` in the default Copilot or Codex agent, using the active client's skill-specific operation declared in its binding.
+- Follow the skill's intake contract: clarify bug versus user story, required fields, scope, reproduction details or acceptance criteria, and target adapter; obtain explicit user approval before creating. Do not create or resume a Planner session and do not produce a plan.
+- Confirm the active session exposes an issue-creation operation and can write to the selected repository. Copilot's documented operation is `issue_write(method: create)`. The configured Codex GitHub Apps binding has no write operation; Codex may proceed only if its default session independently exposes and authorizes one. If unavailable or rejected, stop and report the blocker; do not switch to another adapter or use a role's tools as a workaround.
+- The issue-write operation does not upload screenshots. If the user requested an image and no separate upload tool is available, ask whether to proceed without the image. Never imply the image was attached unless the upload succeeds.
+- Return exactly the work-item type, ID, adapter, source link or local path, and unresolved fields, as required by the skill.

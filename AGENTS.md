@@ -22,6 +22,7 @@ Full role contracts live in `docs/agents/canonical/<environment>/agents (codex o
 
 Repository skills live in `.agents/skills`. Read a skill's `SKILL.md` before running its workflow.
 
+
 ## Instructions
 
 Modular rules live in `docs/agents/instructions; skip a shared rule already loaded by the active environment's native adapter`. Each file declares the paths it applies to; load one only when the current request touches those paths.

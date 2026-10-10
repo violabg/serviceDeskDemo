@@ -14,6 +14,10 @@ Owner: copilot. Load this file only in that environment, then load docs/agents/i
 | demo-ask | `vscode/askQuestions`, `read/readFile`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages`, `web/fetch`, `neondatabase/mcp-server-neon/list_docs_resources`, `neondatabase/mcp-server-neon/get_doc_resource`, `neondatabase/mcp-server-neon/get_database_tables`, `neondatabase/mcp-server-neon/describe_table_schema`, `neondatabase/mcp-server-neon/list_branches`, `neondatabase/mcp-server-neon/compare_database_schema`, `io.github.vercel/next-devtools-mcp/init`, `io.github.vercel/next-devtools-mcp/nextjs_docs`, `io.github.vercel/next-devtools-mcp/nextjs_index`, `io.github.vercel/next-devtools-mcp/nextjs_call` |
 | demo-vision | `read/readFile`, `edit/createFile`, `edit/editFiles`, `web`, `github/*` |
 
+## Explicit Skill Operations
+
+Only when the user explicitly invokes `.agents/skills/create-work-item-from-description/SKILL.md` in the default Copilot agent, use the active GitHub integration's `issue_write` operation with `method: create` to create an approved issue in the selected repository. This permission is scoped to that skill invocation and is not added to any role above. Check the active tool catalog and repository authorization at runtime; do not infer availability from this document. `issue_write` accepts issue text and metadata, not image bytes. If the user requires a screenshot attachment and no upload operation is available, stop and ask whether to create the issue without the image.
+
 ## Native operations
 
 - Reads/search use read/readFile, search/fileSearch, search/listDirectory, search/textSearch and search/usages. Authorized artifact editing uses the role's existing edit tools. Implementation and testing verification uses execute/runInTerminal, execute/getTerminalOutput and read/problems. Documentation uses web/fetch where granted.
@@ -25,6 +29,6 @@ Owner: copilot. Load this file only in that environment, then load docs/agents/i
 
 ## Tracker and bounded gathering
 
-- GitHub read binding: github/issue_read; allowed methods get, get_comments and get_labels. Supply owner violabg, repo serviceDeskDemo, the exact numeric issue_number and explicit pagination for all comments. Follow docs/agents/github-issues-adapter.md. No search, list or tracker writes are approved.
+- GitHub read binding for role workflows: github/issue_read; allowed methods get, get_comments and get_labels. Supply owner violabg, repo serviceDeskDemo, the exact numeric issue_number and explicit pagination for all comments. Follow docs/agents/github-issues-adapter.md. These roles do not authorize search, listing or tracker writes; see the separate explicit skill operation above.
 - Use verified default evidence delegation where available. When delegation is unavailable or unverified, the user-approved 2026-10-08 fallback performs the exact same bounded planning evidence task inline, including current-session artifact persistence and directly linked dependency reads. Missing approved tracker access still stops retrieval. Delegate questions return to the parent. This does not authorize full-role delegation or extra issue access.
 - Knowledge Builder discovery may use up to ten bounded evidence tasks within runtime concurrency limits under the inspected default procedure; otherwise gather the same evidence inline. Preserve knowledge/index-only editing and owning-session boundaries. Native execution of generated roles, MCP access, custom role registrations and visual handoffs remains unverified.
