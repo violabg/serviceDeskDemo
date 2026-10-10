@@ -4,9 +4,13 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `7.0.0`
+- `7.0.1`
 
 ## 2026-10-10
+
+### 7.0.1
+
+- Keep the complete installed Bootstrap and Maintainer skill folders and resources at their installed paths. Exclude them from ordinary context and move only generated maintenance evidence into the maintenance area.
 
 ### 7.0.0
 

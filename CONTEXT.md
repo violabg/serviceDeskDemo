@@ -1,6 +1,6 @@
 # Service Desk Context Glossary
 
-This glossary records stable code and domain vocabulary. Select operational guidance through `docs/agents/knowledge/README.md`; do not use this file as a knowledge index.
+This glossary records stable code and domain vocabulary. Select operational guidance through `knowledge/knowledge-index.md`; do not use this file as a knowledge index.
 
 | Term | Preferred Meaning | Avoided or Related Terms | Source of Truth |
 | --- | --- | --- | --- |

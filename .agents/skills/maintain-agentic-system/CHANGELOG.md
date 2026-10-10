@@ -4,9 +4,13 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.2.0`
+- `3.2.1`
 
 ## 2026-10-10
+
+### 3.2.1
+
+- Keep installed Bootstrap and Maintainer skill folders and their complete resources at their installed paths, exclude them from ordinary context, and relocate only generated maintenance evidence.
 
 ### 3.2.0
 

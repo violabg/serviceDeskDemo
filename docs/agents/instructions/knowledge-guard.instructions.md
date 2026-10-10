@@ -1,12 +1,14 @@
 ---
-applyTo: "docs/agents/knowledge/**/*.md"
+applyTo: "knowledge/**/*.md"
 ---
 
 # Knowledge File Guard
 
-- Read knowledge files only through `docs/agents/knowledge/README.md`.
-- Edit knowledge files only through `docs/agents/knowledge/README.md`.
-- Register every new or renamed knowledge file in `docs/agents/knowledge/README.md` with a `When to read` trigger specific enough to keep unrelated requests from loading it.
+Generated project knowledge lives under `knowledge/`. Keep maintenance records and the installed Bootstrap/Maintainer skill bodies out of ordinary knowledge discovery and indexing.
+
+- Read knowledge files only through `knowledge/knowledge-index.md`.
+- Edit knowledge files only through `knowledge/knowledge-index.md`.
+- Register every new or renamed knowledge file in `knowledge/knowledge-index.md` with a `When to read` trigger specific enough to keep unrelated requests from loading it.
 - Keep one subject per knowledge file. Split a file that answers unrelated questions instead of growing it.
 - Record the source of every stated fact. Remove a claim that no longer matches the repository instead of leaving it unverified.
 

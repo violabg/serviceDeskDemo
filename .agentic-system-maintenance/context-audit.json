@@ -1,0 +1,1399 @@
+{
+  "version": 1,
+  "knowledge_root": "knowledge",
+  "knowledge_index": "knowledge/knowledge-index.md",
+  "maintenance_root": ".agentic-system-maintenance",
+  "excluded_roots": [
+    ".agentic-system-maintenance",
+    ".agents/skills/bootstrap-agentic-system",
+    ".agents/skills/maintain-agentic-system"
+  ],
+  "outputs": [
+    ".agentic-system-maintenance/pre-bootstrap/README.md",
+    ".agentic-system-maintenance/pre-bootstrap/knowledge/testing-flow-checklist.md",
+    ".agentic-system-maintenance/pre-bootstrap/knowledge/dashboard-navigation-boundaries.md",
+    ".agentic-system-maintenance/sources/registry/capabilities.yaml",
+    ".agentic-system-maintenance/sources/registry/placeholders.yaml",
+    ".agentic-system-maintenance/sources/templates/knowledge-index-schema.md",
+    ".agentic-system-maintenance/sources/templates/agent-role-contracts.md",
+    ".agentic-system-maintenance/sources/templates/agentic-system-manifest.md",
+    ".agentic-system-maintenance/sources/templates/agentic-system-answers.md",
+    ".agentic-system-maintenance/sources/templates/bootstrap-file-plan.md",
+    ".agentic-system-maintenance/sources/contracts/platform-compatibility.md",
+    ".agentic-system-maintenance/sources/templates/agents/planner.agent.md",
+    "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+    ".codex/agents/demo-planner.toml",
+    ".agentic-system-maintenance/sources/templates/agents/implementor.agent.md",
+    "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+    ".codex/agents/demo-implementor.toml",
+    ".agentic-system-maintenance/sources/templates/agents/direct-implementor.agent.md",
+    "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+    ".codex/agents/demo-direct-implementor.toml",
+    ".agentic-system-maintenance/sources/templates/agents/integration-tester.agent.md",
+    "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+    ".codex/agents/demo-integration-tester.toml",
+    ".agentic-system-maintenance/sources/templates/agents/knowledge-builder.agent.md",
+    "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+    ".codex/agents/demo-knowledge-builder.toml",
+    ".agentic-system-maintenance/sources/templates/agents/ask.agent.md",
+    "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+    ".codex/agents/demo-ask.toml",
+    ".agentic-system-maintenance/sources/templates/agents/vision.agent.md",
+    "docs/agents/canonical/codex/agents/demo-vision.agent.md",
+    ".codex/agents/demo-vision.toml",
+    "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+    ".github/agents/demo-planner.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+    ".github/agents/demo-implementor.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+    ".github/agents/demo-direct-implementor.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+    ".github/agents/demo-integration-tester.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+    ".github/agents/demo-knowledge-builder.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+    ".github/agents/demo-ask.agent.md",
+    "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+    ".github/agents/demo-vision.agent.md",
+    ".agentic-system-maintenance/sources/templates/skills/author-repo-skill/SKILL.md",
+    ".agentic-system-maintenance/sources/templates/skills/plan-bug-from-id/SKILL.md",
+    ".agentic-system-maintenance/sources/templates/skills/plan-user-story-from-id/SKILL.md",
+    ".agentic-system-maintenance/sources/templates/skills/user-story-analysis/SKILL.md",
+    ".agentic-system-maintenance/sources/templates/skills/integration-test-knowledge-checklist/SKILL.md",
+    ".agentic-system-maintenance/sources/templates/instructions/knowledge-guard.instructions.md",
+    ".agentic-system-maintenance/sources/templates/instructions/planning-sessions.instructions.md",
+    ".agentic-system-maintenance/sources/templates/instructions/AGENTS.md",
+    "AGENTS.md",
+    ".agentic-system-maintenance/sources/templates/plan-schema.md",
+    "docs/agents/plan-schema.md",
+    ".agentic-system-maintenance/sources/templates/test-plan-schema.md",
+    "docs/agents/test-plan-schema.md",
+    ".agentic-system-maintenance/sources/templates/artifact-gates.md",
+    "docs/agents/artifact-gates.md",
+    ".agentic-system-maintenance/changelogs/bootstrap-agentic-system.CHANGELOG.md",
+    ".agentic-system-maintenance/scripts/verify-canonical-copies.mjs",
+    "docs/agents/context-glossary.md",
+    "docs/agents/github-issues-adapter.md",
+    "docs/agents/integration-bindings.md",
+    ".github/instructions/agent-integrations.instructions.md",
+    "README.md",
+    "knowledge/testing-flow-checklist.md",
+    "knowledge/dashboard-navigation-boundaries.md",
+    ".agentic-system-maintenance/preservation-plan.json",
+    ".agentic-system-maintenance/native-adapters.json",
+    ".agentic-system-maintenance/scripts/generate-agentic-system.py",
+    ".agentic-system-maintenance/scripts/verify-agentic-system.py",
+    ".agentic-system-maintenance/compatibility.md",
+    ".agentic-system-maintenance/decision-register.json",
+    ".agentic-system-maintenance/bootstrap-file-plan.md",
+    ".agentic-system-maintenance/agentic-system-manifest.md",
+    ".agentic-system-maintenance/validation-report.md",
+    ".agentic-system-maintenance/contract-audit.md",
+    ".agentic-system-maintenance/agentic-system.answers.yaml",
+    "docs/agents/integration-policy.md",
+    "docs/agents/bindings/codex.md",
+    "docs/agents/bindings/copilot.md",
+    ".agents/skills/author-repo-skill/SKILL.md",
+    ".agents/skills/plan-bug-from-id/SKILL.md",
+    ".agents/skills/plan-user-story-from-id/SKILL.md",
+    ".agents/skills/user-story-analysis/SKILL.md",
+    ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
+    "docs/agents/instructions/knowledge-guard.instructions.md",
+    "docs/agents/instructions/planning-sessions.instructions.md",
+    ".github/instructions/knowledge-guard.instructions.md",
+    ".github/instructions/planning-sessions.instructions.md",
+    "docs/agents/instructions/agent-integrations.md",
+    ".agentic-system-maintenance/history/2026-10-08-before.tar.gz",
+    ".agentic-system-maintenance/scripts/verify-environment-bindings.mjs",
+    ".agentic-system-maintenance/environment-audit.json",
+    ".agentic-system-maintenance/history/2026-10-08-operations.json",
+    ".agentic-system-maintenance/history/2026-10-08-plan.md",
+    ".agentic-system-maintenance/history/2026-10-08-codex-neon-mcp.md",
+    "docs/agents/knowledge-index-schema.md",
+    ".agents/skills/bootstrap-agentic-system/CHANGELOG.md",
+    ".agents/skills/bootstrap-agentic-system/SKILL.md",
+    ".agents/skills/bootstrap-agentic-system/contracts/audit-and-handoff.md",
+    ".agents/skills/bootstrap-agentic-system/contracts/context-boundaries.md",
+    ".agents/skills/bootstrap-agentic-system/contracts/discovery-and-decisions.md",
+    ".agents/skills/bootstrap-agentic-system/contracts/generation.md",
+    ".agents/skills/bootstrap-agentic-system/contracts/platform-compatibility.md",
+    ".agents/skills/bootstrap-agentic-system/contracts/source-model.md",
+    ".agents/skills/bootstrap-agentic-system/registry/capabilities.yaml",
+    ".agents/skills/bootstrap-agentic-system/registry/placeholders.yaml",
+    ".agents/skills/bootstrap-agentic-system/scripts/verify-canonical-copies.mjs",
+    ".agents/skills/bootstrap-agentic-system/scripts/verify-context-boundaries.mjs",
+    ".agents/skills/bootstrap-agentic-system/scripts/verify-environment-bindings.mjs",
+    ".agents/skills/bootstrap-agentic-system/templates/agent-contracts.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agent-role-contracts.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agentic-system-answers.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agentic-system-manifest.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/ask.agent.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/direct-implementor.agent.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/implementor.agent.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/integration-tester.agent.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/knowledge-builder.agent.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/planner.agent.md",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/vision.agent.md",
+    ".agents/skills/bootstrap-agentic-system/templates/artifact-gates.md",
+    ".agents/skills/bootstrap-agentic-system/templates/bootstrap-file-plan.md",
+    ".agents/skills/bootstrap-agentic-system/templates/generated-system-blueprint.md",
+    ".agents/skills/bootstrap-agentic-system/templates/instructions/AGENTS.md",
+    ".agents/skills/bootstrap-agentic-system/templates/instructions/knowledge-guard.instructions.md",
+    ".agents/skills/bootstrap-agentic-system/templates/instructions/planning-sessions.instructions.md",
+    ".agents/skills/bootstrap-agentic-system/templates/knowledge-index-schema.md",
+    ".agents/skills/bootstrap-agentic-system/templates/plan-schema.md",
+    ".agents/skills/bootstrap-agentic-system/templates/skills/author-repo-skill/SKILL.md",
+    ".agents/skills/bootstrap-agentic-system/templates/skills/business-logic-gap-detector/SKILL.md",
+    ".agents/skills/bootstrap-agentic-system/templates/skills/integration-test-knowledge-checklist/SKILL.md",
+    ".agents/skills/bootstrap-agentic-system/templates/skills/plan-bug-from-id/SKILL.md",
+    ".agents/skills/bootstrap-agentic-system/templates/skills/plan-user-story-from-id/SKILL.md",
+    ".agents/skills/bootstrap-agentic-system/templates/skills/user-story-analysis/SKILL.md",
+    ".agents/skills/bootstrap-agentic-system/templates/test-plan-schema.md",
+    ".agents/skills/maintain-agentic-system/CHANGELOG.md",
+    ".agents/skills/maintain-agentic-system/SKILL.md",
+    ".agents/skills/maintain-agentic-system/contracts/delta-audit.md",
+    ".agents/skills/maintain-agentic-system/contracts/merge-model.md",
+    ".agents/skills/maintain-agentic-system/contracts/modes-and-scope.md",
+    "knowledge/nextjs-server-execution-checklist.md",
+    "knowledge/base-ui-composition-checklist.md",
+    "knowledge/dashboard-forms-best-practices.md",
+    "knowledge/dashboard-section-permission-flow-checklist.md",
+    "knowledge/shared-component-reuse-checklist.md",
+    "knowledge/nextjs-cache-components-pattern.md",
+    "knowledge/access-control.md",
+    "knowledge/knowledge-index.md"
+  ],
+  "files": [
+    {
+      "output": ".agentic-system-maintenance/pre-bootstrap/README.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/pre-bootstrap/knowledge/testing-flow-checklist.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/pre-bootstrap/knowledge/dashboard-navigation-boundaries.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/registry/capabilities.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/registry/placeholders.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/knowledge-index-schema.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agent-role-contracts.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agentic-system-manifest.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agentic-system-answers.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/bootstrap-file-plan.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/contracts/platform-compatibility.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agents/planner.agent.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-planner.toml",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agents/implementor.agent.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-implementor.toml",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agents/direct-implementor.agent.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-direct-implementor.toml",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agents/integration-tester.agent.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-integration-tester.toml",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agents/knowledge-builder.agent.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-knowledge-builder.toml",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agents/ask.agent.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-ask.toml",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/agents/vision.agent.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-vision.toml",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".github/agents/demo-planner.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".github/agents/demo-implementor.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".github/agents/demo-direct-implementor.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".github/agents/demo-integration-tester.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".github/agents/demo-knowledge-builder.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".github/agents/demo-ask.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/knowledge-index-schema.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".github/agents/demo-vision.agent.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/skills/author-repo-skill/SKILL.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/skills/plan-bug-from-id/SKILL.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/skills/plan-user-story-from-id/SKILL.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/skills/user-story-analysis/SKILL.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/skills/integration-test-knowledge-checklist/SKILL.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/instructions/knowledge-guard.instructions.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/instructions/planning-sessions.instructions.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/instructions/AGENTS.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "AGENTS.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/knowledge-index.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/instructions/knowledge-guard.instructions.md",
+          "when": "ordinary"
+        },
+        {
+          "output": ".agentic-system-maintenance/agentic-system-manifest.md",
+          "when": "maintenance"
+        },
+        {
+          "output": ".agents/skills/bootstrap-agentic-system/SKILL.md",
+          "when": "maintenance"
+        },
+        {
+          "output": ".agents/skills/maintain-agentic-system/SKILL.md",
+          "when": "maintenance"
+        }
+      ],
+      "maintenance_router": true
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/plan-schema.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/plan-schema.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/test-plan-schema.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/test-plan-schema.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/templates/artifact-gates.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/artifact-gates.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/changelogs/bootstrap-agentic-system.CHANGELOG.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/scripts/verify-canonical-copies.mjs",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/context-glossary.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agents/github-issues-adapter.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agents/integration-bindings.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".github/instructions/agent-integrations.instructions.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "README.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "knowledge/testing-flow-checklist.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/dashboard-navigation-boundaries.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/preservation-plan.json",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/native-adapters.json",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/scripts/generate-agentic-system.py",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/scripts/verify-agentic-system.py",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/compatibility.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/decision-register.json",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/bootstrap-file-plan.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/agentic-system-manifest.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/validation-report.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/contract-audit.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/agentic-system.answers.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/integration-policy.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agents/bindings/codex.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agents/bindings/copilot.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/author-repo-skill/SKILL.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/integration-bindings.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agents/skills/plan-bug-from-id/SKILL.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/integration-bindings.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agents/skills/plan-user-story-from-id/SKILL.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/integration-bindings.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agents/skills/user-story-analysis/SKILL.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/integration-bindings.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agents/instructions/knowledge-guard.instructions.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agents/instructions/planning-sessions.instructions.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".github/instructions/knowledge-guard.instructions.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".github/instructions/planning-sessions.instructions.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agents/instructions/agent-integrations.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/history/2026-10-08-before.tar.gz",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/scripts/verify-environment-bindings.mjs",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/environment-audit.json",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/history/2026-10-08-operations.json",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/history/2026-10-08-plan.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/history/2026-10-08-codex-neon-mcp.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agents/knowledge-index-schema.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/CHANGELOG.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/contracts/audit-and-handoff.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/contracts/context-boundaries.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/contracts/discovery-and-decisions.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/contracts/generation.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/contracts/platform-compatibility.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/contracts/source-model.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/registry/capabilities.yaml",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/registry/placeholders.yaml",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/scripts/verify-canonical-copies.mjs",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/scripts/verify-context-boundaries.mjs",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/scripts/verify-environment-bindings.mjs",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agent-contracts.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agent-role-contracts.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agentic-system-answers.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agentic-system-manifest.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/ask.agent.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/direct-implementor.agent.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/implementor.agent.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/integration-tester.agent.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/knowledge-builder.agent.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/planner.agent.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/vision.agent.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/artifact-gates.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/bootstrap-file-plan.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/generated-system-blueprint.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/instructions/AGENTS.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/instructions/knowledge-guard.instructions.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/instructions/planning-sessions.instructions.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/knowledge-index-schema.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/plan-schema.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/skills/author-repo-skill/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/skills/business-logic-gap-detector/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/skills/integration-test-knowledge-checklist/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/skills/plan-bug-from-id/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/skills/plan-user-story-from-id/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/skills/user-story-analysis/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/test-plan-schema.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/maintain-agentic-system/CHANGELOG.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/maintain-agentic-system/SKILL.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/maintain-agentic-system/contracts/delta-audit.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/maintain-agentic-system/contracts/merge-model.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": ".agents/skills/maintain-agentic-system/contracts/modes-and-scope.md",
+      "kind": "maintenance-entrypoint",
+      "maintenance_router": true,
+      "references": []
+    },
+    {
+      "output": "knowledge/nextjs-server-execution-checklist.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/base-ui-composition-checklist.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/dashboard-forms-best-practices.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/dashboard-section-permission-flow-checklist.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/shared-component-reuse-checklist.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/nextjs-cache-components-pattern.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/access-control.md",
+      "kind": "knowledge",
+      "references": []
+    },
+    {
+      "output": "knowledge/knowledge-index.md",
+      "kind": "knowledge",
+      "references": [
+        {
+          "output": "knowledge/nextjs-server-execution-checklist.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/base-ui-composition-checklist.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/dashboard-forms-best-practices.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/dashboard-navigation-boundaries.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/dashboard-section-permission-flow-checklist.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/shared-component-reuse-checklist.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/nextjs-cache-components-pattern.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/testing-flow-checklist.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "knowledge/access-control.md",
+          "when": "ordinary"
+        }
+      ]
+    }
+  ],
+  "knowledge_entries": [
+    "knowledge/nextjs-server-execution-checklist.md",
+    "knowledge/base-ui-composition-checklist.md",
+    "knowledge/dashboard-forms-best-practices.md",
+    "knowledge/dashboard-navigation-boundaries.md",
+    "knowledge/dashboard-section-permission-flow-checklist.md",
+    "knowledge/shared-component-reuse-checklist.md",
+    "knowledge/nextjs-cache-components-pattern.md",
+    "knowledge/testing-flow-checklist.md",
+    "knowledge/access-control.md"
+  ]
+}
