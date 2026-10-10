@@ -5,6 +5,15 @@ export default auth.middleware({
 })
 
 export const config = {
-  // Complete the OAuth verifier exchange before rendering the callback UI.
-  matcher: ["/auth/callback", "/account/:path*"],
+  // Refresh session cookies before protected Server Components read the session.
+  matcher: [
+    "/auth/callback",
+    "/account/:path*",
+    "/dashboard/:path*",
+    "/customers/:path*",
+    "/tickets/:path*",
+    "/users/:path*",
+    "/roles/:path*",
+    "/pending-access",
+  ],
 }
