@@ -161,7 +161,14 @@
     "knowledge/shared-component-reuse-checklist.md",
     "knowledge/nextjs-cache-components-pattern.md",
     "knowledge/access-control.md",
-    "knowledge/knowledge-index.md"
+    "knowledge/knowledge-index.md",
+    ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md",
+    ".agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md",
+    ".agents/skills/create-work-item-from-description/SKILL.md",
+    ".agentic-system-maintenance/sources/authored/create-work-item-from-description/SKILL.md",
+    ".agents/skills/create-work-item-from-description/CHANGELOG.md",
+    ".agentic-system-maintenance/sources/authored/create-work-item-from-description/CHANGELOG.md",
+    ".agentic-system-maintenance/context-audit.json"
   ],
   "files": [
     {
@@ -773,6 +780,14 @@
         {
           "output": ".agents/skills/maintain-agentic-system/SKILL.md",
           "when": "maintenance"
+        },
+        {
+          "output": ".agents/skills/create-work-item-from-description/SKILL.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/integration-bindings.md",
+          "when": "ordinary"
         }
       ],
       "maintenance_router": true
@@ -825,12 +840,34 @@
     {
       "output": "docs/agents/github-issues-adapter.md",
       "kind": "runtime",
-      "references": []
+      "references": [
+        {
+          "output": "docs/agents/integration-bindings.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/plan-schema.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/artifact-gates.md",
+          "when": "ordinary"
+        }
+      ]
     },
     {
       "output": "docs/agents/integration-bindings.md",
       "kind": "runtime",
-      "references": []
+      "references": [
+        {
+          "output": "docs/agents/bindings/codex.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "when": "ordinary"
+        }
+      ]
     },
     {
       "output": ".github/instructions/agent-integrations.instructions.md",
@@ -915,7 +952,16 @@
     {
       "output": "docs/agents/bindings/codex.md",
       "kind": "runtime",
-      "references": []
+      "references": [
+        {
+          "output": "docs/agents/integration-policy.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/github-issues-adapter.md",
+          "when": "ordinary"
+        }
+      ]
     },
     {
       "output": "docs/agents/bindings/copilot.md",
@@ -1045,266 +1091,222 @@
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/CHANGELOG.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/contracts/audit-and-handoff.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/contracts/context-boundaries.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/contracts/discovery-and-decisions.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/contracts/generation.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/contracts/platform-compatibility.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/contracts/source-model.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/registry/capabilities.yaml",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/registry/placeholders.yaml",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/scripts/verify-canonical-copies.mjs",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/scripts/verify-context-boundaries.mjs",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/scripts/verify-environment-bindings.mjs",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agent-contracts.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agent-role-contracts.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agentic-system-answers.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agentic-system-manifest.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agents/ask.agent.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agents/direct-implementor.agent.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agents/implementor.agent.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agents/integration-tester.agent.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agents/knowledge-builder.agent.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agents/planner.agent.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/agents/vision.agent.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/artifact-gates.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/bootstrap-file-plan.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/generated-system-blueprint.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/instructions/AGENTS.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/instructions/knowledge-guard.instructions.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/instructions/planning-sessions.instructions.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/knowledge-index-schema.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/plan-schema.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/skills/author-repo-skill/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/skills/business-logic-gap-detector/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/skills/integration-test-knowledge-checklist/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/skills/plan-bug-from-id/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/skills/plan-user-story-from-id/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/skills/user-story-analysis/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/bootstrap-agentic-system/templates/test-plan-schema.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/maintain-agentic-system/CHANGELOG.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/maintain-agentic-system/SKILL.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/maintain-agentic-system/contracts/delta-audit.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/maintain-agentic-system/contracts/merge-model.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agents/skills/maintain-agentic-system/contracts/modes-and-scope.md",
-      "kind": "maintenance-entrypoint",
-      "maintenance_router": true,
+      "kind": "maintenance",
       "references": []
     },
     {
@@ -1383,6 +1385,50 @@
           "when": "ordinary"
         }
       ]
+    },
+    {
+      "output": ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/create-work-item-from-description/SKILL.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agents/integration-bindings.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agents/github-issues-adapter.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/authored/create-work-item-from-description/SKILL.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/create-work-item-from-description/CHANGELOG.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/sources/authored/create-work-item-from-description/CHANGELOG.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agentic-system-maintenance/context-audit.json",
+      "kind": "maintenance",
+      "references": []
     }
   ],
   "knowledge_entries": [

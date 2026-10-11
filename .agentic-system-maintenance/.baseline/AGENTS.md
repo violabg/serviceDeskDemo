@@ -20,6 +20,7 @@ Full role contracts live in `docs/agents/canonical/<environment>/agents (codex o
 
 ## Skills
 
+- When the user explicitly invokes `create-work-item-from-description` by name, load and run `.agents/skills/create-work-item-from-description/SKILL.md` directly in the default agent. This standalone workflow bypasses normal agent role routing and the Planner flow. Resolve the active environment and load only its binding through `docs/agents/integration-bindings.md`. Clarify the work item, present the complete proposal and obtain explicit approval, then create only through the available authorized tool or native procedure separately approved in that binding. If its prerequisites are missing, stop without creating the item.
 Repository skills live in `.agents/skills`. Read a skill's `SKILL.md` before running its workflow.
 
 ## Instructions
@@ -44,4 +45,4 @@ Validate every change with `diagnostics, then pnpm typecheck and scoped lint, th
 ## Provenance
 
 During initial Bootstrap or explicitly requested agent-system maintenance only, access `.agentic-system-maintenance/` and the complete Bootstrap/Maintainer skills at `.agents/skills/bootstrap-agentic-system/` and `.agents/skills/maintain-agentic-system/`. For ordinary work, exclude these paths and their aliases before search, indexing, knowledge retrieval, or delegation; do not load their contents. If ordinary work changes an agent-system file, report that maintenance evidence needs refreshing; do not open or update the evidence ledger.
-`.agentic-system-maintenance/agentic-system-manifest.md` records what was generated, which slots were filled, and which decisions were approved. Update it during explicitly approved maintenance.
+`.agentic-system-maintenance/agentic-system-manifest.md` records what was generated, which slots were filled, and which decisions were approved. Update it whenever this system changes.
