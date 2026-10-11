@@ -12,11 +12,11 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 5.3.0 with targeted 7.0 context isolation and 7.1 standalone creation routing; full 6.0/7.0 application remains deferred
+- Bootstrap Contract Applied Through: 8.0.0 (includes 6.0, 6.1, 7.0, 7.0.1; 7.1 superseded by 8.0 `manage-work-item`)
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
-- Maintain Skill Version Available: 3.2.1
-- Maintain Skill Version Last Applied: 3.2.1
-- Last Maintenance Date: 2026-10-10
+- Maintain Skill Version Available: 3.3.0
+- Maintain Skill Version Last Applied: 3.3.0
+- Last Maintenance Date: 2026-10-11
 
 ## Generated System Paths
 
@@ -27,12 +27,14 @@
 
 
 - Root Instructions: `AGENTS.md`
-- Native Agents: `.codex/agents/`, `.github/agents/`
-- Canonical Agents: `docs/agents/canonical/{codex,copilot}/agents/`
-- Skills and complete canonical copies: `.agents/skills/<original-name>/SKILL.md`; no native skill wrappers
+- Native Agents: `.codex/agents/demo-<role>.toml`, `.github/agents/demo-<role>.agent.md`, `.claude/agents/demo-<role>-claude.md` (six roles; Vision retired 2026-10-11)
+- Canonical Agents: `docs/agents/canonical/{codex,copilot,claude-code}/agents/`; role bodies identical across environments, frontmatter tools differ
+- Skills and complete canonical copies: `.agents/skills/<original-name>/SKILL.md` (six, incl. `manage-work-item`); Claude Code discovers them through `.claude/skills/<name>` links
+- Native Configuration: `.codex/config.toml` (GitHub MCP), `.claude/settings.json` (maintenance skills user-invocable-only; roles denied for automatic delegation), `.mcp.json` (adds `next-devtools`)
+- Claude Code Rules: `.claude/rules/`
 - Shared Instructions: `docs/agents/instructions/`
 - Native Copilot Instruction Adapters: `.github/instructions/`
-- Environment Bindings: `docs/agents/bindings/{codex,copilot}.md`; neutral policy: `docs/agents/integration-policy.md`
+- Environment Bindings: `docs/agents/bindings/{codex,copilot,claude-code}.md`; neutral policy: `docs/agents/integration-policy.md`
 - Context Glossary: `docs/agents/context-glossary.md`
 - Knowledge Index: `knowledge/knowledge-index.md` (migrated from `docs/agents/knowledge/README.md`; links re-keyed)
 - Plan Schema: `docs/agents/plan-schema.md`
@@ -46,7 +48,9 @@
 - Execution Report: `sessions/<id>/execution-report.md`
 - Bootstrap Changelog Snapshot: `.agentic-system-maintenance/changelogs/bootstrap-agentic-system.CHANGELOG.md`
 - Context Audit: `.agentic-system-maintenance/context-audit.json`
-- Approved Maintenance Plan: `.agentic-system-maintenance/maintenance-plan-2026-10-10.md`
+- Approved Maintenance Plan: `.agentic-system-maintenance/maintenance-plan-2026-10-11-upgrade-8.0-claude.md` (report: `maintenance-2026-10-11-upgrade-8.0-claude.md`)
+- Runtime Root: not adopted (existing `docs/agents/` and `sessions/` retained, 2026-10-11)
+- Maintenance Renderer: `.agentic-system-maintenance/scripts/render-8.0.py` (audits: `build-audits-8.0.py`; records: `finalize-8.0.py`)
 - Answers File: `.agentic-system-maintenance/agentic-system.answers.yaml`
 - Baseline Directory: `.agentic-system-maintenance/.baseline/`
 - Approved File Plan: `.agentic-system-maintenance/bootstrap-file-plan.md`
@@ -54,21 +58,22 @@
 
 ## Environment Compatibility
 
-- Execution Host: Codex in VS Code Insiders; SDK path 0.153.0
+- Execution Host: Claude Code 2.1.296 in VS Code (2026-10-11); earlier: Codex in VS Code Insiders, SDK path 0.153.0
 - Selected Environments and role/operation maps: `.agentic-system-maintenance/agentic-system.answers.yaml`
 - Compatibility Evidence: `.agentic-system-maintenance/compatibility.md`
 - Canonical Source Snapshots: `.agentic-system-maintenance/sources/` (maintenance-only)
 - Preservation Plan: `.agentic-system-maintenance/preservation-plan.json`
-- Preservation Plan SHA-256: 9d26b6e5695cc1cf952f8de7b521d5b68637e2b859d5d5c3e0863a9a76035c3e
-- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: 35131cc7a489d1d5fc5a4fccd540be6b7ec823e3dbe5d9bc42e0bd5962909c2c
+- Preservation Plan SHA-256: 42394c9defc4db1c268e2a182fe00ceeebfd105f7a42a956646d80d599402f7b
+- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: f2d39a3afeec83321820a0328f038a9823dc47b4f4cf2ae9d9dccd0353ac3c45
 - Native Body Mapping: `.agentic-system-maintenance/native-adapters.json`
 - Structural Verification: `.agentic-system-maintenance/validation-report.md`
 - Contract Audit: `.agentic-system-maintenance/contract-audit.md`
 
 | Environment | Registration | Status | Limitations |
 | --- | --- | --- | --- |
-| Codex | Seven TOML agents, five directly discoverable canonical skills, root routing | unverified | Native discovery, GitHub Apps config-layer inheritance, connected schemas and effective role operations not executed in current sandbox |
-| Copilot | Seven Markdown agents, five directly discoverable canonical skills, scoped instruction adapters | unverified | Actual client/model/tool picker and generated-role handoffs require client verification |
+| Codex | Six TOML agents, six canonical skills, root routing, project `.codex/config.toml` | unverified | GitHub MCP configured (`codex mcp list`, 2026-10-11) but `GITHUB_TOKEN` not verified in the Codex process; role discovery and operations not executed; diagnostics blocked |
+| Copilot | Six Markdown agents, six canonical skills, scoped instruction adapters | unverified | Also discovers `.claude/agents` (`demo-*-claude`) and `.claude/skills` links; tool picker and handoffs require client verification |
+| Claude Code | Six `demo-<role>-claude` subagents, six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, Agent() deny behaviour and skillOverrides not exercised; diagnostics blocked |
 
 ## Customization Register
 
@@ -100,12 +105,21 @@
 
 | C021 | AGENTS.md SKILL_ROOT slot and authored creation skill inventory | standalone routing and provenance | slot-override | User approved targeted Bootstrap 7.1 root routing, selected binding load and canonical formatting; add authored skill/changelog source snapshots and baseline pairs, retaining legacy text as comparison evidence | extends-canonical within declared root slot; skill itself repository-authored | always; last checked 5.3.0 plus targeted 7.1; native discovery outside this host unverified |
 
-Canonical copies remain exact after approved slots and marker stripping. The native Vision metadata overrides are not described as unchanged canonical translations. No other non-slot canonical edits are authorized.
+| C022 | `manage-work-item` and all bindings | `WORK_ITEM_WRITE` | slot-override | User approved D2 2026-10-11: GitHub MCP `issue_write` create/update in every environment; no delete, bulk, search or comment tools | extends-canonical within declared slot | always; re-evaluate on tracker/auth changes |
+| C023 | `.codex/agents/*.toml`, `.codex/config.toml`, Codex binding | Codex GitHub transport | modified-rule | User: "codex to use github via mcp" (2026-10-11); GitHub MCP with `GITHUB_TOKEN` bearer reference; Codex App connector disabled in every role; supersedes C016 and C020 | extends-canonical through Codex-only environment binding | always; re-evaluate on client/auth changes; authentication unverified |
+| C024 | Planner/Direct Implementor `VISION_INVOCATION`, `VISION_AGENT_NAME`, policy | visual evidence | slot-override | User: remove the Vision agent everywhere (2026-10-11); inline image inspection with `visual-evidence v1` JSON; supersedes C001, C002, C007, C008 | extends-canonical within declared slots | always |
+| C025 | `.claude/agents/demo-<role>-claude.md`, `.claude/settings.json`, `.claude/skills` links, `.claude/rules` | Claude Code registration | new-agent | User chose native subagents with a `-claude` suffix and maximal sharing (2026-10-11); automatic delegation denied; maintenance skills user-invocable-only | independent native registration; canonical bodies preserved | re-evaluate on discovery changes |
+| C026 | Environment-dependent body slots in all role copies | shared neutral bodies (S1) | slot-override | User asked to keep content shared (2026-10-11); slots point to the router-selected `docs/agents/bindings/<environment>.md`; exact identifiers only in bindings and native adapters | extends-canonical within declared slots | always; re-evaluate on client/schema changes |
+| C027 | `knowledge/knowledge-index.md` | Path cells | modified-rule | 8.0 context-boundary contract requires repository-relative Path cells; links converted to backticked `knowledge/<file>` paths (2026-10-11) | extends-canonical | always |
+
+Retired or superseded 2026-10-11: C001, C002, C007, C008 (Vision retired; see C024), C016 and C020 (see C023), C021 (8.0 `manage-work-item` route). C010 remains resolved. C003, C013, C014, C015 re-checked for claude-code on 8.0.0.
+
+Canonical copies remain exact after approved slots and marker stripping. No other non-slot canonical edits are authorized.
 
 ## Generated, Skipped and Deferred
 
-- Generated agents: Planner, Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask, Vision for both environments.
-- Generated skills: author-repo-skill, plan-bug-from-id, plan-user-story-from-id, user-story-analysis, integration-test-knowledge-checklist, with original source names in directly discoverable canonical copies (2026-10-08).
+- Generated agents: Planner, Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask for codex, copilot and claude-code. Vision retired 2026-10-11.
+- Generated skills: author-repo-skill, plan-bug-from-id, plan-user-story-from-id, user-story-analysis, integration-test-knowledge-checklist, manage-work-item (8.0.0, 2026-10-11), with original source names in directly discoverable canonical copies. `create-work-item-from-description` retired (D5).
 - Deferred skill: business-logic-gap-detector. The canonical Implementor body retains its existing special-mode text; no configured gap-detector skill is installed.
 - No duplicate knowledge index, clarification schema, local tracker or new product tests.
 - Knowledge Builder bootstrap: existing index preserved; only approved glossary/reference reconciliation performed. A future topic-scoped Knowledge Builder run should verify stale knowledge and fill integration-testing gaps.
@@ -121,6 +135,16 @@ Canonical copies remain exact after approved slots and marker stripping. The nat
 - C011/C012 preserve the two repository-only knowledge updates without refreshing their pristine baselines. Five orphan baselines remain approved deferred debt; full structural validation is not certified as passing.
 - Both selected environments remain unverified for generated-role discovery, effective tools, MCP prerequisites, handoffs and image operations. No client-version upgrade is implied.
 - Session-folder contents were excluded from discovery and edits. Product code, runtime configuration and tests were outside scope.
+
+## Bootstrap 8.0.0 Approved Upgrade And Claude Code (2026-10-11)
+
+- Approval: user approved decisions D1–D6 ("approved recommended, remove the vision agent … everywhere, i also want codex to use github via mcp") and both operation sets ("Both U and E"); D-Q1: native subagents with a `-claude` suffix and maximal sharing.
+- Upgrade: 8.0.0 templates rendered for all roles and skills; capability sidecar tokens resolved into `## Capability Bindings`; Bootstrap narration sections removed; 6.0 intake changes applied (deferral lifted); `manage-work-item` generated with `WORK_ITEM_WRITE` = GitHub MCP `issue_write`.
+- Evolve: claude-code environment (ID `claude-code`, not `claude`, because `bindings/claude.md` collides case-insensitively with `CLAUDE.md` on macOS and auto-loads as nested memory); Vision retired; Codex GitHub moved to MCP.
+- Merge: all regions MINE == BASE except C011/C012 (kept). Register-resolved: C001/C002/C007/C008/C016/C020/C021 superseded by explicit user decisions. Root `MAINTENANCE_ROOT` block kept (C019).
+- Router fix: the shared `AGENTS.md` no longer carries Claude invocation syntax; `VALIDATION_COMMANDS` no longer sends ordinary work into the maintenance root.
+- Verification: shipped canonical verifier passes (27 copies); context-boundary audit passes; environment audit fails only on the inherited `read/problems` lines in Codex and Claude Code Implementor/Integration Tester (8 outputs) and passes for all 67 runtime files without that literal; repository verifier results in `validation-report.md`. Live: Claude Code main-session `issue_read` verified; Codex GitHub configuration verified, authentication not.
+- Session-folder contents were excluded. No product code, schema, migrations, tests or product runtime configuration changed.
 
 ## Maintenance History
 
@@ -182,3 +206,4 @@ Root Skills conflict resolved by approved source render and removal of extra bla
 Final scoped Contract Auditor review passed. Structural checks: 674 passed, 3 inherited failures; full context audit blocked by unchanged knowledge-index Path cells. Native issue creation verification follows the approved standalone skill separately.
 
 Native default-Codex creation verified: https://github.com/violabg/serviceDeskDemo/issues/8; command exit 0, exact returned-ID title/body verification passed, temporary body transport deleted. Connector create remains blocked by its external permission grant. No generated-role or Copilot execution is inferred from this default-host result.
+| 2026-10-11 | 8.0.0 | 3.3.0 | Upgrade 5.3.0→8.0.0 (6.0 deferral lifted, `manage-work-item`, capability bindings) plus evolve: claude-code environment with `-claude` subagents and shared neutral bodies, Vision retired, Codex GitHub via MCP, `create-work-item-from-description` retired. Deferred: business-logic-gap-detector; blocked: diagnostics slot gap; unverified: native role execution in all clients and Codex GitHub authentication. |

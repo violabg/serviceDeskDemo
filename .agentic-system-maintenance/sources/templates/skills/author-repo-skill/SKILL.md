@@ -6,6 +6,11 @@ disable-model-invocation: true
 
 # Author Repo Skill
 
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
+## Repository Context Boundary
+- Exclude `{{MAINTENANCE_ROOT}}` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
+- Keep generated project knowledge under top-level `knowledge/`; report provenance maintenance needed after runtime system edits instead of accessing the maintenance area.
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
 Use this skill to create or evolve a repository-local skill in this repository's Agentic System.
 
 A skill is a procedure the repository runs more than once and wants to run the same way every time. Anything used once belongs in a prompt. Anything an agent must always obey belongs in that agent's contract or in a scoped instruction file.

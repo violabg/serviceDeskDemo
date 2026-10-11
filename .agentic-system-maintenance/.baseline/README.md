@@ -58,10 +58,11 @@ Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approv
 | demo-integration-tester | Integration-test planning and execution |
 | demo-knowledge-builder | Evidence-backed knowledge and index maintenance |
 | demo-ask | Read-only codebase and programming Q&A |
-| demo-vision | Luna image extraction when the calling model lacks vision |
 
-Codex registrations live in `.codex/agents/`; Copilot registrations live in `.github/agents/`. Their full preserved contracts and maintenance evidence live in `docs/agents/`.
+Images are inspected inline by Planner and Direct Implementor; there is no separate Vision agent.
 
-Generated skills are complete canonical copies with original invocation names: `author-repo-skill`, `plan-bug-from-id`, `plan-user-story-from-id`, `user-story-analysis`, and `integration-test-knowledge-checklist`, directly under `.agents/skills/<name>/SKILL.md`. Exact tools and delegation procedures are separate in `docs/agents/bindings/{codex,copilot}.md`; shared workflows load only the active environment binding. The two issue-planning skills run within `demo-planner`. The gap-detector skill is deferred.
+Registrations per client: Codex in `.codex/agents/`, Copilot in `.github/agents/`, Claude Code in `.claude/agents/` with a `-claude` suffix (run `claude --agent demo-planner-claude`). Role instructions are identical across clients; the full contracts live in `docs/agents/canonical/<environment>/agents/` and exact tools in `docs/agents/bindings/{codex,copilot,claude-code}.md`.
 
-Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. Read [compatibility evidence](.agentic-system-maintenance/compatibility.md) for verified and outstanding client checks. Reload the client after installation and confirm role and skill discovery before relying on an unverified operation.
+Generated skills are single shared copies under `.agents/skills/<name>/SKILL.md` (Claude Code reaches them through `.claude/skills/` links): `author-repo-skill`, `plan-bug-from-id`, `plan-user-story-from-id`, `user-story-analysis`, `integration-test-knowledge-checklist`, and `manage-work-item`. The two issue-planning skills run within `demo-planner`. Invoke `manage-work-item` explicitly to create a bug or user story, or to update an existing issue after reading it; every write needs your approval of the exact proposal. The gap-detector skill is deferred.
+
+Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. GitHub MCP access in Codex and Claude Code reads its token from the `GITHUB_TOKEN` environment variable. Reload each client after changes and confirm role and skill discovery before relying on an unverified operation.

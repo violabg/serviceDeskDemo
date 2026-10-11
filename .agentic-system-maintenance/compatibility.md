@@ -97,3 +97,29 @@ The root loads the complete skill then only its selected environment binding. Sh
 Context-audit discovery: the preapply inventory misclassified 44 excluded installed Bootstrap/Maintainer resources as ordinary maintenance entrypoints. The archived plan reproduces the same failure. The approved audit-plan update corrects only their inventory kind to maintenance, preserving installed paths and exclusion policy. This platform-compatibility metadata delta is now applied; no installed skill file changed.
 
 Native creation outcome: **verified-native** for the explicitly invoked default-Codex workflow on 2026-10-10. Created the previously approved customer story once as https://github.com/violabg/serviceDeskDemo/issues/8, exit 0, then verified its exact approved title/body with the returned URL. Temporary body-file deleted. No unresolved issue fields. GitHub connector create remains blocked; generated-role reads and Copilot remain unverified.
+
+## 2026-10-11: Bootstrap 8.0.0, claude-code, Vision retirement, Codex GitHub MCP
+
+Execution host: Claude Code 2.1.296 in VS Code. Selected environments: codex, copilot, claude-code (user: "add claude to the system").
+
+| Evidence source (retrieved 2026-10-11) | Established behavior | Local result |
+| --- | --- | --- |
+| https://code.claude.com/docs/en/memory | AGENTS.md is read natively when no CLAUDE.md/CLAUDE.local.md exists (v2.1.277+); `.claude/rules` with `paths:` frontmatter; a nested `CLAUDE.md` loads on demand | AGENTS.md loaded in this session; no CLAUDE.md created. A file named `bindings/claude.md` was observed auto-loading as nested memory on case-insensitive macOS, so the environment ID and binding are `claude-code` |
+| https://code.claude.com/docs/en/sub-agents | `.claude/agents/*.md`; `name`, `description`, `tools` (incl. `mcp__<server>__<tool>`); body is the full system prompt; subagents lack `AskUserQuestion`; `permissions.deny: Agent(name)` blocks delegation; `claude --agent` runs as main session | Six `demo-<role>-claude` adapters with enforced tools and complete bodies; delegation deny in `.claude/settings.json`; not exercised |
+| https://code.claude.com/docs/en/skills | Project skills only in `.claude/skills/`; symlinked skill folders supported; `disable-model-invocation`; `skillOverrides` (`user-invocable-only`) | Six links to `.agents/skills`; maintenance skills user-invocable-only; not exercised |
+| https://code.claude.com/docs/en/settings | Project `.claude/settings.json` precedence and scopes | Shared settings file created |
+| https://learn.chatgpt.com/docs/extend/mcp | Codex `[mcp_servers.<name>]` `url`, `bearer_token_env_var`, `enabled_tools`; project `.codex/config.toml` for trusted projects | `codex mcp list` (codex-cli 0.162.1) shows `github` enabled at `https://api.githubcopilot.com/mcp/` with bearer env var `GITHUB_TOKEN`; the variable was absent in the inspected shell; no authenticated Codex call |
+| https://code.visualstudio.com/docs/agent-customization/custom-agents, /agent-skills, /overview | VS Code also discovers `.claude/agents` (Claude format) and `.claude/skills`; no documented switch to disable it; duplicate-name handling undocumented | Claude registrations use distinct `-claude` names; Copilot binding forbids selecting them; skill links resolve to the same source; client listing unverified |
+
+Live checks: Claude Code main session `mcp__github__issue_read` (`get`, violabg/serviceDeskDemo#1) succeeded. No `issue_write` call was made in any client.
+
+Static verification: shipped canonical verifier passes (27 copies); context-boundary audit passes (173 files); environment audit is blocked only by the inherited `read/problems` lines (Codex and Claude Code Implementor/Integration Tester canonical and native copies, 8 outputs) and passes for all 67 runtime files without that literal.
+
+Required client verification (pending):
+
+1. Codex: make `GITHUB_TOKEN` available to the Codex process, reload, confirm six `demo-*` roles, then one `issue_read get` from Planner.
+2. Copilot: confirm six `demo-*` agents and how the `.claude/agents` `demo-*-claude` entries are listed; tool picker diagnostics for `github/issue_read` and `github/issue_write`.
+3. Claude Code: `claude --agent demo-planner-claude` loads the role with its tool list and `AskUserQuestion`; `Agent(demo-*-claude)` deny prevents automatic delegation without blocking `--agent`; `/manage-work-item` is listed and not model-invoked; maintenance skills are hidden from the model.
+4. All: inline image inspection writes `visual-evidence v1` JSON in a disposable fixture.
+
+Status: all three environments **unverified**; diagnostics **blocked** in Codex and Claude Code Implementor/Integration Tester.

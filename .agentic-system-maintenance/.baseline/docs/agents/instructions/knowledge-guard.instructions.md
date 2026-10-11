@@ -4,8 +4,8 @@ applyTo: "knowledge/**/*.md"
 
 # Knowledge File Guard
 
-Generated project knowledge lives under `knowledge/`. Keep maintenance records and the installed Bootstrap/Maintainer skill bodies out of ordinary knowledge discovery and indexing.
-
+- Generated project knowledge and its index live under top-level `knowledge/`. Existing authoritative project docs may be indexed in place.
+- Never read, search, index, summarize, or link `.agentic-system-maintenance/` or installed Bootstrap/Maintainer bodies, resources, and aliases during ordinary knowledge work. Exclude them before retrieval and pass exclusions to delegates; only initial Bootstrap or explicit agent-system maintenance may access them.
 - Read knowledge files only through `knowledge/knowledge-index.md`.
 - Edit knowledge files only through `knowledge/knowledge-index.md`.
 - Register every new or renamed knowledge file in `knowledge/knowledge-index.md` with a `When to read` trigger specific enough to keep unrelated requests from loading it.

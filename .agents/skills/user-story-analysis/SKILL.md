@@ -6,8 +6,11 @@ disable-model-invocation: true
 
 # User Story Analysis
 
-Use `the current client's bounded native repository search listed in docs/agents/integration-bindings.md` for codebase discovery when analysis requires repository evidence.
+Use `the bounded native repository search listed in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved)` for codebase discovery when analysis requires repository evidence.
 Read relevant project knowledge through `knowledge/knowledge-index.md` before analysis when repository knowledge is available.
+## Repository Context Boundary
+- Exclude `.agentic-system-maintenance/` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
+- Keep generated project knowledge under top-level `knowledge/`; report provenance maintenance needed after runtime system edits instead of accessing the maintenance area.
 Act as a **senior Business Analyst and experienced Product Owner**.
 
 Your task is to critically analyze the following **user story** in order to identify:
