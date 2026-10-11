@@ -65,13 +65,13 @@ placeholders:
       - git remote origin host
       - .github/ISSUE_TEMPLATE/
       - Jira, Linear, or Azure Boards references in CONTRIBUTING.md or PR templates
-      - existing docs/issues/ or similar Markdown issue folder
+      - existing Markdown issue folder such as docs/issues/
 
   - name: LOCAL_MARKDOWN_TRACKER_CONTRACT
     kind: both
     question: When no external tracker exists, which local Markdown issue contract applies?
     fill_from: user
-    recommend: "`docs/issues/<external-issue-id>.md` with front matter carrying id, type, title, and status."
+    recommend: "`{{RUNTIME_ROOT}}/issues/<external-issue-id>.md` with front matter carrying id, type, title, and status; keep an existing Markdown issue folder in place when one exists."
     infer_from:
       - existing Markdown issue, story, or ticket folders
       - front matter fields already used by those files
@@ -87,6 +87,17 @@ placeholders:
       - tracker chosen for TRACKER_ADAPTER
       - selected planning skill's Markdown output fields and batch-title-resolution requirements
       - verified adapter output formats and exact single-item, comment, and batch operations
+
+  - name: WORK_ITEM_WRITE
+    kind: both
+    question: Which exact tools or procedures may manage-work-item use to create work items and update existing ones?
+    fill_from: user
+    capability: work-item-write
+    recommend: Approve only the selected adapter's create and field-update operations, plus add-comment when the team wants update notes. No delete, bulk-edit, search, or administrative tools. For the local Markdown adapter, approve writing one item file under the contract path. When no working write binding exists, skip or defer manage-work-item instead of generating a skill that cannot write.
+    infer_from:
+      - configured MCP servers in .vscode/mcp.json, .mcp.json, or .cursor/mcp.json
+      - tracker chosen for TRACKER_ADAPTER
+      - the selected client's verified tool list and permissions for that tracker integration
 
   - name: SESSION_ACTIVATION
     kind: block
@@ -110,7 +121,7 @@ placeholders:
     kind: value
     question: What is the planning session root path?
     fill_from: user
-    recommend: "`docs/sessions` when docs/ already holds project documentation; otherwise `.agent/sessions`."
+    recommend: "`{{RUNTIME_ROOT}}/sessions`, unless the repository already has an established session root."
     infer_from:
       - presence and layout of docs/
       - existing generated or agent-owned folders
@@ -146,7 +157,7 @@ placeholders:
     kind: both
     question: What is the implementation plan schema path?
     fill_from: user
-    recommend: "`docs/agents/plan-schema.md` as a runtime resource outside knowledge and maintenance roots."
+    recommend: "`{{RUNTIME_ROOT}}/schemas/plan-schema.md`, a runtime resource outside knowledge and maintenance roots."
     infer_from:
       - approved runtime resource root outside knowledge and maintenance areas
 
@@ -154,7 +165,7 @@ placeholders:
     kind: value
     question: Which compatible test-plan schema should the Integration Tester use?
     fill_from: discovery
-    recommend: Use an existing compatible repository schema; otherwise install templates/test-plan-schema.md beside the implementation-plan schema.
+    recommend: Use an existing compatible repository schema; otherwise install templates/test-plan-schema.md at `{{RUNTIME_ROOT}}/schemas/test-plan-schema.md`.
     infer_from:
       - existing test-plan schemas and test workflow documentation
       - selected Integration Tester contract and resolved PLAN_SCHEMA_PATH folder
@@ -210,7 +221,7 @@ placeholders:
     kind: both
     question: What is the artifact and gate conventions path?
     fill_from: user
-    recommend: "`docs/agents/artifact-gates.md`, beside the other generated contracts."
+    recommend: "`{{RUNTIME_ROOT}}/artifact-gates.md`, beside the other runtime contracts."
     infer_from:
       - resolved PLAN_SCHEMA_PATH folder
 
@@ -229,14 +240,24 @@ placeholders:
     kind: value
     question: Which exact MCP or platform tool names are approved for this generated role?
     fill_from: user
-    recommend: Start with this role's Role Tooling Intent profile and audit its Capability Substitutions tokens. Match each target capability category to tools or services already configured for the target repository, its tracker and knowledge sources, and its dependency stack; add only exact, least-privilege names approved for this role. Leave empty when no candidate is approved.
+    recommend: Start with the `tooling_intent` categories in this role's capability sidecar and audit its `capabilities` tokens. Match each target capability category to tools or services already configured for the target repository, its tracker and knowledge sources, and its dependency stack; add only exact, least-privilege names approved for this role. Leave empty when no candidate is approved.
     infer_from:
-      - Role Tooling Intent profile in the selected templates/agents/<role>.agent.md mirror
-      - Capability Substitutions table in the selected templates/agents/<role>.agent.md mirror
+      - tooling_intent categories in the selected templates/agents/<role>.capabilities.yaml sidecar
+      - capabilities tokens in the selected templates/agents/<role>.capabilities.yaml sidecar
       - .vscode/mcp.json, .mcp.json, .cursor/mcp.json
       - tool lists in existing agent files
       - existing repository skills and their supported operations
       - package manifests and lockfiles that identify framework, library, cloud, or API documentation needs
+
+  - name: CAPABILITY_BINDINGS
+    kind: both
+    question: Which approved binding performs each capability token this generated role uses?
+    fill_from: discovery
+    recommend: One Markdown table row per token listed in this role's capability sidecar, as `| `#capability:<token>` | <binding> |`. Start from the sidecar's `substitute` text, fill its slot values, and replace every reference to the Bootstrap registry with the concrete approved tool, repository path, or fallback procedure. Never cite Bootstrap or maintenance files, source services, or tools of another environment.
+    infer_from:
+      - capabilities entries in the selected templates/agents/<role>.capabilities.yaml sidecar
+      - approved capability resolutions and fallbacks in the decision register
+      - approved PLATFORM_TOOLS, APPROVED_MCP_TOOLS, WORK_ITEM_RETRIEVAL, SESSION_ROOT, and schema paths for this role
 
   - name: REPOSITORY_SEARCH_TOOL
     kind: both
@@ -386,7 +407,7 @@ placeholders:
     kind: value
     question: Where do generated agent files live?
     fill_from: user
-    recommend: The canonical-copy location and native agent root verified for this selected environment; share copies only when approved slot values agree.
+    recommend: "`{{RUNTIME_ROOT}}/canonical/agents/` for complete canonical copies, plus the native agent root verified for this selected environment; share copies only when approved slot values agree."
     infer_from:
       - selected-environment documentation and existing native registration evidence
       - resolved TARGET_PLATFORM
@@ -404,10 +425,20 @@ placeholders:
     kind: value
     question: Where do modular instruction files live?
     fill_from: user
-    recommend: The shared canonical instruction location and verified native scoping/discovery roots for selected environments.
+    recommend: "`{{RUNTIME_ROOT}}/canonical/instructions/` as the shared canonical instruction location, plus the verified native scoping/discovery roots for selected environments."
     infer_from:
       - official selected-client instruction-loading documentation and existing scoped instructions
       - resolved TARGET_PLATFORM
+
+  - name: RUNTIME_ROOT
+    kind: value
+    question: Which top-level folder holds the generated system's runtime resources (canonical copies, schemas, artifact gates, sessions, and a local issue folder)?
+    fill_from: user
+    recommend: "`.agentic-system/`, disjoint from `knowledge/`, the maintenance root, and application code. Runtime roles read it; it is never indexed as project knowledge. When a selected client cannot discover or read a hidden folder, propose the visible `agentic-system/` instead."
+    infer_from:
+      - top-level path collisions and existing session, schema, or issue folders
+      - selected-client discovery, search, and file-access evidence for hidden folders
+      - approved knowledge and maintenance roots
 
   - name: MAINTENANCE_ROOT
     kind: both
@@ -441,11 +472,13 @@ required:
   agents:
     default:
       - MAINTENANCE_ROOT
+      - CAPABILITY_BINDINGS
       - APPROVED_MCP_TOOLS
       - REPOSITORY_SEARCH_TOOL
       - KNOWLEDGE_SOURCE
     planner.agent.md:
       - MAINTENANCE_ROOT
+      - CAPABILITY_BINDINGS
       - APPROVED_MCP_TOOLS
       - KNOWLEDGE_INDEX_PATH
       - PLAN_SCHEMA_PATH
@@ -453,6 +486,7 @@ required:
       - KNOWLEDGE_SOURCE
     knowledge-builder.agent.md:
       - MAINTENANCE_ROOT
+      - CAPABILITY_BINDINGS
       - APPROVED_MCP_TOOLS
       - KNOWLEDGE_INDEX_PATH
       - CONTEXT_GLOSSARY_PATH
@@ -461,12 +495,14 @@ required:
       - KNOWLEDGE_SOURCE
     vision.agent.md:
       - MAINTENANCE_ROOT
+      - CAPABILITY_BINDINGS
       - APPROVED_MCP_TOOLS
       - VISION_MODEL
       - VISUAL_ARTIFACT_FORMAT
       - VISUAL_ARTIFACT_STORAGE
     direct-implementor.agent.md:
       - MAINTENANCE_ROOT
+      - CAPABILITY_BINDINGS
       - APPROVED_MCP_TOOLS
       - KNOWLEDGE_SOURCE
       - REPOSITORY_SEARCH_TOOL
@@ -477,6 +513,11 @@ required:
       - MAINTENANCE_ROOT
       - KNOWLEDGE_SOURCE
       - REPOSITORY_SEARCH_TOOL
+    manage-work-item:
+      - MAINTENANCE_ROOT
+      - TRACKER_ADAPTER
+      - WORK_ITEM_RETRIEVAL
+      - WORK_ITEM_WRITE
     author-repo-skill:
       - MAINTENANCE_ROOT
       - SKILL_ROOT

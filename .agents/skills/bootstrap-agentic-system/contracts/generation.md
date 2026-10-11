@@ -85,6 +85,13 @@ For generated work-item planning skills:
 - distinguish External Issue ID from Planning Session ID. Determine issue type before recommending `bug-<external-issue-id>` or `us-<external-issue-id>`, allow approved custom prefix, and record resulting identity in current-session artifact,
 - create or resume only current Planning Session ID folder under approved session root; resume directly from known Planning Session ID and never enumerate other session folders.
 
+For generated `manage-work-item`:
+
+- do not add skill-level `tools:` frontmatter,
+- fill `TRACKER_ADAPTER`, `WORK_ITEM_RETRIEVAL`, and `WORK_ITEM_WRITE` with the approved adapter and exact tools; include the local Markdown contract only when it is the approved adapter,
+- keep explicit invocation, read-before-update, approval of the exact change, and no-delete rules intact,
+- remove the root-instruction `manage-work-item` route when the skill is skipped or deferred.
+
 For generated instruction files:
 
 - copy `templates/instructions/AGENTS.md` to the approved root instruction path, or to the approved platform-equivalent path when the platform does not read `AGENTS.md`,

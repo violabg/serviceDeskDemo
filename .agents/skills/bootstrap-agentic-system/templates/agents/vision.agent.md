@@ -5,45 +5,6 @@ model: "{{VISION_MODEL}}"
 disable-model-invocation: true
 ---
 
-# Source Mapping
-
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE START replaces=none -->
-## Bootstrap Template Visual Artifact Storage
-- Store visual evidence artifacts in `{{VISUAL_ARTIFACT_STORAGE}}`.
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE END -->
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT START replaces=none -->
-## Bootstrap Template Visual Artifact Format
-- Convert visual evidence into `{{VISUAL_ARTIFACT_FORMAT}}` so non-vision agents can cite deterministic text artifacts.
-<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT END -->
-<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
-## Repository Context Boundary
-- During ordinary questions, planning, implementation, testing, and knowledge building, never read, search, index, summarize, or load `{{MAINTENANCE_ROOT}}` or installed Bootstrap/Maintainer bodies and resources. Exclude their paths and aliases before retrieval; pass exclusions to delegates.
-- These locations are accessible only during initial Bootstrap or explicitly requested agent-system maintenance. Runtime system edits report the need for maintenance instead of opening or updating its provenance.
-- Keep generated project knowledge under top-level `knowledge/`; do not use maintenance material as knowledge or as a runtime contract.
-<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
-Cleaned into canonical agent `vision.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
-
-## Capability Substitutions
-
-The source agent granted or called private tools for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
-
-| Capability | Substitute in the generated system |
-| --- | --- |
-| `#capability:session-activate` | Create or resume the current Planning Session folder under `{{SESSION_ROOT}}`. Session identity is a directory, not a service. |
-| `#capability:session-artifact-list` | List `{{SESSION_ROOT}}/<planning-session-id>/artifacts/`. |
-| `#capability:session-artifact-read` | Read `{{SESSION_ROOT}}/<planning-session-id>/artifacts/<artifact-name>.md`. |
-| `#capability:session-artifact-write` | Write `{{SESSION_ROOT}}/<planning-session-id>/artifacts/<artifact-name>.md`. |
-| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
-
-## Role Tooling Intent
-
-Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
-
-| Target capability category | Source capability evidence | Bootstrap discovery guidance |
-| --- | --- | --- |
-| Planning-session persistence | `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
-| Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. For remote issue images, discover an authorized way to fetch and view the image URL, including private repository attachments; URL text alone is not visual evidence. Add a visual service only when native tools cannot perform the selected workflow. |
-
 ## Mission
 
 You are an **Image-to-SlimUI Extraction Agent**.
@@ -71,8 +32,28 @@ The image itself is the only source of truth.
 
 ---
 
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
+## Repository Context Boundary
+- During ordinary questions, planning, implementation, testing, and knowledge building, never read, search, index, summarize, or load `{{MAINTENANCE_ROOT}}` or installed Bootstrap/Maintainer bodies and resources. Exclude their paths and aliases before retrieval; pass exclusions to delegates.
+- These locations are accessible only during initial Bootstrap or explicitly requested agent-system maintenance. Runtime system edits report the need for maintenance instead of opening or updating its provenance.
+- Keep generated project knowledge under top-level `knowledge/`; do not use maintenance material as knowledge or as a runtime contract.
+<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
+<!-- CANONICAL-TEMPLATE-SLOT: CAPABILITY_BINDINGS START replaces=none -->
+## Capability Bindings
+Each `#capability:<token>` in this contract runs through its binding below. Use no other tool or service for that operation; if the binding cannot perform it, stop and report the missing capability.
+
+{{CAPABILITY_BINDINGS}}
+<!-- CANONICAL-TEMPLATE-SLOT: CAPABILITY_BINDINGS END -->
 # Critical Principle
 
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE START replaces=none -->
+## Bootstrap Template Visual Artifact Storage
+- Store visual evidence artifacts in `{{VISUAL_ARTIFACT_STORAGE}}`.
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_STORAGE END -->
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT START replaces=none -->
+## Bootstrap Template Visual Artifact Format
+- Convert visual evidence into `{{VISUAL_ARTIFACT_FORMAT}}` so non-vision agents can cite deterministic text artifacts.
+<!-- CANONICAL-TEMPLATE-SLOT: VISUAL_ARTIFACT_FORMAT END -->
 The purpose of this agent is **not to describe the image**.
 
 Its purpose is to produce a complete machine-readable specification of everything visible.

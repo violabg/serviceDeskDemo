@@ -4,7 +4,14 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.2.1`
+- `3.3.0`
+
+## 2026-10-11
+
+### 3.3.0
+
+- Classify a target that still installs or routes to the retired `create-work-item-from-description` as `requires update`, and propose generating `manage-work-item` with approved write tools.
+- Treat scattered runtime defaults (`docs/agents/` schemas, `docs/sessions/`, `.agent/sessions/`, `docs/issues/`) as an optional approved move under the runtime root through the existing relocation procedure.
 
 ## 2026-10-10
 
