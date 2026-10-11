@@ -56,27 +56,62 @@ vi.mock("@/components/ui/field", () => ({
   ),
   FieldError: () => null,
 }))
-vi.mock("@/components/ui/select", () => ({
-  Select: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  SelectContent: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  SelectGroup: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  SelectItem: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  SelectTrigger: ({
-    children,
-    ...props
-  }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
-  SelectValue: ({ placeholder }: { placeholder?: string }) => (
-    <span>{placeholder}</span>
-  ),
-}))
+vi.mock("@/components/ui/select", () => {
+  type SelectState = {
+    items: Array<{ value: string; label: string }>
+    value?: string
+    onValueChange?: (value: string) => void
+  }
+  const SelectContext = React.createContext<SelectState>({ items: [] })
+
+  return {
+    Select: ({
+      children,
+      items = [],
+      value,
+      onValueChange,
+    }: {
+      children: React.ReactNode
+      items?: Array<{ value: string; label: string }>
+      value?: string
+      onValueChange?: (value: string) => void
+    }) => (
+      <SelectContext.Provider value={{ items, value, onValueChange }}>
+        <div>{children}</div>
+      </SelectContext.Provider>
+    ),
+    SelectContent: ({ children }: { children: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+    SelectGroup: ({ children }: { children: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+    SelectItem: ({
+      children,
+      value,
+    }: {
+      children: React.ReactNode
+      value: string
+    }) => {
+      const { onValueChange } = React.useContext(SelectContext)
+      return (
+        <button type="button" onClick={() => onValueChange?.(value)}>
+          {children}
+        </button>
+      )
+    },
+    SelectTrigger: ({
+      children,
+      ...props
+    }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
+    SelectValue: ({ placeholder }: { placeholder?: string }) => {
+      // Mirrors Base UI: the trigger shows the item label for the selected value.
+      const { items, value } = React.useContext(SelectContext)
+      const label = items.find((item) => item.value === value)?.label
+      return <span>{label ?? placeholder}</span>
+    },
+  }
+})
 
 const customers = [
   {
@@ -165,5 +200,98 @@ describe("NewTicketForm", () => {
     expect(formData.get("assetId")).toBe("")
     expect(formData.get("assignedToId")).toBe("")
     expect(refreshMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("labels a customer with its company in the trigger and the option", () => {
+    const { container } = render(
+      <NewTicketForm customers={customers} assets={[]} technicians={[]} />
+    )
+
+    const trigger = container.querySelector("#ticket-customer")
+    expect(trigger).toHaveTextContent("Acme Corp (Acme)")
+    expect(
+      screen.getAllByRole("button", { name: "Acme Corp (Acme)" })
+    ).toHaveLength(1)
+  })
+
+  it("labels a customer without a company by name only", () => {
+    const { container } = render(
+      <NewTicketForm
+        customers={[
+          { id: "customer-2", name: "Beta Srl", email: null, company: null },
+        ]}
+        assets={[]}
+        technicians={[]}
+      />
+    )
+
+    expect(container.querySelector("#ticket-customer")?.textContent).toBe(
+      "Beta Srl"
+    )
+    expect(screen.getByRole("button", { name: "Beta Srl" })).toBeInTheDocument()
+  })
+
+  it("shows the default customer's label instead of its ID", () => {
+    const { container } = render(
+      <NewTicketForm customers={customers} assets={[]} technicians={[]} />
+    )
+
+    const trigger = container.querySelector("#ticket-customer")
+    expect(trigger).toHaveTextContent("Acme Corp (Acme)")
+    expect(trigger).not.toHaveTextContent("customer-1")
+  })
+
+  it("keeps the customer ID as the submitted value after another customer is chosen", async () => {
+    const user = userEvent.setup()
+    checkDuplicateTicketActionMock.mockClear()
+    checkDuplicateTicketActionMock.mockResolvedValue({
+      success: true,
+      duplicate: false,
+    })
+
+    const { container } = render(
+      <NewTicketForm
+        customers={[
+          ...customers,
+          { id: "customer-2", name: "Beta Srl", email: null, company: null },
+        ]}
+        assets={[]}
+        technicians={[]}
+      />
+    )
+
+    await user.click(screen.getByRole("button", { name: "Beta Srl" }))
+
+    expect(container.querySelector("#ticket-customer")?.textContent).toBe(
+      "Beta Srl"
+    )
+
+    await user.type(screen.getByLabelText(/title/i), "VPN outage")
+    await user.type(
+      screen.getByLabelText(/description/i),
+      "Users cannot connect"
+    )
+    await user.type(
+      screen.getByLabelText(/requester contact/i),
+      "user@example.com"
+    )
+    await user.click(screen.getByRole("button", { name: "Check Duplicate" }))
+
+    await waitFor(() => {
+      expect(checkDuplicateTicketActionMock).toHaveBeenCalledTimes(1)
+    })
+
+    const formData = checkDuplicateTicketActionMock.mock.calls[0][0] as FormData
+    expect(formData.get("customerId")).toBe("customer-2")
+  })
+
+  it("shows the placeholder when there are no customers", () => {
+    const { container } = render(
+      <NewTicketForm customers={[]} assets={[]} technicians={[]} />
+    )
+
+    expect(container.querySelector("#ticket-customer")?.textContent).toBe(
+      "Select customer"
+    )
   })
 })

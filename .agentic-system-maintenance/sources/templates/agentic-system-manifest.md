@@ -39,11 +39,21 @@ This file does not update itself. Bootstrap initializes it, and Maintainer updat
 - Agent Directory: `<agent-dir>`
 - Skill Directory: none | `<skill-dir>`
 - Bootstrap Changelog Snapshot: `<path>`
-- Answers File: `<docs-agents-dir>/agentic-system.answers.yaml`
-- Baseline Directory: `<docs-agents-dir>/.baseline/`
+- Answers File: `<maintenance-root>/agentic-system.answers.yaml`
+- Baseline Directory: `<maintenance-root>/.baseline/`
 - Session Root: `<session-root>`
 - Work Item Adapter Contract: `<path>`
 - Planning Session Identity Artifact: `<session-root>/<planning-session-id>/session-identity.md>`
+
+## Context Isolation
+
+- Knowledge Root: `knowledge/`
+- Maintenance Root: `<maintenance-root>`
+- Other Maintenance-Only Locations: `<paths-or-none>`
+- Context Audit Plan And SHA-256: `<path>` / `<hash>`
+- Static Boundary Verification: `<command-result-date>`
+- Native Ordinary-Context Exclusions And Explicit Maintenance Loading: `<evidence-status-limitations>`
+- Integration Registration And Authentication Evidence: `<maintenance-evidence-path>`
 
 ## Environment Compatibility
 

@@ -12,23 +12,36 @@ Owner: copilot. Load this file only in that environment, then load docs/agents/i
 | demo-integration-tester | `vscode/askQuestions`, `read/readFile`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `execute/runInTerminal`, `execute/getTerminalOutput`, `read/problems`, `agent` |
 | demo-knowledge-builder | `vscode/askQuestions`, `read/readFile`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `agent`, `web/fetch`, `neondatabase/mcp-server-neon/list_docs_resources`, `neondatabase/mcp-server-neon/get_doc_resource`, `neondatabase/mcp-server-neon/get_database_tables`, `neondatabase/mcp-server-neon/describe_table_schema`, `neondatabase/mcp-server-neon/list_branches`, `neondatabase/mcp-server-neon/compare_database_schema`, `io.github.vercel/next-devtools-mcp/init`, `io.github.vercel/next-devtools-mcp/nextjs_docs`, `io.github.vercel/next-devtools-mcp/nextjs_index`, `io.github.vercel/next-devtools-mcp/nextjs_call` |
 | demo-ask | `vscode/askQuestions`, `read/readFile`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages`, `web/fetch`, `neondatabase/mcp-server-neon/list_docs_resources`, `neondatabase/mcp-server-neon/get_doc_resource`, `neondatabase/mcp-server-neon/get_database_tables`, `neondatabase/mcp-server-neon/describe_table_schema`, `neondatabase/mcp-server-neon/list_branches`, `neondatabase/mcp-server-neon/compare_database_schema`, `io.github.vercel/next-devtools-mcp/init`, `io.github.vercel/next-devtools-mcp/nextjs_docs`, `io.github.vercel/next-devtools-mcp/nextjs_index`, `io.github.vercel/next-devtools-mcp/nextjs_call` |
-| demo-vision | `read/readFile`, `edit/createFile`, `edit/editFiles`, `web`, `github/*` |
 
-## Explicit Skill Operations
+## Operations named by shared contracts
 
-Only when the user explicitly invokes `.agents/skills/create-work-item-from-description/SKILL.md` in the default Copilot agent, use the active GitHub integration's `issue_write` operation with `method: create` to create an approved issue in the selected repository. This permission is scoped to that skill invocation and is not added to any role above. Check the active tool catalog and repository authorization at runtime; do not infer availability from this document. `issue_write` accepts issue text and metadata, not image bytes. If the user requires a screenshot attachment and no upload operation is available, stop and ask whether to create the issue without the image.
+| Operation | Copilot binding |
+| --- | --- |
+| file-read | `read/readFile` |
+| file-search, file/path and text search, bounded native repository search | `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages` |
+| file-edit | `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, within the role's authorized scope |
+| terminal | `execute/runInTerminal`, `execute/getTerminalOutput` (Implementor, Direct Implementor, Integration Tester only) |
+| image-read | `read/readFile` on a local image path, with an image-capable model; unverified |
+| web-fetch | `web/fetch` (Ask, Planner, Knowledge Builder) |
+| foreground question route | `vscode/askQuestions` |
+| default evidence delegation procedure | see Native operations below |
+| GitHub `issue_read` | `github/issue_read` |
+| GitHub `issue_write` | `github/issue_write` (default agent, `manage-work-item` only) |
 
 ## Native operations
 
-- Reads/search use read/readFile, search/fileSearch, search/listDirectory, search/textSearch and search/usages. Authorized artifact editing uses the role's existing edit tools. Implementation and testing verification uses execute/runInTerminal, execute/getTerminalOutput and read/problems. Documentation uses web/fetch where granted.
-- Foreground questions use vscode/askQuestions. Delegates return questions to the coordinator, which asks and reinvokes with answers. Do not assume nested delegation is enabled.
-- Default delegation uses agent/runSubagent only after inspecting the intended client's schema. Use a selector-free call only if that schema supports it; otherwise use only a target actually listed as callable. Generic role descriptions are not registered target names. The current reported default-target failure means no named default has been verified. Until the schema is verified, use the approved bounded inline gathering procedure below.
-- Named demo-vision delegation also requires callable registration and the schema's actual selector. The Copilot native metadata exception allowing visual delegation is preserved. The approved model is GPT-6 Luna (copilot), with the existing web and repository retrieval grants; obtain actual image input before extraction. No substitute is approved.
-- MCP transport/authentication comes from existing client configuration. Qualified configured prefixes are github/, neondatabase/mcp-server-neon/ and io.github.vercel/next-devtools-mcp/. Check the role's actual tool picker before executing them.
-- Instruction loading uses native applyTo globs in .github/instructions. Native adapters embed the full neutral instruction bodies; exact calls must never be placed in neutral bodies.
+- Foreground questions use `vscode/askQuestions`. Delegates return questions to the coordinator, which asks and reinvokes with answers. Do not assume nested delegation is enabled.
+- Default delegation uses `agent/runSubagent` only after inspecting the intended client's schema. Use a selector-free call only if that schema supports it; otherwise use only a target actually listed as callable. Generic role descriptions are not registered target names. No named default has been verified. Until the schema is verified, use the approved bounded inline gathering procedure below.
+- VS Code also discovers Claude-format agents in `.claude/agents/` (`demo-*-claude`) and skills in `.claude/skills/`. Never select a `*-claude` agent in Copilot; those carry Claude Code bindings. The `.claude/skills/` entries are links to the same `.agents/skills/` sources.
+- MCP transport/authentication comes from existing client configuration (`.vscode/mcp.json`). Qualified configured prefixes are `github/`, `neondatabase/mcp-server-neon/` and `io.github.vercel/next-devtools-mcp/`. Check the role's actual tool picker before executing them.
+- Instruction loading uses native applyTo globs in `.github/instructions`. Native adapters embed the full neutral instruction bodies; exact calls must never be placed in neutral bodies.
 
 ## Tracker and bounded gathering
 
-- GitHub read binding for role workflows: github/issue_read; allowed methods get, get_comments and get_labels. Supply owner violabg, repo serviceDeskDemo, the exact numeric issue_number and explicit pagination for all comments. Follow docs/agents/github-issues-adapter.md. These roles do not authorize search, listing or tracker writes; see the separate explicit skill operation above.
-- Use verified default evidence delegation where available. When delegation is unavailable or unverified, the user-approved 2026-10-08 fallback performs the exact same bounded planning evidence task inline, including current-session artifact persistence and directly linked dependency reads. Missing approved tracker access still stops retrieval. Delegate questions return to the parent. This does not authorize full-role delegation or extra issue access.
-- Knowledge Builder discovery may use up to ten bounded evidence tasks within runtime concurrency limits under the inspected default procedure; otherwise gather the same evidence inline. Preserve knowledge/index-only editing and owning-session boundaries. Native execution of generated roles, MCP access, custom role registrations and visual handoffs remains unverified.
+- GitHub read binding for role workflows: `github/issue_read`; allowed methods `get`, `get_comments` and `get_labels`. Supply owner `violabg`, repo `serviceDeskDemo`, the exact numeric issue_number and explicit pagination for all comments. Follow docs/agents/github-issues-adapter.md. These roles do not authorize search, listing or tracker writes.
+- Use verified default evidence delegation where available. When delegation is unavailable or unverified, the user-approved 2026-10-08 fallback performs the exact same bounded planning evidence task inline, including current-session artifact persistence and directly linked dependency reads. Missing approved tracker access still stops retrieval. This does not authorize full-role delegation or extra issue access.
+- Knowledge Builder discovery may use up to ten bounded evidence tasks within runtime concurrency limits under the inspected default procedure; otherwise gather the same evidence inline. Preserve knowledge/index-only editing and owning-session boundaries.
+
+## manage-work-item
+
+Only when the user explicitly invokes `manage-work-item` in the default Copilot agent: read with `github/issue_read` (`get`, `get_comments`) and write with `github/issue_write` (`method: create` for an approved new item; `method: update` for the approved per-field change after the re-read). Check the active tool catalog and repository authorization at runtime; do not infer availability from this document. `issue_write` accepts issue text and metadata, not image bytes; if the user requires an attachment, ask whether to proceed without it.

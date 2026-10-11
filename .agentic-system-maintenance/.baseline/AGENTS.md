@@ -4,7 +4,7 @@ Route the current request through this file, then load only what that request ne
 
 ## Agents
 
-Resolve the active environment from the client/session identity first: use `codex` or `copilot`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below.
+Resolve the active environment from the client/session identity first: use `codex`, `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Native registrations may carry a client suffix (Claude Code: `<role>-claude`); the selected binding names them.
 
 - `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.
 - `demo-implementor`: approved-plan implementation. Load `docs/agents/canonical/<environment>/agents/demo-implementor.agent.md`.
@@ -12,15 +12,14 @@ Resolve the active environment from the client/session identity first: use `code
 - `demo-integration-tester`: integration-test planning and execution. Load `docs/agents/canonical/<environment>/agents/demo-integration-tester.agent.md`.
 - `demo-knowledge-builder`: evidence-backed repository knowledge. Load `docs/agents/canonical/<environment>/agents/demo-knowledge-builder.agent.md`.
 - `demo-ask`: read-only Q&A. Load `docs/agents/canonical/<environment>/agents/demo-ask.agent.md`.
-- `demo-vision`: Luna image extraction; delegated only when the caller lacks vision. Load `docs/agents/canonical/<environment>/agents/demo-vision.agent.md`.
 
 Shared skills use only the already selected environment binding. Invoke the complete configured skill at `.agents/skills/<skill-name>/SKILL.md`; packaged Bootstrap templates are source mirrors, never configured runtime skills.
 
-Full role contracts live in `docs/agents/canonical/<environment>/agents (codex or copilot)`. Do not restate them here.
+Full role contracts live in `docs/agents/canonical/<environment>/agents (codex, copilot or claude-code)`. Do not restate them here.
 
 ## Skills
 
-- When the user explicitly invokes `create-work-item-from-description` by name, load and run `.agents/skills/create-work-item-from-description/SKILL.md` directly in the default agent. This standalone workflow bypasses normal agent role routing and the Planner flow. Resolve the active environment and load only its binding through `docs/agents/integration-bindings.md`. Clarify the work item, present the complete proposal and obtain explicit approval, then create only through the available authorized tool or native procedure separately approved in that binding. If its prerequisites are missing, stop without creating the item.
+- When the user explicitly invokes `manage-work-item` by name, load and run that skill directly. This standalone workflow creates a bug or user story, or updates an existing work item after reading it, and bypasses normal agent role routing and the Planner flow. Every create or update needs explicit approval of the complete proposal and runs only through the tracker bindings approved for that skill; without them, stop without changing anything.
 Repository skills live in `.agents/skills`. Read a skill's `SKILL.md` before running its workflow.
 
 ## Instructions
@@ -40,7 +39,7 @@ Modular rules live in `docs/agents/instructions; skip a shared rule already load
 
 ## Validation
 
-Validate every change with `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 .agentic-system-maintenance/scripts/verify-agentic-system.py` before handing work back.
+Validate every change with `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; changes to agent-system files are reported for explicit agent-system maintenance, which runs its own verifier` before handing work back.
 
 ## Provenance
 

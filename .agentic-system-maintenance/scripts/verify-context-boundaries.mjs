@@ -11,7 +11,7 @@ function repoPath(path) {
   }
   return path;
 }
-function entryPaths(index, indexPath) {
+function entryPaths(index) {
   const section = index.match(/^## Knowledge Entries\s*\n([\s\S]*?)(?=^## |$(?![\s\S]))/m)?.[1];
   if (section === undefined) throw new Error("knowledge index requires Knowledge Entries section");
   const paths = [];
@@ -20,9 +20,7 @@ function entryPaths(index, indexPath) {
     const cell = line.split("|")[2]?.trim();
     if (!cell || cell === "Path" || /^:?-+:?$/.test(cell)) continue;
     const link = cell.match(/^\[[^\]]*\]\(([^)]+)\)$/);
-    const rawPath = link ? decodeURIComponent(link[1].split("#")[0]) : cell.replace(/^`(.*)`$/, "$1");
-    const directory = indexPath.slice(0, indexPath.lastIndexOf("/") + 1);
-    const path = rawPath.startsWith(directory) ? rawPath : `${directory}${rawPath}`;
+    const path = link ? decodeURIComponent(link[1].split("#")[0]) : cell.replace(/^`(.*)`$/, "$1");
     paths.push(repoPath(path));
   }
   if (new Set(paths).size !== paths.length) throw new Error("knowledge index repeats a path");
@@ -47,6 +45,20 @@ export function verifyContextBoundaries(repoRoot, plan) {
   for (const root of [knowledge, ...excluded]) if (!statSync(root).isDirectory()) throw new Error("context roots must be directories");
   if (excluded.some((root) => within(root, knowledge) || within(knowledge, root))) throw new Error("knowledge and maintenance roots overlap physically");
   const isExcluded = (path) => excluded.some((root) => within(root, path));
+  // Optional runtime root: a separate top-level area for runtime resources, never knowledge or maintenance.
+  let runtime;
+  if (plan.runtime_root !== undefined) {
+    repoPath(plan.runtime_root);
+    if (plan.runtime_root.includes("/") || plan.runtime_root === "knowledge" || plan.excluded_roots.includes(plan.runtime_root)) {
+      throw new Error("runtime root must be a separate top-level directory outside knowledge and maintenance");
+    }
+    runtime = physical(plan.runtime_root);
+    if (!statSync(runtime).isDirectory()) throw new Error("context roots must be directories");
+    if (within(runtime, knowledge) || within(knowledge, runtime) || excluded.some((root) => within(root, runtime) || within(runtime, root))) {
+      throw new Error("runtime root overlaps knowledge or maintenance physically");
+    }
+  }
+  const inRuntime = (path) => runtime !== undefined && within(runtime, path);
   const records = new Map(plan.files.map((file) => [repoPath(file.output), file]));
   if (records.size !== plan.files.length || records.size !== plan.outputs.length || plan.outputs.some((path) => !records.has(repoPath(path)))) {
     throw new Error("files must cover the approved outputs inventory exactly once");
@@ -61,9 +73,10 @@ export function verifyContextBoundaries(repoRoot, plan) {
     seen.add(path);
     if (!["runtime", "knowledge", "maintenance", "maintenance-entrypoint"].includes(file.kind) || !Array.isArray(file.references)) throw new Error(`${file.output}: invalid kind or references`);
     if (file.kind === "maintenance" && !isExcluded(path)) throw new Error(`${file.output}: maintenance material outside excluded roots`);
-    if (file.kind !== "maintenance" && file.kind !== "maintenance-entrypoint" && isExcluded(path)) throw new Error(`${file.output}: ordinary output in maintenance area`);
+    if (file.kind !== "maintenance" && isExcluded(path)) throw new Error(`${file.output}: ordinary output in maintenance area`);
     if (file.kind === "knowledge" && (!file.output.startsWith("knowledge/") || !within(knowledge, path))) throw new Error(`${file.output}: generated knowledge outside knowledge/`);
     if (within(knowledge, path) && file.kind !== "knowledge") throw new Error(`${file.output}: non-knowledge material in knowledge/`);
+    if (inRuntime(path) && file.kind !== "runtime") throw new Error(`${file.output}: non-runtime material in runtime root`);
     for (const reference of file.references) {
       if (!["ordinary", "maintenance"].includes(reference?.when)) throw new Error(`${file.output}: reference needs an explicit context`);
       const target = records.get(reference.output);
@@ -80,11 +93,12 @@ export function verifyContextBoundaries(repoRoot, plan) {
     }
   }
   // The native audit must additionally prove maintenance entrypoints are never eagerly loaded.
-  const actualEntries = entryPaths(readFileSync(physical(plan.knowledge_index), "utf8"), plan.knowledge_index);
+  const actualEntries = entryPaths(readFileSync(physical(plan.knowledge_index), "utf8"));
   if (actualEntries.length !== plan.knowledge_entries.length || actualEntries.some((path) => !plan.knowledge_entries.includes(path))) throw new Error("knowledge_entries must match the actual index paths");
   for (const entry of actualEntries) {
     const path = physical(entry);
     if (!statSync(path).isFile() || isExcluded(path) || maintenanceEntrypoints.has(path)) throw new Error(`${entry}: knowledge index loads maintenance or a non-file`);
+    if (inRuntime(path)) throw new Error(`${entry}: knowledge index treats runtime resources as knowledge`);
   }
   // Reject ordinary aliases into excluded roots, even outside Knowledge Entries.
   for (const file of plan.files.filter((f) => f.kind === "knowledge")) {

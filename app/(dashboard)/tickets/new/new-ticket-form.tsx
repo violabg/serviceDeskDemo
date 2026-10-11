@@ -43,6 +43,13 @@ const initialDuplicateState: DuplicateState = {
 
 const NONE_VALUE = "__none__"
 
+function getCustomerLabel(customer: {
+  name: string
+  company: string | null
+}) {
+  return `${customer.name}${customer.company ? ` (${customer.company})` : ""}`
+}
+
 type NewTicketFormValues = {
   title: string
   description: string
@@ -199,7 +206,14 @@ export function NewTicketForm({
               control={control}
               rules={{ required: "Customer is required" }}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  items={customers.map((customer) => ({
+                    value: customer.id,
+                    label: getCustomerLabel(customer),
+                  }))}
+                >
                   <SelectTrigger
                     id="ticket-customer"
                     className="w-full"
@@ -211,8 +225,7 @@ export function NewTicketForm({
                     <SelectGroup>
                       {customers.map((customer) => (
                         <SelectItem key={customer.id} value={customer.id}>
-                          {customer.name}
-                          {customer.company ? ` (${customer.company})` : ""}
+                          {getCustomerLabel(customer)}
                         </SelectItem>
                       ))}
                     </SelectGroup>

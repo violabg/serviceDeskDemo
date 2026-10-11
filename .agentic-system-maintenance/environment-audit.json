@@ -1,6 +1,26 @@
 {
   "version": 1,
   "runtime_outputs": [
+    "AGENTS.md",
+    "docs/agents/integration-bindings.md",
+    "docs/agents/integration-policy.md",
+    "docs/agents/github-issues-adapter.md",
+    "docs/agents/context-glossary.md",
+    "docs/agents/plan-schema.md",
+    "docs/agents/test-plan-schema.md",
+    "docs/agents/artifact-gates.md",
+    "docs/agents/knowledge-index-schema.md",
+    "knowledge/knowledge-index.md",
+    "docs/agents/instructions/agent-integrations.md",
+    "docs/agents/instructions/knowledge-guard.instructions.md",
+    "docs/agents/instructions/planning-sessions.instructions.md",
+    ".agents/skills/author-repo-skill/SKILL.md",
+    ".agents/skills/plan-bug-from-id/SKILL.md",
+    ".agents/skills/plan-user-story-from-id/SKILL.md",
+    ".agents/skills/user-story-analysis/SKILL.md",
+    ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
+    ".agents/skills/manage-work-item/SKILL.md",
+    "docs/agents/bindings/codex.md",
     "docs/agents/canonical/codex/agents/demo-planner.agent.md",
     ".codex/agents/demo-planner.toml",
     "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
@@ -13,8 +33,7 @@
     ".codex/agents/demo-knowledge-builder.toml",
     "docs/agents/canonical/codex/agents/demo-ask.agent.md",
     ".codex/agents/demo-ask.toml",
-    "docs/agents/canonical/codex/agents/demo-vision.agent.md",
-    ".codex/agents/demo-vision.toml",
+    "docs/agents/bindings/copilot.md",
     "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
     ".github/agents/demo-planner.agent.md",
     "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
@@ -27,36 +46,28 @@
     ".github/agents/demo-knowledge-builder.agent.md",
     "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
     ".github/agents/demo-ask.agent.md",
-    "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
-    ".github/agents/demo-vision.agent.md",
-    "AGENTS.md",
-    "docs/agents/plan-schema.md",
-    "docs/agents/test-plan-schema.md",
-    "docs/agents/artifact-gates.md",
-    "docs/agents/context-glossary.md",
-    "docs/agents/github-issues-adapter.md",
-    "docs/agents/integration-bindings.md",
-    ".github/instructions/agent-integrations.instructions.md",
-    "README.md",
-    "knowledge/testing-flow-checklist.md",
-    "knowledge/dashboard-navigation-boundaries.md",
-    "docs/agents/integration-policy.md",
-    "docs/agents/bindings/codex.md",
-    "docs/agents/bindings/copilot.md",
-    ".agents/skills/author-repo-skill/SKILL.md",
-    ".agents/skills/plan-bug-from-id/SKILL.md",
-    ".agents/skills/plan-user-story-from-id/SKILL.md",
-    ".agents/skills/user-story-analysis/SKILL.md",
-    ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
-    "docs/agents/instructions/knowledge-guard.instructions.md",
-    "docs/agents/instructions/planning-sessions.instructions.md",
+    "docs/agents/bindings/claude-code.md",
+    "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
+    ".claude/agents/demo-planner-claude.md",
+    "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
+    ".claude/agents/demo-implementor-claude.md",
+    "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
+    ".claude/agents/demo-direct-implementor-claude.md",
+    "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
+    ".claude/agents/demo-integration-tester-claude.md",
+    "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
+    ".claude/agents/demo-knowledge-builder-claude.md",
+    "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
+    ".claude/agents/demo-ask-claude.md",
     ".github/instructions/knowledge-guard.instructions.md",
+    ".claude/rules/knowledge-guard.md",
     ".github/instructions/planning-sessions.instructions.md",
-    "docs/agents/instructions/agent-integrations.md",
-    "knowledge/knowledge-index.md",
-    "docs/agents/knowledge-index-schema.md",
-    ".agents/skills/create-work-item-from-description/SKILL.md",
-    ".agents/skills/create-work-item-from-description/CHANGELOG.md"
+    ".claude/rules/planning-sessions.md",
+    ".github/instructions/agent-integrations.instructions.md",
+    ".claude/rules/agent-integrations.md",
+    ".codex/config.toml",
+    ".claude/settings.json",
+    ".mcp.json"
   ],
   "environments": [
     {
@@ -70,16 +81,12 @@
         "collaboration.spawn_agent",
         "collaboration.wait_agent",
         "collaboration.send_message",
-        "mcp__neon__",
         "mcp__next_devtools__",
-        "gpt-6-luna",
-        "mcp__codex_apps__github_fetch_issue",
-        "mcp__codex_apps__github_fetch_issue_comments",
-        "mcp__codex_apps__github_create_issue",
-        "gh issue create",
-        "gh auth status",
-        "gh repo view",
-        "gh issue view"
+        "bearer_token_env_var",
+        "default_tools_enabled",
+        "mcp__github__issue_read",
+        "mcp__github__issue_write",
+        "mcp__neon__"
       ],
       "delegation": []
     },
@@ -108,10 +115,9 @@
         "agent/runSubagent",
         "agentName",
         "github/issue_read",
-        "github/*",
+        "github/issue_write",
         "neondatabase/mcp-server-neon/",
-        "io.github.vercel/next-devtools-mcp/",
-        "GPT-6 Luna (copilot)"
+        "io.github.vercel/next-devtools-mcp/"
       ],
       "delegation": [
         {
@@ -122,352 +128,67 @@
       ]
     },
     {
-      "id": "source-only",
+      "id": "claude-code",
       "literals": [
-        "agent_type",
-        "mcp_github_mcp_s2_issue_read"
+        "AskUserQuestion",
+        "WebFetch",
+        "mcp__next-devtools__",
+        "claude --agent",
+        "`Agent`",
+        "subagent_type",
+        "mcp__github__issue_read",
+        "mcp__github__issue_write",
+        "mcp__neon__"
+      ],
+      "delegation": [
+        {
+          "tool": "`Agent`",
+          "selector": "subagent_type",
+          "targets": [
+            "general-purpose"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "retired",
+      "literals": [
+        "mcp__codex_apps__",
+        "gh issue create",
+        "demo-vision",
+        "gpt-6-luna",
+        "GPT-6 Luna",
+        "SlimUI",
+        "create-work-item-from-description"
       ],
       "delegation": []
     }
   ],
   "files": [
     {
-      "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/bindings/codex.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/github-issues-adapter.md",
-        "docs/agents/plan-schema.md"
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-planner.toml",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/canonical/codex/agents/demo-planner.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/bindings/codex.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/github-issues-adapter.md",
-        "docs/agents/plan-schema.md"
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-implementor.toml",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/canonical/codex/agents/demo-implementor.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/bindings/codex.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/github-issues-adapter.md",
-        "docs/agents/plan-schema.md"
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-direct-implementor.toml",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/bindings/codex.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/test-plan-schema.md"
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-integration-tester.toml",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/bindings/codex.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/test-plan-schema.md"
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-knowledge-builder.toml",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/bindings/codex.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/test-plan-schema.md"
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-ask.toml",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/canonical/codex/agents/demo-ask.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/bindings/codex.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md"
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-vision.toml",
-      "environments": [
-        "codex"
-      ],
-      "references": [
-        "docs/agents/canonical/codex/agents/demo-vision.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/github-issues-adapter.md",
-        "docs/agents/plan-schema.md"
-      ]
-    },
-    {
-      "output": ".github/agents/demo-planner.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/canonical/copilot/agents/demo-planner.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/github-issues-adapter.md",
-        "docs/agents/plan-schema.md"
-      ]
-    },
-    {
-      "output": ".github/agents/demo-implementor.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/canonical/copilot/agents/demo-implementor.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/github-issues-adapter.md",
-        "docs/agents/plan-schema.md"
-      ]
-    },
-    {
-      "output": ".github/agents/demo-direct-implementor.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/test-plan-schema.md"
-      ]
-    },
-    {
-      "output": ".github/agents/demo-integration-tester.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/test-plan-schema.md"
-      ]
-    },
-    {
-      "output": ".github/agents/demo-knowledge-builder.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md",
-        "docs/agents/test-plan-schema.md"
-      ]
-    },
-    {
-      "output": ".github/agents/demo-ask.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/canonical/copilot/agents/demo-ask.agent.md"
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "knowledge/knowledge-index.md",
-        "docs/agents/context-glossary.md",
-        "docs/agents/integration-policy.md",
-        "docs/agents/knowledge-index-schema.md"
-      ]
-    },
-    {
-      "output": ".github/agents/demo-vision.agent.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/canonical/copilot/agents/demo-vision.agent.md"
-      ]
-    },
-    {
       "output": "AGENTS.md",
       "environments": [
         "codex",
-        "copilot"
+        "copilot",
+        "claude-code"
       ],
       "references": [
         {
           "output": "docs/agents/bindings/codex.md",
           "environments": [
             "codex"
+          ]
+        },
+        {
+          "output": "docs/agents/bindings/copilot.md",
+          "environments": [
+            "copilot"
+          ]
+        },
+        {
+          "output": "docs/agents/bindings/claude-code.md",
+          "environments": [
+            "claude-code"
           ]
         },
         {
@@ -507,18 +228,6 @@
           ]
         },
         {
-          "output": "docs/agents/canonical/codex/agents/demo-vision.agent.md",
-          "environments": [
-            "codex"
-          ]
-        },
-        {
-          "output": "docs/agents/bindings/copilot.md",
-          "environments": [
-            "copilot"
-          ]
-        },
-        {
           "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
           "environments": [
             "copilot"
@@ -555,94 +264,57 @@
           ]
         },
         {
-          "output": "docs/agents/canonical/copilot/agents/demo-vision.agent.md",
+          "output": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
           "environments": [
-            "copilot"
+            "claude-code"
           ]
         },
         {
-          "output": ".github/instructions/agent-integrations.instructions.md",
+          "output": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
           "environments": [
-            "copilot"
+            "claude-code"
           ]
         },
         {
-          "output": ".github/instructions/knowledge-guard.instructions.md",
+          "output": "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
           "environments": [
-            "copilot"
+            "claude-code"
           ]
         },
         {
-          "output": ".github/instructions/planning-sessions.instructions.md",
+          "output": "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
           "environments": [
-            "copilot"
+            "claude-code"
           ]
         },
-        ".agents/skills/author-repo-skill/SKILL.md",
-        ".agents/skills/plan-bug-from-id/SKILL.md",
-        ".agents/skills/plan-user-story-from-id/SKILL.md",
-        ".agents/skills/user-story-analysis/SKILL.md",
-        ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
-        "docs/agents/instructions/knowledge-guard.instructions.md",
-        "docs/agents/instructions/planning-sessions.instructions.md",
-        "docs/agents/instructions/agent-integrations.md",
+        {
+          "output": "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
+          "environments": [
+            "claude-code"
+          ]
+        },
+        {
+          "output": "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
+          "environments": [
+            "claude-code"
+          ]
+        },
+        "docs/agents/integration-bindings.md",
         "knowledge/knowledge-index.md",
         "docs/agents/context-glossary.md",
         "docs/agents/plan-schema.md",
         "docs/agents/artifact-gates.md",
-        ".agents/skills/create-work-item-from-description/SKILL.md",
-        "docs/agents/integration-bindings.md"
-      ]
-    },
-    {
-      "output": "docs/agents/plan-schema.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": []
-    },
-    {
-      "output": "docs/agents/test-plan-schema.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": []
-    },
-    {
-      "output": "docs/agents/artifact-gates.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": []
-    },
-    {
-      "output": "docs/agents/context-glossary.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": []
-    },
-    {
-      "output": "docs/agents/github-issues-adapter.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/integration-bindings.md",
-        "docs/agents/plan-schema.md",
-        "docs/agents/artifact-gates.md"
+        ".agents/skills/manage-work-item/SKILL.md",
+        "docs/agents/instructions/knowledge-guard.instructions.md",
+        "docs/agents/instructions/planning-sessions.instructions.md"
       ]
     },
     {
       "output": "docs/agents/integration-bindings.md",
       "environments": [
         "codex",
-        "copilot"
+        "copilot",
+        "claude-code"
       ],
       "references": [
         {
@@ -656,51 +328,176 @@
           "environments": [
             "copilot"
           ]
-        }
+        },
+        {
+          "output": "docs/agents/bindings/claude-code.md",
+          "environments": [
+            "claude-code"
+          ]
+        },
+        "docs/agents/integration-policy.md"
       ]
-    },
-    {
-      "output": ".github/instructions/agent-integrations.instructions.md",
-      "environments": [
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/bindings/copilot.md",
-        "docs/agents/instructions/agent-integrations.md"
-      ]
-    },
-    {
-      "output": "README.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": []
-    },
-    {
-      "output": "knowledge/testing-flow-checklist.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": []
-    },
-    {
-      "output": "knowledge/dashboard-navigation-boundaries.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": []
     },
     {
       "output": "docs/agents/integration-policy.md",
       "environments": [
         "codex",
-        "copilot"
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/github-issues-adapter.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/context-glossary.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/plan-schema.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/test-plan-schema.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/artifact-gates.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/knowledge-index-schema.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "knowledge/knowledge-index.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/instructions/agent-integrations.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/instructions/knowledge-guard.instructions.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": "docs/agents/instructions/planning-sessions.instructions.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": ".agents/skills/author-repo-skill/SKILL.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": ".agents/skills/plan-bug-from-id/SKILL.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
       ],
       "references": [
-        "docs/agents/integration-policy.md"
+        "docs/agents/github-issues-adapter.md",
+        "docs/agents/integration-bindings.md"
+      ]
+    },
+    {
+      "output": ".agents/skills/plan-user-story-from-id/SKILL.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/github-issues-adapter.md",
+        "docs/agents/integration-bindings.md"
+      ]
+    },
+    {
+      "output": ".agents/skills/user-story-analysis/SKILL.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": ".agents/skills/manage-work-item/SKILL.md",
+      "environments": [
+        "codex",
+        "copilot",
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/github-issues-adapter.md",
+        "docs/agents/integration-bindings.md"
       ]
     },
     {
@@ -714,6 +511,139 @@
       ]
     },
     {
+      "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/bindings/codex.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/plan-schema.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-planner.toml",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/canonical/codex/agents/demo-planner.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/bindings/codex.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-implementor.toml",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/canonical/codex/agents/demo-implementor.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/bindings/codex.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-direct-implementor.toml",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/bindings/codex.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-integration-tester.toml",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/bindings/codex.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-knowledge-builder.toml",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/bindings/codex.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".codex/agents/demo-ask.toml",
+      "environments": [
+        "codex"
+      ],
+      "references": [
+        "docs/agents/canonical/codex/agents/demo-ask.agent.md"
+      ]
+    },
+    {
       "output": "docs/agents/bindings/copilot.md",
       "environments": [
         "copilot"
@@ -724,76 +654,279 @@
       ]
     },
     {
-      "output": ".agents/skills/author-repo-skill/SKILL.md",
+      "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "environments": [
-        "codex",
         "copilot"
       ],
       "references": [
-        "docs/agents/integration-bindings.md"
-      ]
-    },
-    {
-      "output": ".agents/skills/plan-bug-from-id/SKILL.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/integration-bindings.md",
-        "docs/agents/github-issues-adapter.md"
-      ]
-    },
-    {
-      "output": ".agents/skills/plan-user-story-from-id/SKILL.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/integration-bindings.md",
-        "docs/agents/github-issues-adapter.md"
-      ]
-    },
-    {
-      "output": ".agents/skills/user-story-analysis/SKILL.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/integration-bindings.md"
-      ]
-    },
-    {
-      "output": ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "knowledge/knowledge-index.md"
-      ]
-    },
-    {
-      "output": "docs/agents/instructions/knowledge-guard.instructions.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "knowledge/knowledge-index.md"
-      ]
-    },
-    {
-      "output": "docs/agents/instructions/planning-sessions.instructions.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
+        "docs/agents/bindings/copilot.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
         "docs/agents/plan-schema.md",
-        "docs/agents/artifact-gates.md"
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".github/agents/demo-planner.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/canonical/copilot/agents/demo-planner.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/bindings/copilot.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".github/agents/demo-implementor.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/canonical/copilot/agents/demo-implementor.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/bindings/copilot.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".github/agents/demo-direct-implementor.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/bindings/copilot.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".github/agents/demo-integration-tester.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/canonical/copilot/agents/demo-integration-tester.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/bindings/copilot.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".github/agents/demo-knowledge-builder.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/copilot/agents/demo-ask.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/bindings/copilot.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".github/agents/demo-ask.agent.md",
+      "environments": [
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/canonical/copilot/agents/demo-ask.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/bindings/claude-code.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/integration-policy.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/plan-schema.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".claude/agents/demo-planner-claude.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/canonical/claude-code/agents/demo-planner.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".claude/agents/demo-implementor-claude.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".claude/agents/demo-direct-implementor-claude.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".claude/agents/demo-integration-tester-claude.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".claude/agents/demo-knowledge-builder-claude.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md"
+      ]
+    },
+    {
+      "output": "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/integration-policy.md",
+        "knowledge/knowledge-index.md",
+        "docs/agents/context-glossary.md",
+        "docs/agents/test-plan-schema.md"
+      ]
+    },
+    {
+      "output": ".claude/agents/demo-ask-claude.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/canonical/claude-code/agents/demo-ask.agent.md"
       ]
     },
     {
@@ -801,65 +934,65 @@
       "environments": [
         "copilot"
       ],
-      "references": [
-        "docs/agents/instructions/knowledge-guard.instructions.md"
-      ]
+      "references": []
+    },
+    {
+      "output": ".claude/rules/knowledge-guard.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": []
     },
     {
       "output": ".github/instructions/planning-sessions.instructions.md",
       "environments": [
         "copilot"
       ],
-      "references": [
-        "docs/agents/instructions/planning-sessions.instructions.md"
-      ]
+      "references": []
     },
     {
-      "output": "docs/agents/instructions/agent-integrations.md",
+      "output": ".claude/rules/planning-sessions.md",
       "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "docs/agents/integration-bindings.md",
-        "docs/agents/github-issues-adapter.md"
-      ]
-    },
-    {
-      "output": "knowledge/knowledge-index.md",
-      "environments": [
-        "codex",
-        "copilot"
-      ],
-      "references": [
-        "knowledge/testing-flow-checklist.md",
-        "knowledge/dashboard-navigation-boundaries.md"
-      ]
-    },
-    {
-      "output": "docs/agents/knowledge-index-schema.md",
-      "environments": [
-        "codex",
-        "copilot"
+        "claude-code"
       ],
       "references": []
     },
     {
-      "output": ".agents/skills/create-work-item-from-description/SKILL.md",
+      "output": ".github/instructions/agent-integrations.instructions.md",
       "environments": [
-        "codex",
         "copilot"
       ],
       "references": [
-        "docs/agents/integration-bindings.md",
-        "docs/agents/github-issues-adapter.md"
+        "docs/agents/bindings/copilot.md"
       ]
     },
     {
-      "output": ".agents/skills/create-work-item-from-description/CHANGELOG.md",
+      "output": ".claude/rules/agent-integrations.md",
       "environments": [
-        "codex",
-        "copilot"
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md"
+      ]
+    },
+    {
+      "output": ".codex/config.toml",
+      "environments": [
+        "codex"
+      ],
+      "references": []
+    },
+    {
+      "output": ".claude/settings.json",
+      "environments": [
+        "claude-code"
+      ],
+      "references": []
+    },
+    {
+      "output": ".mcp.json",
+      "environments": [
+        "claude-code"
       ],
       "references": []
     }

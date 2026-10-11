@@ -6,6 +6,9 @@ disable-model-invocation: true
 
 # Author Repo Skill
 
+## Repository Context Boundary
+- Exclude `.agentic-system-maintenance/` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
+- Keep generated project knowledge under top-level `knowledge/`; report provenance maintenance needed after runtime system edits instead of accessing the maintenance area.
 Use this skill to create or evolve a repository-local skill in this repository's Agentic System.
 
 A skill is a procedure the repository runs more than once and wants to run the same way every time. Anything used once belongs in a prompt. Anything an agent must always obey belongs in that agent's contract or in a scoped instruction file.
@@ -26,7 +29,7 @@ Two skills that differ only in a noun are one skill with a parameter.
 ## Gather Before Writing
 
 Read relevant project knowledge through `knowledge/knowledge-index.md` before writing a procedure that depends on repository conventions.
-Use `the current client's bounded native repository search listed in docs/agents/integration-bindings.md` to confirm that every path, command, and role the skill names exists in this repository.
+Use `the bounded native repository search listed in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved)` to confirm that every path, command, and role the skill names exists in this repository.
 Collect the repository facts the procedure depends on, and cite where each came from:
 
 - the existing skills, so the new one matches their structure and does not overlap,
@@ -71,7 +74,7 @@ When the repository has a customization register, record the new or changed skil
 
 ## Approval And Validation
 
-Validate the written skill with the repository commands `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 .agentic-system-maintenance/scripts/verify-agentic-system.py` where they apply, and record a reason for each command that was skipped.
+Validate the written skill with the repository commands `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; changes to agent-system files are reported for explicit agent-system maintenance, which runs its own verifier` where they apply, and record a reason for each command that was skipped.
 Propose the file plan and wait for explicit approval before writing. Approval is false by default.
 
 After writing, verify:

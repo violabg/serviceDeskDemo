@@ -4,7 +4,16 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `7.1.0`
+- `8.0.0`
+
+## 2026-10-11
+
+### 8.0.0
+
+- Generate `manage-work-item` into the target repository, replacing the standalone `create-work-item-from-description` kit skill. It creates bugs or user stories, and updates an existing work item only after reading it and its comments, presenting the exact per-field change, and re-reading before writing. Reads use the approved `WORK_ITEM_RETRIEVAL` tools; writes use a new `WORK_ITEM_WRITE` slot with no delete or bulk tools. Root instructions route to it only when it is generated.
+- Ship each agent's capability evidence as a Bootstrap-only sidecar, `templates/agents/<role>.capabilities.yaml`, instead of Source Mapping, Capability Substitutions, and Role Tooling Intent sections inside the agent. Generated agents no longer carry Bootstrap narration or references to the Bootstrap registry; a new `CAPABILITY_BINDINGS` slot holds one concrete binding per capability token the role uses.
+- Gather runtime resources under one runtime root, `RUNTIME_ROOT` (default `.agentic-system/`): canonical copies, schemas, artifact gates, sessions, and a local issue folder. Plan schema, test-plan schema, artifact gates, session root, and local tracker defaults move under it, and the context audit accepts an optional `runtime_root` that must stay disjoint from knowledge and maintenance.
+- Align the generated-system blueprint with the six-batch generation order and the separate knowledge, runtime, maintenance, and native areas.
 
 ## 2026-10-10
 

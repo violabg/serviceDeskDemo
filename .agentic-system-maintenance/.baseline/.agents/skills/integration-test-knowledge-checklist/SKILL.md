@@ -8,7 +8,10 @@ disable-model-invocation: true
 
 Read relevant integration-test knowledge through `knowledge/knowledge-index.md` before drafting project-specific test guidance.
 Document the integration-test scope and out-of-scope boundaries: `Vitest tests of connected repo-owned modules, actions, routes and feature components with real internal wiring and stubbed Neon/auth/third-party boundaries; exclude live vendor systems, unit and e2e tests, and direct components/ui/** tests unless the user overrides that exclusion`.
-Document the target repository validation commands: `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; agent-system-only changes use python3 .agentic-system-maintenance/scripts/verify-agentic-system.py`.
+Document the target repository validation commands: `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; changes to agent-system files are reported for explicit agent-system maintenance, which runs its own verifier`.
+## Repository Context Boundary
+- Exclude `.agentic-system-maintenance/` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
+- Keep generated project knowledge under top-level `knowledge/`; report provenance maintenance needed after runtime system edits instead of accessing the maintenance area.
 # Integration Test Knowledge Checklist for Integration Tester
 
 Use this checklist to generate a project-specific integration-test knowledge for Integration Tester.

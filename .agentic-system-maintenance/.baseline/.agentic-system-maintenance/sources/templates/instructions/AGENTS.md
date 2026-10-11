@@ -11,7 +11,7 @@ Full role contracts live in `{{AGENT_ROOT}}`. Do not restate them here.
 ## Skills
 
 <!-- CANONICAL-TEMPLATE-SLOT: SKILL_ROOT START replaces=none -->
-- When the user explicitly invokes `create-work-item-from-description` by name, load and run that skill directly. This standalone workflow bypasses normal agent role routing and the Planner flow. Clarify the work item, present the complete proposal and obtain the user's explicit approval, then create it only with an authorized issue-creation tool available in the active client. If no such tool is available, stop without creating the item.
+- When the user explicitly invokes `manage-work-item` by name, load and run that skill directly. This standalone workflow creates a bug or user story, or updates an existing work item after reading it, and bypasses normal agent role routing and the Planner flow. Every create or update needs explicit approval of the complete proposal and runs only through the tracker bindings approved for that skill; without them, stop without changing anything.
 <!-- CANONICAL-TEMPLATE-SLOT: SKILL_ROOT END -->
 Repository skills live in `{{SKILL_ROOT}}`. Read a skill's `SKILL.md` before running its workflow.
 
