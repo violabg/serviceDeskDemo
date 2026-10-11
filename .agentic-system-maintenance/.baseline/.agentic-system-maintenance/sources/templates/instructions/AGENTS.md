@@ -10,6 +10,9 @@ Full role contracts live in `{{AGENT_ROOT}}`. Do not restate them here.
 
 ## Skills
 
+<!-- CANONICAL-TEMPLATE-SLOT: SKILL_ROOT START replaces=none -->
+- When the user explicitly invokes `create-work-item-from-description` by name, load and run that skill directly. This standalone workflow bypasses normal agent role routing and the Planner flow. Clarify the work item, present the complete proposal and obtain the user's explicit approval, then create it only with an authorized issue-creation tool available in the active client. If no such tool is available, stop without creating the item.
+<!-- CANONICAL-TEMPLATE-SLOT: SKILL_ROOT END -->
 Repository skills live in `{{SKILL_ROOT}}`. Read a skill's `SKILL.md` before running its workflow.
 
 ## Instructions
@@ -34,6 +37,6 @@ Validate every change with `{{VALIDATION_COMMANDS}}` before handing work back.
 ## Provenance
 
 <!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
-During initial Bootstrap or explicitly requested agent-system maintenance only, access `{{MAINTENANCE_ROOT}}` and the complete Bootstrap/Maintainer skills at `.agents/skills/bootstrap-agentic-system/` and `.agents/skills/maintain-agentic-system/`. For ordinary work, exclude these paths and their aliases before search, indexing, knowledge retrieval, or delegation; do not load their contents. If ordinary work changes an agent-system file, report that maintenance evidence needs refreshing; do not open or update the evidence ledger.
+Access `{{MAINTENANCE_ROOT}}` and installed Bootstrap/Maintainer bodies and resources only during initial Bootstrap or explicitly requested agent-system maintenance. For ordinary requests, never read, search, index, summarize, or load them; exclude paths and aliases before retrieval and pass exclusions to delegates. The provenance update below runs only in maintenance; ordinary runtime edits report the need for maintenance.
 <!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
-`{{MANIFEST_PATH}}` records what was generated, which slots were filled, and which decisions were approved. Update it during explicitly approved maintenance.
+`{{MANIFEST_PATH}}` records what was generated, which slots were filled, and which decisions were approved. Update it whenever this system changes.

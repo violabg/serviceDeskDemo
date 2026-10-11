@@ -554,7 +554,7 @@
     },
     {
       "template": "templates/instructions/AGENTS.md",
-      "sha256": "e63c3f30680ef51eda3d1b02d0919fa434b2fe23de3edd894d397ccd592acd1f",
+      "sha256": "1aa67649b5547500a9db80e1af607a64d609af3773ae0de445ec2fd3a364339f",
       "output": "AGENTS.md",
       "values": {
         "CONTEXT_GLOSSARY_PATH": "docs/agents/context-glossary.md",
@@ -575,6 +575,11 @@
           "slot": "MAINTENANCE_ROOT",
           "occurrence": 0,
           "value": "During initial Bootstrap or explicitly requested agent-system maintenance only, access `.agentic-system-maintenance/` and the complete Bootstrap/Maintainer skills at `.agents/skills/bootstrap-agentic-system/` and `.agents/skills/maintain-agentic-system/`. For ordinary work, exclude these paths and their aliases before search, indexing, knowledge retrieval, or delegation; do not load their contents. If ordinary work changes an agent-system file, report that maintenance evidence needs refreshing; do not open or update the evidence ledger."
+        },
+        {
+          "slot": "SKILL_ROOT",
+          "occurrence": 0,
+          "value": "- When the user explicitly invokes `create-work-item-from-description` by name, load and run `.agents/skills/create-work-item-from-description/SKILL.md` directly in the default agent. This standalone workflow bypasses normal agent role routing and the Planner flow. Resolve the active environment and load only its binding through `docs/agents/integration-bindings.md`. Clarify the work item, present the complete proposal and obtain explicit approval, then create only through the available authorized tool or native procedure separately approved in that binding. If its prerequisites are missing, stop without creating the item."
         }
       ]
     }

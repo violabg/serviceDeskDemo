@@ -172,6 +172,53 @@
       "bootstrap_6_0": "remains explicitly deferred",
       "native_loading": "unverified",
       "context_audit": ".agentic-system-maintenance/context-audit.json"
+    },
+    "codex_issue_creation_2026_10_10": {
+      "approved": true,
+      "date": "2026-10-10",
+      "evidence": "User approved the complete evolve plan, native GitHub CLI procedure and resumed previously approved customer story.",
+      "mode": "evolve",
+      "scope": "default Codex explicitly invoked creation skill only; no role or global configuration changes",
+      "procedure": "docs/agents/bindings/codex.md#explicit-skill-operations",
+      "repository": "https://github.com/violabg/serviceDeskDemo",
+      "command": "gh issue create --repo https://github.com/violabg/serviceDeskDemo --title <approved-title> --body-file <temporary-body-file>",
+      "configuration_status": "configured",
+      "authentication_status": "verified",
+      "authentication_method": "existing OS keyring login; no credential values stored",
+      "active_account": "violabg",
+      "cli_version": "2.100.0",
+      "repository_preflight": {
+        "viewerPermission": "ADMIN",
+        "hasIssuesEnabled": true,
+        "method": "bounded gh auth status and exact gh repo view"
+      },
+      "create_status": "verified-native: approved real customer story created once; exact returned issue title/body verified",
+      "connector_create_status": "blocked: 403 Resource not accessible by integration; no automatic retry",
+      "rollback": ".agentic-system-maintenance/history/2026-10-10-before-codex-issue-create",
+      "maintenance_plan": ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md",
+      "report": ".agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md",
+      "legacy_skill_baseline": "absent; current authored text preserved only as legacy comparison evidence, not invented canonical source",
+      "targeted_bootstrap": "7.1.0 standalone SKILL_ROOT route; applied-through remains 5.3.0",
+      "validation": {
+        "canonical": "passed:22 exact copies",
+        "authored": "passed",
+        "context": "blocked: inherited knowledge index document-relative Path cells; corrected 44 inventory classifications",
+        "runtime_syntax": "52 direct file scans passed; exactly four inherited diagnostics failures",
+        "full_environment": "blocked: inherited read/problems",
+        "final_auditor": "passed scoped runtime/provenance review: no new approved creation blockers; inherited gaps retained",
+        "structural": "674 passed; 3 inherited failures (two protected knowledge baselines and diagnostics binding)"
+      },
+      "verification_result": {
+        "date": "2026-10-10",
+        "issue_number": 8,
+        "issue_url": "https://github.com/violabg/serviceDeskDemo/issues/8",
+        "method": "gh issue create with exact approved body-file, followed by gh issue view of returned URL",
+        "exit_code": 0,
+        "approved_title_and_body_match": true,
+        "temporary_transport_file_deleted": true,
+        "unresolved_issue_fields": [],
+        "scope": "default host standalone skill only; generated-role operations remain unverified"
+      }
     }
   },
   "execution_host": "Codex in VS Code Insiders; SDK environment path 0.153.0",
@@ -605,8 +652,11 @@
         ".agents/skills/author-repo-skill/SKILL.md": ".agents/skills",
         "AGENTS.md": ".agents/skills"
       },
-      "source": "user-approved 2026-10-08 maintenance plan; preserved 5.3.0 templates",
-      "evidence": "User: approved; environment isolation, original skill names, bounded inline gathering, deferral of 6.0 changes."
+      "source": "existing values retained; standalone routing block approved 2026-10-10",
+      "evidence": "User: approved; environment isolation, original skill names, bounded inline gathering, deferral of 6.0 changes.",
+      "blocks": {
+        "AGENTS.md#block-0": "- When the user explicitly invokes `create-work-item-from-description` by name, load and run `.agents/skills/create-work-item-from-description/SKILL.md` directly in the default agent. This standalone workflow bypasses normal agent role routing and the Planner flow. Resolve the active environment and load only its binding through `docs/agents/integration-bindings.md`. Clarify the work item, present the complete proposal and obtain explicit approval, then create only through the available authorized tool or native procedure separately approved in that binding. If its prerequisites are missing, stop without creating the item."
+      }
     },
     "VALIDATION_COMMANDS": {
       "value": {
@@ -5496,11 +5546,11 @@
   },
   "preservation": {
     "plan": ".agentic-system-maintenance/preservation-plan.json",
-    "plan_sha256": "cda19d3d8d21b6fa3df582f4efa615050060840b0b148e63f66128e9d6e77e50",
+    "plan_sha256": "9d26b6e5695cc1cf952f8de7b521d5b68637e2b859d5d5c3e0863a9a76035c3e",
     "sources": ".agentic-system-maintenance/sources",
-    "verification": "python3 .agentic-system-maintenance/scripts/verify-agentic-system.py; see .agentic-system-maintenance/validation-report.md",
+    "verification": "python3 .agentic-system-maintenance/scripts/verify-agentic-system.py; scoped approved results in .agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md; full system retains inherited failures",
     "environment_audit": ".agentic-system-maintenance/environment-audit.json",
-    "environment_audit_sha256": "28cc80b4a1bc268b418907085d4b80c551c3a19af0dafb6604aaa6d961c66ec4",
+    "environment_audit_sha256": "35131cc7a489d1d5fc5a4fccd540be6b7ec823e3dbe5d9bc42e0bd5962909c2c",
     "environment_audit_result": "blocked: inherited source diagnostics tooling slot gap; four Codex canonical/native outputs"
   },
   "generated": [
@@ -6137,7 +6187,7 @@
         "copilot"
       ],
       "template": "templates/instructions/AGENTS.md",
-      "source_sha256": "e63c3f30680ef51eda3d1b02d0919fa434b2fe23de3edd894d397ccd592acd1f",
+      "source_sha256": "1aa67649b5547500a9db80e1af607a64d609af3773ae0de445ec2fd3a364339f",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/instructions/AGENTS.md"
     },
     {
@@ -6148,7 +6198,7 @@
         "copilot"
       ],
       "template": "templates/instructions/AGENTS.md",
-      "source_sha256": "e63c3f30680ef51eda3d1b02d0919fa434b2fe23de3edd894d397ccd592acd1f",
+      "source_sha256": "1aa67649b5547500a9db80e1af607a64d609af3773ae0de445ec2fd3a364339f",
       "baseline": ".agentic-system-maintenance/.baseline/AGENTS.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -6227,7 +6277,7 @@
         "copilot"
       ],
       "template": "CHANGELOG.md",
-      "source_sha256": "afb9f982d0910360f61a8de3d482b24ca90175880bd85bd129ddd518360b9176",
+      "source_sha256": "670cfab2c892c4c8967e113d9e84cf93b55c7cfeefb9390219e6cfa88d7e9036",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/changelogs/bootstrap-agentic-system.CHANGELOG.md"
     },
     {
@@ -6681,6 +6731,82 @@
       "template": "authored",
       "source_sha256": "not-applicable",
       "baseline": ".agentic-system-maintenance/.baseline/knowledge/knowledge-index.md"
+    },
+    {
+      "path": ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md",
+      "kind": "provenance",
+      "environments": [
+        "codex"
+      ],
+      "template": "authored",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md"
+    },
+    {
+      "path": ".agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md",
+      "kind": "provenance",
+      "environments": [
+        "codex"
+      ],
+      "template": "authored",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md"
+    },
+    {
+      "path": ".agents/skills/create-work-item-from-description/SKILL.md",
+      "kind": "shared-resource",
+      "environments": [
+        "codex",
+        "copilot"
+      ],
+      "template": "authored",
+      "source_sha256": "e32ccf6168866fc61ea2119f3918d68a4788c45cccf0541a5eec1f87af37e3a7",
+      "baseline": ".agentic-system-maintenance/.baseline/.agents/skills/create-work-item-from-description/SKILL.md",
+      "authored_source": ".agentic-system-maintenance/sources/authored/create-work-item-from-description/SKILL.md"
+    },
+    {
+      "path": ".agentic-system-maintenance/sources/authored/create-work-item-from-description/SKILL.md",
+      "kind": "provenance",
+      "environments": [
+        "codex"
+      ],
+      "template": "authored",
+      "source_sha256": "e32ccf6168866fc61ea2119f3918d68a4788c45cccf0541a5eec1f87af37e3a7",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/authored/create-work-item-from-description/SKILL.md"
+    },
+    {
+      "path": ".agents/skills/create-work-item-from-description/CHANGELOG.md",
+      "kind": "shared-resource",
+      "environments": [
+        "codex",
+        "copilot"
+      ],
+      "template": "authored",
+      "source_sha256": "f1821cbf80f366e0bbe4eaf423aa463c34e709f154c3156de2599cbbb894f32d",
+      "baseline": ".agentic-system-maintenance/.baseline/.agents/skills/create-work-item-from-description/CHANGELOG.md",
+      "authored_source": ".agentic-system-maintenance/sources/authored/create-work-item-from-description/CHANGELOG.md"
+    },
+    {
+      "path": ".agentic-system-maintenance/sources/authored/create-work-item-from-description/CHANGELOG.md",
+      "kind": "provenance",
+      "environments": [
+        "codex"
+      ],
+      "template": "authored",
+      "source_sha256": "f1821cbf80f366e0bbe4eaf423aa463c34e709f154c3156de2599cbbb894f32d",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/authored/create-work-item-from-description/CHANGELOG.md"
+    },
+    {
+      "path": ".agentic-system-maintenance/context-audit.json",
+      "kind": "provenance",
+      "environments": [
+        "codex",
+        "copilot"
+      ],
+      "template": "authored",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/context-audit.json",
+      "origin": "existing approved context audit; previously missing primary/baseline pair, registered during approved inventory refresh"
     }
   ],
   "deferred": [
@@ -6711,7 +6837,7 @@
     ],
     "evidence": "2026-10-10 approved targeted context-isolation migration; native exclusion behavior remains unverified",
     "context_audit": ".agentic-system-maintenance/context-audit.json",
-    "outputs_count": 153,
+    "outputs_count": 160,
     "knowledge_entries": [
       "knowledge/nextjs-server-execution-checklist.md",
       "knowledge/base-ui-composition-checklist.md",
@@ -6726,7 +6852,8 @@
     "maintenance_plan": ".agentic-system-maintenance/maintenance-plan-2026-10-10.md",
     "baseline_archive": ".agentic-system-maintenance/history/2026-10-10-before-layout/.baseline",
     "native_loading": "unverified",
-    "search_exclusions": "static instructions recorded; client behavior unverified"
+    "search_exclusions": "static instructions recorded; client behavior unverified",
+    "codex_issue_creation_plan": ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md"
   },
   "integration_evidence": {
     "codex": {
@@ -6739,6 +6866,53 @@
         "configuration": "streamable HTTP endpoint and nine-tool allowlist recorded",
         "authentication": "OAuth recorded as connected on 2026-10-08",
         "operation": "CLI list_branches read verified on 2026-10-08; generated-role execution unverified"
+      },
+      "github_cli_issue_creation": {
+        "approved": true,
+        "date": "2026-10-10",
+        "evidence": "User approved the complete evolve plan, native GitHub CLI procedure and resumed previously approved customer story.",
+        "mode": "evolve",
+        "scope": "default Codex explicitly invoked creation skill only; no role or global configuration changes",
+        "procedure": "docs/agents/bindings/codex.md#explicit-skill-operations",
+        "repository": "https://github.com/violabg/serviceDeskDemo",
+        "command": "gh issue create --repo https://github.com/violabg/serviceDeskDemo --title <approved-title> --body-file <temporary-body-file>",
+        "configuration_status": "configured",
+        "authentication_status": "verified",
+        "authentication_method": "existing OS keyring login; no credential values stored",
+        "active_account": "violabg",
+        "cli_version": "2.100.0",
+        "repository_preflight": {
+          "viewerPermission": "ADMIN",
+          "hasIssuesEnabled": true,
+          "method": "bounded gh auth status and exact gh repo view"
+        },
+        "create_status": "verified-native: approved real customer story created once; exact returned issue title/body verified",
+        "connector_create_status": "blocked: 403 Resource not accessible by integration; no automatic retry",
+        "rollback": ".agentic-system-maintenance/history/2026-10-10-before-codex-issue-create",
+        "maintenance_plan": ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md",
+        "report": ".agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md",
+        "legacy_skill_baseline": "absent; current authored text preserved only as legacy comparison evidence, not invented canonical source",
+        "targeted_bootstrap": "7.1.0 standalone SKILL_ROOT route; applied-through remains 5.3.0",
+        "validation": {
+          "canonical": "passed:22 exact copies",
+          "authored": "passed",
+          "context": "blocked: inherited knowledge index document-relative Path cells; corrected 44 inventory classifications",
+          "runtime_syntax": "52 direct file scans passed; exactly four inherited diagnostics failures",
+          "full_environment": "blocked: inherited read/problems",
+          "final_auditor": "passed scoped runtime/provenance review: no new approved creation blockers; inherited gaps retained",
+          "structural": "674 passed; 3 inherited failures (two protected knowledge baselines and diagnostics binding)"
+        },
+        "verification_result": {
+          "date": "2026-10-10",
+          "issue_number": 8,
+          "issue_url": "https://github.com/violabg/serviceDeskDemo/issues/8",
+          "method": "gh issue create with exact approved body-file, followed by gh issue view of returned URL",
+          "exit_code": 0,
+          "approved_title_and_body_match": true,
+          "temporary_transport_file_deleted": true,
+          "unresolved_issue_fields": [],
+          "scope": "default host standalone skill only; generated-role operations remain unverified"
+        }
       }
     },
     "copilot": {

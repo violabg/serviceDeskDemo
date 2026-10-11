@@ -12,7 +12,7 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 5.3.0 with targeted 7.0 context isolation; full 6.0/7.0 application remains deferred
+- Bootstrap Contract Applied Through: 5.3.0 with targeted 7.0 context isolation and 7.1 standalone creation routing; full 6.0/7.0 application remains deferred
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Available: 3.2.1
 - Maintain Skill Version Last Applied: 3.2.1
@@ -59,8 +59,8 @@
 - Compatibility Evidence: `.agentic-system-maintenance/compatibility.md`
 - Canonical Source Snapshots: `.agentic-system-maintenance/sources/` (maintenance-only)
 - Preservation Plan: `.agentic-system-maintenance/preservation-plan.json`
-- Preservation Plan SHA-256: cda19d3d8d21b6fa3df582f4efa615050060840b0b148e63f66128e9d6e77e50
-- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: 5477c3bbd9a279c716fff1bca23e5881961942580f46969237fd091eb3d274fc
+- Preservation Plan SHA-256: 9d26b6e5695cc1cf952f8de7b521d5b68637e2b859d5d5c3e0863a9a76035c3e
+- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: 35131cc7a489d1d5fc5a4fccd540be6b7ec823e3dbe5d9bc42e0bd5962909c2c
 - Native Body Mapping: `.agentic-system-maintenance/native-adapters.json`
 - Structural Verification: `.agentic-system-maintenance/validation-report.md`
 - Contract Audit: `.agentic-system-maintenance/contract-audit.md`
@@ -96,7 +96,9 @@
 | C016 | Codex GitHub Apps binding, three role contracts and seven Codex agent layers | issue retrieval and default-off app policy | modified-rule | User approved app `github`, only issue-fetch and issue-comments tools for Planner, Implementor and Direct Implementor; search/list/write prohibited for those roles; pagination and response schemas remain unverified | extends-canonical through Codex-only environment binding | always; re-evaluate on client/schema changes; runtime access unverified |
 | C017 | Codex Neon MCP user config, generator and seven Codex agent layers | Neon Streamable HTTP transport, OAuth and exact operation allowlists | modified-rule | User approved Codex-only workflow repair; live read-only branch listing verified for the linked project on 2026-10-08; generated-role invocation remains unverified | extends-canonical through Codex-only environment binding | always; re-evaluate on client/schema changes; no credentials stored in repository |
 | C018 | `docs/agents/integration-policy.md` | Database migration and privilege bootstrap workflow | added-section | User approved explicit Planner Section 4 operations and Implementor execution/verification gates for conditional schema migrations and idempotent Admin privilege seeding; preserve exact target authorization and explicit migration approval | extends-canonical through shared role-binding policy | always; re-evaluate when schema/migration or privilege-seed workflow changes |
-| C020 | Work-item creation skill, shared GitHub adapter/policy, and Copilot/Codex bindings | explicit skill-scoped issue creation | added-section | User approved creation only after explicit skill invocation and issue approval; no custom-role grant changes. Copilot `issue_write(method: create)` availability is runtime-scoped; Codex's configured GitHub App remains read-only and creation is blocked until its default session exposes a separately authorized create operation. Screenshot upload is a separate unresolved capability. | extends-canonical through existing tracker and client-binding boundaries | always; re-evaluate on client/tool schema changes; Codex create and image upload unverified |
+| C020 | Work-item creation skill, shared GitHub adapter/policy, and selected bindings | explicit skill-scoped issue creation | modified-rule | User approved native GitHub CLI creation for default Codex on 2026-10-10 after connector 403; retain explicit skill invocation, final proposal approval, exact fields, bounded preflight/result verification and duplicate prevention. Copilot binding and custom-role grants are independent. | repository-authored procedure within existing tracker/client boundaries | always; re-evaluate on client/auth changes; CLI authentication/preflight and approved native creation verified on 2026-10-10 |
+
+| C021 | AGENTS.md SKILL_ROOT slot and authored creation skill inventory | standalone routing and provenance | slot-override | User approved targeted Bootstrap 7.1 root routing, selected binding load and canonical formatting; add authored skill/changelog source snapshots and baseline pairs, retaining legacy text as comparison evidence | extends-canonical within declared root slot; skill itself repository-authored | always; last checked 5.3.0 plus targeted 7.1; native discovery outside this host unverified |
 
 Canonical copies remain exact after approved slots and marker stripping. The native Vision metadata overrides are not described as unchanged canonical translations. No other non-slot canonical edits are authorized.
 
@@ -165,3 +167,18 @@ Status: **BLOCKED** for Codex Implementor and Integration Tester diagnostics. Th
 Codex's global Neon URL used the legacy SSE endpoint, so Codex CLI could not speak the configured transport. The endpoint now uses Streamable HTTP (`https://mcp.neon.tech/mcp`), OAuth is connected, and the user-level allowlist exposes only the nine Neon operations declared by the Codex role bindings. The seven generated Codex agent layers now each include complete Neon and next-devtools transport settings; their role-specific Neon allowlists remain exact. Copilot files and configuration were not changed.
 
 A fresh Codex CLI read-only run and a current `mcp__neon__list_branches` call successfully listed the linked project's `main` branch and made no database changes. The separate `mcp__codex_apps__neon` connector is not logged in here; it is independent of Codex user-configured MCP OAuth. The first immediate call raced MCP startup and did not see the tool; the next trace confirmed a successful call. Codex should allow optional MCP servers to finish startup before treating an initial missing-tool response as final. The generated custom-role runtime and layer inheritance remain unverified. See `maintenance/2026-10-08-codex-neon-mcp.md` and `compatibility.md`.
+
+
+## 2026-10-10 Codex Work-Item Creation Repair
+
+Approval: user `approved` after review of the evolve plan and native GitHub CLI procedure. Plan: `.agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md`; report: `.agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md`. Installed Bootstrap 7.1.0 is available; fully applied remains 5.3.0 with targeted 7.0/7.1 adoption. Maintain 3.2.1; maintenance date 2026-10-10.
+
+Connector create returned 403 and remains blocked. CLI 2.100.0 authentication as violabg through the OS keyring and exact target ADMIN/Issues preflight are verified. CLI mutation was subsequently verified by creating the approved customer story as GitHub issue #8 and fetching only its returned URL; title and body match the approved proposal exactly. Role grants and Copilot binding were preserved. Source preservation and shared-resource coverage are audited; no credentials stored. Session contents and application files were excluded.
+
+Root Skills conflict resolved by approved source render and removal of extra blank line; existing maintenance guard retained in its declared slot. The formerly untracked authored skill has no historical pristine baseline; preapply archive preserves original text and the approved revision is recorded as authored source. C020 updated, C021 added. Rollback: `history/2026-10-10-before-codex-issue-create/`. Protected knowledge differences and inherited diagnostics remain blocked/unverified, not absorbed.
+
+| 2026-10-10 | 5.3.0 plus targeted 7.0/7.1 | 3.2.1 | Approved evolve: default-Codex native GitHub creation procedure after connector 403, standalone root route, authored skill provenance and inventories; retain prior deferrals and unrelated blocked checks. |
+
+Final scoped Contract Auditor review passed. Structural checks: 674 passed, 3 inherited failures; full context audit blocked by unchanged knowledge-index Path cells. Native issue creation verification follows the approved standalone skill separately.
+
+Native default-Codex creation verified: https://github.com/violabg/serviceDeskDemo/issues/8; command exit 0, exact returned-ID title/body verification passed, temporary body transport deleted. Connector create remains blocked by its external permission grant. No generated-role or Copilot execution is inferred from this default-host result.

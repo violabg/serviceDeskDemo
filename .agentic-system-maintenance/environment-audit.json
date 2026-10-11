@@ -54,7 +54,9 @@
     ".github/instructions/planning-sessions.instructions.md",
     "docs/agents/instructions/agent-integrations.md",
     "knowledge/knowledge-index.md",
-    "docs/agents/knowledge-index-schema.md"
+    "docs/agents/knowledge-index-schema.md",
+    ".agents/skills/create-work-item-from-description/SKILL.md",
+    ".agents/skills/create-work-item-from-description/CHANGELOG.md"
   ],
   "environments": [
     {
@@ -72,7 +74,12 @@
         "mcp__next_devtools__",
         "gpt-6-luna",
         "mcp__codex_apps__github_fetch_issue",
-        "mcp__codex_apps__github_fetch_issue_comments"
+        "mcp__codex_apps__github_fetch_issue_comments",
+        "mcp__codex_apps__github_create_issue",
+        "gh issue create",
+        "gh auth status",
+        "gh repo view",
+        "gh issue view"
       ],
       "delegation": []
     },
@@ -582,7 +589,9 @@
         "knowledge/knowledge-index.md",
         "docs/agents/context-glossary.md",
         "docs/agents/plan-schema.md",
-        "docs/agents/artifact-gates.md"
+        "docs/agents/artifact-gates.md",
+        ".agents/skills/create-work-item-from-description/SKILL.md",
+        "docs/agents/integration-bindings.md"
       ]
     },
     {
@@ -829,6 +838,25 @@
     },
     {
       "output": "docs/agents/knowledge-index-schema.md",
+      "environments": [
+        "codex",
+        "copilot"
+      ],
+      "references": []
+    },
+    {
+      "output": ".agents/skills/create-work-item-from-description/SKILL.md",
+      "environments": [
+        "codex",
+        "copilot"
+      ],
+      "references": [
+        "docs/agents/integration-bindings.md",
+        "docs/agents/github-issues-adapter.md"
+      ]
+    },
+    {
+      "output": ".agents/skills/create-work-item-from-description/CHANGELOG.md",
       "environments": [
         "codex",
         "copilot"

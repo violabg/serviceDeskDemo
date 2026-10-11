@@ -78,3 +78,22 @@ Status: **BLOCKED** for Codex Implementor and Integration Tester diagnostics. Th
 - `codex mcp get neon` reports the server enabled, Streamable HTTP transport, correct URL, OAuth auth, and nine allowed operation names. A fresh `codex exec --ephemeral --sandbox read-only` trace called `neon.list_branches` successfully and returned `main` (branch `br-sweet-dream-af0d75vt`, archived). No data was changed.
 - The initial fast call raced MCP startup and reported the tool missing; a subsequent trace showed the Neon call completing successfully. Codex workflows should allow the optional server to finish startup before deciding a tool is unavailable. The active ChatGPT session does not inherit the local user's Codex MCP configuration.
 - The seven Codex role TOMLs parse with complete transport configuration and exact per-role allowlists. Generated-role invocation/inheritance remains unverified, so this proves local Codex CLI MCP access and static role configuration, not every custom role's runtime behavior. Copilot was not changed.
+
+
+## Codex Standalone Issue Creation (2026-10-10)
+
+Selected context: default Codex agent in this active local host; no new target version or global configuration. User approved the native GitHub CLI procedure for the explicitly invoked creation skill. Connector creation was rejected with 403. This is an alternative authorized procedure for the same GitHub adapter; it does not repair or grant the connector's remote permissions.
+
+Official sources retrieved 2026-10-10:
+- https://docs.github.com/en/rest/using-the-rest-api/troubleshooting-the-rest-api#resource-not-accessible — integration error indicates insufficient permissions.
+- https://docs.github.com/en/rest/issues/issues#create-an-issue — issue creation endpoint and permission requirements.
+- https://cli.github.com/manual/gh_issue_create — native issue create supports explicit repository, title and body-file; returned URL/nonzero handling must avoid duplicates.
+- https://learn.chatgpt.com/docs/extend/mcp?surface=cli — Codex integration registration/authentication and per-tool controls; a missing scope is not repaired by instruction text.
+
+Local evidence: gh 2.100.0 at /opt/homebrew/bin/gh; installed create help confirms command flags. Existing login is violabg via OS keyring with repo scope. No token values are recorded. Bounded `gh repo view` of github.com/violabg/serviceDeskDemo returned ADMIN and enabled issues. Configuration: configured. Authentication: verified in default host. Repository preflight: verified-native read. Creation: unverified until the already approved real story executes. Generated-role operations, Copilot runtime, and native discovery/exclusion outside this active host remain unverified. No login, scope refresh, app-policy change or custom-role tool grant was made.
+
+The root loads the complete skill then only its selected environment binding. Shared resources contain no Codex CLI calls; exact syntax is isolated in the Codex binding. The skill permits only approved native procedures, keeps final issue approval and forbids automatic retry after uncertain results. All previous full environment-audit diagnostics failures remain visible.
+
+Context-audit discovery: the preapply inventory misclassified 44 excluded installed Bootstrap/Maintainer resources as ordinary maintenance entrypoints. The archived plan reproduces the same failure. The approved audit-plan update corrects only their inventory kind to maintenance, preserving installed paths and exclusion policy. This platform-compatibility metadata delta is now applied; no installed skill file changed.
+
+Native creation outcome: **verified-native** for the explicitly invoked default-Codex workflow on 2026-10-10. Created the previously approved customer story once as https://github.com/violabg/serviceDeskDemo/issues/8, exit 0, then verified its exact approved title/body with the returned URL. Temporary body-file deleted. No unresolved issue fields. GitHub connector create remains blocked; generated-role reads and Copilot remain unverified.
