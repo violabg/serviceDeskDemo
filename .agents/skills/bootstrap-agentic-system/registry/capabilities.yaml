@@ -68,6 +68,16 @@ capabilities:
       batch file-read procedure when the selected operation requires it. Preserve Markdown,
       code blocks, image URLs, IDs, titles, and relation types required by that skill.
 
+  - id: work-item-write
+    essential: false
+    why: manage-work-item creates bugs and user stories and updates fields of existing work items, only after explicit approval of the complete proposal.
+    fallback: >-
+      When the approved tracker adapter is the local Markdown contract declared in
+      LOCAL_MARKDOWN_TRACKER_CONTRACT, create or update the item file with the file-editing
+      capability following that contract. Otherwise there is no fallback: report the mode as
+      blocked and change nothing. Never substitute shell commands, raw API calls, or another
+      client's tools.
+
   - id: visual-evidence
     essential: false
     why: Screenshot, mockup, and UI evidence review for visual planning and testing.

@@ -36,7 +36,7 @@ A registration adapter is not a new authored version of Planner, Implementor, a 
 
 ## Capability Resolution
 
-Resolve capabilities by environment, role, and required operation. `registry/capabilities.yaml` defines stable needs and possible fallback procedures, not tool defaults. Read the selected mirrors' Role Tooling Intent and Capability Substitutions as the operation inventory. Existing baseline tool names are source evidence, not a target allowlist.
+Resolve capabilities by environment, role, and required operation. `registry/capabilities.yaml` defines stable needs and possible fallback procedures, not tool defaults. Read the selected agents' capability sidecars (`templates/agents/<role>.capabilities.yaml`) as the operation inventory. Existing baseline tool names are source evidence, not a target allowlist.
 
 For each operation record its tool or procedure, exact invocation, inputs, outputs, configuration/permission prerequisites, assigned role, evidence, and verification status. A skill or MCP declaration is not proof that its underlying tools are installed, authenticated, permitted, or available in that role. Do not copy credentials into provenance files. Reuse existing configuration and scope proposed configuration changes to agent-system settings; never broaden global permissions automatically.
 

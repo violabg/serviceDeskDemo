@@ -7,6 +7,7 @@ Load source assets only when their output is needed.
 - `templates/generated-system-blueprint.md`: first-install structure, batch order, directory strategy, and generated-system map.
 - `templates/bootstrap-file-plan.md`: proposal and approval plan shape.
 - `templates/agents/`: Canonical Template Mirrors for generated agents.
+- `templates/agents/<role>.capabilities.yaml`: Bootstrap-only capability sidecar per agent: the capability tokens the role uses, their substitute text, and target capability categories. Read it during discovery; never copy it into the target.
 - `templates/skills/`: Canonical Template Mirrors for generated skills.
 - `templates/instructions/`: Canonical Template Mirrors for the root instruction router and the modular instruction files it routes to.
 - `templates/agentic-system-manifest.md`: provenance ledger, customization register, and maintenance handoff.

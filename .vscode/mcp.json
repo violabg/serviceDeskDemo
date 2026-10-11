@@ -6,9 +6,13 @@
 		},
 		"neondatabase/mcp-server-neon": {
 			"type": "http",
-			"url": "https://mcp.neon.tech/sse",
+			"url": "https://mcp.neon.tech/mcp",
 			"gallery": "https://api.mcp.github.com",
 			"version": "1.0.0"
+		},
+		"context7": {
+			"type": "http",
+			"url": "https://mcp.context7.com/mcp"
 		},
 		"io.github.vercel/next-devtools-mcp": {
 			"type": "stdio",

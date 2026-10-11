@@ -76,4 +76,4 @@ Run the Contract Auditor subagent against the final file list when available; ot
 
 ## Post-Maintenance Recommendations
 
-Always recommend running the Knowledge Builder agent after structural changes. When tracker workflows are relevant, recommend `create-work-item-from-description`. When the repository needs its own repeatable procedures, recommend authoring them as repo-local skills rather than growing the agent contracts.
+Always recommend running the Knowledge Builder agent after structural changes. When tracker workflows are relevant, recommend the generated `manage-work-item`, or generating it when it is absent. A target that still routes to or installs the retired standalone `create-work-item-from-description` skill records that delta as `requires update`: propose generating `manage-work-item` from the current mirror with approved `WORK_ITEM_WRITE` tools and replacing the old root-instruction route; remove the old skill only with explicit approval. When the repository needs its own repeatable procedures, recommend authoring them as repo-local skills rather than growing the agent contracts.

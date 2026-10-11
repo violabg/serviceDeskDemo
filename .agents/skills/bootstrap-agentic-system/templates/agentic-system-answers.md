@@ -16,6 +16,7 @@ execution_host: <client-running-this-workflow>
 layout:
   knowledge_root: knowledge
   knowledge_index: knowledge/knowledge-index.md
+  runtime_root: .agentic-system           # RUNTIME_ROOT: canonical copies, schemas, gates, sessions, local issues
   runtime_roots: [<approved-shared-and-native-roots>]
   maintenance_root: .agentic-system-maintenance
   excluded_roots: [<maintenance-root-and-other-local-maintenance-skill-roots>]

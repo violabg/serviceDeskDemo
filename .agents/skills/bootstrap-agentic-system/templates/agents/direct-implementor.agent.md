@@ -5,61 +5,26 @@ agents: [agent, "{{VISION_AGENT_NAME}}"]
 disable-model-invocation: true
 ---
 
-# Source Mapping
-
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START replaces=none -->
-## Bootstrap Template Knowledge Source
-- Read selected project knowledge through `{{KNOWLEDGE_SOURCE}}` when the workflow requires repository guidance.
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START replaces=none -->
-## Bootstrap Template Repository Search
-- Use `{{REPOSITORY_SEARCH_TOOL}}` for repository discovery when the workflow requires codebase evidence.
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
 <!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
 ## Repository Context Boundary
 - During ordinary questions, planning, implementation, testing, and knowledge building, never read, search, index, summarize, or load `{{MAINTENANCE_ROOT}}` or installed Bootstrap/Maintainer bodies and resources. Exclude their paths and aliases before retrieval; pass exclusions to delegates.
 - These locations are accessible only during initial Bootstrap or explicitly requested agent-system maintenance. Runtime system edits report the need for maintenance instead of opening or updating its provenance.
 - Keep generated project knowledge under top-level `knowledge/`; do not use maintenance material as knowledge or as a runtime contract.
 <!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
-Cleaned into canonical agent `direct-implementor.agent.md`. This canonical copy preserves workflow intent while removing company-identifying names, private MCP server names, and direct source-agent identifiers.
+<!-- CANONICAL-TEMPLATE-SLOT: CAPABILITY_BINDINGS START replaces=none -->
+## Capability Bindings
+Each `#capability:<token>` in this contract runs through its binding below. Use no other tool or service for that operation; if the binding cannot perform it, stop and report the missing capability.
 
-## Capability Substitutions
-
-The source agent granted or called private tools for these operations. Each one keeps its identity as a capability token, and the generated system satisfies it with the substitute below.
-
-| Capability | Substitute in the generated system |
-| --- | --- |
-| `#capability:execution-report-read` | Read `{{SESSION_ROOT}}/<planning-session-id>/execution-report.md`. |
-| `#capability:execution-report-write` | Write `{{SESSION_ROOT}}/<planning-session-id>/execution-report.md`. |
-| `#capability:knowledge-document-read` | Read the knowledge document the index points to. |
-| `#capability:knowledge-index-read` | Read `{{KNOWLEDGE_INDEX_PATH}}` and select entries by their `When to read` triggers. |
-| `#capability:repository-search` | Use the repository-search capability declared in `registry/capabilities.yaml`. |
-| `#capability:session-activate` | Create or resume the current Planning Session folder under `{{SESSION_ROOT}}`. Session identity is a directory, not a service. |
-| `#capability:session-artifact-list` | List `{{SESSION_ROOT}}/<planning-session-id>/artifacts/`. |
-| `#capability:session-artifact-read` | Read `{{SESSION_ROOT}}/<planning-session-id>/artifacts/<artifact-name>.md`. |
-| `#capability:session-artifact-write` | Write `{{SESSION_ROOT}}/<planning-session-id>/artifacts/<artifact-name>.md`. |
-| `#capability:session-event-log` | Append the event to `{{SESSION_ROOT}}/<planning-session-id>/session-log.md`. Keep event history separate from session memory summaries. |
-| `#capability:session-list` | Read only the current Planning Session folder under `{{SESSION_ROOT}}`. Never enumerate other sessions. |
-| `#capability:session-memory-append` | Append to `{{SESSION_ROOT}}/<planning-session-id>/session-memory.md`, newest entry last. |
-| `#capability:session-memory-read` | Read `{{SESSION_ROOT}}/<planning-session-id>/session-memory.md`. |
-| `#capability:visual-evidence` | Use the visual-evidence capability declared in `registry/capabilities.yaml`. |
-| `#capability:work-item-batch-retrieval` | Use `{{WORK_ITEM_RETRIEVAL}}` to retrieve the provided work item IDs as a batch. |
-| `#capability:work-item-comment-retrieval` | Use `{{WORK_ITEM_RETRIEVAL}}` to read the work item comments. |
-| `#capability:work-item-retrieval` | Use `{{WORK_ITEM_RETRIEVAL}}` for the requested External Issue ID. |
-| `#capability:work-item-type-retrieval` | Use `{{WORK_ITEM_RETRIEVAL}}` to determine the work item type. |
-
-## Role Tooling Intent
-
-Use this profile during Bootstrap discovery. It describes target capability categories inferred from this role's private upstream-tool scope; it never requires the original service or any named replacement.
-
-| Target capability category | Source capability evidence | Bootstrap discovery guidance |
-| --- | --- | --- |
-| Work-item tracker access | `#capability:work-item-batch-retrieval`, `#capability:work-item-comment-retrieval`, `#capability:work-item-retrieval`, `#capability:work-item-type-retrieval` | Read issue, story, type, or comment evidence. Seek a read-only target tracker integration or the local tracker fallback. |
-| Repository knowledge access | `#capability:knowledge-document-read`, `#capability:knowledge-index-read` | Read or maintain repository knowledge. Prefer the generated knowledge index and repository documents; consider a configured documentation source only when it improves this role's workflow. |
-| Repository discovery | `#capability:repository-search` | Perform bounded code and symbol discovery. Use approved repository search when available; otherwise use native workspace file/path and text search to identify candidate files and terms without requiring cluster metadata or an MCP. |
-| Planning-session persistence | `#capability:execution-report-read`, `#capability:execution-report-write`, `#capability:session-activate`, `#capability:session-artifact-list`, `#capability:session-artifact-read`, `#capability:session-artifact-write`, `#capability:session-event-log`, `#capability:session-list`, `#capability:session-memory-append`, `#capability:session-memory-read` | Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one. |
-| Visual evidence analysis | `#capability:visual-evidence` | Inspect image or UI evidence and produce a text artifact. For remote issue images, discover an authorized way to fetch and view the image URL, including private repository attachments; URL text alone is not visual evidence. Add a visual service only when native tools cannot perform the selected workflow. |
-
+{{CAPABILITY_BINDINGS}}
+<!-- CANONICAL-TEMPLATE-SLOT: CAPABILITY_BINDINGS END -->
+<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START replaces=none -->
+## Repository Search
+- Use `{{REPOSITORY_SEARCH_TOOL}}` for repository discovery when the workflow requires codebase evidence.
+<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
+<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START replaces=none -->
+## Knowledge Source
+- Read selected project knowledge through `{{KNOWLEDGE_SOURCE}}` when the workflow requires repository guidance.
+<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
 # Agent Role
 
 | Focus       | Mandatory Requirement                                                                                   |

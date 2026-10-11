@@ -53,6 +53,7 @@ Required checks:
 - Plan schema exists at the approved path, preserves the required content from `templates/plan-schema.md` or an approved stronger equivalent, and is explicitly referenced by Planner.
 - Vision decision is reflected in generated files or recorded as an intentional no-op.
 - Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
+- Generated `manage-work-item`, when selected, binds reads only to approved `WORK_ITEM_RETRIEVAL` tools and creates/updates only through approved `WORK_ITEM_WRITE` tools or the approved local Markdown contract; it has no delete or bulk tools, and root instructions route to it only when it was generated.
 - Generated work-item planning skills preserve tracker/local adapter, session, evidence, Planner-only, no-skill-tools-frontmatter, and approved native-or-inline gathering requirements.
 - Generated Planner and work-item planning skills ask clarification only for genuine blocking uncertainty; otherwise complete mandatory gates, artifacts, and implementation plan before requesting review or approval.
 - Compatibility verification from `contracts/platform-compatibility.md` covers every selected environment, including discovery collisions, complete instruction loading, and effective operations. Installed files alone do not establish compatibility.
@@ -85,7 +86,7 @@ The final handoff must include:
 Always recommend:
 
 - run the generated Knowledge Builder agent to scan repository knowledge, refine the knowledge index, suggest context-glossary terms, and ask bounded questions for missing knowledge boundaries,
-- use `create-work-item-from-description` when the team wants repeatable creation of user-story or bug tickets from clarified work,
+- use the generated `manage-work-item` to create bug or user-story tickets from clarified work, or to update an existing ticket after reading it; when it was skipped or blocked for lack of a write binding, say which binding would enable it,
 - use the installed `author-repo-skill` when the team wants a new repository-local skill, or wants to rework a generated one such as `plan-bug-from-id` or `plan-user-story-from-id`,
 - invoke explicit agent-system maintenance after hand edits to refresh answers, baseline, and customization records coherently; ordinary runtime work reports that need without accessing maintenance material.
 

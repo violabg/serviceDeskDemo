@@ -22,12 +22,12 @@ The Core System batch should normally include:
 | `<agent-dir>/<prefix>-ask.agent.md` | Yes | Q&A-only role for knowledge-grounded answers without implementation authority. |
 | `<agent-dir>/<prefix>-contract-auditor.agent.md` | Optional hidden | Read-only generated-file auditor for file-plan and contract adherence. |
 | `<agent-dir>/<prefix>-partials/` | Optional | Additive prompt-scoped instruction modules for repo-specific extensions or custom roles without Canonical Template Mirrors. They must not replace mirrored non-slot content and cannot relocate canonical content. |
-| `<manifest-path>` | Yes | Version provenance ledger that records the Bootstrap skill version, Bootstrap contract applied-through version, installed skill changelog source, repo-local snapshot path, and later maintenance history. |
-| `<bootstrap-changelog-snapshot-path>` | Yes | Repo-local copy of the installed Bootstrap skill `CHANGELOG.md` used as the maintenance baseline when the original installed skill path is unavailable later. |
-| `<knowledge-index-path>` | Yes | Index-first routing file with knowledge entries and `When to read` triggers. |
-| `<template-dir>/plan-schema.md` | Yes | Implementation-plan artifact schema copied or adapted from this skill. |
-| `<template-dir>/test-plan-schema.md` | When Integration Tester is selected | Verified existing test-plan schema or the shipped local YAML fallback. |
-| `<template-dir>/artifact-gates.md` | Usually | Gate, approval, handoff, and session artifact contract. |
+| `<maintenance-root>/agentic-system-manifest.md` | Yes | Version provenance ledger that records the Bootstrap skill version, Bootstrap contract applied-through version, installed skill changelog source, repo-local snapshot path, and later maintenance history. |
+| `<maintenance-root>/skill-changelogs/bootstrap-agentic-system.CHANGELOG.md` | Yes | Repo-local copy of the installed Bootstrap skill `CHANGELOG.md` used as the maintenance baseline when the original installed skill path is unavailable later. |
+| `knowledge/knowledge-index.md` | Yes | Index-first routing file with knowledge entries and `When to read` triggers. |
+| `<runtime-root>/schemas/plan-schema.md` | Yes | Implementation-plan artifact schema copied or adapted from this skill. |
+| `<runtime-root>/schemas/test-plan-schema.md` | When Integration Tester is selected | Verified existing test-plan schema or the shipped local YAML fallback. |
+| `<runtime-root>/artifact-gates.md` | Usually | Gate, approval, handoff, and session artifact contract. |
 | `<context-glossary-path>` | When glossary-worthy terms are resolved | Repository code/domain vocabulary and source-of-truth boundaries. |
 
 Do not generate Vision in the Core System batch.
@@ -49,8 +49,8 @@ Use the generated Knowledge Builder to fill missing repository knowledge before 
 
 | File | Required | Purpose |
 | --- | --- | --- |
-| `<knowledge-index-path>` | Yes | Add evidence-backed entries and `When to read` triggers. |
-| `<knowledge-path>` | When selected | Repository knowledge entries backed by docs, code, commands, or user answers. |
+| `knowledge/knowledge-index.md` | Yes | Add evidence-backed entries and `When to read` triggers. |
+| `knowledge/<topic>.md` | When selected | Repository knowledge entries backed by docs, code, commands, or user answers. |
 
 Keep the context glossary separate from the knowledge index.
 
@@ -61,6 +61,7 @@ Present the full Canonical Template Mirror skill inventory and let the user choo
 | File or Skill | Required | Purpose |
 | --- | --- | --- |
 | `author-repo-skill` | Recommended | Author or rework a repository-local skill after Bootstrap, so later procedures do not get grafted onto agent contracts. |
+| `manage-work-item` | Recommended when a tracker write binding exists | Create a bug or user story, or read and update an existing work item, through the approved tracker bindings after explicit approval. |
 | `plan-bug-from-id` | User-selected | Plan from an existing bug work item ID. |
 | `plan-user-story-from-id` | User-selected | Plan from an existing user-story work item ID. |
 | `user-story-analysis` | User-selected | Analyze user-story completeness, ambiguity, edge cases, and risks. |
@@ -69,7 +70,11 @@ Present the full Canonical Template Mirror skill inventory and let the user choo
 
 Generate selected skills from `templates/skills/`, fill only approved Personalization Slots, and record every generated, skipped, and deferred skill in the manifest.
 
-### Batch 5: Contract Audit
+### Batch 5: Maintenance Baseline
+
+Write the answers file, one pristine `.baseline/` copy of every file written in earlier batches, and the manifest customization register under `<maintenance-root>`. This batch may merge into another batch but cannot be skipped or deferred past handoff.
+
+### Batch 6: Contract Audit
 
 Verify generated files against the approved file plan, Canonical Template Mirrors, slot values, baseline tool surfaces, exact approved MCP/platform tools, manifest records, and tracker/session/glossary/knowledge/visual decisions.
 
@@ -80,7 +85,7 @@ Use later batches for workflows that are valuable but not required for the first
 | File or Skill | When to Add |
 | --- | --- |
 | Refinement of the generated `plan-bug-from-id` and `plan-user-story-from-id` through the installed `author-repo-skill` | The team wants to revise the repository-local planning skills after Bootstrap. |
-| Repository-local create-bug or create-user-story skills | The team repeatedly creates work items from clarified requirements or QA findings. Prefer `create-work-item-from-description` when available. |
+| `manage-work-item`, when skipped during the first install | A tracker write binding becomes available, or the team starts creating or editing work items from clarified requirements or QA findings. |
 | Business-logic gap detector skill | The team wants an explicit test-first weakness-finding workflow for production logic. |
 | Integration-test knowledge checklist skill | The team needs repeatable creation or maintenance of project-specific integration-test knowledge. |
 | Review agent | Review has a separate authority boundary, durable artifact, or context boundary not covered by gates. |
@@ -88,34 +93,55 @@ Use later batches for workflows that are valuable but not required for the first
 
 ## Default Directory Strategy
 
-Choose directories using the selected-environment research in `contracts/platform-compatibility.md`. Do not assume a platform from folder presence. The following is a logical map; actual paths and native formats are resolved in the target repository:
+Keep the target in four separate areas. Native client folders hold only what each selected client must discover there; everything else the system runs on lives under one runtime root. Choose native roots using selected-environment research, never from folder presence.
 
 ```text
-<shared-root>/
-  canonical/                       # complete filled copies; variants only for differing bindings
-    agents/
-    skills/
-    instructions/
-  templates/                       # runtime schemas and artifact contracts
-knowledge/                         # project-root knowledge; no installation/maintenance material
+AGENTS.md                          # root router; or the approved platform equivalent
+CONTEXT.md                         # only when glossary-worthy repo terms are resolved
+knowledge/                         # project knowledge only; no installation or maintenance material
   knowledge-index.md
-  <project-knowledge>.md
-.agentic-system-maintenance/        # initial Bootstrap or explicit maintenance only
+  <topic>.md
+<runtime-root>/                    # default .agentic-system/; read by runtime roles, never knowledge
+  canonical/                       # complete filled canonical copies; variants only for differing bindings
+    agents/
+      <prefix>-planner.agent.md
+      <prefix>-implementor.agent.md
+      <prefix>-tester.agent.md
+      <prefix>-knowledge-builder.agent.md
+      <prefix>-ask.agent.md
+      <prefix>-vision.agent.md     # when selected
+    skills/
+      <repo-skill>/SKILL.md
+    instructions/
+      knowledge-guard.instructions.md
+      planning-sessions.instructions.md
+  partials/                        # optional repo-specific extensions, by role or shared
+  schemas/
+    plan-schema.md
+    test-plan-schema.md            # when Integration Tester is selected
+  artifact-gates.md
+  sessions/                        # session root; access only the current session
+    <planning-session-id>/
+      session-identity.md          # External Issue ID and Planning Session ID mapping
+      session-memory.md            # durable summaries and carried-forward decisions
+      session-log.md               # chronological event log
+      execution-report.md          # execution and validation progress snapshots
+      artifacts/
+  issues/                          # only when the local Markdown tracker is the approved adapter
+<maintenance-root>/                # default .agentic-system-maintenance/; Bootstrap or explicit maintenance only
   agentic-system-manifest.md
-  agentic-system.answers.yaml      # selected environments, decisions, and setup evidence
-  preservation-plan.json
-  environment-audit.json
-  context-audit.json
-  sources/                         # hashed mirrors, excluded from native discovery
-  .baseline/                       # pre-baseline copies; never recursively snapshot itself
+  agentic-system.answers.yaml      # every approved slot value, binding, and generated/baseline pair
+  .baseline/                       # pre-baseline copy of every generated file at its repository path
   skill-changelogs/
-  skills/                          # maintenance skill bodies/resources if copied locally
+    bootstrap-agentic-system.CHANGELOG.md
+  sources/                         # hashed mirrors, excluded from native discovery
   evidence/                        # compatibility, authentication setup, native checks; no secrets
-  plans/                           # installation and maintenance reports
-<environment-native-roots>/         # discovered only for selected clients/versions
-  <native-registrations>            # direct copies or minimal verified adapters
-<session-root>/                     # shared contract; access only the current session
+  plans/                           # preservation, environment, and context audit plans and reports
+<environment-native-roots>/        # discovered only for selected clients/versions
+  <native-registrations>           # direct copies or minimal verified adapters loading <runtime-root>/canonical/
 ```
+
+Existing repository conventions win only on evidence and approval: an established session root, issue folder, or schema location stays where it is and is recorded in the answers file.
 
 ## Batch Rules
 
