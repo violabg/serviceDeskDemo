@@ -4,7 +4,14 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.3.0`
+- `3.4.0`
+
+## 2026-10-13
+
+### 3.4.0
+
+- Classify a generated Vision agent, its native registration, its `VISION_*` and visual-artifact slot values, and Planner or Direct Implementor delegation to it as retired components that require update. Propose removing them with approval and re-resolving image handling as `IMAGE_INSPECTION`; session visual artifacts stay untouched.
+- Resolve the new role entrypoints, Planner handoff step, and client guides for the recorded environments, and regenerate affected client guides whenever an environment, role, entrypoint, or handoff step changes.
 
 ## 2026-10-11
 

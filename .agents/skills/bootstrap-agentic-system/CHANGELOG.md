@@ -4,7 +4,25 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `8.0.0`
+- `9.2.0`
+
+## 2026-10-13
+
+### 9.2.0
+
+- Deliver Planner clarification batches through the environment's verified question tool when one exists. Each question keeps its full per-question text in chat, and its answer choices appear as selectable options in a single question-tool call, with free-text Other still available. Environments without a question tool receive the batch in chat only.
+
+### 9.1.0
+
+- Ask all blocking Planner clarification questions together in one message, ordered by impact and each in the per-question format, instead of one at a time. The Planner waits for every answer before resuming. If those answers leave new blocking questions, they are asked together in one further message. The same batching applies to the clarifications in the generated `plan-user-story-from-id` and `plan-bug-from-id` flows.
+
+### 9.0.0
+
+- Remove the Vision role. Generated systems no longer include a Vision agent, its model choice, or Planner and Direct Implementor delegation to it; the `VISION_AGENT_NAME`, `VISION_MODEL`, `VISION_INVOCATION`, `VISUAL_ARTIFACT_FORMAT`, and `VISUAL_ARTIFACT_STORAGE` slots are gone. Planner and Direct Implementor inspect images themselves through the new `IMAGE_INSPECTION` slot, may hand an image to a default subagent on an explicitly approved cheaper vision-capable model, and record one Markdown visual-evidence session artifact per image so Implementor can use the findings with fresh context.
+- Run every user-invokable role as the main conversation of its session, never as a delegated subagent. A new `role-selection` capability and a Role Entrypoints section in the compatibility contract give each selected environment a verified way to start each role: the client's own main-session selection where it exists, otherwise a user-only role-entry adapter that loads the complete role, with its tool limits recorded as instruction-only.
+- Make `plan-user-story-from-id` and `plan-bug-from-id` activate the Planner through a new `ROLE_ACTIVATION` slot, so one explicit invocation works from a fresh session on clients without an agent picker.
+- Replace the Planner's generic "invoke implementor" instruction with a `ROLE_HANDOFF` slot that prints the exact step for the consuming environment to start Implementor in a new conversation with the Planning Session ID.
+- Generate user guides under a new `CLIENT_GUIDE_ROOT` (default `docs/agentic-system/`): an index plus one guide per selected environment covering role start methods, common flows, the handoff, and enforcement limits. Root instructions link the index, and the final handoff links every guide. The generated-system blueprint and file plan gain a Client Guides batch in place of the Vision batch.
 
 ## 2026-10-11
 

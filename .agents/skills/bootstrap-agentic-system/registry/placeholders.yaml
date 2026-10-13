@@ -36,25 +36,6 @@ placeholders:
       - explicit selected environments and their client/version evidence
       - existing customization folders as evidence only, not selection
 
-  - name: VISION_AGENT_NAME
-    kind: value
-    question: What is the generated visual-evidence agent called on the target platform?
-    fill_from: user
-    recommend: "`{{AGENT_PREFIX}}vision`, matching the naming of the other generated agents."
-    infer_from:
-      - resolved AGENT_PREFIX
-      - existing agent naming style in the platform folder
-
-  - name: VISION_MODEL
-    kind: value
-    question: Which model should the generated Vision agent use?
-    fill_from: user
-    recommend: The sanitized upstream Vision default when the target platform supports it (`gpt-5.6-luna-pro` in the current source); otherwise use the target platform default by omitting the model field.
-    infer_from:
-      - model declarations in existing target-platform Vision agents
-      - target platform model support and configuration
-      - canonical Vision agent model default
-
   - name: TRACKER_ADAPTER
     kind: both
     question: Which work-item tracker adapter should generated planning skills use?
@@ -207,15 +188,46 @@ placeholders:
     infer_from:
       - target delegation tools and concurrency limits
 
-  - name: VISION_INVOCATION
+  - name: IMAGE_INSPECTION
     kind: value
-    question: How should the Planner process visual evidence?
+    question: How does this role inspect images in this selected environment?
     fill_from: discovery
     capability: visual-evidence
-    recommend: For each local image or remote issue image URL, fetch the bytes with approved access (including private repository authentication when needed), then invoke the selected visual agent with approved target syntax or inspect the image inline with approved visual tools. If the image is unreadable, request it from the user; do not make image-dependent claims from its URL. Introduce the following evidence task in the replacement instruction.
+    recommend: For each local image or remote issue image URL, fetch the bytes with approved access (including private repository authentication when needed) and inspect the image with this role's own verified image-capable tools. Only when the user approved a cheaper vision-capable model for image inspection, or this role cannot read images in this environment, delegate the inspection through this environment's verified default-subagent invocation with that exact model; never invent a named delegate or model. If the image is unreadable, request it from the user; do not make image-dependent claims from its URL. Introduce the following evidence task in the replacement instruction.
     infer_from:
-      - approved Vision decision and target delegation tools
-      - available image tools or user-supplied visual evidence
+      - selected client's image input support for the role and execution context
+      - target delegation tools and whether they accept a model choice
+      - user-approved image-inspection model, if any
+
+  - name: ROLE_HANDOFF
+    kind: value
+    question: After plan approval, how does the user start Implementor in a new conversation with the Planning Session ID in this environment?
+    fill_from: discovery
+    capability: role-selection
+    recommend: "Tell the user to start Implementor in a new conversation with fresh context and print the exact step for this environment with the approved Planning Session ID filled in: the verified start command with an initial prompt where the client supports one, otherwise the steps to open a new conversation, select or enter the Implementor entrypoint, and paste `Resume implementation for Planning Session <planning-session-id>`. Never continue implementation in the planning conversation, and keep other clients' syntax out of this value."
+    infer_from:
+      - verified Implementor entrypoint for this environment
+      - client support for starting a session with an initial prompt
+      - approved SESSION_ROOT and Planning Session ID format
+
+  - name: ROLE_ACTIVATION
+    kind: both
+    question: How does a role-bound skill make sure it runs under its required role in this environment?
+    fill_from: discovery
+    capability: role-selection
+    recommend: "With native main-session role selection, run the skill only when the conversation is already working as the required role; otherwise stop and tell the user the exact step to start that role. With a role-entry adapter, load the required role's entry first when the conversation is not already working as that role, then continue with the skill. Record whether tool limits are runtime-enforced or instruction-only."
+    infer_from:
+      - verified role entrypoints for this environment
+      - selected client's skill invocation and main-session agent selection documentation
+
+  - name: CLIENT_GUIDE_ROOT
+    kind: value
+    question: Where should the user-facing guides for each selected environment live?
+    fill_from: user
+    recommend: "`docs/agentic-system/`, holding `README.md` plus one `<environment-id>.md` per selected environment. Exclude it from knowledge indexing and runtime loading; keep an existing documentation folder convention when one exists."
+    infer_from:
+      - existing docs/ layout and documentation site configuration
+      - approved knowledge, runtime, and maintenance roots
 
   - name: ARTIFACT_GATES_PATH
     kind: both
@@ -279,25 +291,6 @@ placeholders:
       - UI folders, component libraries, or frontend frameworks in the dependency manifest
       - existing screenshot, mockup, or design folders
       - Playwright, Cypress, or visual regression config
-
-  - name: VISUAL_ARTIFACT_FORMAT
-    kind: both
-    question: Which format do visual evidence artifacts use?
-    fill_from: user
-    capability: visual-evidence
-    recommend: PNG captures paired with a short Markdown note describing what the capture proves.
-    infer_from:
-      - formats of existing screenshots or design exports
-
-  - name: VISUAL_ARTIFACT_STORAGE
-    kind: both
-    question: Where are visual evidence artifacts stored?
-    fill_from: user
-    capability: visual-evidence
-    recommend: "`{{SESSION_ARTIFACT_STORAGE}}/visual/`, so visual evidence stays inside the owning session."
-    infer_from:
-      - resolved SESSION_ARTIFACT_STORAGE
-      - existing image or asset folders
 
   - name: REPO_DOMAIN_TERMS
     kind: block
@@ -484,6 +477,8 @@ required:
       - PLAN_SCHEMA_PATH
       - REPOSITORY_SEARCH_TOOL
       - KNOWLEDGE_SOURCE
+      - IMAGE_INSPECTION
+      - ROLE_HANDOFF
     knowledge-builder.agent.md:
       - MAINTENANCE_ROOT
       - CAPABILITY_BINDINGS
@@ -493,21 +488,13 @@ required:
       - REPO_KNOWLEDGE_PATHS
       - REPOSITORY_SEARCH_TOOL
       - KNOWLEDGE_SOURCE
-    vision.agent.md:
-      - MAINTENANCE_ROOT
-      - CAPABILITY_BINDINGS
-      - APPROVED_MCP_TOOLS
-      - VISION_MODEL
-      - VISUAL_ARTIFACT_FORMAT
-      - VISUAL_ARTIFACT_STORAGE
     direct-implementor.agent.md:
       - MAINTENANCE_ROOT
       - CAPABILITY_BINDINGS
       - APPROVED_MCP_TOOLS
       - KNOWLEDGE_SOURCE
       - REPOSITORY_SEARCH_TOOL
-      - VISION_AGENT_NAME
-      - VISION_INVOCATION
+      - IMAGE_INSPECTION
   skills:
     default:
       - MAINTENANCE_ROOT
@@ -526,6 +513,7 @@ required:
       - VALIDATION_COMMANDS
     plan-bug-from-id:
       - MAINTENANCE_ROOT
+      - ROLE_ACTIVATION
       - TRACKER_ADAPTER
       - LOCAL_MARKDOWN_TRACKER_CONTRACT
       - WORK_ITEM_ID_FORMAT
@@ -533,6 +521,7 @@ required:
       - SESSION_ROOT
     plan-user-story-from-id:
       - MAINTENANCE_ROOT
+      - ROLE_ACTIVATION
       - TRACKER_ADAPTER
       - LOCAL_MARKDOWN_TRACKER_CONTRACT
       - WORK_ITEM_ID_FORMAT
@@ -560,6 +549,7 @@ required:
       - ARTIFACT_GATES_PATH
       - VALIDATION_COMMANDS
       - MANIFEST_PATH
+      - CLIENT_GUIDE_ROOT
     knowledge-guard.instructions.md:
       - MAINTENANCE_ROOT
       - KNOWLEDGE_FILE_GLOB

@@ -15,7 +15,7 @@ The proposal must cover:
 - tracker/session contract,
 - context glossary decision,
 - project-root knowledge and maintenance isolation strategy, including ordinary search/loading exclusions and explicitly invoked maintenance entrypoints,
-- visual artifact strategy,
+- image inspection, role entrypoints, Planner-to-Implementor handoff, and client guide strategy,
 - selected Canonical Template Mirror agents and skills,
 - tool and integration assignment register, native registration/authentication setup, non-secret prerequisites, and per-role verification,
 - agentic-system manifest, answers file, baseline directory, and Bootstrap changelog snapshot strategy,
@@ -36,6 +36,7 @@ The file plan must include:
 - schema file destination copied from `templates/plan-schema.md`, plus any approved repo-local equivalent or adaptation; include `templates/test-plan-schema.md` or a verified compatible local schema when Integration Tester is selected,
 - context glossary operation or no-op reason,
 - issue tracker or local Markdown adapter contract,
+- role entrypoint for each selected environment and user-invokable role, role-entry adapters with complete instruction-loading evidence, and client guide paths,
 - maintenance baseline plan: answers file path, baseline directory path, and the promise that every generated file gets a pristine copy,
 - batch approval checkpoints,
 - rollback notes.
@@ -43,11 +44,11 @@ The file plan must include:
 Default batch order:
 
 1. Core System: root instructions copied from `templates/instructions/AGENTS.md`, the modular instruction files selected from `templates/instructions/`, manifest, Bootstrap changelog snapshot, knowledge index shell, the repo-local schema file copied from `templates/plan-schema.md`, the resolved test-plan schema when Integration Tester is selected, Planner, Implementor, Tester or Integration Tester, Knowledge Builder, Ask when selected, and context glossary only when resolved.
-2. Vision Evidence: Vision agent or visual-intake skill when selected.
-3. Knowledge Builder Bootstrap: initial knowledge files and index entries when evidence supports them; otherwise recommend running generated Knowledge Builder.
-4. Skill Template Generation: selected skills from `templates/skills/`.
+2. Knowledge Builder Bootstrap: initial knowledge files and index entries when evidence supports them; otherwise recommend running generated Knowledge Builder.
+3. Skill Template Generation: selected skills from `templates/skills/`.
+4. Client Guides: `CLIENT_GUIDE_ROOT` index and one guide per selected environment.
 5. Maintenance Baseline: answers file, pristine `.baseline/` copies of every file written in earlier batches, and the customization register in the manifest.
-6. Contract Audit: final preservation, schema, manifest, tool, tracker, glossary, knowledge, baseline, and validation checks.
+6. Contract Audit: final preservation, schema, manifest, tool, tracker, glossary, knowledge, role entrypoint, handoff, client guide, baseline, and validation checks.
 
 Present default batches as recommendations only. Let the user select, defer, skip, reorder, split, or combine every proposed batch. Reflect approved composition and checkpoints in proposal and file plan. Ask for explicit approval before any write batch. Do not write generated files while the plan is unapproved.
 
@@ -69,9 +70,9 @@ For every generated agent or skill with a matching mirror:
 - retain canonical frontmatter outside declared slots; put native registration, unsupported source metadata handling, and delegation configuration in the separately verified adapter when required,
 - replace `"{{APPROVED_MCP_TOOLS}}"` with exact quoted string tool names or remove it if no additional tools are approved; deduplicate with `PLATFORM_TOOLS` and remove empty list items,
 - fill invocation slots with the approved native syntax or explicit inline/manual procedure; using plain chat for `QUESTION_TOOL` must not leave a fictitious tool reference,
-- replace `"{{VISION_AGENT_NAME}}"` with the generated Vision agent name when Vision is selected, or fill that placeholder with an empty value and configure the native adapter to omit that unselected delegate,
-- replace `"{{VISION_MODEL}}"` with the approved exact model when Vision is selected; if the user approves the target platform default, fill that placeholder with an empty value in the canonical copy and omit the native adapter's model setting; record this default decision in the manifest,
-- use a verified native adapter whenever retained canonical metadata is not directly loadable (including empty optional model/delegate values); never register an invalid copy directly,
+- fill `IMAGE_INSPECTION` with the consuming environment's approved image inspection; name a delegate model only when the user approved it and the environment verified that its delegation accepts it,
+- fill `ROLE_HANDOFF` with the consuming environment's exact step for starting Implementor in a new conversation with the Planning Session ID; when the step differs between environments, keep one Planner copy per distinct value,
+- use a verified native adapter whenever retained canonical metadata is not directly loadable; never register an invalid copy directly,
 - record all decisions in the manifest.
 
 For generated work-item planning skills:
@@ -79,6 +80,7 @@ For generated work-item planning skills:
 - do not add skill-level `tools:` frontmatter,
 - name the selected external tracker adapter or local Markdown adapter in the body,
 - preserve Planner-only invocation,
+- fill `ROLE_ACTIVATION` with the consuming environment's approved activation: a run-only-in-Planner check with the exact start step where the client selects the main-session role natively, or loading the Planner role-entry adapter first where it does not,
 - fill `WORK_ITEM_GATHERING` with the approved target invocation or an explicit inline gathering instruction; verify any named delegate and selector in the intended client, preserve the following evidence task and its artifact contract, and never combine different clients' invocations in a shared skill,
 - define adapter name, exact approved retrieval tools when available, supported issue types, External Issue ID format, required retrieved fields, rich-content and attachment Markdown conversion, missing/duplicate/unreadable/invalid-ID behavior, and local lookup rules when applicable,
 - retrieve only requested External Issue ID by default. Read each issue explicitly referenced or linked by the current issue before deciding relevance; record retrieval reason as dependency evidence and do not recurse,
@@ -100,6 +102,12 @@ For generated instruction files:
 - omit unselected targets within the declared roster slot; do not delete fixed non-slot routing lines,
 - fill `MAINTENANCE_ROOT` in all selected mirrors and preserve their exclusion guard; the root manifest locator and update instruction apply only during explicit maintenance,
 - keep the root instruction file navigational: move any repository-specific rule into a modular instruction file or a knowledge file instead of expanding the router.
+
+For role entrypoints and client guides:
+
+- register each user-invokable role through the role-entry method approved in `contracts/platform-compatibility.md`; a role-entry adapter is generated from the complete canonical copy, is invocable only explicitly by the user, has automatic invocation disabled where the client supports it, and records its tool limits as instruction-only,
+- fill `CLIENT_GUIDE_ROOT` in root instructions and write `<client-guide-root>/README.md` plus one `<client-guide-root>/<environment-id>.md` per selected environment, following the Client Guides batch in `templates/generated-system-blueprint.md`,
+- write guides only from recorded evidence, for people rather than agents; exclude the guide root from knowledge indexing and runtime loading, and never copy credential values into a guide.
 
 For generated runtime schema files:
 
