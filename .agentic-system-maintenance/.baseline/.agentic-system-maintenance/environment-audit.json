@@ -124,7 +124,10 @@
         "gpt-6-luna",
         "GPT-6 Luna",
         "SlimUI",
-        "create-work-item-from-description"
+        "create-work-item-from-description",
+        "visual-evidence v1",
+        "artifacts/visual/",
+        ".slimui"
       ],
       "delegation": []
     }

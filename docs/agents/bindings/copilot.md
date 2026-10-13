@@ -2,6 +2,14 @@
 
 Owner: copilot. Load this file only in that environment, then load docs/agents/integration-policy.md for authority and evidence rules. These are configured assignments; generated-role execution remains unverified.
 
+## Role entrypoints and handoff
+
+Every role runs as the main conversation of its own chat; never start a role as a delegated subagent. Source: https://code.visualstudio.com/docs/copilot/customization/custom-agents (retrieved 2026-10-13). Status: documented, not exercised in this repository.
+
+- Start a role: open the Chat view, choose `demo-<role>` in the **Agent** dropdown, then send the request. Never choose a `demo-*-claude` entry. The `tools` frontmatter limits the role's tool picker; path limits inside granted tools remain instructions. Whether a selected agent stays active for a whole chat, and how a chat switches role, are not documented: start a new chat to change role.
+- Planner start step: open a new chat and choose `demo-planner` in the Agent dropdown. Role-bound skills: in that chat, run `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>`; in any other chat, stop and give this start step.
+- Implementor handoff step, after plan approval: open a new chat (**New Chat**), choose `demo-implementor` in the Agent dropdown, and send `Resume implementation for Planning Session <planning-session-id>` with the approved Planning Session ID filled in. No documented way starts a chat with an agent and a prompt together. Do not use agent `handoffs` buttons: they switch agents with the planning conversation's context, which breaks the fresh-context rule.
+
 ## Exact role tools
 
 | Role | Tools |
@@ -22,8 +30,9 @@ Owner: copilot. Load this file only in that environment, then load docs/agents/i
 | file-edit | `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, within the role's authorized scope |
 | terminal | `execute/runInTerminal`, `execute/getTerminalOutput` (Implementor, Direct Implementor, Integration Tester only) |
 | image-read | `read/readFile` on a local image path, with an image-capable model; unverified |
+| image-inspection procedure | Inline: the role reads the local image with `read/readFile` using its own image-capable chat model and writes the Markdown artifact itself. No delegate model is approved for Copilot; unverified |
 | web-fetch | `web/fetch` (Ask, Planner, Knowledge Builder) |
-| foreground question route | `vscode/askQuestions` |
+| foreground question route | `vscode/askQuestions`; its per-call question and option limits are unverified. If the tool is absent, ask the batch in chat only |
 | default evidence delegation procedure | see Native operations below |
 | GitHub `issue_read` | `github/issue_read` |
 | GitHub `issue_write` | `github/issue_write` (default agent, `manage-work-item` only) |

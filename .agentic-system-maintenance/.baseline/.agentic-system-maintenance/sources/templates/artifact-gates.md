@@ -17,7 +17,7 @@ Minimum durable planning package:
 Add evidence artifacts when the request requires them:
 
 - bug cause selection artifact such as `bug_<external-issue-id>_cause_analysis.md`
-- visual evidence artifacts such as `bug_<external-issue-id>_screenshot.md`, `bug_<external-issue-id>_screenshot.slimui.md`, `<image-name>.slimui.md`, or another approved deterministic structured visual file
+- visual evidence artifacts such as `bug_<external-issue-id>_screenshot_visual_evidence.md` or `<image-name>_visual_evidence.md`, one Markdown artifact per inspected image
 - stakeholder or decision log when non-trivial user choices change scope or design
 - selected-knowledge summary when the knowledge inventory cannot live directly inside the plan
 - implementor-side changed-files or validation artifact after code work begins

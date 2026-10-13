@@ -4,6 +4,7 @@ Route the current request through this file, then load only what that request ne
 
 ## Agents
 
+Each role listed here runs as the main conversation of its session. `docs/agentic-system/README.md` explains, for every installed client, how to start each role and how to hand off from Planner to Implementor in a new conversation with the Planning Session ID.
 Resolve the active environment from the client/session identity first: use `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Native registrations may carry a client suffix (Claude Code: `<role>-claude`); the selected binding names them.
 
 - `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.

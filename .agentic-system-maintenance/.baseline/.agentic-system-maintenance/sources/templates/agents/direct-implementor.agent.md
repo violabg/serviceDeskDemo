@@ -1,7 +1,7 @@
 ---
 description: "Direct Implementation Agent — analyzes requirements and directly produces implementation without an intermediate plan document"
 tools: [{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"]
-agents: [agent, "{{VISION_AGENT_NAME}}"]
+agents: [agent]
 disable-model-invocation: true
 ---
 
@@ -164,13 +164,13 @@ After receiving the screenshot path(s), apply the `IMAGE_INTAKE_INSTRUCTION` to 
 ### IMAGE_INTAKE_INSTRUCTION
 
 For every provided screenshot:
-1. {{VISION_INVOCATION}}
+1. {{IMAGE_INSPECTION}}
    `SessionId: <session_id>; image: <image_path_or_url>;`
 2. Process one evidence task per image artifact using the selected procedure: bounded parallel delegation when available, or sequential inline execution.
 3. Wait for all evidence tasks to complete.
-4. Collect the JSON artifact name produced by each task.
-5. Read every generated JSON artifact.
-6. Use the generated JSON artifacts as input for subsequent UI/UX questioning and design.
+4. For each image, write a Markdown visual-evidence artifact with `#capability:session-artifact-write` that records the image source, layout, components, visible text, states, and every detail relevant to the request, and references the original image so later roles can view it.
+5. Read every visual-evidence artifact.
+6. Use the visual-evidence artifacts as input for subsequent UI/UX questioning and design.
 
 ## Gate 3 - Requirement Decomposition & Reasoning
 

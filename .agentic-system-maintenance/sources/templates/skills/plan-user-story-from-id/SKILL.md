@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # Plan User Story From Id
 
+<!-- CANONICAL-TEMPLATE-SLOT: ROLE_ACTIVATION START replaces=none -->
+## Required Role
+This skill runs only under the Planner role, as the main conversation. {{ROLE_ACTIVATION}}
+<!-- CANONICAL-TEMPLATE-SLOT: ROLE_ACTIVATION END -->
 <!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
 ## Repository Context Boundary
 - Exclude `{{MAINTENANCE_ROOT}}` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
@@ -21,7 +25,7 @@ After retrieval identifies issue type, recommend Planning Session ID `bug-<exter
 Create or resume only `{{SESSION_ROOT}}/<Planning Session ID>`. Store evidence, dependency evidence, decisions, gate evidence, and final plan only in current Planning Session ID folder. Resume directly from the known Planning Session ID; never scan or enumerate session folders.
 
 Treat acceptance criteria, explicit dependencies, ambiguities, and missing requirements as plan evidence.
-Run normal Planner gates after evidence is stored. Ask one evidence-backed blocking clarification at a time only when required evidence leaves a material planning decision unresolved. When no blocking clarification remains, complete all mandatory gates, artifacts, and implementation plan uninterrupted, then ask only for plan review or approval. Never present incomplete artifacts as approval-ready plan.
+Run normal Planner gates after evidence is stored. Ask all evidence-backed blocking clarifications together in one message only when required evidence leaves a material planning decision unresolved. When no blocking clarification remains, complete all mandatory gates, artifacts, and implementation plan uninterrupted, then ask only for plan review or approval. Never present incomplete artifacts as approval-ready plan.
 
 You need to plan an implementation based the on the work item id provided by the user.
 If user don't provide an work item id, ask for it.

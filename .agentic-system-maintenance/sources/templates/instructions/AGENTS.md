@@ -4,6 +4,9 @@ Route the current request through this file, then load only what that request ne
 
 ## Agents
 
+<!-- CANONICAL-TEMPLATE-SLOT: CLIENT_GUIDE_ROOT START replaces=none -->
+Each role listed here runs as the main conversation of its session. `{{CLIENT_GUIDE_ROOT}}README.md` explains, for every installed client, how to start each role and how to hand off from Planner to Implementor in a new conversation with the Planning Session ID.
+<!-- CANONICAL-TEMPLATE-SLOT: CLIENT_GUIDE_ROOT END -->
 {{AGENT_ROSTER}}
 
 Full role contracts live in `{{AGENT_ROOT}}`. Do not restate them here.

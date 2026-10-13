@@ -3,7 +3,7 @@
     "path": ".github/agents/demo-planner.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
     "format": "markdown",
-    "body_sha256": "dd8703b828cd0260a7cd335c36cd4b482649389534e6ffdb313ebac403ee4400",
+    "body_sha256": "3d90f19ccec1e5ed0aeb2627729696554ffbfbb6be50ad4acf45f3cef61ddf60",
     "role": "planner",
     "environment": "copilot"
   },
@@ -11,7 +11,7 @@
     "path": ".github/agents/demo-implementor.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-implementor.agent.md",
     "format": "markdown",
-    "body_sha256": "abb8a59ab221baa64d4253e913dbf05f759ce4a83aa061960b4272a9bd464d9f",
+    "body_sha256": "26cf68c59ec67923f66e980b9cd29e72296325f48429678677416ca9bab810f5",
     "role": "implementor",
     "environment": "copilot"
   },
@@ -19,7 +19,7 @@
     "path": ".github/agents/demo-direct-implementor.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-direct-implementor.agent.md",
     "format": "markdown",
-    "body_sha256": "86da4d987fa8a21dffc64b37e3fe035e3747748e4b231f32731e9c368eef0fcb",
+    "body_sha256": "130db33baf5e8970710adef5afb47e7b2fde8e0933d143414bf99b02bb516b2f",
     "role": "direct-implementor",
     "environment": "copilot"
   },
@@ -35,7 +35,7 @@
     "path": ".github/agents/demo-knowledge-builder.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-knowledge-builder.agent.md",
     "format": "markdown",
-    "body_sha256": "aba3e2a295f82597e453f899c44d094a5f1d77c28d45fec789ba35b19ae9f263",
+    "body_sha256": "1900e1f92fc5b479557205f93dc4543cb0a19a08dda6c4398bda771fb15efc3a",
     "role": "knowledge-builder",
     "environment": "copilot"
   },
@@ -51,7 +51,7 @@
     "path": ".claude/agents/demo-planner-claude.md",
     "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
     "format": "markdown",
-    "body_sha256": "dd8703b828cd0260a7cd335c36cd4b482649389534e6ffdb313ebac403ee4400",
+    "body_sha256": "3d90f19ccec1e5ed0aeb2627729696554ffbfbb6be50ad4acf45f3cef61ddf60",
     "role": "planner",
     "environment": "claude-code"
   },
@@ -59,7 +59,7 @@
     "path": ".claude/agents/demo-implementor-claude.md",
     "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
     "format": "markdown",
-    "body_sha256": "abb8a59ab221baa64d4253e913dbf05f759ce4a83aa061960b4272a9bd464d9f",
+    "body_sha256": "26cf68c59ec67923f66e980b9cd29e72296325f48429678677416ca9bab810f5",
     "role": "implementor",
     "environment": "claude-code"
   },
@@ -67,7 +67,7 @@
     "path": ".claude/agents/demo-direct-implementor-claude.md",
     "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
     "format": "markdown",
-    "body_sha256": "86da4d987fa8a21dffc64b37e3fe035e3747748e4b231f32731e9c368eef0fcb",
+    "body_sha256": "130db33baf5e8970710adef5afb47e7b2fde8e0933d143414bf99b02bb516b2f",
     "role": "direct-implementor",
     "environment": "claude-code"
   },
@@ -83,7 +83,7 @@
     "path": ".claude/agents/demo-knowledge-builder-claude.md",
     "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
     "format": "markdown",
-    "body_sha256": "aba3e2a295f82597e453f899c44d094a5f1d77c28d45fec789ba35b19ae9f263",
+    "body_sha256": "1900e1f92fc5b479557205f93dc4543cb0a19a08dda6c4398bda771fb15efc3a",
     "role": "knowledge-builder",
     "environment": "claude-code"
   },
