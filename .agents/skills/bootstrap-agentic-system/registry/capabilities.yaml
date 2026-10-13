@@ -87,6 +87,18 @@ capabilities:
       attachments require working repository permissions. If the image cannot be read,
       request the image from the user; never infer visual content from a URL alone.
 
+  - id: role-selection
+    essential: true
+    why: >-
+      User-invokable roles ask questions and hold approval gates, so each must run as the main
+      conversation of its session. Users need a verified way to start each role, role-bound
+      skills need to run under their role, and the Planner handoff must name a fresh-context start.
+    fallback: >-
+      Where the client cannot run a role as the main conversation, generate a user-only
+      role-entry adapter (for example a skill invoked explicitly by name) that loads the complete
+      canonical role body before the role operates. Its tool limits are instruction-only and must
+      be recorded as such. When neither works, block the role in that environment.
+
   - id: subagent-delegation
     essential: false
     why: Bounded discovery lanes without flooding the main conversation.

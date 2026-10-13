@@ -32,6 +32,16 @@ Every `requires update` maps to a proposed file operation. Every `unknown` maps 
 
 A delta that lands on a region with a customization register row is resolved by the register rules, not by the classification alone. See `contracts/merge-model.md`.
 
+## Retired Components
+
+A generated file whose source the installed Bootstrap contract no longer ships is a `requires update` delta, not a customization. The current case is the retired Vision role: a generated `<prefix>-vision` agent, its native registration, the `VISION_AGENT_NAME`, `VISION_MODEL`, and `VISION_INVOCATION` slot values, `VISUAL_ARTIFACT_FORMAT` and `VISUAL_ARTIFACT_STORAGE`, and any Planner or Direct Implementor delegation to it.
+
+- Propose removing the retired agent, its adapters, its baseline copy, and its answers entries, and removing the delegate from Planner and Direct Implementor metadata. Delete nothing before plan approval.
+- Re-resolve image handling as the `IMAGE_INSPECTION` slot for each environment, through the sibling Bootstrap decision rules. Keep existing visual artifacts in session folders untouched; they are session content.
+- Treat a repository edit inside a retired file as a merge conflict to show the user, never as a reason to keep the retired role silently.
+
+When the installed contract adds role entrypoints, the Planner handoff step, or client guides, resolve them for the recorded environments like any other `requires update` delta. Whenever a selected environment, a user-invokable role, an entrypoint, or a handoff step changes, regenerate the affected client guides in the same approved plan and keep their links in root instructions current.
+
 ## Missing Provenance
 
 When no manifest or snapshot exists, do not assume every entry is missing. Infer the likely applied contract from the existing files, mark the uncertain entries `unknown`, and propose creating the manifest, answers file, and baseline as the first operation. The plan must say the delta audit is best-effort until that provenance is written.
