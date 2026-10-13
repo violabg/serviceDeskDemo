@@ -123,3 +123,23 @@ Required client verification (pending):
 4. All: inline image inspection writes `visual-evidence v1` JSON in a disposable fixture.
 
 Status: all three environments **unverified**; diagnostics **blocked** in Codex and Claude Code Implementor/Integration Tester.
+
+## 2026-10-13: Bootstrap 9.2.0 role entrypoints, image inspection and question tool
+
+Execution host: Claude Code 2.1.296 in VS Code. Selected environments: copilot, claude-code. Capability `role-selection` (Bootstrap 9.0) assessed per environment.
+
+| Evidence source (retrieved 2026-10-13) | Established behavior | Local result |
+| --- | --- | --- |
+| `claude --help` (2.1.296) | `--agent <agent>` sets the agent for the current session; positional `[prompt]` supplies the first message | Planner start `claude --agent demo-planner-claude`; Implementor handoff `claude --agent demo-implementor-claude "Resume implementation for Planning Session <id>"` |
+| https://code.claude.com/docs/en/sub-agents | `--agent` runs the main thread under the subagent's system prompt, tool restrictions and model; `agent` setting would make one role the project default; no in-session switch documented; `Agent` accepts a per-invocation `model` unless `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set; subagents never receive `AskUserQuestion`; whether `--agent` main sessions keep it is not stated | Native main-session selection recorded; no `agent` setting added; image delegate `general-purpose` + `model: haiku` (user-approved) with inline fallback |
+| Claude Code 2.1.296 `AskUserQuestion` schema (this host) | 1–4 questions per call, 2–4 options each, free-text Other added automatically | 9.2 one-call batch delivery adapted: full batch in one message, consecutive calls of up to 4 when larger |
+| https://code.visualstudio.com/docs/copilot/customization/custom-agents (page dated 10/7/2026) | Custom agents chosen in the Agent dropdown; `handoffs` switch agents with conversation context (optional `send`); no documented way to open a chat with an agent and prompt together; `disable-model-invocation` blocks subagent use only; no `askQuestions` limits documented | Native main-session selection recorded; handoff = New Chat + `demo-implementor` + pasted prompt; `handoffs` not used (fresh-context rule); `vscode/askQuestions` limits unverified; image inspection inline |
+
+Static verification after the upgrade: canonical verifier passes against the installed 9.2.0 templates (21 copies); context-boundary audit passes (161 files) after removing the deleted `templates/agents/vision.agent.md` and listing the 8.0 capability sidecars and `manage-work-item` template; environment audit remains blocked only by the inherited `read/problems` lines in the Claude Code Implementor and Integration Tester canonical copies and adapters; no retired literal (`demo-vision`, Luna, SlimUI, `visual-evidence v1`, `artifacts/visual/`) remains in any runtime output.
+
+Required client verification (pending):
+
+1. Claude Code: `claude --agent demo-planner-claude` loads the complete role, can ask with `AskUserQuestion`, and reaches its first gate; `/plan-user-story-from-id` runs in that session; the Implementor handoff command resumes from a test Planning Session ID; a local screenshot yields `<image-name>_visual_evidence.md` inspected by the haiku delegate.
+2. Copilot: `demo-planner` in the Agent dropdown loads and asks with `vscode/askQuestions`; `/plan-user-story-from-id` runs in that chat; New Chat + `demo-implementor` resumes from the session ID; inline image inspection writes the Markdown artifact.
+
+Status: both environments **unverified** for role entrypoints, handoff and image inspection; diagnostics remain **blocked** in Claude Code Implementor/Integration Tester.

@@ -59,7 +59,9 @@ Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approv
 | demo-knowledge-builder | Evidence-backed knowledge and index maintenance |
 | demo-ask | Read-only codebase and programming Q&A |
 
-Images are inspected inline by Planner and Direct Implementor; there is no separate Vision agent.
+Planner and Direct Implementor inspect images themselves (in Claude Code through an approved haiku subagent) and record one Markdown visual-evidence artifact per image; there is no separate Vision agent.
+
+How to start each role, plan from an issue and hand off to Implementor in a new conversation, per client: [agentic system user guides](docs/agentic-system/README.md).
 
 Registrations per client: Copilot in `.github/agents/`, Claude Code in `.claude/agents/` with a `-claude` suffix (run `claude --agent demo-planner-claude`). Role instructions are identical across clients; the full contracts live in `docs/agents/canonical/<environment>/agents/` and exact tools in `docs/agents/bindings/{copilot,claude-code}.md`.
 

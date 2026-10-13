@@ -37,6 +37,8 @@ capabilities:
     substitute: Append to `{{SESSION_ROOT}}/<planning-session-id>/session-memory.md`, newest entry last.
   - token: session-memory-read
     substitute: Read `{{SESSION_ROOT}}/<planning-session-id>/session-memory.md`.
+  - token: visual-evidence
+    substitute: Use the visual-evidence capability declared in `registry/capabilities.yaml`. For remote issue images, fetch and view the image URL, including private repository attachments, with approved access; never describe an image from its URL alone.
   - token: wiki-catalog-read
     substitute: List the available wikis through the approved knowledge-retrieval capability declared in `registry/capabilities.yaml`.
   - token: wiki-page-list
@@ -91,3 +93,7 @@ tooling_intent:
       - session-memory-append
       - session-memory-read
     guidance: Persist and exchange session artifacts. Prefer repository-local session files and generated contracts; do not add an MCP only for storage unless target evidence requires one.
+  - category: Visual evidence analysis
+    tokens:
+      - visual-evidence
+    guidance: Inspect image or UI evidence and produce a text artifact. For remote issue images, discover an authorized way to fetch and view the image URL, including private repository attachments; URL text alone is not visual evidence. Add a visual service only when native tools cannot perform the selected workflow.

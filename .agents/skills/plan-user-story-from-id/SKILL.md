@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 # Plan User Story From Id
 
+## Required Role
+This skill runs only under the Planner role, as the main conversation. Run it only when this conversation is already working as the Planner role (`demo-planner`; the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names its native registration and start step). Otherwise stop and tell the user that exact Planner start step from the binding. Both selected environments select the main-session role natively; the binding records whether the Planner tool limits are runtime-enforced.
 ## Repository Context Boundary
 - Exclude `.agentic-system-maintenance/` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
 - Keep generated project knowledge under top-level `knowledge/`; report provenance maintenance needed after runtime system edits instead of accessing the maintenance area.
@@ -18,7 +20,7 @@ After retrieval identifies issue type, recommend Planning Session ID `bug-<exter
 Create or resume only `sessions/<Planning Session ID>`. Store evidence, dependency evidence, decisions, gate evidence, and final plan only in current Planning Session ID folder. Resume directly from the known Planning Session ID; never scan or enumerate session folders.
 
 Treat acceptance criteria, explicit dependencies, ambiguities, and missing requirements as plan evidence.
-Run normal Planner gates after evidence is stored. Ask one evidence-backed blocking clarification at a time only when required evidence leaves a material planning decision unresolved. When no blocking clarification remains, complete all mandatory gates, artifacts, and implementation plan uninterrupted, then ask only for plan review or approval. Never present incomplete artifacts as approval-ready plan.
+Run normal Planner gates after evidence is stored. Ask all evidence-backed blocking clarifications together in one message only when required evidence leaves a material planning decision unresolved. When no blocking clarification remains, complete all mandatory gates, artifacts, and implementation plan uninterrupted, then ask only for plan review or approval. Never present incomplete artifacts as approval-ready plan.
 
 You need to plan an implementation based the on the work item id provided by the user.
 If user don't provide an work item id, ask for it.

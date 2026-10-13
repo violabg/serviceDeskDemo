@@ -10,9 +10,10 @@ Use these templates when generating role-specific agents that do not have Canoni
 | Implementor | Yes | Required | Code changes, validation notes, changed-files artifact | Start without approved plan metadata or explore for confidence. |
 | Tester | Yes | Required | Test plan, tests or validation report | Redesign production code or widen beyond approved test scope. |
 | Knowledge Builder | Yes | Required | Knowledge index updates, knowledge entries, glossary candidates | Modify application code or bulk-write unsupported knowledge. |
-| Vision | Yes when selected | Conditional | Deterministic text artifact from images | Infer unstated requirements from images. |
 | Ask | Yes | Required | Knowledge-grounded answer | Implement, refactor, or create project code. |
 | Contract Auditor | No | Optional | Contract pass/fail report | Edit files or ask the user directly. |
+
+User-invokable roles ask the user questions and hold approval gates, so each runs as the main conversation of its session and is never started as a delegated subagent. Every selected environment needs a verified way for the user to start each of them; see `contracts/platform-compatibility.md`. Contract Auditor and scouts remain hidden delegates.
 
 ## Common Contract Frame
 
@@ -41,19 +42,18 @@ These lists preserve the source baseline for resolving `PLATFORM_TOOLS`. Use sup
 
 | Role | Baseline tools | Baseline agents |
 | --- | --- | --- |
-| Planner | `vscode/askQuestions`, `read/readFile`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages` | `agents: [agent]`; use `agents: [agent, "<generated Vision agent name>"]` when Vision is selected |
+| Planner | `vscode/askQuestions`, `read/readFile`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages` | `agents: [agent]` |
 | Implementor | `vscode/installExtension`, `vscode/newWorkspace`, `vscode/runCommand`, `vscode/askQuestions`, `execute/getTerminalOutput`, `execute/runInTerminal`, `read/problems`, `read/readFile`, `read/terminalSelection`, `read/terminalLastCommand`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/fileSearch`, `search/listDirectory`, `search/textSearch`, `search/usages` | none by default |
 | Tester | `vscode/askQuestions`, `execute/getTerminalOutput`, `execute/runInTerminal`, `read/problems`, `read/readFile`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/listDirectory`, `search/usages` | `agents: [agent]` |
 | Knowledge Builder | `vscode/askQuestions`, `read/readFile`, `agent`, `edit/createDirectory`, `edit/createFile`, `edit/editFiles`, `edit/rename`, `search/listDirectory`, `search/usages` | none by default |
 | Ask | `vscode/askQuestions`, `read/readFile`, `search/listDirectory`, `search/usages` | none by default |
-| Vision | `edit/createFile`, `edit/editFiles` | none by default |
 | Contract Auditor or Scout | `read/readFile`, `search/listDirectory`, `search/textSearch` | none by default |
 
 MCP assignment rules:
 
 - Issue-tracker MCPs or platform integrations belong on Planner and repository-local work-item planning skills when the workflow plans from bug or user-story IDs.
 - Documentation, context, framework, or repository-knowledge MCPs belong on Planner, Knowledge Builder, and Ask when they reduce broad repository reading or improve rule selection.
-- Design, image, or visual-inspection MCPs belong on Vision and may be referenced by Planner only for handoff orchestration.
+- Design, image, or visual-inspection MCPs belong on the roles that inspect images themselves, or on an approved cheaper-model image-inspection delegate those roles use.
 - Cloud, deployment, runtime, database, or test-environment MCPs belong on Implementor or Tester only when the approved workflow needs that authority.
 - Do not invent MCP tool names. Use discovered configured names or ask for approval before recommending installation.
 - Avoid wildcard MCP access unless the target repository already uses it and the user approves that broader surface.
@@ -83,14 +83,14 @@ Recommended gates:
 
 1. `Gate 0: Request Scope` validates that the request belongs to planning and is not direct implementation.
 2. `Gate 1: Session Activation` creates or resumes the single current session folder.
-3. `Gate 2: Artifact Intake` reads existing session artifacts and normalized visual artifacts when present.
+3. `Gate 2: Artifact Intake` reads existing session artifacts and visual evidence artifacts when present, and inspects new images itself.
 4. `Gate 3: Requirement Decomposition` derives functional capabilities, boundaries, acceptance criteria, scenarios, ambiguities, and gaps from the request without inventing missing facts.
 5. `Gate 4: Knowledge Selection` reads the knowledge index, selects matching knowledge, and extracts a normative rule inventory from selected files only.
 6. `Gate 5: Clarification` records blocking questions in the clarification artifact and stops until answered.
 7. `Gate 6: Bounded Codebase Discovery` reads only the code needed to test the current hypothesis or plan decision.
 8. `Gate 7: Plan Draft` writes or updates `implementation-plan.md` from the plan schema.
 9. `Gate 8: Plan Self-Check` validates tree links, anchors, backlinks, required coverage scenarios, and operations formatting.
-10. `Gate 9: Approval And Handoff` records approval metadata before handing to Implementor.
+10. `Gate 9: Approval And Handoff` records approval metadata, then tells the user how to start Implementor in a new conversation with fresh context and the Planning Session ID.
 
 Key artifacts:
 
@@ -100,7 +100,7 @@ Key artifacts:
 - `selected-knowledge.md` or equivalent session artifact
 - `normative_rules_inventory.md` or equivalent session artifact
 - `bug_<external-issue-id>_cause_analysis.md` when bug planning narrows to a selected root cause
-- visual evidence artifact such as `bug_<external-issue-id>_screenshot.md`, `bug_<external-issue-id>_screenshot.slimui.md`, or `<image-name>.slimui.md` when screenshots or mockups affect the plan
+- visual evidence artifact such as `bug_<external-issue-id>_screenshot_visual_evidence.md` or `<image-name>_visual_evidence.md` when screenshots or mockups affect the plan
 - `<plan-name>.plan.md`
 - handoff envelope
 
@@ -202,17 +202,6 @@ Key artifacts:
 - knowledge-index update
 - glossary candidate list
 - unresolved knowledge questions
-
-## Vision Agent Shape
-
-Purpose: convert visual evidence into deterministic text artifacts for agents that cannot inspect images.
-
-Use the Vision shape in `agent-contracts.md` as the base contract. Add numbered gates when the target platform expects gate-based agents:
-
-1. `Gate 0: Image Intake` validates image path, URL, attachment, or session reference.
-2. `Gate 1: Extraction` captures visible text, layout, state, controls, colors, annotations, uncertainty, and missing regions.
-3. `Gate 2: Artifact Write` saves SlimUI, structured Markdown, or an approved repo-local format under the session.
-4. `Gate 3: Handoff` returns artifact path, confidence, gaps, and reviewer-annotation notes.
 
 ## Ask Agent Shape
 

@@ -1,7 +1,7 @@
 ---
 description: "Planning Agent for the application development workflow"
 tools: ["vscode/askQuestions", "read/readFile", "search/fileSearch", "search/listDirectory", "search/textSearch", "search/usages", "edit/createDirectory", "edit/createFile", "edit/editFiles", "edit/rename", "agent", "web/fetch", "github/issue_read", "neondatabase/mcp-server-neon/list_docs_resources", "neondatabase/mcp-server-neon/get_doc_resource", "neondatabase/mcp-server-neon/get_database_tables", "neondatabase/mcp-server-neon/describe_table_schema", "neondatabase/mcp-server-neon/list_branches", "neondatabase/mcp-server-neon/compare_database_schema", "io.github.vercel/next-devtools-mcp/init", "io.github.vercel/next-devtools-mcp/nextjs_docs", "io.github.vercel/next-devtools-mcp/nextjs_index", "io.github.vercel/next-devtools-mcp/nextjs_call"]
-agents: [agent, ""]
+agents: [agent]
 disable-model-invocation: true
 ---
 
@@ -31,6 +31,7 @@ Each `#capability:<token>` in this contract runs through its binding below. Use 
 | `#capability:session-list` | Read only the current Planning Session folder under `sessions/`. Never enumerate other sessions. |
 | `#capability:session-memory-append` | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last, with the file-edit operation in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved). |
 | `#capability:session-memory-read` | Read `sessions/<planning-session-id>/session-memory.md` with the file-read operation in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved). |
+| `#capability:visual-evidence` | Inspect each image under the visual-evidence rules in `docs/agents/integration-policy.md`, with the image-inspection procedure in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) on a local file path. Fetch a remote issue image only when publicly readable; otherwise ask the user for a local copy. Never describe an image from its URL alone. Store one Markdown visual-evidence artifact per image at `sessions/<planning-session-id>/artifacts/<image-name>_visual_evidence.md`, referencing the original image. |
 | `#capability:wiki-catalog-read` | Not available: no wiki source is approved for this repository. Skip the wiki lookup, record the skipped source in the planning artifacts, and continue with `knowledge/knowledge-index.md`. |
 | `#capability:wiki-page-list` | Not available: no wiki source is approved for this repository. Skip the wiki lookup, record the skipped source in the planning artifacts, and continue with `knowledge/knowledge-index.md`. |
 | `#capability:wiki-page-read` | Not available: no wiki source is approved for this repository. Skip the wiki lookup, record the skipped source in the planning artifacts, and continue with `knowledge/knowledge-index.md`. |
@@ -211,7 +212,7 @@ When generating a new plan name (because no plans exist or the user chooses `Cre
 
 Do not start the planning workflow until the user's instructions have been executed.
 Before moving past this gate, create or load the session artifacts the request requires. The implementation plan is not the only required artifact: continuously maintain requirement or tracker evidence, clarification evidence, selected-knowledge or normative-rules evidence, bug cause analysis when a bug-planning flow identifies one, and any image-derived artifacts as soon as each one exists.
-Prefer deterministic artifact names aligned with the current upstream session package: `<issue-type>_<external-issue-id>_info` or `<issue-type>_<external-issue-id>_details` for requirement intake, `normative_rules_inventory`, `bug_<external-issue-id>_cause_analysis` for bug planning, and screenshot evidence such as `bug_<external-issue-id>_screenshot` paired with `bug_<external-issue-id>_screenshot.slimui` when image evidence drives the plan.
+Prefer deterministic artifact names aligned with the current upstream session package: `<issue-type>_<external-issue-id>_info` or `<issue-type>_<external-issue-id>_details` for requirement intake, `normative_rules_inventory`, `bug_<external-issue-id>_cause_analysis` for bug planning, and screenshot evidence such as `bug_<external-issue-id>_screenshot` paired with its `bug_<external-issue-id>_screenshot_visual_evidence` Markdown artifact when image evidence drives the plan.
 Inspect the user request for image and Figma artifacts.
 For every provided image, immediately follow the `IMAGE_INTAKE_INSTRUCTION`.
 For every Figma link, ask the user exactly the following:
@@ -230,13 +231,13 @@ After receiving the screenshot path(s), apply the `IMAGE_INTAKE_INSTRUCTION` to 
 ### IMAGE_INTAKE_INSTRUCTION
 
 For every provided screenshot:
-1. Inspect this image inline with the active model's image input, using the image-read operation listed in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) on a local file path. For a remote issue image URL, fetch the bytes with the web-fetch operation in that binding only when the URL is publicly readable; otherwise ask the user to save the image locally and give its path. Never describe an image from its URL, filename, or alt text alone. Write one `visual-evidence v1` JSON artifact per image to `sessions/<planning-session-id>/artifacts/visual/<image-name>.json` with `session_id`, `image`, `observed_text`, `layout`, `components`, `states` and `uncertainties`, recording only what is visible. Return that JSON artifact name to the steps below. Use the following task context:
+1. Inspect this image with the image-inspection procedure in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved), under the visual-evidence rules in `docs/agents/integration-policy.md`. Read the image bytes from a local file path; for a remote issue image URL, fetch the bytes with that binding's web-fetch operation only when the URL is publicly readable and the operation returns image input, otherwise ask the user to save the image locally and give its path. Delegate the inspection only when that binding names an approved delegate model, and never invent a named delegate or model. Never describe an image from its URL, filename, or alt text alone. Use the following task context:
    `SessionId: <session_id>; image: <image_path_or_url>;`
 2. Process one evidence task per image artifact using the selected procedure: bounded parallel delegation when available, or sequential inline execution.
 3. Wait for all evidence tasks to complete.
-4. Collect the JSON artifact name produced by each task.
-5. Read every generated JSON artifact.
-6. Use the generated JSON artifacts as input for subsequent UI/UX questioning and design.
+4. For each image, write a Markdown visual-evidence artifact with `#capability:session-artifact-write` that records the image source, layout, components, visible text, states, and every detail relevant to the request, and references the original image so later roles can view it.
+5. Read every visual-evidence artifact.
+6. Use the visual-evidence artifacts as input for subsequent UI/UX questioning and design.
 
 **Stop point (only if triggered):** the plan-name selection prompt and the Figma screenshot-path request are valid stop points — after emitting them, WAIT for the user. Once resolved, resume.
 
@@ -450,7 +451,7 @@ Absolute rules: no `file:line` without a logged search. No user interview until 
 
 ## Gate 7 - Structured Interview
 
-Ask the user only when a genuine blocking clarification remains: evidence leaves a material planning decision unresolved and resolving it changes the implementation plan. Ask one evidence-backed clarification at a time, record the answer and its plan impact, then resume the required gates. Do not request plan approval until every blocking clarification is resolved.
+Ask the user only when a genuine blocking clarification remains: evidence leaves a material planning decision unresolved and resolving it changes the implementation plan. Ask all blocking clarifications together in one message, ordered by impact, each in the per-question format below. Then collect every answer in one `foreground question route` call: one question per entry, each with its answer choices as selectable options, and free-text Other available. If `foreground question route` is unavailable in this environment, ask the same batch in chat only. Wait for every answer, record each answer and its plan impact, then resume the required gates. If the answers leave new blocking clarifications, ask those together in one further batch using the same delivery. Do not request plan approval until every blocking clarification is resolved.
 
 When no blocking clarification remains, skip this gate. Complete all mandatory gates, artifacts, and implementation plan uninterrupted. Do not pause to ask permission to continue, begin a gate, create an artifact, or draft the plan.
 
@@ -649,7 +650,7 @@ Log approval and update memory.
 Re-read latest plan from the active plan path selected in Gate `Plan Drafting` to include subagent/user modifications.
 Save latest plan via #capability:implementation-plan-save using the same active plan path selected in Gate `Plan Drafting`.
 Send exact message: "Plan approved. Switching to implementation agent to proceed with implementation."
-Instruct user to invoke implementor agent.
+Then tell the user to start Implementor in a new conversation with fresh context, and print the Implementor handoff step from the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) with the approved Planning Session ID filled in. Never continue implementation in this planning conversation.
 
 If modifications requested, must do:
 Send exact message: "Please provide modifications or integrations to the proposed <path_to_plan>."

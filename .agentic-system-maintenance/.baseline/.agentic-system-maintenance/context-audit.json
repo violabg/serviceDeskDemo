@@ -77,7 +77,6 @@
     ".agents/skills/bootstrap-agentic-system/templates/agents/integration-tester.agent.md",
     ".agents/skills/bootstrap-agentic-system/templates/agents/knowledge-builder.agent.md",
     ".agents/skills/bootstrap-agentic-system/templates/agents/planner.agent.md",
-    ".agents/skills/bootstrap-agentic-system/templates/agents/vision.agent.md",
     ".agents/skills/bootstrap-agentic-system/templates/artifact-gates.md",
     ".agents/skills/bootstrap-agentic-system/templates/bootstrap-file-plan.md",
     ".agents/skills/bootstrap-agentic-system/templates/generated-system-blueprint.md",
@@ -160,7 +159,17 @@
     ".github/instructions/agent-integrations.instructions.md",
     ".claude/rules/agent-integrations.md",
     ".claude/settings.json",
-    ".mcp.json"
+    ".mcp.json",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/ask.capabilities.yaml",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/direct-implementor.capabilities.yaml",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/implementor.capabilities.yaml",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/integration-tester.capabilities.yaml",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/knowledge-builder.capabilities.yaml",
+    ".agents/skills/bootstrap-agentic-system/templates/agents/planner.capabilities.yaml",
+    ".agents/skills/bootstrap-agentic-system/templates/skills/manage-work-item/SKILL.md",
+    "docs/agentic-system/README.md",
+    "docs/agentic-system/copilot.md",
+    "docs/agentic-system/claude-code.md"
   ],
   "files": [
     {
@@ -504,11 +513,6 @@
       "references": []
     },
     {
-      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/vision.agent.md",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
       "output": ".agents/skills/bootstrap-agentic-system/templates/artifact-gates.md",
       "kind": "maintenance",
       "references": []
@@ -803,6 +807,10 @@
         {
           "output": ".agents/skills/maintain-agentic-system/SKILL.md",
           "when": "maintenance"
+        },
+        {
+          "output": "docs/agentic-system/README.md",
+          "when": "ordinary"
         }
       ],
       "maintenance_router": true
@@ -1447,6 +1455,65 @@
     },
     {
       "output": ".mcp.json",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/ask.capabilities.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/direct-implementor.capabilities.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/implementor.capabilities.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/integration-tester.capabilities.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/knowledge-builder.capabilities.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/agents/planner.capabilities.yaml",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": ".agents/skills/bootstrap-agentic-system/templates/skills/manage-work-item/SKILL.md",
+      "kind": "maintenance",
+      "references": []
+    },
+    {
+      "output": "docs/agentic-system/README.md",
+      "kind": "runtime",
+      "references": [
+        {
+          "output": "docs/agentic-system/copilot.md",
+          "when": "ordinary"
+        },
+        {
+          "output": "docs/agentic-system/claude-code.md",
+          "when": "ordinary"
+        }
+      ]
+    },
+    {
+      "output": "docs/agentic-system/copilot.md",
+      "kind": "runtime",
+      "references": []
+    },
+    {
+      "output": "docs/agentic-system/claude-code.md",
       "kind": "runtime",
       "references": []
     }

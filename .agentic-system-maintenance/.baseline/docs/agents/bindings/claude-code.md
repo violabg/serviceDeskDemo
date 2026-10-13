@@ -8,6 +8,15 @@ Owner: claude-code (Claude Code 2.1.296 at installation). Load this file only in
 - Claude Code reads the root `AGENTS.md` natively when no `CLAUDE.md` exists; do not add a `CLAUDE.md`. Path-scoped rules load from `.claude/rules/`.
 - Skills are discovered through `.claude/skills/<name>` links to the single `.agents/skills/<name>` source. The Bootstrap and Maintainer skills are `user-invocable-only` in `.claude/settings.json`: run them only through explicit `/bootstrap-agentic-system` or `/maintain-agentic-system`.
 
+## Role entrypoints and handoff
+
+Every role runs as the main conversation of its own session; never start a role as a delegated subagent. Sources: `claude --help` (2.1.296) and https://code.claude.com/docs/en/sub-agents (retrieved 2026-10-13). Status: documented, not exercised in this repository.
+
+- Start a role: `claude --agent demo-<role>-claude`, optionally followed by an initial prompt in quotes. The session runs under that registration's system prompt and `tools` list, so tool limits are runtime-enforced; path limits inside granted tools remain instructions. There is no documented in-session role switch: start a new session to change role. Do not set `agent` in `.claude/settings.json`, which would put every session under one role. In the VS Code extension, run the same command in the integrated terminal.
+- Planner start step: `claude --agent demo-planner-claude`. Role-bound skills: in that session, run `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>`; in any other session, stop and give this start step.
+- Implementor handoff step, after plan approval: in a new terminal session run `claude --agent demo-implementor-claude "Resume implementation for Planning Session <planning-session-id>"` with the approved Planning Session ID filled in. Never continue implementation in the planning session.
+- Whether a `--agent` main session keeps `AskUserQuestion` is unverified; the foreground question route above covers its absence.
+
 ## Exact role tools
 
 | Role | Tools |
@@ -30,8 +39,9 @@ The `tools` list is enforced by Claude Code: Ask has no edit or shell tools, and
 | file-edit | `Edit`, `Write`, within the role's authorized scope |
 | terminal | `Bash` (Implementor, Direct Implementor, Integration Tester only) |
 | image-read | `Read` on a local image path |
+| image-inspection procedure | Planner and Direct Implementor: approved haiku delegate, see Native operations below. Roles without `Agent`: inline `Read` |
 | web-fetch | `WebFetch` (Ask, Planner, Knowledge Builder). It returns page text, not image input: for a remote image, ask the user to save it locally |
-| foreground question route | `AskUserQuestion` when the role runs as the main session agent; delegates cannot use it |
+| foreground question route | `AskUserQuestion` when the role runs as the main session agent; delegates cannot use it. One call takes at most 4 questions, each with 2–4 options plus an automatic free-text Other. For a larger batch, keep the full batch in one chat message and collect answers in consecutive calls of up to 4, in batch order. If the tool is absent in the session, ask the batch in chat only |
 | default evidence delegation procedure | see Native operations below |
 | GitHub `issue_read` | `mcp__github__issue_read` |
 | GitHub `issue_write` | `mcp__github__issue_write` (main session, `manage-work-item` only) |
@@ -40,6 +50,7 @@ The `tools` list is enforced by Claude Code: Ask has no edit or shell tools, and
 
 - Default evidence delegation uses `Agent` with `subagent_type: "general-purpose"` and a bounded prompt carrying the exact owning session ID, evidence scope, approved tools, exclusions and artifact output. Subagents cannot ask the user (`AskUserQuestion` is unavailable to them); they return questions to the parent, which asks and re-delegates with the answers. If `general-purpose` is not listed as callable, gather the same evidence inline under the approved 2026-10-08 fallback.
 - MCP servers come from the project `.mcp.json` (`github`, `neon`, `context7`, `next-devtools`). The GitHub server authenticates with `Authorization: Bearer ${GITHUB_TOKEN}` from the Claude Code process environment; no credential is stored in the repository. Neon uses its OAuth login. Approve the project servers when Claude Code asks; tool presence alone is not proof of authentication.
+- Image inspection (user-approved 2026-10-13): Planner and Direct Implementor hand each image to `Agent` with `subagent_type: "general-purpose"` and `model: "haiku"`. The prompt carries the owning Planning Session ID, the local image path, the request context and the visual-evidence sections from docs/agents/integration-policy.md. The delegate reads the image with `Read`, writes no files and returns the artifact text. The calling role checks it, writes the Markdown artifact itself and records `Inspected by: general-purpose subagent, model haiku`. If `Agent` or `general-purpose` is unavailable, or the model cannot be passed (for example when `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set), inspect inline with `Read` and record the role as inspector. `WebFetch` returns page text, not image input: for a remote image, ask the user to save it locally.
 
 ## Tracker and bounded gathering
 
