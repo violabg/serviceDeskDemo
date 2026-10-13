@@ -1,7 +1,7 @@
 ---
 description: "Direct Implementation Agent — analyzes requirements and directly produces implementation without an intermediate plan document"
 tools: ["AskUserQuestion", "Read", "Grep", "Glob", "Edit", "Write", "Bash", "Agent", "mcp__github__issue_read", "mcp__neon__list_docs_resources", "mcp__neon__get_doc_resource", "mcp__neon__get_database_tables", "mcp__neon__describe_table_schema", "mcp__neon__list_branches", "mcp__neon__compare_database_schema", "mcp__neon__prepare_database_migration", "mcp__neon__run_sql", "mcp__neon__complete_database_migration", "mcp__next-devtools__init", "mcp__next-devtools__nextjs_docs", "mcp__next-devtools__nextjs_index", "mcp__next-devtools__nextjs_call", "mcp__next-devtools__browser_eval"]
-agents: [agent, ""]
+agents: [agent]
 disable-model-invocation: true
 ---
 
@@ -27,7 +27,7 @@ Each `#capability:<token>` in this contract runs through its binding below. Use 
 | `#capability:session-list` | Read only the current Planning Session folder under `sessions/`. Never enumerate other sessions. |
 | `#capability:session-memory-append` | Append to `sessions/<planning-session-id>/session-memory.md`, newest entry last, with the file-edit operation in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved). |
 | `#capability:session-memory-read` | Read `sessions/<planning-session-id>/session-memory.md` with the file-read operation in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved). |
-| `#capability:visual-evidence` | Inspect each image inline under the visual-evidence rules in `docs/agents/integration-policy.md`, with the image-read operation in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) on a local file path. Fetch a remote issue image only when publicly readable; otherwise ask the user for a local copy. Never describe an image from its URL alone. Store one `visual-evidence v1` JSON artifact per image under `sessions/<planning-session-id>/artifacts/visual/`. |
+| `#capability:visual-evidence` | Inspect each image under the visual-evidence rules in `docs/agents/integration-policy.md`, with the image-inspection procedure in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) on a local file path. Fetch a remote issue image only when publicly readable; otherwise ask the user for a local copy. Never describe an image from its URL alone. Store one Markdown visual-evidence artifact per image at `sessions/<planning-session-id>/artifacts/<image-name>_visual_evidence.md`, referencing the original image. |
 | `#capability:work-item-batch-retrieval` | GitHub MCP `issue_read` with `method: get`, one call per provided issue ID in `violabg/serviceDeskDemo`, by the qualified tool name in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved). Do not recurse, search or list; follow `docs/agents/github-issues-adapter.md`. |
 | `#capability:work-item-comment-retrieval` | GitHub MCP `issue_read` with `method: get_comments`, requesting every page, by the qualified tool name in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved). Stop if all pages cannot be retrieved. |
 | `#capability:work-item-retrieval` | GitHub MCP `issue_read` with `method: get` for the requested External Issue ID, by the qualified tool name in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved); follow `docs/agents/github-issues-adapter.md`. |
@@ -179,13 +179,13 @@ After receiving the screenshot path(s), apply the `IMAGE_INTAKE_INSTRUCTION` to 
 ### IMAGE_INTAKE_INSTRUCTION
 
 For every provided screenshot:
-1. Inspect this image inline with the active model's image input, using the image-read operation listed in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) on a local file path. For a remote issue image URL, fetch the bytes with the web-fetch operation in that binding only when the URL is publicly readable; otherwise ask the user to save the image locally and give its path. Never describe an image from its URL, filename, or alt text alone. Write one `visual-evidence v1` JSON artifact per image to `sessions/<planning-session-id>/artifacts/visual/<image-name>.json` with `session_id`, `image`, `observed_text`, `layout`, `components`, `states` and `uncertainties`, recording only what is visible. Return that JSON artifact name to the steps below. Use the following task context:
+1. Inspect this image with the image-inspection procedure in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved), under the visual-evidence rules in `docs/agents/integration-policy.md`. Read the image bytes from a local file path; for a remote issue image URL, fetch the bytes with that binding's web-fetch operation only when the URL is publicly readable and the operation returns image input, otherwise ask the user to save the image locally and give its path. Delegate the inspection only when that binding names an approved delegate model, and never invent a named delegate or model. Never describe an image from its URL, filename, or alt text alone. Use the following task context:
    `SessionId: <session_id>; image: <image_path_or_url>;`
 2. Process one evidence task per image artifact using the selected procedure: bounded parallel delegation when available, or sequential inline execution.
 3. Wait for all evidence tasks to complete.
-4. Collect the JSON artifact name produced by each task.
-5. Read every generated JSON artifact.
-6. Use the generated JSON artifacts as input for subsequent UI/UX questioning and design.
+4. For each image, write a Markdown visual-evidence artifact with `#capability:session-artifact-write` that records the image source, layout, components, visible text, states, and every detail relevant to the request, and references the original image so later roles can view it.
+5. Read every visual-evidence artifact.
+6. Use the visual-evidence artifacts as input for subsequent UI/UX questioning and design.
 
 ## Gate 3 - Requirement Decomposition & Reasoning
 
