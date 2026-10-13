@@ -51,7 +51,10 @@ Required checks:
 - Context glossary operation or no-op matches the approved decision; any glossary is primarily repository code/domain vocabulary and records preferred terms, avoided terms, aliases, and distinctions when ambiguity was resolved.
 - Knowledge index exists when planned and includes purpose, token budget rule, knowledge entries, `When to read` triggers, selection workflow, and artifact record.
 - Plan schema exists at the approved path, preserves the required content from `templates/plan-schema.md` or an approved stronger equivalent, and is explicitly referenced by Planner.
-- Vision decision is reflected in generated files or recorded as an intentional no-op.
+- Image inspection matches the approved decision for each environment: image-handling roles inspect images themselves or through an explicitly approved delegate and model, and record a Markdown visual-evidence artifact per image. No dedicated image-to-text agent or named image delegate is generated.
+- Every user-invokable role has a verified role entrypoint per selected environment, or an explicit blocked or unverified record under `contracts/platform-compatibility.md`; role-entry adapters load the complete canonical role body.
+- Generated Planner copies fill `ROLE_HANDOFF` with their environment's fresh-context Implementor start step, and role-bound skills fill `ROLE_ACTIVATION`.
+- Client guides exist under the approved `CLIENT_GUIDE_ROOT` for every selected environment, match the recorded entrypoint and handoff evidence, contain no credentials, and are excluded from knowledge indexing and runtime loading.
 - Knowledge Builder contract requires repository scanning, knowledge-index creation or refinement, context-glossary term suggestions, and bounded questions for missing knowledge areas.
 - Generated `manage-work-item`, when selected, binds reads only to approved `WORK_ITEM_RETRIEVAL` tools and creates/updates only through approved `WORK_ITEM_WRITE` tools or the approved local Markdown contract; it has no delete or bulk tools, and root instructions route to it only when it was generated.
 - Generated work-item planning skills preserve tracker/local adapter, session, evidence, Planner-only, no-skill-tools-frontmatter, and approved native-or-inline gathering requirements.
@@ -81,7 +84,8 @@ The final handoff must include:
 - per-environment compatibility status and evidence, including blocked or unverified workflows,
 - preservation plan and source-snapshot paths,
 - remaining risks,
-- post-bootstrap recommendations.
+- post-bootstrap recommendations,
+- a closing section that links `<client-guide-root>/README.md` and every `<client-guide-root>/<environment-id>.md`, with a one-line summary of how to start Planner and hand off to Implementor in each selected environment.
 
 Always recommend:
 

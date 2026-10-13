@@ -1,7 +1,7 @@
 ---
 description: "Planning Agent for the application development workflow"
 tools: [{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"]
-agents: [agent, "{{VISION_AGENT_NAME}}"]
+agents: [agent]
 disable-model-invocation: true
 ---
 
@@ -193,7 +193,7 @@ When generating a new plan name (because no plans exist or the user chooses `Cre
 
 Do not start the planning workflow until the user's instructions have been executed.
 Before moving past this gate, create or load the session artifacts the request requires. The implementation plan is not the only required artifact: continuously maintain requirement or tracker evidence, clarification evidence, selected-knowledge or normative-rules evidence, bug cause analysis when a bug-planning flow identifies one, and any image-derived artifacts as soon as each one exists.
-Prefer deterministic artifact names aligned with the current upstream session package: `<issue-type>_<external-issue-id>_info` or `<issue-type>_<external-issue-id>_details` for requirement intake, `normative_rules_inventory`, `bug_<external-issue-id>_cause_analysis` for bug planning, and screenshot evidence such as `bug_<external-issue-id>_screenshot` paired with `bug_<external-issue-id>_screenshot.slimui` when image evidence drives the plan.
+Prefer deterministic artifact names aligned with the current upstream session package: `<issue-type>_<external-issue-id>_info` or `<issue-type>_<external-issue-id>_details` for requirement intake, `normative_rules_inventory`, `bug_<external-issue-id>_cause_analysis` for bug planning, and screenshot evidence such as `bug_<external-issue-id>_screenshot` paired with its `bug_<external-issue-id>_screenshot_visual_evidence` Markdown artifact when image evidence drives the plan.
 Inspect the user request for image and Figma artifacts.
 For every provided image, immediately follow the `IMAGE_INTAKE_INSTRUCTION`.
 For every Figma link, ask the user exactly the following:
@@ -212,13 +212,13 @@ After receiving the screenshot path(s), apply the `IMAGE_INTAKE_INSTRUCTION` to 
 ### IMAGE_INTAKE_INSTRUCTION
 
 For every provided screenshot:
-1. {{VISION_INVOCATION}}
+1. {{IMAGE_INSPECTION}}
    `SessionId: <session_id>; image: <image_path_or_url>;`
 2. Process one evidence task per image artifact using the selected procedure: bounded parallel delegation when available, or sequential inline execution.
 3. Wait for all evidence tasks to complete.
-4. Collect the JSON artifact name produced by each task.
-5. Read every generated JSON artifact.
-6. Use the generated JSON artifacts as input for subsequent UI/UX questioning and design.
+4. For each image, write a Markdown visual-evidence artifact with `#capability:session-artifact-write` that records the image source, layout, components, visible text, states, and every detail relevant to the request, and references the original image so later roles can view it.
+5. Read every visual-evidence artifact.
+6. Use the visual-evidence artifacts as input for subsequent UI/UX questioning and design.
 
 **Stop point (only if triggered):** the plan-name selection prompt and the Figma screenshot-path request are valid stop points — after emitting them, WAIT for the user. Once resolved, resume.
 
@@ -433,7 +433,7 @@ Absolute rules: no `file:line` without a logged search. No user interview until 
 <!-- CANONICAL-TEMPLATE-SLOT: PLANNER_CLARIFICATION_WORKFLOW START replaces=sha256:d8c751620cd766f3 lines=3 -->
 ## Gate 7 - Structured Interview
 
-Ask the user only when a genuine blocking clarification remains: evidence leaves a material planning decision unresolved and resolving it changes the implementation plan. Ask one evidence-backed clarification at a time, record the answer and its plan impact, then resume the required gates. Do not request plan approval until every blocking clarification is resolved.
+Ask the user only when a genuine blocking clarification remains: evidence leaves a material planning decision unresolved and resolving it changes the implementation plan. Ask all blocking clarifications together in one message, ordered by impact, each in the per-question format below. Then collect every answer in one `{{QUESTION_TOOL}}` call: one question per entry, each with its answer choices as selectable options, and free-text Other available. If `{{QUESTION_TOOL}}` is unavailable in this environment, ask the same batch in chat only. Wait for every answer, record each answer and its plan impact, then resume the required gates. If the answers leave new blocking clarifications, ask those together in one further batch using the same delivery. Do not request plan approval until every blocking clarification is resolved.
 
 When no blocking clarification remains, skip this gate. Complete all mandatory gates, artifacts, and implementation plan uninterrupted. Do not pause to ask permission to continue, begin a gate, create an artifact, or draft the plan.
 
@@ -633,7 +633,7 @@ Log approval and update memory.
 Re-read latest plan from the active plan path selected in Gate `Plan Drafting` to include subagent/user modifications.
 Save latest plan via #capability:implementation-plan-save using the same active plan path selected in Gate `Plan Drafting`.
 Send exact message: "Plan approved. Switching to implementation agent to proceed with implementation."
-Instruct user to invoke implementor agent.
+{{ROLE_HANDOFF}}
 
 If modifications requested, must do:
 Send exact message: "Please provide modifications or integrations to the proposed <path_to_plan>."

@@ -11,7 +11,7 @@ When drafting a planner or implementor contract, use these repository originals 
 - Knowledge index schema: [`knowledge-index-schema.md`](knowledge-index-schema.md)
 - Implementation plan schema: [`plan-schema.md`](plan-schema.md)
 
-Use the original shapes as examples, then adapt fields to the target repo. Start from `agent-role-contracts.md` for concrete Planner, Implementor, Tester, Knowledge Builder, Vision, Ask, and Contract Auditor contracts; use this file for the shared root, Vision, hidden subagent, and artifact contract snippets.
+Use the original shapes as examples, then adapt fields to the target repo. Start from `agent-role-contracts.md` for concrete Planner, Implementor, Tester, Knowledge Builder, Ask, and Contract Auditor contracts; use this file for the shared root, visual evidence artifact, hidden subagent, and artifact contract snippets.
 
 ## Root AGENTS.md Shape
 
@@ -28,7 +28,7 @@ Minimum sections:
 - Implementor:
 - Tester:
 - Knowledge Builder:
-- Vision: `<path>` | not installed
+- How to start each role in each selected client: `<client-guide-root>/README.md`
 
 ## Repository Context
 
@@ -74,53 +74,37 @@ When a custom generated agent has no Canonical Template Mirror and the target pl
 
 If a request depends on another role's contract fragment, a shared repository rule, or a repo-specific operating mode, the main contract must say to load that dependency partial as well. Selective loading is for relevance and token control, not for hiding important constraints.
 
-## Vision Agent Shape
+## Visual Evidence Artifact Shape
 
-Create a Vision agent when screenshots, mockups, wireframes, diagrams, UI snapshots, browser screenshots, image assets, issue attachments, or annotated QA images materially affect planning, implementation, review, or testing.
+Main roles inspect images themselves. When screenshots, mockups, wireframes, diagrams, UI snapshots, browser screenshots, image assets, issue attachments, or annotated QA images materially affect planning, implementation, review, or testing, the role that inspected the image, or the approved cheaper-model delegate it used, records one Markdown session artifact per image so a later role starting with fresh context can rely on the findings.
 
 ````markdown
----
-name: "<Team Vision>"
-description: "Use when: converting image evidence for <repo/team> into a deterministic text artifact that non-vision agents can cite."
-tools: [edit/createFile, edit/editFiles]
-user-invocable: true
----
+# Visual Evidence: <image-name>
 
-# <Team Vision>
+## Source
 
-## Mission
+- Image reference: <path, URL, attachment, or session artifact>
+- Inspected by: <role> | <approved delegate and model>
 
-Convert one image or image set into a deterministic session artifact for Planner, Implementor, and Tester agents.
+## Extracted Visual Structure
 
-## Inputs
+<layout, hierarchy, visible text captured exactly when legible, controls, icons, assets, color, spacing, and visible state relevant to the request>
 
-- Image path, URL, attachment, or session artifact reference
-- Session path
-- Requested output format: SlimUI | structured Markdown | repo-local visual artifact format
+## Reviewer Annotations
 
-## Non-Negotiable Rules
+<visible annotations, kept separate from the underlying UI, diagram, or screenshot content>
+
+## Uncertainties And Gaps
+
+<anything unreadable or ambiguous; never infer unstated requirements from the image>
+````
+
+Rules:
 
 - Treat the image as source evidence; do not infer unstated requirements.
-- Preserve visible reviewer annotations separately from the underlying UI, diagram, or screenshot content.
-- Capture text exactly when legible.
-- Capture layout, hierarchy, color, spacing, controls, icons, assets, and visible state when relevant to downstream work.
 - Mark uncertainty explicitly instead of guessing.
-- Save the output as a session artifact before handing off.
-- Return the artifact path and a compact summary of confidence and gaps.
-
-## Output Artifact
-
-- Path pattern: `<session-path>/visual/<image-name>.slimui` or approved repo-local equivalent
-- Required sections or format rules:
-  - Source image reference
-  - Extracted visual structure
-  - Reviewer annotations
-  - Uncertainties and gaps
-
-## Handoff
-
-Planner, Implementor, and Tester agents must cite the produced visual artifact. They must not rely on raw images unless they have vision capability and an approved reason.
-````
+- Save the artifact before using it in planning or implementation decisions, and reference the original image so later roles can view it.
+- Path pattern: `<session-path>/artifacts/<image-name>_visual_evidence.md` or the approved session artifact equivalent.
 
 ## User-Invokable Main Agent
 
@@ -157,7 +141,7 @@ Convert a requirement into durable planning artifacts that can be approved befor
 - Before requesting approval or handing work to an Implementor, run a plan-schema adherence self-check and repair any schema drift.
 - Do not bulk-read the repository before knowledge selection and clusterization.
 - Add discovered tracker, documentation, context, framework, or repository-knowledge MCP tools only when they fit Planner authority and are recorded in the file plan.
-- Preserve `agents: [agent]` in frontmatter. If Vision is selected, use `agents: [agent, "<generated Vision agent name>"]`.
+- Preserve `agents: [agent]` in frontmatter.
 
 ## Gates
 

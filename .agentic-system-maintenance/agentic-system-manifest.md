@@ -16,7 +16,7 @@
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Available: 3.3.0
 - Maintain Skill Version Last Applied: 3.3.0
-- Last Maintenance Date: 2026-10-11
+- Last Maintenance Date: 2026-10-13
 
 ## Generated System Paths
 
@@ -27,14 +27,14 @@
 
 
 - Root Instructions: `AGENTS.md`
-- Native Agents: `.codex/agents/demo-<role>.toml`, `.github/agents/demo-<role>.agent.md`, `.claude/agents/demo-<role>-claude.md` (six roles; Vision retired 2026-10-11)
-- Canonical Agents: `docs/agents/canonical/{codex,copilot,claude-code}/agents/`; role bodies identical across environments, frontmatter tools differ
+- Native Agents: `.github/agents/demo-<role>.agent.md`, `.claude/agents/demo-<role>-claude.md` (six roles; Vision retired 2026-10-11)
+- Canonical Agents: `docs/agents/canonical/{copilot,claude-code}/agents/`; role bodies identical across environments, frontmatter tools differ
 - Skills and complete canonical copies: `.agents/skills/<original-name>/SKILL.md` (six, incl. `manage-work-item`); Claude Code discovers them through `.claude/skills/<name>` links
-- Native Configuration: `.codex/config.toml` (GitHub MCP), `.claude/settings.json` (maintenance skills user-invocable-only; roles denied for automatic delegation), `.mcp.json` (adds `next-devtools`)
+- Native Configuration: `.claude/settings.json` (maintenance skills user-invocable-only; roles denied for automatic delegation), `.mcp.json` (adds `next-devtools`)
 - Claude Code Rules: `.claude/rules/`
 - Shared Instructions: `docs/agents/instructions/`
 - Native Copilot Instruction Adapters: `.github/instructions/`
-- Environment Bindings: `docs/agents/bindings/{codex,copilot,claude-code}.md`; neutral policy: `docs/agents/integration-policy.md`
+- Environment Bindings: `docs/agents/bindings/{copilot,claude-code}.md`; neutral policy: `docs/agents/integration-policy.md`
 - Context Glossary: `docs/agents/context-glossary.md`
 - Knowledge Index: `knowledge/knowledge-index.md` (migrated from `docs/agents/knowledge/README.md`; links re-keyed)
 - Plan Schema: `docs/agents/plan-schema.md`
@@ -48,7 +48,7 @@
 - Execution Report: `sessions/<id>/execution-report.md`
 - Bootstrap Changelog Snapshot: `.agentic-system-maintenance/changelogs/bootstrap-agentic-system.CHANGELOG.md`
 - Context Audit: `.agentic-system-maintenance/context-audit.json`
-- Approved Maintenance Plan: `.agentic-system-maintenance/maintenance-plan-2026-10-11-upgrade-8.0-claude.md` (report: `maintenance-2026-10-11-upgrade-8.0-claude.md`)
+- Approved Maintenance Plan: none retained (the 2026-10-11 plan and report were deleted on 2026-10-13 by user approval; see Maintenance History)
 - Runtime Root: not adopted (existing `docs/agents/` and `sessions/` retained, 2026-10-11)
 - Maintenance Renderer: `.agentic-system-maintenance/scripts/render-8.0.py` (audits: `build-audits-8.0.py`; records: `finalize-8.0.py`)
 - Answers File: `.agentic-system-maintenance/agentic-system.answers.yaml`
@@ -63,15 +63,14 @@
 - Compatibility Evidence: `.agentic-system-maintenance/compatibility.md`
 - Canonical Source Snapshots: `.agentic-system-maintenance/sources/` (maintenance-only)
 - Preservation Plan: `.agentic-system-maintenance/preservation-plan.json`
-- Preservation Plan SHA-256: 42394c9defc4db1c268e2a182fe00ceeebfd105f7a42a956646d80d599402f7b
-- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: f2d39a3afeec83321820a0328f038a9823dc47b4f4cf2ae9d9dccd0353ac3c45
+- Preservation Plan SHA-256: eaa4457dbcfa0cb12befb666127afa17918d89db5b3849019eb933ecfcb915dc
+- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: 0fc31e01e32ee53fa4fe6fe63f41261076d60ae5566ed1aae086b63bef7d86bb
 - Native Body Mapping: `.agentic-system-maintenance/native-adapters.json`
 - Structural Verification: `.agentic-system-maintenance/validation-report.md`
 - Contract Audit: `.agentic-system-maintenance/contract-audit.md`
 
 | Environment | Registration | Status | Limitations |
 | --- | --- | --- | --- |
-| Codex | Six TOML agents, six canonical skills, root routing, project `.codex/config.toml` | unverified | GitHub MCP configured (`codex mcp list`, 2026-10-11) but `GITHUB_TOKEN` not verified in the Codex process; role discovery and operations not executed; diagnostics blocked |
 | Copilot | Six Markdown agents, six canonical skills, scoped instruction adapters | unverified | Also discovers `.claude/agents` (`demo-*-claude`) and `.claude/skills` links; tool picker and handoffs require client verification |
 | Claude Code | Six `demo-<role>-claude` subagents, six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, Agent() deny behaviour and skillOverrides not exercised; diagnostics blocked |
 
@@ -114,11 +113,13 @@
 
 Retired or superseded 2026-10-11: C001, C002, C007, C008 (Vision retired; see C024), C016 and C020 (see C023), C021 (8.0 `manage-work-item` route). C010 remains resolved. C003, C013, C014, C015 re-checked for claude-code on 8.0.0.
 
+Retired 2026-10-13: C008, C016, C017, C020 and C023 (Codex environment removed by user approval; their target files, bindings and generated layers were deleted). Rows are kept as history only and no longer apply to any file.
+
 Canonical copies remain exact after approved slots and marker stripping. No other non-slot canonical edits are authorized.
 
 ## Generated, Skipped and Deferred
 
-- Generated agents: Planner, Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask for codex, copilot and claude-code. Vision retired 2026-10-11.
+- Generated agents: Planner, Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask for copilot and claude-code. Vision retired 2026-10-11.
 - Generated skills: author-repo-skill, plan-bug-from-id, plan-user-story-from-id, user-story-analysis, integration-test-knowledge-checklist, manage-work-item (8.0.0, 2026-10-11), with original source names in directly discoverable canonical copies. `create-work-item-from-description` retired (D5).
 - Deferred skill: business-logic-gap-detector. The canonical Implementor body retains its existing special-mode text; no configured gap-detector skill is installed.
 - No duplicate knowledge index, clarification schema, local tracker or new product tests.
@@ -207,3 +208,4 @@ Final scoped Contract Auditor review passed. Structural checks: 674 passed, 3 in
 
 Native default-Codex creation verified: https://github.com/violabg/serviceDeskDemo/issues/8; command exit 0, exact returned-ID title/body verification passed, temporary body transport deleted. Connector create remains blocked by its external permission grant. No generated-role or Copilot execution is inferred from this default-host result.
 | 2026-10-11 | 8.0.0 | 3.3.0 | Upgrade 5.3.0→8.0.0 (6.0 deferral lifted, `manage-work-item`, capability bindings) plus evolve: claude-code environment with `-claude` subagents and shared neutral bodies, Vision retired, Codex GitHub via MCP, `create-work-item-from-description` retired. Deferred: business-logic-gap-detector; blocked: diagnostics slot gap; unverified: native role execution in all clients and Codex GitHub authentication. |
+| 2026-10-13 | 8.0.0 | 3.3.0 | Evolve: removed the Codex environment by user approval. Deleted `.codex/`, the Codex binding and canonical copies, the maintenance history folder and dated maintenance reports/plans (including baseline mirrors); removed Codex entries from answers, native adapters, preservation plan, audits and decision register (`github-app` row deleted; `mcp` and `environments` values pruned); updated root routing, README and integration router. Bootstrap skill and third-party shadcn reference intentionally unchanged. Environments now: copilot, claude-code. Native runtime verification of the two remaining environments remains unverified. |
