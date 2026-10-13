@@ -30,20 +30,7 @@ The Core System batch should normally include:
 | `<runtime-root>/artifact-gates.md` | Usually | Gate, approval, handoff, and session artifact contract. |
 | `<context-glossary-path>` | When glossary-worthy terms are resolved | Repository code/domain vocabulary and source-of-truth boundaries. |
 
-Do not generate Vision in the Core System batch.
-
-### Batch 2: Vision Evidence
-
-Run only when the user selects Vision support.
-
-| File | Required | Purpose |
-| --- | --- | --- |
-| `<agent-dir>/<prefix>-vision.agent.md` | When selected | Image-to-text role for screenshots, mockups, diagrams, UI snapshots, assets, or QA images. |
-| `<agent-dir>/<prefix>-partials/vision/` | When selected and partials are used | Prompt-scoped Vision guidance and evidence-intake rules. |
-
-Ask for only the visual assets needed to configure the workflow. Generate Vision last among agents, and wire Planner-to-Vision handoff only after the visual-evidence strategy is known.
-
-### Batch 3: Knowledge Builder Bootstrap
+### Batch 2: Knowledge Builder Bootstrap
 
 Use the generated Knowledge Builder to fill missing repository knowledge before finalizing generated skills.
 
@@ -54,7 +41,7 @@ Use the generated Knowledge Builder to fill missing repository knowledge before 
 
 Keep the context glossary separate from the knowledge index.
 
-### Batch 4: Skill Template Generation
+### Batch 3: Skill Template Generation
 
 Present the full Canonical Template Mirror skill inventory and let the user choose `generate`, `skip`, or `defer` for each skill.
 
@@ -70,13 +57,24 @@ Present the full Canonical Template Mirror skill inventory and let the user choo
 
 Generate selected skills from `templates/skills/`, fill only approved Personalization Slots, and record every generated, skipped, and deferred skill in the manifest.
 
+### Batch 4: Client Guides
+
+Write user-facing guides under `<client-guide-root>` (default `docs/agentic-system/`): one `README.md` index and one `<environment-id>.md` per selected environment.
+
+| File | Required | Purpose |
+| --- | --- | --- |
+| `<client-guide-root>/README.md` | Yes | Index linking every selected environment's guide, for people rather than agents. |
+| `<client-guide-root>/<environment-id>.md` | One per selected environment | How to start each installed role, run the common flows (plan from a user story or bug, implement, ask, build knowledge), hand off from Planner to Implementor in a new conversation with the Planning Session ID, find sessions and artifacts, and recover from missing setup. |
+
+Write guides only from recorded evidence. Label every role start method, handoff step, and integration as verified, fallback, blocked, or unverified, and say which tool limits the client enforces and which are instructions only. Guides are excluded from knowledge indexing and runtime loading.
+
 ### Batch 5: Maintenance Baseline
 
 Write the answers file, one pristine `.baseline/` copy of every file written in earlier batches, and the manifest customization register under `<maintenance-root>`. This batch may merge into another batch but cannot be skipped or deferred past handoff.
 
 ### Batch 6: Contract Audit
 
-Verify generated files against the approved file plan, Canonical Template Mirrors, slot values, baseline tool surfaces, exact approved MCP/platform tools, manifest records, and tracker/session/glossary/knowledge/visual decisions.
+Verify generated files against the approved file plan, Canonical Template Mirrors, slot values, baseline tool surfaces, exact approved MCP/platform tools, manifest records, tracker/session/glossary/knowledge/visual decisions, role entrypoints, the Planner handoff step, and client guides.
 
 ## Optional Later Batches
 
@@ -109,7 +107,6 @@ knowledge/                         # project knowledge only; no installation or 
       <prefix>-tester.agent.md
       <prefix>-knowledge-builder.agent.md
       <prefix>-ask.agent.md
-      <prefix>-vision.agent.md     # when selected
     skills/
       <repo-skill>/SKILL.md
     instructions/
@@ -137,8 +134,12 @@ knowledge/                         # project knowledge only; no installation or 
   sources/                         # hashed mirrors, excluded from native discovery
   evidence/                        # compatibility, authentication setup, native checks; no secrets
   plans/                           # preservation, environment, and context audit plans and reports
+<client-guide-root>/               # default docs/agentic-system/; user guides, never knowledge or runtime context
+  README.md
+  <environment-id>.md
 <environment-native-roots>/        # discovered only for selected clients/versions
   <native-registrations>           # direct copies or minimal verified adapters loading <runtime-root>/canonical/
+  <role-entry-adapters>            # only where the client cannot run a role as the main conversation
 ```
 
 Existing repository conventions win only on evidence and approval: an established session root, issue folder, or schema location stays where it is and is recorded in the answers file.
@@ -184,6 +185,9 @@ Before asking for approval or handing off, confirm:
 - Implementor requires approved plan metadata before editing and validates the touched behavior after the first edit.
 - Tester cannot modify production code unless the repo explicitly uses a combined implementation/testing role and the user approved that boundary.
 - Knowledge Builder can create or refine the knowledge index and propose glossary terms without editing application code.
-- Vision exists when visual evidence affects planning, implementation, review, or testing.
+- Roles that inspect images record one Markdown visual-evidence artifact per image; any image-inspection delegate uses an explicitly approved model.
+- Every user-invokable role has a verified way to start it as the main conversation in each selected environment, or a recorded blocked or unverified status.
+- Planner's approval handoff gives the exact step to start Implementor in a new conversation with the Planning Session ID for its environment.
+- Client guides exist for every selected environment and the final report links them.
 - Handoff envelope includes session ID, current gate, approval state, selected knowledge, open questions, blocking risks, and next-agent definition of done.
 - Validation commands are named, or unavailable validation is reported with a reason.

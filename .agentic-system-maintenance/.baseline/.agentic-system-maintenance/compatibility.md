@@ -1,4 +1,4 @@
-> Earlier dated sections are historical installation evidence. Current ownership and limitations are in the 2026-10-08 maintenance sections and answers. Historical tool names and skill aliases are not runtime bindings.
+> Earlier dated sections are historical installation evidence. Current ownership and limitations are in the 2026-10-08 maintenance sections and answers. Historical tool names and skill aliases are not runtime bindings. Codex was removed as a selected environment on 2026-10-13; its Codex sections below are retained evidence only and describe no current file.
 
 # Environment Compatibility Evidence
 

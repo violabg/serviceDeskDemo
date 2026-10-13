@@ -4,7 +4,7 @@ Route the current request through this file, then load only what that request ne
 
 ## Agents
 
-Resolve the active environment from the client/session identity first: use `codex`, `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Native registrations may carry a client suffix (Claude Code: `<role>-claude`); the selected binding names them.
+Resolve the active environment from the client/session identity first: use `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Native registrations may carry a client suffix (Claude Code: `<role>-claude`); the selected binding names them.
 
 - `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.
 - `demo-implementor`: approved-plan implementation. Load `docs/agents/canonical/<environment>/agents/demo-implementor.agent.md`.
@@ -15,7 +15,7 @@ Resolve the active environment from the client/session identity first: use `code
 
 Shared skills use only the already selected environment binding. Invoke the complete configured skill at `.agents/skills/<skill-name>/SKILL.md`; packaged Bootstrap templates are source mirrors, never configured runtime skills.
 
-Full role contracts live in `docs/agents/canonical/<environment>/agents (codex, copilot or claude-code)`. Do not restate them here.
+Full role contracts live in `docs/agents/canonical/<environment>/agents (copilot or claude-code)`. Do not restate them here.
 
 ## Skills
 

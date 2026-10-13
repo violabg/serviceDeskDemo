@@ -61,22 +61,33 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 | Batch | Approval Status | Proposed Files | Blocking Decisions | Validation |
 | --- | --- | --- | --- | --- |
 | Core System | pending | root instructions, glossary if needed, manifest, changelog snapshot, knowledge-index shell, repo-local schema files, templates, Planner, Implementor, Tester, Knowledge Builder, Ask if selected | platform, prefix, root instructions, tool decisions, glossary decisions, schema paths | root/template/frontmatter/schema checks |
-| Vision Evidence | selected | Vision agent or visual-intake skill | visual support option, relevant visual assets, artifact format | visual artifact support check |
 | Knowledge Builder Bootstrap | pending | knowledge index updates and knowledge files | knowledge gaps, authority boundaries, source evidence | knowledge-index checks |
 | Skill Template Generation | pending | selected repo-local skills | generated/skipped/deferred choices, tracker/session adapter | skill mirror and adapter checks |
+| Client Guides | pending | `<client-guide-root>/README.md` and one guide per selected environment | guide root, role start methods, handoff steps | guide evidence and link check |
 | Contract Audit | pending | audit artifact or final report | approved selections, substitutions, and unresolved compatibility | mirror/tool/manifest validation |
 
-## Visual Artifacts
+## Image Inspection
 
 - Visual Evidence Found: yes | no | unknown
 - Visual Evidence Types: screenshots | mockups | wireframes | diagrams | UI snapshots | browser screenshots | image assets | issue attachments | QA images | none
-- Proposed Visual Support: Vision agent | visual-intake skill | deferred | no change
-- Proposed Visual Artifact Format: SlimUI | structured Markdown | repo-local format | not applicable
-- Visual Artifact Path Pattern:
-- Proposed Vision Model: canonical upstream default | target platform default | user-selected exact model | not applicable
-- User-Selected Vision Model:
+- Image Inspection Per Environment: inline by the role | approved cheaper-model delegate | blocked | not applicable
+- Delegate Model Per Environment (Exact, Verified): `<model>` | not applicable
+- Remote Image Access (Private Attachments): verified | blocked | unverified | not applicable
+- Visual Evidence Artifact Path Pattern: `<session-root>/<planning-session-id>/artifacts/<image-name>_visual_evidence.md`
 - Reason:
 - User-Selected Option:
+
+## Role Entrypoints And Client Guides
+
+| Environment | Role | Start Method | Enforcement | Status |
+| --- | --- | --- | --- | --- |
+| `<id>` | Planner | native main-session selection `<exact-command-or-ui-step>` \| role-entry adapter `<path>` | runtime-enforced \| instruction-only | verified-native \| verified-fallback \| blocked \| unverified |
+
+- Role-Bound Skill Activation Per Environment:
+- Planner To Implementor Handoff Step Per Environment (New Conversation, Planning Session ID):
+- Client Guide Root: `docs/agentic-system/` | `<approved-path>`
+- Client Guide Files And Consuming Environments:
+- Guide Exclusions From Knowledge Indexing And Runtime Loading:
 
 ## Context Glossary
 
@@ -114,7 +125,7 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 - Cross-Role Dependency Loading Rule:
 - Prompt-Specific Partial Groups For Non-Mirrored Additions:
 - Shared Or Repo-Wide Partial Groups:
-- Roles Using Additive Partials: Planner | Implementor | Tester | Knowledge Builder | Vision | Ask | none
+- Roles Using Additive Partials: Planner | Implementor | Tester | Knowledge Builder | Ask | none
 - Repo-Specific Roles Or Split Templates:
 - Non-Slot Drift (Blocking):
 - Reason:
@@ -133,7 +144,6 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 | `templates/agents/integration-tester.agent.md` | `<agent-dir>/<prefix>-tester.agent.md` | prefix, validation commands, approved tools | stripped | none | pending |
 | `templates/agents/knowledge-builder.agent.md` | `<agent-dir>/<prefix>-knowledge-builder.agent.md` | prefix, knowledge paths, glossary path, approved tools | stripped | none | pending |
 | `templates/agents/ask.agent.md` | `<agent-dir>/<prefix>-ask.agent.md` | prefix, knowledge paths, approved tools | none | pending |
-| `templates/agents/vision.agent.md` | `<agent-dir>/<prefix>-vision.agent.md` | prefix, Vision model, visual evidence strategy, artifact format, approved tools | none | pending |
 
 ## Canonical Skill Inventory
 
@@ -249,7 +259,9 @@ For new files, include full or near-full proposed structure.
 - Canonical Template Mirror preservation check:
 - Personalization Slot check:
 - Canonical Skill Inventory manifest check:
-- Visual artifact support check:
+- Visual evidence artifact and image inspection check:
+- Role entrypoint and Planner handoff check:
+- Client guide evidence and link check:
 - Root instruction file check:
 - Context glossary repo-code/domain focus check:
 - Platform-specific checks:

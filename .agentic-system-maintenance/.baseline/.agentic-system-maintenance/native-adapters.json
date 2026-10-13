@@ -1,53 +1,5 @@
 [
   {
-    "path": ".codex/agents/demo-planner.toml",
-    "canonical_copy": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
-    "format": "toml",
-    "body_sha256": "dd8703b828cd0260a7cd335c36cd4b482649389534e6ffdb313ebac403ee4400",
-    "role": "planner",
-    "environment": "codex"
-  },
-  {
-    "path": ".codex/agents/demo-implementor.toml",
-    "canonical_copy": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
-    "format": "toml",
-    "body_sha256": "abb8a59ab221baa64d4253e913dbf05f759ce4a83aa061960b4272a9bd464d9f",
-    "role": "implementor",
-    "environment": "codex"
-  },
-  {
-    "path": ".codex/agents/demo-direct-implementor.toml",
-    "canonical_copy": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
-    "format": "toml",
-    "body_sha256": "86da4d987fa8a21dffc64b37e3fe035e3747748e4b231f32731e9c368eef0fcb",
-    "role": "direct-implementor",
-    "environment": "codex"
-  },
-  {
-    "path": ".codex/agents/demo-integration-tester.toml",
-    "canonical_copy": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
-    "format": "toml",
-    "body_sha256": "276a3b23488d4984c207e3842c88ad842dd9305e566548b9083e41b3ff8ac7ba",
-    "role": "integration-tester",
-    "environment": "codex"
-  },
-  {
-    "path": ".codex/agents/demo-knowledge-builder.toml",
-    "canonical_copy": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
-    "format": "toml",
-    "body_sha256": "aba3e2a295f82597e453f899c44d094a5f1d77c28d45fec789ba35b19ae9f263",
-    "role": "knowledge-builder",
-    "environment": "codex"
-  },
-  {
-    "path": ".codex/agents/demo-ask.toml",
-    "canonical_copy": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
-    "format": "toml",
-    "body_sha256": "f0613d25aa25dcbc4ffdfef5838cef0c59a449ddba260c33244d24f124f2351c",
-    "role": "ask",
-    "environment": "codex"
-  },
-  {
     "path": ".github/agents/demo-planner.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
     "format": "markdown",

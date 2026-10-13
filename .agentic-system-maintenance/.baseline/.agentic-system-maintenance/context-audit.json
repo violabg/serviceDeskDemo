@@ -52,12 +52,8 @@
     ".agentic-system-maintenance/validation-report.md",
     ".agentic-system-maintenance/contract-audit.md",
     ".agentic-system-maintenance/agentic-system.answers.yaml",
-    ".agentic-system-maintenance/history/2026-10-08-before.tar.gz",
     ".agentic-system-maintenance/scripts/verify-environment-bindings.mjs",
     ".agentic-system-maintenance/environment-audit.json",
-    ".agentic-system-maintenance/history/2026-10-08-operations.json",
-    ".agentic-system-maintenance/history/2026-10-08-plan.md",
-    ".agentic-system-maintenance/history/2026-10-08-codex-neon-mcp.md",
     ".agents/skills/bootstrap-agentic-system/CHANGELOG.md",
     ".agents/skills/bootstrap-agentic-system/SKILL.md",
     ".agents/skills/bootstrap-agentic-system/contracts/audit-and-handoff.md",
@@ -110,12 +106,9 @@
     "knowledge/nextjs-cache-components-pattern.md",
     "knowledge/access-control.md",
     "knowledge/knowledge-index.md",
-    ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md",
-    ".agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md",
     ".agentic-system-maintenance/context-audit.json",
     ".agentic-system-maintenance/scripts/render-8.0.py",
     ".agentic-system-maintenance/scripts/build-audits-8.0.py",
-    ".agentic-system-maintenance/maintenance-plan-2026-10-11-upgrade-8.0-claude.md",
     "AGENTS.md",
     "docs/agents/integration-bindings.md",
     "docs/agents/integration-policy.md",
@@ -134,19 +127,6 @@
     ".agents/skills/user-story-analysis/SKILL.md",
     ".agents/skills/integration-test-knowledge-checklist/SKILL.md",
     ".agents/skills/manage-work-item/SKILL.md",
-    "docs/agents/bindings/codex.md",
-    "docs/agents/canonical/codex/agents/demo-planner.agent.md",
-    ".codex/agents/demo-planner.toml",
-    "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
-    ".codex/agents/demo-implementor.toml",
-    "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
-    ".codex/agents/demo-direct-implementor.toml",
-    "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
-    ".codex/agents/demo-integration-tester.toml",
-    "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
-    ".codex/agents/demo-knowledge-builder.toml",
-    "docs/agents/canonical/codex/agents/demo-ask.agent.md",
-    ".codex/agents/demo-ask.toml",
     "docs/agents/bindings/copilot.md",
     "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
     ".github/agents/demo-planner.agent.md",
@@ -179,7 +159,6 @@
     ".claude/rules/planning-sessions.md",
     ".github/instructions/agent-integrations.instructions.md",
     ".claude/rules/agent-integrations.md",
-    ".codex/config.toml",
     ".claude/settings.json",
     ".mcp.json"
   ],
@@ -400,32 +379,12 @@
       "references": []
     },
     {
-      "output": ".agentic-system-maintenance/history/2026-10-08-before.tar.gz",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
       "output": ".agentic-system-maintenance/scripts/verify-environment-bindings.mjs",
       "kind": "maintenance",
       "references": []
     },
     {
       "output": ".agentic-system-maintenance/environment-audit.json",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
-      "output": ".agentic-system-maintenance/history/2026-10-08-operations.json",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
-      "output": ".agentic-system-maintenance/history/2026-10-08-plan.md",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
-      "output": ".agentic-system-maintenance/history/2026-10-08-codex-neon-mcp.md",
       "kind": "maintenance",
       "references": []
     },
@@ -727,16 +686,6 @@
       ]
     },
     {
-      "output": ".agentic-system-maintenance/maintenance-plan-2026-10-10-codex-issue-create.md",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
-      "output": ".agentic-system-maintenance/maintenance-2026-10-10-codex-issue-create.md",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
       "output": ".agentic-system-maintenance/context-audit.json",
       "kind": "maintenance",
       "references": []
@@ -752,48 +701,15 @@
       "references": []
     },
     {
-      "output": ".agentic-system-maintenance/maintenance-plan-2026-10-11-upgrade-8.0-claude.md",
-      "kind": "maintenance",
-      "references": []
-    },
-    {
       "output": "AGENTS.md",
       "kind": "runtime",
       "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
         {
           "output": "docs/agents/bindings/copilot.md",
           "when": "ordinary"
         },
         {
           "output": "docs/agents/bindings/claude-code.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
           "when": "ordinary"
         },
         {
@@ -895,10 +811,6 @@
       "output": "docs/agents/integration-bindings.md",
       "kind": "runtime",
       "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
         {
           "output": "docs/agents/bindings/copilot.md",
           "when": "ordinary"
@@ -1016,240 +928,6 @@
         },
         {
           "output": "docs/agents/integration-bindings.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": "docs/agents/bindings/codex.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/integration-policy.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/github-issues-adapter.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/integration-policy.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "knowledge/knowledge-index.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/context-glossary.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/plan-schema.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/github-issues-adapter.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-planner.toml",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-planner.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/integration-policy.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "knowledge/knowledge-index.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/context-glossary.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/github-issues-adapter.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-implementor.toml",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-implementor.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/integration-policy.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "knowledge/knowledge-index.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/context-glossary.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/github-issues-adapter.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-direct-implementor.toml",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-direct-implementor.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/integration-policy.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "knowledge/knowledge-index.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/context-glossary.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/test-plan-schema.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-integration-tester.toml",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-integration-tester.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/integration-policy.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "knowledge/knowledge-index.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/context-glossary.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/test-plan-schema.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-knowledge-builder.toml",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-knowledge-builder.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/bindings/codex.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/integration-policy.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "knowledge/knowledge-index.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/context-glossary.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/test-plan-schema.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".codex/agents/demo-ask.toml",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/codex/agents/demo-ask.agent.md",
           "when": "ordinary"
         }
       ]
@@ -1761,11 +1439,6 @@
           "when": "ordinary"
         }
       ]
-    },
-    {
-      "output": ".codex/config.toml",
-      "kind": "runtime",
-      "references": []
     },
     {
       "output": ".claude/settings.json",

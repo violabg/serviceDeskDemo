@@ -2,7 +2,6 @@
 
 Resolve the active agent environment from the client/session identity before any native operation. A directory, installed configuration, or visible tool name never selects a different client. If identity is ambiguous, request the client identity and stop binding-dependent work.
 
-- For the codex environment, load only docs/agents/bindings/codex.md.
 - For the copilot environment, load only docs/agents/bindings/copilot.md.
 - For the claude-code environment, load only docs/agents/bindings/claude-code.md.
 
