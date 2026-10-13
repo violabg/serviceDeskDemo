@@ -151,12 +151,15 @@
   {
     "id": "vision",
     "value": {
-      "codex": "gpt-5.6-luna",
-      "copilot": "GPT-5.6 Luna",
-      "conditional": "inline if image-capable; otherwise spawn Vision"
+      "status": "retired",
+      "image_inspection": {
+        "copilot": "inline: the role reads the local image with read/readFile using its own image-capable model; no delegate model approved",
+        "claude-code": "Planner and Direct Implementor: Agent subagent_type general-purpose with model haiku (user-approved); inline Read when Agent, general-purpose or the model parameter is unavailable; roles without Agent inspect inline"
+      },
+      "artifact": "one Markdown visual-evidence artifact per image"
     },
     "source": "user",
-    "evidence": "User: use vision with luna; planner can spin a vision agent as subagent if current model lack vision capabilities"
+    "evidence": "User approved the 2026-10-13 upgrade plan (\"Approve all\"): Q1 Markdown visual evidence, Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026). Supersedes the 2026-09-25 Luna Vision decision."
   },
   {
     "id": "approval",
@@ -179,5 +182,23 @@
     },
     "source": "user",
     "evidence": "User: approved, following the maintenance plan; no client/version migration or tool grants."
+  },
+  {
+    "id": "upgrade-9.2-scope",
+    "value": "Bootstrap 8.0.0 -> 9.2.0: IMAGE_INSPECTION, ROLE_HANDOFF, ROLE_ACTIVATION, Planner QUESTION_TOOL, CLIENT_GUIDE_ROOT, batched clarifications",
+    "source": "user",
+    "evidence": "User approved the 2026-10-13 upgrade plan (\"Approve all\"): Q1 Markdown visual evidence, Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026)."
+  },
+  {
+    "id": "role-entrypoints",
+    "value": "native main-session selection in both environments; exact steps in the bindings",
+    "source": "user",
+    "evidence": "User approved the 2026-10-13 upgrade plan (\"Approve all\"): Q1 Markdown visual evidence, Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026)."
+  },
+  {
+    "id": "client-guide-root",
+    "value": "docs/agentic-system/",
+    "source": "accepted recommendation",
+    "evidence": "User approved the 2026-10-13 upgrade plan (\"Approve all\"): Q1 Markdown visual evidence, Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026)."
   }
 ]

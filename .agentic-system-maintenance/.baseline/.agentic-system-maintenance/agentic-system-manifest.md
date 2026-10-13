@@ -12,10 +12,10 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 8.0.0 (includes 6.0, 6.1, 7.0, 7.0.1; 7.1 superseded by 8.0 `manage-work-item`)
+- Bootstrap Contract Applied Through: 9.2.0 (includes 9.0, 9.1; earlier: 6.0, 6.1, 7.0, 7.0.1, 8.0; 7.1 superseded by 8.0 `manage-work-item`)
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
-- Maintain Skill Version Available: 3.3.0
-- Maintain Skill Version Last Applied: 3.3.0
+- Maintain Skill Version Available: 3.4.0
+- Maintain Skill Version Last Applied: 3.4.0
 - Last Maintenance Date: 2026-10-13
 
 ## Generated System Paths
@@ -50,9 +50,11 @@
 - Context Audit: `.agentic-system-maintenance/context-audit.json`
 - Approved Maintenance Plan: none retained (the 2026-10-11 plan and report were deleted on 2026-10-13 by user approval; see Maintenance History)
 - Runtime Root: not adopted (existing `docs/agents/` and `sessions/` retained, 2026-10-11)
-- Maintenance Renderer: `.agentic-system-maintenance/scripts/render-8.0.py` (audits: `build-audits-8.0.py`; records: `finalize-8.0.py`)
+- Maintenance Renderer: `.agentic-system-maintenance/scripts/render-9.2.py` (records and baseline: `finalize-9.2.py`); `render-8.0.py`, `build-audits-8.0.py` and `finalize-8.0.py` are retained history and reference the deleted 2026-10-11 rollback folder
 - Answers File: `.agentic-system-maintenance/agentic-system.answers.yaml`
 - Baseline Directory: `.agentic-system-maintenance/.baseline/`
+- Client Guides: `docs/agentic-system/README.md`, `docs/agentic-system/copilot.md`, `docs/agentic-system/claude-code.md` (for people; excluded from knowledge indexing and runtime loading; linked from `AGENTS.md` and `README.md`)
+- Role Entrypoints And Handoff: `## Role entrypoints and handoff` in each binding
 - Approved File Plan: `.agentic-system-maintenance/bootstrap-file-plan.md`
 - Decisions: `.agentic-system-maintenance/decision-register.json`
 
@@ -63,16 +65,16 @@
 - Compatibility Evidence: `.agentic-system-maintenance/compatibility.md`
 - Canonical Source Snapshots: `.agentic-system-maintenance/sources/` (maintenance-only)
 - Preservation Plan: `.agentic-system-maintenance/preservation-plan.json`
-- Preservation Plan SHA-256: eaa4457dbcfa0cb12befb666127afa17918d89db5b3849019eb933ecfcb915dc
-- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: 0fc31e01e32ee53fa4fe6fe63f41261076d60ae5566ed1aae086b63bef7d86bb
+- Preservation Plan SHA-256: 378888aa61cbd64efe0556fdd72c9b61772f872b7fa0060fb41212d9a7dc4cb7
+- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: febcbcfa7ba466749043874e25705bf2f372831259a0f0cd8caf616aa598860a
 - Native Body Mapping: `.agentic-system-maintenance/native-adapters.json`
 - Structural Verification: `.agentic-system-maintenance/validation-report.md`
 - Contract Audit: `.agentic-system-maintenance/contract-audit.md`
 
 | Environment | Registration | Status | Limitations |
 | --- | --- | --- | --- |
-| Copilot | Six Markdown agents, six canonical skills, scoped instruction adapters | unverified | Also discovers `.claude/agents` (`demo-*-claude`) and `.claude/skills` links; tool picker and handoffs require client verification |
-| Claude Code | Six `demo-<role>-claude` subagents, six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, Agent() deny behaviour and skillOverrides not exercised; diagnostics blocked |
+| Copilot | Six Markdown agents, six canonical skills, scoped instruction adapters; roles start from the Agent dropdown, Implementor handoff via New Chat | unverified | Image inspection inline; `vscode/askQuestions` limits unknown. Also discovers `.claude/agents` (`demo-*-claude`) and `.claude/skills` links; tool picker and handoffs require client verification |
+| Claude Code | Six `demo-<role>-claude` subagents run as main sessions with `claude --agent`, six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Image inspection via approved haiku `general-purpose` delegate with inline fallback; `AskUserQuestion` max 4 questions per call; Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, Agent() deny behaviour and skillOverrides not exercised; diagnostics blocked |
 
 ## Customization Register
 
@@ -110,8 +112,13 @@
 | C025 | `.claude/agents/demo-<role>-claude.md`, `.claude/settings.json`, `.claude/skills` links, `.claude/rules` | Claude Code registration | new-agent | User chose native subagents with a `-claude` suffix and maximal sharing (2026-10-11); automatic delegation denied; maintenance skills user-invocable-only | independent native registration; canonical bodies preserved | re-evaluate on discovery changes |
 | C026 | Environment-dependent body slots in all role copies | shared neutral bodies (S1) | slot-override | User asked to keep content shared (2026-10-11); slots point to the router-selected `docs/agents/bindings/<environment>.md`; exact identifiers only in bindings and native adapters | extends-canonical within declared slots | always; re-evaluate on client/schema changes |
 | C027 | `knowledge/knowledge-index.md` | Path cells | modified-rule | 8.0 context-boundary contract requires repository-relative Path cells; links converted to backticked `knowledge/<file>` paths (2026-10-11) | extends-canonical | always |
+| C028 | Planner/Direct Implementor `IMAGE_INSPECTION`, visual-evidence capability rows, integration policy, both bindings | image inspection and evidence format | slot-override | User approved 2026-10-13: Markdown `<image-name>_visual_evidence.md` per image (upstream 9.0); Copilot inline; Claude Code `general-purpose` delegate with `model: haiku`, inline fallback when the model cannot be passed; supersedes C024 | extends-canonical within declared slot and bindings | re-evaluate on client model or delegation changes; last checked 9.2.0 |
+| C029 | Planner `ROLE_HANDOFF` and `QUESTION_TOOL`, planning-skill `ROLE_ACTIVATION`, both bindings | role entrypoints, handoff, question delivery | slot-override | User approved 2026-10-13 (Q3): neutral slot values point to the active binding, which holds the exact start, handoff and question-tool steps; extends C026; Claude Code `AskUserQuestion` takes at most 4 questions per call, so larger batches use consecutive calls | extends-canonical within declared slots | always; re-evaluate on client entrypoint or question-tool changes; last checked 9.2.0 |
+| C030 | `docs/agentic-system/` | client guides | added-section | Bootstrap 9.0 client guides at the recommended root, written from recorded evidence; linked from `README.md` | independent repository documentation | always; regenerate when an environment, role, entrypoint or handoff step changes |
 
 Retired or superseded 2026-10-11: C001, C002, C007, C008 (Vision retired; see C024), C016 and C020 (see C023), C021 (8.0 `manage-work-item` route). C010 remains resolved. C003, C013, C014, C015 re-checked for claude-code on 8.0.0.
+
+Retired 2026-10-13 (9.2.0 upgrade): C024, superseded by C028 (Bootstrap 9.0 replaced `VISION_INVOCATION` with `IMAGE_INSPECTION` and fixed Markdown evidence).
 
 Retired 2026-10-13: C008, C016, C017, C020 and C023 (Codex environment removed by user approval; their target files, bindings and generated layers were deleted). Rows are kept as history only and no longer apply to any file.
 
@@ -147,6 +154,16 @@ Canonical copies remain exact after approved slots and marker stripping. No othe
 - Verification: shipped canonical verifier passes (27 copies); context-boundary audit passes; environment audit fails only on the inherited `read/problems` lines in Codex and Claude Code Implementor/Integration Tester (8 outputs) and passes for all 67 runtime files without that literal; repository verifier results in `validation-report.md`. Live: Claude Code main-session `issue_read` verified; Codex GitHub configuration verified, authentication not.
 - Session-folder contents were excluded. No product code, schema, migrations, tests or product runtime configuration changed.
 
+## Bootstrap 9.2.0 Approved Upgrade (2026-10-13)
+
+- Approval: user "Approve all" on the 2026-10-13 plan; Q1 Markdown visual evidence (take upstream, C024 retired), Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026); client guides at the recommended `docs/agentic-system/`.
+- Upgrade: `render-9.2.py` re-rendered 11 canonical copies (Planner, Direct Implementor, Implementor, Knowledge Builder in both environments; both planning skills; `AGENTS.md`) and 8 native adapters from the recorded recipe plus the new `IMAGE_INSPECTION`, `ROLE_HANDOFF`, `ROLE_ACTIVATION`, Planner `QUESTION_TOOL` and `CLIENT_GUIDE_ROOT` values; empty `VISION_AGENT_NAME` frontmatter remnants removed; Planner gained the `visual-evidence` capability row; 9.1/9.2 batched clarifications applied; `artifact-gates.md` equals the 9.2 template.
+- Authored edits: integration policy Visual evidence section and guide exclusion; Role entrypoints and handoff plus image-inspection procedure in both bindings; image line in the three agent-integration instructions; root README image line and guide link; three client guides.
+- Records: answers synced with the recipe (Vision slots removed; role entrypoints per environment), decision register, context-audit inventory synced with the installed Bootstrap/Maintainer trees, retired literals extended, source snapshot (12 files) and changelog snapshot refreshed, baselines refreshed after validation.
+- Merge: every affected region had MINE == BASE; only C024 conflicted and was resolved by Q1. C011/C012 retained.
+- Unchanged: diagnostics slot gap stays blocked (9.2.0 adds no slot); business-logic-gap-detector deferred; native role entrypoints, handoffs and image inspection unverified in both clients.
+- Session-folder contents were excluded. No product code, schema, migrations, tests or product runtime configuration changed.
+
 ## Maintenance History
 
 | 2026-10-10 | 5.3.0 plus targeted 7.0 isolation | 3.2.1 | Approved evidence/layout migration: moved generated maintenance evidence to `.agentic-system-maintenance/`, consolidated all nine project knowledge documents and the index under `knowledge/`, retained installed Bootstrap/Maintainer skills at their existing paths, and preserved Codex/Copilot MCP configuration. Native loading/search exclusion remains unverified; inherited diagnostics source-slot gap remains blocked. |
@@ -168,7 +185,7 @@ Canonical copies remain exact after approved slots and marker stripping. No othe
 | 2026-10-10 | 5.3.0 | 3.1.0 | Evolved shared database workflow policy: Planner must include conditional migration, privilege seed and Admin verification steps; Implementor must confirm plan coverage, exact target authorization, and apply/verify only when needed. Session contents and product code were excluded. |
 | 2026-10-10 | 5.3.0 | 3.2.1 | Evolved the explicitly invoked work-item skill route for default Copilot and Codex, preserving role grants and requiring runtime authorization plus explicit issue approval; Codex issue creation and screenshot upload remain blocked/unverified. Refreshed only the five approved policy/binding baselines. |
 
-After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, demo-author-repo-skill for reusable procedures, and create-work-item-from-description when ticket creation is explicitly requested.
+After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, author-repo-skill for reusable procedures, and manage-work-item when ticket creation or update is explicitly requested.
 
 ## 2026-10-08 Approved Environment Isolation
 
@@ -209,3 +226,4 @@ Final scoped Contract Auditor review passed. Structural checks: 674 passed, 3 in
 Native default-Codex creation verified: https://github.com/violabg/serviceDeskDemo/issues/8; command exit 0, exact returned-ID title/body verification passed, temporary body transport deleted. Connector create remains blocked by its external permission grant. No generated-role or Copilot execution is inferred from this default-host result.
 | 2026-10-11 | 8.0.0 | 3.3.0 | Upgrade 5.3.0→8.0.0 (6.0 deferral lifted, `manage-work-item`, capability bindings) plus evolve: claude-code environment with `-claude` subagents and shared neutral bodies, Vision retired, Codex GitHub via MCP, `create-work-item-from-description` retired. Deferred: business-logic-gap-detector; blocked: diagnostics slot gap; unverified: native role execution in all clients and Codex GitHub authentication. |
 | 2026-10-13 | 8.0.0 | 3.3.0 | Evolve: removed the Codex environment by user approval. Deleted `.codex/`, the Codex binding and canonical copies, the maintenance history folder and dated maintenance reports/plans (including baseline mirrors); removed Codex entries from answers, native adapters, preservation plan, audits and decision register (`github-app` row deleted; `mcp` and `environments` values pruned); updated root routing, README and integration router. Bootstrap skill and third-party shadcn reference intentionally unchanged. Environments now: copilot, claude-code. Native runtime verification of the two remaining environments remains unverified. |
+| 2026-10-13 | 9.2.0 | 3.4.0 | Upgrade 8.0.0→9.2.0: Vision remnants removed, `IMAGE_INSPECTION` (Markdown evidence; Claude Code haiku delegate, Copilot inline), role entrypoints and fresh-context Implementor handoff via bindings, `ROLE_ACTIVATION` in planning skills, batched Planner clarifications through the question tool, client guides under `docs/agentic-system/`. Deferred: gap-detector skill; blocked: diagnostics slot; unverified: native role entrypoints, handoff and image inspection. |

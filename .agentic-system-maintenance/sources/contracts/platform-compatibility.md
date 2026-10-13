@@ -45,9 +45,25 @@ Source tool names, including native OpenCode names in upstream-derived evidence 
 For delegation, inspect the exact tool schema and its callable agent registrations in the intended client and role. Record whether the built-in default is invoked by omitting a selector, by another documented form, or by a specific registered name. The words "agent", "default", and "general-purpose" are descriptions, never evidence of a registered selector value. Do not invent a selector parameter or copy one from the execution host or another client. A named custom delegate must also be discovered as callable there. If delegation is unavailable, use an explicitly approved inline procedure only where the workflow permits it, preserving the same evidence task and artifact output; otherwise mark that dependent operation blocked. Unknown bindings stay unverified and must be resolved before invocation.
 
 Planner must be able to read/search repository evidence and persist the plan, artifacts, memory, and logs required by its canonical contract while retaining its restriction on application edits. Implementor needs the canonical editing, execution, validation, and session capabilities. Preserve the corresponding requirements of every other selected role. Distinguish a runtime-enforced permission boundary from an instruction-only restriction; do not claim the latter is enforced by an allowlist.
-For every role using `repository-search`, verify native workspace search or its approved alternative with a bounded file/path and text query; cluster metadata is not required. When Vision processes remote issue attachments, verify the assigned role can fetch the image bytes under the target repository's permissions and inspect them with an image-capable tool. Do not treat a successful issue lookup or URL retrieval alone as image inspection.
+For every role using `repository-search`, verify native workspace search or its approved alternative with a bounded file/path and text query; cluster metadata is not required. When a role processes remote issue attachments, verify it can fetch the image bytes under the target repository's permissions and inspect them with an image-capable tool, or through its approved image-inspection delegate and model. Do not treat a successful issue lookup or URL retrieval alone as image inspection.
 
 Check whether a role runs as the main agent, a foreground delegate, or a background delegate. Tool access, questions, and delegation may differ. When required interaction must go through a coordinator, bind the relevant declared invocation slot to that route without changing the question or approval gate. A fallback requires working prerequisites and explicit approval; never silently switch procedures or drop a required operation.
+
+## Role Entrypoints
+
+User-invokable roles ask the user questions and hold approval gates, so each runs as the main conversation of its session. Never satisfy a user-invokable role by starting it as a delegated subagent: a delegate may lose question and approval access. Only hidden roles such as auditors and scouts run as delegates.
+
+For each selected environment and user-invokable role, record the first method that works and is verified:
+
+1. Native main-session selection, such as an agent picker or a documented start option that runs the whole session under the role. Do not set a repository-wide default role that would put every session under one role.
+2. A role-entry adapter when the client cannot run a role as the main conversation: a user-only entrypoint, such as a skill invoked explicitly by name, that loads the complete canonical role body before the role operates. It is a registration adapter under Canonical Preservation, so it embeds or loads the body verbatim. Disable automatic invocation where the client supports that. Its tool limits are instruction-only; record them so.
+3. Otherwise mark the role `blocked` or `unverified` for that environment.
+
+Record per role: the exact start command or interface step, whether tool limits are runtime-enforced or instruction-only, and whether the client can switch roles within a conversation. Role-bound skills fill `ROLE_ACTIVATION` from this record.
+
+The Planner hands off to Implementor in a new conversation with fresh context. Clients do not open such a conversation by themselves, and a handoff that carries the planning conversation forward breaks the fresh-context rule. Fill `ROLE_HANDOFF` with the consuming environment's exact next step and the Planning Session ID: a start command with an initial prompt when the client supports one, otherwise the steps to open a new conversation and start Implementor with the session ID.
+
+Verify each entrypoint in a disposable fixture: the role loads its complete instructions, can ask the user a question, and reaches its first gate; a role-bound skill runs under its role; the Planner handoff step starts Implementor, which resumes from the Planning Session ID. Client guides report these results as recorded, including blocked and unverified entries.
 
 ## Integration Registration And Authentication
 

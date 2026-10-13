@@ -36,6 +36,7 @@ If a required approved integration is unavailable, stop its dependent operation 
 - Before ordinary reading, search, indexing, retrieval, or delegation, exclude `.agentic-system-maintenance/`, `.agents/skills/bootstrap-agentic-system/`, and `.agents/skills/maintain-agentic-system/`, including aliases such as `.claude/skills/bootstrap-agentic-system` and `.claude/skills/maintain-agentic-system` and symlink targets. These locations are available only during initial Bootstrap or explicitly requested agent-system maintenance.
 - Runtime work must resolve capabilities through the selected environment binding and this policy. Maintenance registry/template snapshots are evidence only and must not be opened as runtime contracts.
 - After ordinary edits to an agent-system file, report that maintenance evidence needs refresh; do not access the manifest, answers, or baseline.
+- `docs/agentic-system/` holds user guides for people. Do not index it as knowledge or load it as runtime instructions; role contracts, bindings and this policy remain authoritative.
 
 ## Repository evidence and authority
 
@@ -74,9 +75,9 @@ If a required approved integration is unavailable, stop its dependent operation 
 
 ## Visual evidence
 
-- All approved models accept image input; no separate Vision agent exists. Planner and Direct Implementor inspect each image inline with the image-read operation of the selected binding on a local file path. A filename, text-file read, alt text or URL is not image inspection.
+- No separate Vision agent exists. Planner and Direct Implementor inspect each image themselves, through the image-inspection procedure of the selected binding on a local file path: inline with the role's own image input, or, only where that binding names a user-approved delegate model, through that environment's verified default-subagent delegation with exactly that model. Never invent a named delegate or model. A filename, text-file read, alt text or URL is not image inspection.
 - For remote issue images, fetch the bytes with the selected binding's web-fetch operation only when the URL is publicly readable and the operation returns image input. Otherwise ask the user to save the image locally and give its path, and stop the image-dependent step until it is available.
-- Each image produces one `visual-evidence v1` JSON artifact under the current session's `artifacts/visual/<image-name>.json` with `session_id`, `image`, `observed_text`, `layout`, `components`, `states` and `uncertainties`, recording only what is visible. Later gates read these JSON artifacts.
+- Each image produces one Markdown visual-evidence artifact in the current session at `artifacts/<image-name>_visual_evidence.md` (for a bug screenshot, `bug_<external-issue-id>_screenshot_visual_evidence.md`), written by the role that owns the session. Sections: `Source` (image reference; inspected by the role or the approved delegate and model), `Extracted Visual Structure` (layout, hierarchy, visible text captured exactly when legible, controls, icons, assets, color, spacing and visible state relevant to the request), `Reviewer Annotations` (kept separate from the underlying UI), and `Uncertainties And Gaps`. Record only what is visible, mark uncertainty instead of guessing, and reference the original image so later roles can view it. Later gates and roles read these Markdown artifacts.
 
 ## Validation scope
 
