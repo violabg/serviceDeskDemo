@@ -19,7 +19,7 @@ MAINT=ROOT/'.agentic-system-maintenance'
 ERRORS=[]
 CHECKS=[]
 BLOCKED=[]
-ENVS=['codex','copilot','claude-code']
+ENVS=['copilot','claude-code']
 ROLES=['planner','implementor','direct-implementor','integration-tester','knowledge-builder','ask']
 
 def check(condition, label):
@@ -204,7 +204,7 @@ def main():
         check(link.is_symlink() and link.resolve()==(ROOT/'.agents/skills'/name).resolve(),'Claude Code skill link to the single source: '+name)
     for name in ['bodies identical']:
         bodies={env:{r:(DOCS/f'canonical/{env}/agents/demo-{r}.agent.md').read_text().split('\n---\n',1)[1] for r in ROLES} for env in ENVS}
-        check(all(bodies['codex'][r]==bodies[e][r] for e in ENVS for r in ROLES),'Role bodies identical across environments (S1)')
+        check(all(bodies[ENVS[0]][r]==bodies[e][r] for e in ENVS for r in ROLES),'Role bodies identical across environments (S1)')
     settings=load(ROOT/'.claude/settings.json')
     check(settings['skillOverrides']=={'bootstrap-agentic-system':'user-invocable-only','maintain-agentic-system':'user-invocable-only'},'Claude maintenance skills user-invocable only')
     check(sorted(settings['permissions']['deny'])==sorted(f'Agent(demo-{r}-claude)' for r in ROLES),'Claude roles excluded from automatic delegation')
@@ -235,7 +235,7 @@ def main():
             rest=node(f.name); Path(f.name).unlink()
             known='foreign binding read/problems' in full.stderr and any(r in full.stderr for r in ['demo-implementor','demo-integration-tester'])
             check(known and rest.returncode==0,'Environment isolation except the recorded diagnostics gap: '+(rest.stdout or rest.stderr).strip())
-            BLOCKED.append('Full environment audit: '+full.stderr.strip()+' (inherited read/problems outside declared tooling slots; Codex and Claude Code Implementor/Integration Tester)')
+            BLOCKED.append('Full environment audit: '+full.stderr.strip()+' (inherited read/problems outside declared tooling slots; Claude Code Implementor/Integration Tester)')
     except FileNotFoundError:
         check(False,'Environment audit blocked: Node unavailable')
     try:
@@ -263,9 +263,9 @@ def main():
     count=len(CHECKS)
     report='# Structural Validation Report\n\n'
     report+='Date: 2026-10-11. Result: **'+('FAIL' if ERRORS else 'PASS')+'** for structural checks'+(', with recorded blocked items' if BLOCKED else '')+'.\n\n'
-    report+=f'{count} checks passed; {len(ERRORS)} failed; {len(BLOCKED)} recorded blocked. Environments: codex, copilot, claude-code. Canonical copies: {len(plan["copies"])}. Native adapters: {len(adapters)}. Primary/baseline files: {len(inventory)}.\n\n'
+    report+=f'{count} checks passed; {len(ERRORS)} failed; {len(BLOCKED)} recorded blocked. Environments: copilot, claude-code. Canonical copies: {len(plan["copies"])}. Native adapters: {len(adapters)}. Primary/baseline files: {len(inventory)}.\n\n'
     report+='Method: independent Python reconstruction of the declared slot recipe, SHA-256 source checks, exact canonical/body comparisons, constrained YAML/TOML/JSON syntax checks, roster/skill/link/settings checks, cross-environment body identity, baseline equality, the shipped Node canonical, context-boundary and environment-binding verifiers, and a disposable file-contract fixture outside existing sessions.\n\n'
-    report+='Live checks (2026-10-11): Claude Code main session GitHub MCP issue_read get on violabg/serviceDeskDemo#1 succeeded (read-only). codex mcp list shows the project github server with bearer env var GITHUB_TOKEN; GITHUB_TOKEN was absent from the inspected shell, so Codex GitHub authentication is unverified. No issue_write call was made. Generated-role discovery and execution remain **unverified** in all three clients.\n\n'
+    report+='Live checks (2026-10-11): Claude Code main session GitHub MCP issue_read get on violabg/serviceDeskDemo#1 succeeded (read-only). The Codex environment was removed on 2026-10-13; its GitHub MCP checks no longer apply. No issue_write call was made. Generated-role discovery and execution remain **unverified** in all three clients.\n\n'
     report+='Product lint, typecheck, tests and build were skipped because changes are confined to agent-system instructions, configuration, scripts and documentation. No product, database or runtime mutation was performed.\n\n'
     if BLOCKED: report+='## Recorded blocked items\n\n'+'\n'.join('- '+x for x in BLOCKED)+'\n\n'
     if ERRORS: report+='## Failures\n\n'+'\n'.join('- '+x for x in ERRORS)+'\n\n'

@@ -61,8 +61,8 @@ Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approv
 
 Images are inspected inline by Planner and Direct Implementor; there is no separate Vision agent.
 
-Registrations per client: Codex in `.codex/agents/`, Copilot in `.github/agents/`, Claude Code in `.claude/agents/` with a `-claude` suffix (run `claude --agent demo-planner-claude`). Role instructions are identical across clients; the full contracts live in `docs/agents/canonical/<environment>/agents/` and exact tools in `docs/agents/bindings/{codex,copilot,claude-code}.md`.
+Registrations per client: Copilot in `.github/agents/`, Claude Code in `.claude/agents/` with a `-claude` suffix (run `claude --agent demo-planner-claude`). Role instructions are identical across clients; the full contracts live in `docs/agents/canonical/<environment>/agents/` and exact tools in `docs/agents/bindings/{copilot,claude-code}.md`.
 
 Generated skills are single shared copies under `.agents/skills/<name>/SKILL.md` (Claude Code reaches them through `.claude/skills/` links): `author-repo-skill`, `plan-bug-from-id`, `plan-user-story-from-id`, `user-story-analysis`, `integration-test-knowledge-checklist`, and `manage-work-item`. The two issue-planning skills run within `demo-planner`. Invoke `manage-work-item` explicitly to create a bug or user story, or to update an existing issue after reading it; every write needs your approval of the exact proposal. The gap-detector skill is deferred.
 
-Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. GitHub MCP access in Codex and Claude Code reads its token from the `GITHUB_TOKEN` environment variable. Reload each client after changes and confirm role and skill discovery before relying on an unverified operation.
+Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. GitHub MCP access in Claude Code reads its token from the `GITHUB_TOKEN` environment variable. Reload each client after changes and confirm role and skill discovery before relying on an unverified operation.
