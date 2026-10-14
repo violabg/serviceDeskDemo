@@ -5,6 +5,7 @@ Owner: claude-code (Claude Code 2.1.296 at installation). Load this file only in
 ## Registration and invocation
 
 - Each role is registered in `.claude/agents/demo-<role>-claude.md` with an enforced `tools` list and the complete role contract as its body. Run a role as the main session agent: `claude --agent demo-<role>-claude`. Automatic delegation to these roles is denied in `.claude/settings.json` (`Agent(demo-<role>-claude)`); the roles are user-invoked.
+- Each role also has a fallback skill, `.claude/skills/demo-<role>-fallback/SKILL.md` (`disable-model-invocation: true`), for clients that cannot pass `--agent`, such as the VS Code extension chat. The skill loads this binding and the complete canonical role contract into the current conversation and states the role's tool restrictions; it does not copy the contract. These skills are Claude Code entrypoints, not configured shared skills.
 - Claude Code reads the root `AGENTS.md` natively when no `CLAUDE.md` exists; do not add a `CLAUDE.md`. Path-scoped rules load from `.claude/rules/`.
 - Skills are discovered through `.claude/skills/<name>` links to the single `.agents/skills/<name>` source. The Bootstrap and Maintainer skills are `user-invocable-only` in `.claude/settings.json`: run them only through explicit `/bootstrap-agentic-system` or `/maintain-agentic-system`.
 
@@ -12,10 +13,13 @@ Owner: claude-code (Claude Code 2.1.296 at installation). Load this file only in
 
 Every role runs as the main conversation of its own session; never start a role as a delegated subagent. Sources: `claude --help` (2.1.296) and https://code.claude.com/docs/en/sub-agents (retrieved 2026-10-13). Status: documented, not exercised in this repository.
 
-- Start a role: `claude --agent demo-<role>-claude`, optionally followed by an initial prompt in quotes. The session runs under that registration's system prompt and `tools` list, so tool limits are runtime-enforced; path limits inside granted tools remain instructions. There is no documented in-session role switch: start a new session to change role. Do not set `agent` in `.claude/settings.json`, which would put every session under one role. In the VS Code extension, run the same command in the integrated terminal.
-- Planner start step: `claude --agent demo-planner-claude`. Role-bound skills: in that session, run `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>`; in any other session, stop and give this start step.
-- Implementor handoff step, after plan approval: in a new terminal session run `claude --agent demo-implementor-claude "Resume implementation for Planning Session <planning-session-id>"` with the approved Planning Session ID filled in. Never continue implementation in the planning session.
-- Whether a `--agent` main session keeps `AskUserQuestion` is unverified; the foreground question route above covers its absence.
+- Start a role by either route; both are valid in every Claude Code client, because no documented signal distinguishes the VS Code extension from the CLI:
+  - Native: `claude --agent demo-<role>-claude`, optionally followed by an initial prompt in quotes. The session runs under that registration's system prompt and `tools` list, so tool limits are runtime-enforced; path limits inside granted tools remain instructions.
+  - Fallback: in a new conversation, `/demo-<role>-fallback`, optionally followed by the first request. The conversation follows the loaded contract; its tool limits are instructions only.
+- One role per conversation. There is no documented in-session role switch: start a new session or conversation to change role. Do not set `agent` in `.claude/settings.json`, which would put every session under one role.
+- Planner start step: `claude --agent demo-planner-claude`, or `/demo-planner-fallback` in a new conversation. Role-bound skills: in a conversation running Planner by either route, run `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>`; in any other conversation, stop and give this start step.
+- Implementor handoff step, after plan approval: start Implementor with fresh context, either in a new terminal session with `claude --agent demo-implementor-claude "Resume implementation for Planning Session <planning-session-id>"` or in a new conversation with `/demo-implementor-fallback Resume implementation for Planning Session <planning-session-id>`, with the approved Planning Session ID filled in. Never continue implementation in the planning conversation.
+- Whether a `--agent` main session or a fallback-started conversation keeps `AskUserQuestion` is unverified; the foreground question route above covers its absence.
 
 ## Exact role tools
 
@@ -28,7 +32,7 @@ Every role runs as the main conversation of its own session; never start a role 
 | demo-knowledge-builder-claude | `AskUserQuestion`, `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Agent`, `WebFetch`, `mcp__neon__list_docs_resources`, `mcp__neon__get_doc_resource`, `mcp__neon__get_database_tables`, `mcp__neon__describe_table_schema`, `mcp__neon__list_branches`, `mcp__neon__compare_database_schema`, `mcp__next-devtools__init`, `mcp__next-devtools__nextjs_docs`, `mcp__next-devtools__nextjs_index`, `mcp__next-devtools__nextjs_call` |
 | demo-ask-claude | `AskUserQuestion`, `Read`, `Grep`, `Glob`, `WebFetch`, `mcp__neon__list_docs_resources`, `mcp__neon__get_doc_resource`, `mcp__neon__get_database_tables`, `mcp__neon__describe_table_schema`, `mcp__neon__list_branches`, `mcp__neon__compare_database_schema`, `mcp__next-devtools__init`, `mcp__next-devtools__nextjs_docs`, `mcp__next-devtools__nextjs_index`, `mcp__next-devtools__nextjs_call` |
 
-The `tools` list is enforced by Claude Code: Ask has no edit or shell tools, and Planner and Knowledge Builder have no shell. Path limits inside the granted edit tools (for example Planner writing only session artifacts) remain instruction boundaries.
+The `tools` list is enforced by Claude Code when the role starts with `--agent`: Ask has no edit or shell tools, and Planner and Knowledge Builder have no shell. A role started through its fallback skill must keep to the same row by instruction. Path limits inside the granted edit tools (for example Planner writing only session artifacts) remain instruction boundaries.
 
 ## Operations named by shared contracts
 
