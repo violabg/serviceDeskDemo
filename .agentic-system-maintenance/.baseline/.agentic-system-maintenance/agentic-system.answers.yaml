@@ -184,6 +184,20 @@
         "diagnostics tooling slot (no upstream slot in 9.2.0)",
         "native role entrypoint verification"
       ]
+    },
+    "role_fallback_skills_2026_10_14": {
+      "source": "user approved 2026-10-14 (evolve, maintain 3.4.0)",
+      "decision": "Add one disable-model-invocation fallback skill per Claude Code role that loads docs/agents/bindings/claude-code.md and the complete canonical role contract without copying it, and states the role's tool restrictions as instructions; keep claude --agent as the enforced route; remove the --agent-only restriction because the VS Code extension cannot be detected",
+      "unchanged": [
+        "canonical role contracts",
+        "AGENTS.md",
+        ".claude/settings.json",
+        "planning skills (ROLE_ACTIVATION already defers to the binding)",
+        "copilot binding and adapters"
+      ],
+      "register": "C031",
+      "not_used": "skill disallowed-tools: the documented restriction clears on the next user message, so it cannot hold role limits",
+      "status": "unverified"
     }
   },
   "execution_host": "Claude Code 2.1.296 in VS Code (2026-10-11 maintenance); earlier runs: Codex in VS Code Insiders; SDK environment path 0.153.0",
@@ -233,13 +247,22 @@
         "integration-tester/diagnostics": "inherited read/problems outside tooling slots"
       },
       "role_entrypoints": {
-        "method": "native main-session selection: claude --agent demo-<role>-claude",
-        "enforcement": "registration tools list runtime-enforced; path limits instruction-only",
-        "handoff": "claude --agent demo-implementor-claude \"Resume implementation for Planning Session <planning-session-id>\" in a new terminal session",
-        "role_activation": "planning skills run only in a demo-planner-claude session",
-        "in_conversation_switch": "not documented; start a new session",
-        "question_tool": "AskUserQuestion, at most 4 questions per call; larger batches use consecutive calls; availability in --agent sessions unverified",
-        "evidence": "claude --help 2.1.296; https://code.claude.com/docs/en/sub-agents retrieved 2026-10-13",
+        "method": "native main-session selection: claude --agent demo-<role>-claude; fallback: /demo-<role>-fallback in a new conversation",
+        "enforcement": "--agent: registration tools list runtime-enforced; fallback skill: same binding row as instructions only; path limits instruction-only in both",
+        "handoff": "claude --agent demo-implementor-claude \"Resume implementation for Planning Session <planning-session-id>\" in a new terminal session, or /demo-implementor-fallback Resume implementation for Planning Session <planning-session-id> in a new conversation",
+        "role_activation": "planning skills run only in a conversation running Planner by either route",
+        "fallback_skills": [
+          ".claude/skills/demo-planner-fallback/SKILL.md",
+          ".claude/skills/demo-implementor-fallback/SKILL.md",
+          ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
+          ".claude/skills/demo-integration-tester-fallback/SKILL.md",
+          ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
+          ".claude/skills/demo-ask-fallback/SKILL.md"
+        ],
+        "fallback_detection": "none: no documented signal distinguishes the VS Code extension from the CLI, so both routes are valid in every client (user decision 2026-10-14)",
+        "in_conversation_switch": "not documented; start a new session or conversation",
+        "question_tool": "AskUserQuestion, at most 4 questions per call; larger batches use consecutive calls; availability in --agent sessions and fallback-started conversations unverified",
+        "evidence": "claude --help 2.1.296; https://code.claude.com/docs/en/sub-agents retrieved 2026-10-13; https://code.claude.com/docs/en/skills, /vs-code and /env-vars retrieved 2026-10-14",
         "status": "unverified"
       }
     }
@@ -4235,7 +4258,7 @@
     "sources": ".agentic-system-maintenance/sources",
     "verification": "python3 .agentic-system-maintenance/scripts/verify-agentic-system.py",
     "environment_audit": ".agentic-system-maintenance/environment-audit.json",
-    "environment_audit_sha256": "febcbcfa7ba466749043874e25705bf2f372831259a0f0cd8caf616aa598860a",
+    "environment_audit_sha256": "f9f49db6e4912140641acf1ca9b464a981a3eaac423b33b50285ed6dcf7a9067",
     "environment_audit_result": "blocked only by the inherited read/problems diagnostics source gap in the Claude Code Implementor and Integration Tester outputs; Bootstrap 9.2.0 adds no diagnostics slot"
   },
   "generated": [
@@ -4775,6 +4798,66 @@
       "template": "authored",
       "source_sha256": "not-applicable",
       "baseline": ".agentic-system-maintenance/.baseline/.claude/rules/agent-integrations.md"
+    },
+    {
+      "path": ".claude/skills/demo-planner-fallback/SKILL.md",
+      "kind": "shared-resource",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "authored role fallback entrypoint (2026-10-14)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-planner-fallback/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/demo-implementor-fallback/SKILL.md",
+      "kind": "shared-resource",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "authored role fallback entrypoint (2026-10-14)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-implementor-fallback/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
+      "kind": "shared-resource",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "authored role fallback entrypoint (2026-10-14)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-direct-implementor-fallback/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/demo-integration-tester-fallback/SKILL.md",
+      "kind": "shared-resource",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "authored role fallback entrypoint (2026-10-14)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-integration-tester-fallback/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
+      "kind": "shared-resource",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "authored role fallback entrypoint (2026-10-14)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-knowledge-builder-fallback/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/demo-ask-fallback/SKILL.md",
+      "kind": "shared-resource",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "authored role fallback entrypoint (2026-10-14)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-ask-fallback/SKILL.md"
     },
     {
       "path": ".claude/settings.json",
