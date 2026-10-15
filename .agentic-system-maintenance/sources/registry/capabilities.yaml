@@ -2,6 +2,8 @@
 # Stable capability needs. Resolve tools from selected-environment evidence at runtime.
 # Choices are a multi-select intake aid, not supported-platform claims or an enum.
 # Other requires free text; neither an unlisted platform nor an unknown version is rejected.
+# A choice's optional `surfaces` question is asked when that choice is selected; the
+# role-entry dual route is offered only when the answer selects `dual_route_when`.
 # Fallbacks still require approval and working prerequisites for the selected operation.
 
 resolution: runtime-discovery
@@ -10,6 +12,9 @@ platform_choices:
     label: GitHub Copilot in VS Code
   - id: claude-code
     label: Claude Code
+    surfaces:
+      question: Will the team use Claude Code through the VS Code extension?
+      dual_route_when: VS Code extension
   - id: codex
     label: Codex
   - id: opencode
@@ -97,7 +102,10 @@ capabilities:
       Where the client cannot run a role as the main conversation, generate a user-only
       role-entry adapter (for example a skill invoked explicitly by name) that loads the complete
       canonical role body before the role operates. Its tool limits are instruction-only and must
-      be recorded as such. When neither works, block the role in that environment.
+      be recorded as such. When native selection works on some client surfaces but not on others,
+      or the role cannot tell which surface it runs on, offer such an adapter as a fallback beside
+      native selection, which stays the primary route that enforces tool limits. When neither works,
+      block the role in that environment.
 
   - id: subagent-delegation
     essential: false

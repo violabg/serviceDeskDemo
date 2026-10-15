@@ -852,3 +852,11 @@ Product lint, typecheck, tests and build were skipped because changes are confin
 - Fixture file contract: execution-report.md
 - Fixture visual-evidence v1 JSON contract
 - Fixture confined to owning session
+
+## 2026-10-15 Evolution: Claude Code fallback-route repository search (C032)
+
+- Structural verifier: all checks pass except pristine baseline equality for the seven files changed in this run before their approved baseline refresh; recorded blocks unchanged (C011/C012 knowledge baselines, inherited diagnostics gap).
+- Environment binding audit: blocked only by the inherited `read/problems` diagnostics gap, as before.
+- Context boundary audit passed (167 files). Canonical preservation passed (21 copies).
+- Fallback search commands from the binding, run in a VS Code extension session: text search returned 19 lines under `docs`, path search 18 `*.agent.md` files; zero hits under `sessions/`, the maintenance root, `node_modules` or the Bootstrap/Maintainer skills.
+- Not exercised: a fallback-started Planner run through Gate 5 in the VS Code extension; full role runs on both routes.

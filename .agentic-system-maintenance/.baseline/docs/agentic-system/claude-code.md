@@ -7,7 +7,7 @@ Applies to Claude Code 2.1.296 (CLI and VS Code extension). Status of every star
 Each role has two start routes. Use either one in any client:
 
 - **Terminal:** run the command from the repository root. Each role's tool list is enforced.
-- **Fallback skill:** open a new conversation (for example a new tab in the VS Code extension chat) and type the skill. It loads the same role contract, but its tool limits are instructions only.
+- **Fallback skill:** open a new conversation (for example a new tab in the VS Code extension chat) and type the skill. It loads the same role contract, but its tool limits are instructions only. It does not start in a conversation that already runs a role: keep working with that role by sending your request without the command, or open a new conversation.
 
 | Role | Terminal command | Fallback skill | Use it for |
 | --- | --- | --- | --- |
@@ -20,18 +20,18 @@ Each role has two start routes. Use either one in any client:
 
 You can add the first message in quotes after the command, or after the skill name. Use one role per conversation: there is no documented way to switch role inside a session, so start a new one. Do not set `agent` in `.claude/settings.json`; that would run every session under one role.
 
-**Enforced vs instructions only.** With the terminal command, each role's `tools` list is enforced by Claude Code: Ask cannot edit or run commands, and Planner and Knowledge Builder cannot run shell commands. With a fallback skill, the same limits are written as instructions in the skill and the role contract, but Claude Code does not block the tools. Limits inside a granted tool, such as Planner writing only session artifacts, are instructions only in both routes. Claude cannot start these roles on its own: the subagents are denied in `.claude/settings.json` and the fallback skills set `disable-model-invocation: true`.
+**Enforced vs instructions only.** With the terminal command, each role's `tools` list is enforced by Claude Code: Ask cannot edit or run commands, and Planner and Knowledge Builder cannot run shell commands. With a fallback skill, the same limits come from the role's row in the binding's tool table and the role contract, as instructions, but Claude Code does not block the tools. A fallback-started conversation also has no `Glob` or `Grep` search tools, so roles search the repository with read-only `grep` and `find` commands instead; for Planner, Knowledge Builder and Ask that is the only shell use allowed. Limits inside a granted tool, such as Planner writing only session artifacts, are instructions only in both routes. Claude cannot start these roles on its own: the subagents are denied in `.claude/settings.json` and the fallback skills set `disable-model-invocation: true`.
 
 ## Common flows
 
 - **Plan a user story or bug.** Start Planner by either route, then run `/plan-user-story-from-id 12` or `/plan-bug-from-id 12`. These skills only run under Planner; in any other conversation they stop and tell you to start Planner. Planner asks all blocking questions together and collects the answers with the question tool, at most four per prompt.
-- **Hand off to implementation.** When you approve the plan, Planner prints the next step. Start Implementor with fresh context, either in a new terminal session:
+- **Hand off to implementation.** When you approve the plan, Planner prints the next step. Start Implementor with fresh context, either in a new terminal session (tool limits enforced):
 
   ```bash
   claude --agent demo-implementor-claude "Resume implementation for Planning Session <planning-session-id>"
   ```
 
-  or in a new conversation:
+  or in a new conversation (tool limits instructions only):
 
   ```text
   /demo-implementor-fallback Resume implementation for Planning Session <planning-session-id>
@@ -63,4 +63,5 @@ Session files live in `sessions/<planning-session-id>/`: `session-memory.md`, `s
 3. Run the Implementor handoff command with a test session ID and confirm it resumes from that session.
 4. Give Planner a local screenshot and confirm a `_visual_evidence.md` artifact appears, naming the haiku subagent as inspector.
 5. In the VS Code extension chat, open a new conversation, type `/` and confirm the six `demo-<role>-fallback` skills are listed. Run `/demo-ask-fallback` with a question and confirm it reads the binding and the Ask contract before answering, and does not edit files.
-6. In another new conversation, run `/demo-planner-fallback`, then `/plan-user-story-from-id <id>`, and confirm the planning skill accepts the fallback-started Planner.
+6. In another new conversation, run `/demo-planner-fallback`, then `/plan-user-story-from-id <id>`, and confirm the planning skill accepts the fallback-started Planner and that its Gate 5 repository search runs with read-only `grep` and `find`.
+7. In that same conversation, run `/demo-ask-fallback` and confirm it loads nothing and tells you a role is already running.

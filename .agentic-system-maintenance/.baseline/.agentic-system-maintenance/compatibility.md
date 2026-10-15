@@ -143,3 +143,15 @@ Required client verification (pending):
 2. Copilot: `demo-planner` in the Agent dropdown loads and asks with `vscode/askQuestions`; `/plan-user-story-from-id` runs in that chat; New Chat + `demo-implementor` resumes from the session ID; inline image inspection writes the Markdown artifact.
 
 Status: both environments **unverified** for role entrypoints, handoff and image inspection; diagnostics remain **blocked** in Claude Code Implementor/Integration Tester.
+
+## 2026-10-15: Claude Code 2.1.300 route tool surfaces
+
+Execution host: Claude Code 2.1.300 in the VS Code Insiders extension; terminal CLI 2.1.300 at `~/.local/bin/claude`.
+
+| Check | Result |
+| --- | --- |
+| `claude -p --agent demo-planner-claude`, stream-json init | Tools Read, Edit, Write, Task, WebFetch, Grep, Glob plus the granted MCP tools; a `Glob` call returned paths; a `Bash` call was refused ("No such tool available") |
+| `claude -p` without `--agent`, and the VS Code extension session | No `Glob` or `Grep` tool; `grep` and `find` are shell functions over the embedded ugrep/bfs (`EMBEDDED_SEARCH_TOOLS`) |
+| Binding fallback search commands in the extension session | `grep -rnI --exclude-dir=...` and `find ... -prune ... -print` returned real paths with zero hits under `sessions/`, the maintenance root, `node_modules` or the Bootstrap/Maintainer skills |
+
+Consequence: fallback-started roles cannot use the `Glob`/`Grep` binding; C032 binds fallback search to read-only `Bash`. A full fallback-started Planner run through Gate 5 is not exercised.
