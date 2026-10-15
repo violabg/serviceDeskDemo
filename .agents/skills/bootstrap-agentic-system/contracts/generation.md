@@ -80,7 +80,7 @@ For generated work-item planning skills:
 - do not add skill-level `tools:` frontmatter,
 - name the selected external tracker adapter or local Markdown adapter in the body,
 - preserve Planner-only invocation,
-- fill `ROLE_ACTIVATION` with the consuming environment's approved activation: a run-only-in-Planner check with the exact start step where the client selects the main-session role natively, or loading the Planner role-entry adapter first where it does not,
+- fill `ROLE_ACTIVATION` with the consuming environment's approved activation: a run-only-in-Planner check with the exact start step where the client selects the main-session role natively, loading the Planner role-entry adapter first where it does not, or, with an approved dual route, a check that accepts a Planner started by either route and otherwise shows both start steps,
 - fill `WORK_ITEM_GATHERING` with the approved target invocation or an explicit inline gathering instruction; verify any named delegate and selector in the intended client, preserve the following evidence task and its artifact contract, and never combine different clients' invocations in a shared skill,
 - define adapter name, exact approved retrieval tools when available, supported issue types, External Issue ID format, required retrieved fields, rich-content and attachment Markdown conversion, missing/duplicate/unreadable/invalid-ID behavior, and local lookup rules when applicable,
 - retrieve only requested External Issue ID by default. Read each issue explicitly referenced or linked by the current issue before deciding relevance; record retrieval reason as dependency evidence and do not recurse,
@@ -105,7 +105,7 @@ For generated instruction files:
 
 For role entrypoints and client guides:
 
-- register each user-invokable role through the role-entry method approved in `contracts/platform-compatibility.md`; a role-entry adapter is generated from the complete canonical copy, is invocable only explicitly by the user, has automatic invocation disabled where the client supports it, and records its tool limits as instruction-only,
+- register each user-invokable role through the role-entry method approved in `contracts/platform-compatibility.md`; a role-entry adapter is generated from the complete canonical copy, is invocable only explicitly by the user, has automatic invocation disabled where the client supports it, and records its tool limits as instruction-only; a fallback adapter beside native selection also follows the dual-route rules there,
 - fill `CLIENT_GUIDE_ROOT` in root instructions and write `<client-guide-root>/README.md` plus one `<client-guide-root>/<environment-id>.md` per selected environment, following the Client Guides batch in `templates/generated-system-blueprint.md`,
 - write guides only from recorded evidence, for people rather than agents; exclude the guide root from knowledge indexing and runtime loading, and never copy credential values into a guide.
 

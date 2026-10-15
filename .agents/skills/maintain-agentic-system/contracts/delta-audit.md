@@ -42,6 +42,8 @@ A generated file whose source the installed Bootstrap contract no longer ships i
 
 When the installed contract adds role entrypoints, the Planner handoff step, or client guides, resolve them for the recorded environments like any other `requires update` delta. Whenever a selected environment, a user-invokable role, an entrypoint, or a handoff step changes, regenerate the affected client guides in the same approved plan and keep their links in root instructions current.
 
+A repository may already carry role-entry adapters next to native role selection, recorded as a customization. Check them against the installed dual-route rules. When they conform, propose moving the customization register row into the answers file's role-entrypoint record. When an adapter falls short, for example it restates the role's rules or does not refuse to start inside a running role, classify it `requires update` and show the gap. Do not remove the row or the adapters without approval.
+
 ## Missing Provenance
 
 When no manifest or snapshot exists, do not assume every entry is missing. Infer the likely applied contract from the existing files, mark the uncertain entries `unknown`, and propose creating the manifest, answers file, and baseline as the first operation. The plan must say the delta audit is best-effort until that provenance is written.

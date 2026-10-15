@@ -4,7 +4,13 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.4.0`
+- `3.5.0`
+
+## 2026-10-14
+
+### 3.5.0
+
+- Check role-entry adapters that a repository already added next to native role selection as a customization against the new dual-route rules. Conforming adapters can move from the customization register into the recorded role entrypoints, with approval. Adapters that restate role rules or do not refuse to start inside a running role are classified `requires update`.
 
 ## 2026-10-13
 
