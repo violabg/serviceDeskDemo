@@ -1,6 +1,6 @@
 ---
 name: demo-implementor-fallback
-description: "Start the demo-implementor role in this conversation when `claude --agent demo-implementor-claude` cannot be used, for example in the VS Code extension chat."
+description: "Start the demo-implementor role in a new conversation when `claude --agent demo-implementor-claude` cannot be used, for example in the VS Code extension chat."
 disable-model-invocation: true
 argument-hint: "[Resume implementation for Planning Session <planning-session-id>]"
 ---
@@ -11,8 +11,7 @@ This skill only starts the role. The role itself lives in its contract; do not w
 
 ## Activation guard
 - Claude Code only. In any other client, stop: that client's binding names its own start step.
-- Use a new conversation. If this conversation already runs another demo role, stop and tell the user to open a new conversation for `/demo-implementor-fallback`.
-- If this conversation already runs under the `demo-implementor-claude` registration (started with `claude --agent demo-implementor-claude`), the role is active: skip loading and handle the request.
+- Start only in a new conversation. If this conversation already runs any demo role, including this one, whether started with `claude --agent demo-<role>-claude` or a `/demo-<role>-fallback` skill, load nothing and stop. Tell the user that a role is already running here: to keep working with it, send the request again without the command; to start a fresh role, open a new conversation and run `/demo-implementor-fallback` there.
 
 ## Load the role
 Read these files completely, in this order, then follow them as this conversation's role for the rest of the conversation:
@@ -21,14 +20,8 @@ Read these files completely, in this order, then follow them as this conversatio
 
 If either file cannot be read completely, stop and report it; never act on a partial contract.
 
-## Restrictions in this route
-Tool limits are not runtime-enforced here; they bind you as instructions for the whole conversation.
-- Use only the tools in the `demo-implementor-claude` row of the binding's Exact role tools table. The table wins if it differs from this list.
-- Never use `Agent` or `WebFetch`.
-- GitHub is read-only: only `mcp__github__issue_read`, as the binding's tracker section describes.
-- Implement only the approved plan of the named Planning Session.
-- Never use `mcp__github__issue_write`; it belongs only to an explicit `/manage-work-item` run.
-- For runtime-enforced limits, the user can run `claude --agent demo-implementor-claude` in a terminal instead.
+## Enforcement in this route
+Tool limits are not runtime-enforced in this route. The `demo-implementor-claude` row of the binding's Exact role tools table and the loaded contract bind this conversation as instructions. `claude --agent demo-implementor-claude` in a terminal enforces the tool limits.
 
 ## First request
 Handle $ARGUMENTS under the loaded role. If it is empty, wait for the user's request.

@@ -4,7 +4,7 @@ This is the shared compatibility contract for Bootstrap and Maintainer. Load it 
 
 ## Selection And Evidence
 
-Ask which environments the repository must support, allowing multiple selections from `registry/capabilities.yaml`'s `platform_choices`. Include GitHub Copilot in VS Code, Claude Code, Codex, OpenCode, Cursor, and Other. Other requires the user to enter one or more platform names; it is not an unsupported-platform rejection. The choices are suggestions, not a closed compatibility list. Do not select an environment merely because Bootstrap is running in it or a customization folder exists.
+Ask which environments the repository must support, allowing multiple selections from `registry/capabilities.yaml`'s `platform_choices`. Include GitHub Copilot in VS Code, Claude Code, Codex, OpenCode, Cursor, and Other. Other requires the user to enter one or more platform names; it is not an unsupported-platform rejection. The choices are suggestions, not a closed compatibility list. Do not select an environment merely because Bootstrap is running in it or a customization folder exists. When a selected choice declares `surfaces`, ask its question as part of the same intake and record the answer; it decides whether Role Entrypoints offers a dual route.
 
 Record the execution host separately from the selected targets. Give each target an environment ID that distinguishes client, version, and execution context where needed; two clients of the same product may need separate records. Inspect available versions, repository configuration, discovery roots, effective permissions, integrations, and role-level tool availability. An unknown version stays unknown.
 
@@ -53,17 +53,25 @@ Check whether a role runs as the main agent, a foreground delegate, or a backgro
 
 User-invokable roles ask the user questions and hold approval gates, so each runs as the main conversation of its session. Never satisfy a user-invokable role by starting it as a delegated subagent: a delegate may lose question and approval access. Only hidden roles such as auditors and scouts run as delegates.
 
-For each selected environment and user-invokable role, record the first method that works and is verified:
+An environment can reach the user through more than one client surface, such as a terminal CLI, an IDE extension, and a desktop or web app. Native role selection may work on one surface and be missing or unverified on another. Ask the user which surfaces the team uses, and research and verify each one separately.
+
+For each selected environment and user-invokable role, choose a route from these methods:
 
 1. Native main-session selection, such as an agent picker or a documented start option that runs the whole session under the role. Do not set a repository-wide default role that would put every session under one role.
 2. A role-entry adapter when the client cannot run a role as the main conversation: a user-only entrypoint, such as a skill invoked explicitly by name, that loads the complete canonical role body before the role operates. It is a registration adapter under Canonical Preservation, so it embeds or loads the body verbatim. Disable automatic invocation where the client supports that. Its tool limits are instruction-only; record them so.
 3. Otherwise mark the role `blocked` or `unverified` for that environment.
 
-Record per role: the exact start command or interface step, whether tool limits are runtime-enforced or instruction-only, and whether the client can switch roles within a conversation. Role-bound skills fill `ROLE_ACTIVATION` from this record.
+Use native selection when it works on every surface the team uses. For an environment whose platform choice declares `surfaces`, offer the dual route only when the user's answer selects its `dual_route_when` surface; otherwise use native selection alone and generate no fallback adapter. For any other environment, offer it when native selection is missing or unverified on a surface the team uses, or, when the team uses more than one surface, when the role cannot tell which one it is running on. A dual route is a decision: native selection stays the primary route, and a role-entry adapter is added beside it as the fallback. The user may accept it, decline it, or limit it to some roles. A fallback adapter must:
 
-The Planner hands off to Implementor in a new conversation with fresh context. Clients do not open such a conversation by themselves, and a handoff that carries the planning conversation forward breaks the fresh-context rule. Fill `ROLE_HANDOFF` with the consuming environment's exact next step and the Planning Session ID: a start command with an initial prompt when the client supports one, otherwise the steps to open a new conversation and start Implementor with the session ID.
+- resolve unambiguously: its name differs from the native role registration, and it never replaces or re-registers that role;
+- refuse to start when the conversation already runs under a role, whether started natively or through an adapter, and tell the user to open a new conversation;
+- load the complete canonical role body, and must not restate, summarize, or extend that role's rules. It may say that its limits are instruction-only and name the native route that enforces them.
 
-Verify each entrypoint in a disposable fixture: the role loads its complete instructions, can ask the user a question, and reaches its first gate; a role-bound skill runs under its role; the Planner handoff step starts Implementor, which resumes from the Planning Session ID. Client guides report these results as recorded, including blocked and unverified entries.
+Record per role and surface: each route's exact start command or interface step, whether it is primary or fallback, whether its tool limits are runtime-enforced or instruction-only, its verification status, and whether the client can switch roles within a conversation. Role-bound skills fill `ROLE_ACTIVATION` from this record. When a dual route exists, they accept either route. If the conversation is not already working as the required role, they stop and show both start steps, with the enforced route first.
+
+The Planner hands off to Implementor in a new conversation with fresh context. Clients do not open such a conversation by themselves, and a handoff that carries the planning conversation forward breaks the fresh-context rule. Fill `ROLE_HANDOFF` with the consuming environment's exact next step and the Planning Session ID: a start command with an initial prompt when the client supports one, otherwise the steps to open a new conversation and start Implementor with the session ID. With a dual route, show both steps and label which one enforces Implementor's tool limits.
+
+Verify each entrypoint in a disposable fixture on every surface it targets: the role loads its complete instructions, can ask the user a question, and reaches its first gate; a role-bound skill runs under its role; the Planner handoff step starts Implementor, which resumes from the Planning Session ID. A fallback adapter also refuses to start inside a conversation that already runs a role. A route that cannot be exercised on a surface stays `unverified` for that surface. Client guides report these results as recorded, including blocked and unverified entries, and say which route enforces tool limits.
 
 ## Integration Registration And Authentication
 

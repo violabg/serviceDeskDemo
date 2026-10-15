@@ -191,14 +191,32 @@
   },
   {
     "id": "role-entrypoints",
-    "value": "native main-session selection in both environments; exact steps in the bindings",
+    "value": "copilot: native main-session selection only (dual route declined); claude-code: dual route, native --agent primary and /demo-<role>-fallback beside it for all six roles; exact steps in the bindings",
     "source": "user",
-    "evidence": "User approved the 2026-10-13 upgrade plan (\"Approve all\"): Q1 Markdown visual evidence, Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026)."
+    "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback."
   },
   {
     "id": "client-guide-root",
     "value": "docs/agentic-system/",
     "source": "accepted recommendation",
     "evidence": "User approved the 2026-10-13 upgrade plan (\"Approve all\"): Q1 Markdown visual evidence, Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026)."
+  },
+  {
+    "id": "upgrade-9.3-scope",
+    "value": "Bootstrap 9.2.0 -> 9.3.0: dual role route; fallback adapters conform; C031 retired into role_entrypoints",
+    "source": "user",
+    "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback."
+  },
+  {
+    "id": "client-surfaces",
+    "value": "copilot: VS Code only, dual route declined; claude-code: VS Code extension and CLI, dual route accepted",
+    "source": "user",
+    "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback."
+  },
+  {
+    "id": "fallback-repository-search",
+    "value": "claude-code fallback route: file/path and text search bind to read-only Bash find/grep with maintenance, session, dependency and VCS exclusions; native route keeps Glob/Grep",
+    "source": "user",
+    "evidence": "User approved the 2026-10-15 evolve plan (\"approved\"): fallback-route repository search binds to read-only Bash grep/find for all six Claude Code roles because a session started without --agent has no Glob or Grep (Claude Code 2.1.300)."
   }
 ]

@@ -12,11 +12,11 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 9.2.0 (includes 9.0, 9.1; earlier: 6.0, 6.1, 7.0, 7.0.1, 8.0; 7.1 superseded by 8.0 `manage-work-item`)
+- Bootstrap Contract Applied Through: 9.3.0 (includes 9.0, 9.1, 9.2; earlier: 6.0, 6.1, 7.0, 7.0.1, 8.0; 7.1 superseded by 8.0 `manage-work-item`)
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
-- Maintain Skill Version Available: 3.4.0
-- Maintain Skill Version Last Applied: 3.4.0
-- Last Maintenance Date: 2026-10-14
+- Maintain Skill Version Available: 3.5.0
+- Maintain Skill Version Last Applied: 3.5.0
+- Last Maintenance Date: 2026-10-15
 
 ## Generated System Paths
 
@@ -30,7 +30,7 @@
 - Native Agents: `.github/agents/demo-<role>.agent.md`, `.claude/agents/demo-<role>-claude.md` (six roles; Vision retired 2026-10-11)
 - Canonical Agents: `docs/agents/canonical/{copilot,claude-code}/agents/`; role bodies identical across environments, frontmatter tools differ
 - Skills and complete canonical copies: `.agents/skills/<original-name>/SKILL.md` (six, incl. `manage-work-item`); Claude Code discovers them through `.claude/skills/<name>` links
-- Claude Code Role Fallback Skills: `.claude/skills/demo-<role>-fallback/SKILL.md` (six; entrypoints that load the binding and canonical contract, not shared skills; C031)
+- Claude Code Role Fallback Skills: `.claude/skills/demo-<role>-fallback/SKILL.md` (six; Bootstrap 9.3.0 dual-route fallback adapters beside native `--agent`: they refuse inside a running role and load the binding and canonical contract without restating it; not shared skills; recorded in answers `environments.claude-code.role_entrypoints`, formerly C031)
 - Native Configuration: `.claude/settings.json` (maintenance skills user-invocable-only; roles denied for automatic delegation), `.mcp.json` (adds `next-devtools`)
 - Claude Code Rules: `.claude/rules/`
 - Shared Instructions: `docs/agents/instructions/`
@@ -51,7 +51,7 @@
 - Context Audit: `.agentic-system-maintenance/context-audit.json`
 - Approved Maintenance Plan: none retained (the 2026-10-11 plan and report were deleted on 2026-10-13 by user approval; see Maintenance History)
 - Runtime Root: not adopted (existing `docs/agents/` and `sessions/` retained, 2026-10-11)
-- Maintenance Renderer: `.agentic-system-maintenance/scripts/render-9.2.py` (records and baseline: `finalize-9.2.py`); `render-8.0.py`, `build-audits-8.0.py` and `finalize-8.0.py` are retained history and reference the deleted 2026-10-11 rollback folder
+- Maintenance Renderer: `.agentic-system-maintenance/scripts/render-9.2.py` (records and baseline: `finalize-9.2.py`; 9.3.0 records and baseline: `finalize-9.3.py`, no re-render); `render-8.0.py`, `build-audits-8.0.py` and `finalize-8.0.py` are retained history and reference the deleted 2026-10-11 rollback folder
 - Answers File: `.agentic-system-maintenance/agentic-system.answers.yaml`
 - Baseline Directory: `.agentic-system-maintenance/.baseline/`
 - Client Guides: `docs/agentic-system/README.md`, `docs/agentic-system/copilot.md`, `docs/agentic-system/claude-code.md` (for people; excluded from knowledge indexing and runtime loading; linked from `AGENTS.md` and `README.md`)
@@ -61,7 +61,7 @@
 
 ## Environment Compatibility
 
-- Execution Host: Claude Code 2.1.296 in VS Code (2026-10-11); earlier: Codex in VS Code Insiders, SDK path 0.153.0
+- Execution Host: Claude Code 2.1.300 in the VS Code Insiders extension (2026-10-15); earlier: Claude Code 2.1.296 in VS Code (2026-10-11); Codex in VS Code Insiders, SDK path 0.153.0
 - Selected Environments and role/operation maps: `.agentic-system-maintenance/agentic-system.answers.yaml`
 - Compatibility Evidence: `.agentic-system-maintenance/compatibility.md`
 - Canonical Source Snapshots: `.agentic-system-maintenance/sources/` (maintenance-only)
@@ -74,8 +74,8 @@
 
 | Environment | Registration | Status | Limitations |
 | --- | --- | --- | --- |
-| Copilot | Six Markdown agents, six canonical skills, scoped instruction adapters; roles start from the Agent dropdown, Implementor handoff via New Chat | unverified | Image inspection inline; `vscode/askQuestions` limits unknown. Also discovers `.claude/agents` (`demo-*-claude`) and `.claude/skills` links; tool picker and handoffs require client verification |
-| Claude Code | Six `demo-<role>-claude` subagents run as main sessions with `claude --agent`, or in a new conversation through six `/demo-<role>-fallback` skills (tool limits instruction-only), six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Image inspection via approved haiku `general-purpose` delegate with inline fallback; `AskUserQuestion` max 4 questions per call; Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, fallback-skill role runs, Agent() deny behaviour and skillOverrides not exercised; diagnostics blocked |
+| Copilot | Six Markdown agents, six canonical skills, scoped instruction adapters; roles start from the Agent dropdown, Implementor handoff via New Chat; single surface (VS Code), dual-route fallback declined 2026-10-15 | unverified | Image inspection inline; `vscode/askQuestions` limits unknown. Also discovers `.claude/agents` (`demo-*-claude`) and `.claude/skills` links; tool picker and handoffs require client verification |
+| Claude Code | Dual route (surfaces: CLI and VS Code extension): six `demo-<role>-claude` subagents run as main sessions with `claude --agent` (primary, enforced), or in a new conversation through six `/demo-<role>-fallback` skills (fallback, tool limits instruction-only, refuse inside a running role), six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Image inspection via approved haiku `general-purpose` delegate with inline fallback; `AskUserQuestion` max 4 questions per call; Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, fallback-skill role runs and refusal, Agent() deny behaviour and skillOverrides not exercised; fallback-started sessions have no `Glob`/`Grep` (2.1.300, probed 2026-10-15), so fallback search binds to read-only `Bash` `grep`/`find` (C032); diagnostics blocked |
 
 ## Customization Register
 
@@ -114,13 +114,16 @@
 | C026 | Environment-dependent body slots in all role copies | shared neutral bodies (S1) | slot-override | User asked to keep content shared (2026-10-11); slots point to the router-selected `docs/agents/bindings/<environment>.md`; exact identifiers only in bindings and native adapters | extends-canonical within declared slots | always; re-evaluate on client/schema changes |
 | C027 | `knowledge/knowledge-index.md` | Path cells | modified-rule | 8.0 context-boundary contract requires repository-relative Path cells; links converted to backticked `knowledge/<file>` paths (2026-10-11) | extends-canonical | always |
 | C028 | Planner/Direct Implementor `IMAGE_INSPECTION`, visual-evidence capability rows, integration policy, both bindings | image inspection and evidence format | slot-override | User approved 2026-10-13: Markdown `<image-name>_visual_evidence.md` per image (upstream 9.0); Copilot inline; Claude Code `general-purpose` delegate with `model: haiku`, inline fallback when the model cannot be passed; supersedes C024 | extends-canonical within declared slot and bindings | re-evaluate on client model or delegation changes; last checked 9.2.0 |
-| C029 | Planner `ROLE_HANDOFF` and `QUESTION_TOOL`, planning-skill `ROLE_ACTIVATION`, both bindings | role entrypoints, handoff, question delivery | slot-override | User approved 2026-10-13 (Q3): neutral slot values point to the active binding, which holds the exact start, handoff and question-tool steps; extends C026; Claude Code `AskUserQuestion` takes at most 4 questions per call, so larger batches use consecutive calls | extends-canonical within declared slots | always; re-evaluate on client entrypoint or question-tool changes; last checked 9.2.0 |
-| C030 | `docs/agentic-system/` | client guides | added-section | Bootstrap 9.0 client guides at the recommended root, written from recorded evidence; linked from `README.md` | independent repository documentation | always; regenerate when an environment, role, entrypoint or handoff step changes |
+| C029 | Planner `ROLE_HANDOFF` and `QUESTION_TOOL`, planning-skill `ROLE_ACTIVATION`, both bindings | role entrypoints, handoff, question delivery | slot-override | User approved 2026-10-13 (Q3): neutral slot values point to the active binding, which holds the exact start, handoff and question-tool steps; extends C026; Claude Code `AskUserQuestion` takes at most 4 questions per call, so larger batches use consecutive calls | extends-canonical within declared slots | always; re-evaluate on client entrypoint or question-tool changes; last checked 9.3.0 (binding start and handoff steps labelled by enforcement; `ROLE_ACTIVATION` value unchanged because it defers to the binding) |
+| C030 | `docs/agentic-system/` | client guides | added-section | Bootstrap 9.0 client guides at the recommended root, written from recorded evidence; linked from `README.md` | independent repository documentation | always; regenerate when an environment, role, entrypoint or handoff step changes; last regenerated 9.3.0 (enforcement labels, fallback refusal, verify step 7) |
 | C031 | `.claude/skills/demo-<role>-fallback/SKILL.md`, Claude Code binding `## Registration and invocation` and `## Role entrypoints and handoff`, `.claude/rules/agent-integrations.md`, client guides, root README | role fallback entrypoints | new-skill | User approved 2026-10-14: the VS Code extension cannot pass `--agent`, so each role gets a user-only fallback skill that loads the binding and complete canonical contract (no copied text) and states the role's tool restrictions as instructions; the extension cannot be detected, so the `--agent`-only restriction is removed for every client; extends C025 and C029 | independent native entrypoint; canonical bodies and planning skills unchanged | re-evaluate on client entrypoint, skill-frontmatter or tool-restriction changes; runtime unverified |
+| C032 | `docs/agents/bindings/claude-code.md` (`## Role entrypoints and handoff` status line, `## Exact role tools` closing paragraph, `## Operations named by shared contracts` search and terminal rows), `docs/agentic-system/claude-code.md` (`Enforced vs instructions only`, verify step 6) | fallback-route repository search | modified-rule | User approved 2026-10-15: a session started without `--agent` has no `Glob` or `Grep` in Claude Code 2.1.300, so the fallback route binds file/path and text search to read-only `Bash` `find`/`grep` with maintenance, session, dependency and VCS exclusions, for all six roles; for Planner, Knowledge Builder and Ask that is the only allowed `Bash` use; native `--agent` route unchanged | extends-canonical through the environment binding; works around Bootstrap 9.3.0 recording only enforcement, not tool surface, per route | re-evaluate on any Claude Code version change; drop-when-superseded once Bootstrap ships per-route tool surfaces and bindings; last checked 2026-10-15 (2.1.300) |
 
 Retired or superseded 2026-10-11: C001, C002, C007, C008 (Vision retired; see C024), C016 and C020 (see C023), C021 (8.0 `manage-work-item` route). C010 remains resolved. C003, C013, C014, C015 re-checked for claude-code on 8.0.0.
 
 Retired 2026-10-13 (9.2.0 upgrade): C024, superseded by C028 (Bootstrap 9.0 replaced `VISION_INVOCATION` with `IMAGE_INSPECTION` and fixed Markdown evidence).
+
+Retired 2026-10-15 (9.3.0 upgrade): C031. Bootstrap 9.3.0 covers fallback adapters beside native selection; after the approved conformance edits (no restated role rules, refusal inside any running role) the six skills are generated role-entry adapters recorded in answers `environments.claude-code.role_entrypoints`, not a customization.
 
 Retired 2026-10-13: C008, C016, C017, C020 and C023 (Codex environment removed by user approval; their target files, bindings and generated layers were deleted). Rows are kept as history only and no longer apply to any file.
 
@@ -166,6 +169,26 @@ Canonical copies remain exact after approved slots and marker stripping. No othe
 - Unchanged: diagnostics slot gap stays blocked (9.2.0 adds no slot); business-logic-gap-detector deferred; native role entrypoints, handoffs and image inspection unverified in both clients.
 - Session-folder contents were excluded. No product code, schema, migrations, tests or product runtime configuration changed.
 
+## Bootstrap 9.3.0 Approved Upgrade (2026-10-15)
+
+- Approval: user "Approve all" on the 2026-10-15 plan; Q1 take 9.3.0 (fallback skills point to the binding's Exact role tools row and the enforced `--agent` route instead of restating limits), Q2 refuse with a clear hint whenever any demo role already runs (including the same role), Q3 decline a Copilot fallback.
+- Surfaces: Claude Code answers yes to the VS Code extension question (C031 evidence), so the dual route stays for all six roles; Copilot uses a single surface and declined the offer.
+- Upgrade: six fallback skills conformed (activation guard, `## Enforcement in this route`); Claude Code binding labels the Planner start step and Implementor handoff by enforcement and states the refusal; both guides gained enforcement labels and verify step 7 (refusal). No canonical copy or native adapter re-rendered: `ROLE_HANDOFF` and `ROLE_ACTIVATION` defer to the binding (C029).
+- Records: answers (`surfaces`, per-surface `routes`, `fallback_rules`, decisions `upgrade-9.3-scope` and `client-surfaces`), decision register, three source snapshots and the changelog snapshot refreshed; C031 retired; baselines refreshed after validation.
+- Merge: every affected region had MINE == BASE; C031 (`re-evaluate`) was resolved by Q1/Q2.
+- Unchanged: diagnostics slot gap stays blocked (9.3.0 adds no slot); business-logic-gap-detector deferred; both routes on both Claude Code surfaces, fallback refusal and the Copilot dropdown unverified.
+- Session-folder contents were excluded. No product code, schema, migrations, tests or product runtime configuration changed.
+
+## 2026-10-15 Approved Evolution: Fallback Repository Search
+
+- Approval: user "approved" on the 2026-10-15 evolve plan after the Planner, started with `/demo-planner-fallback` in the VS Code extension, stopped at Gate 5 because `Glob` and `Grep` were missing and its row grants no `Bash`.
+- Cause: Claude Code 2.1.300 sessions started without `--agent` expose no `Glob` or `Grep` (search runs through `Bash` `grep`/`find` over embedded ugrep/bfs); `--agent` sessions get them from the registration `tools` list. The binding mapped search to `Glob`/`Grep` on both routes.
+- Change: Claude Code binding search and terminal rows, the fallback substitution under the Exact role tools table and the route status line; Claude Code client guide. Fallback skills, canonical copies, native agents and the README are unchanged (the skills defer to the binding row).
+- Bootstrap gap (reported upstream, not fixed here): 9.3.0 records only enforcement per route, not each route's effective tool surface; operations bind per environment and role, not per route; entrypoint verification stops at the first gate.
+- Records: answers (`execution_host`, claude-code `version`, per-route `tool_surface` and `repository_search`, decision `fallback-repository-search`, `maintenance_decisions.fallback_repository_search_2026_10_15`), decision register, compatibility evidence, validation report, register row C032; baselines refreshed after validation.
+- Unverified: a full fallback-started Planner run through Gate 5 in the VS Code extension; full role runs on both routes.
+- Session-folder contents were excluded. No product code, schema, migrations, tests or product runtime configuration changed.
+
 ## Maintenance History
 
 | 2026-10-10 | 5.3.0 plus targeted 7.0 isolation | 3.2.1 | Approved evidence/layout migration: moved generated maintenance evidence to `.agentic-system-maintenance/`, consolidated all nine project knowledge documents and the index under `knowledge/`, retained installed Bootstrap/Maintainer skills at their existing paths, and preserved Codex/Copilot MCP configuration. Native loading/search exclusion remains unverified; inherited diagnostics source-slot gap remains blocked. |
@@ -186,6 +209,7 @@ Canonical copies remain exact after approved slots and marker stripping. No othe
 | 2026-10-08 | 5.3.0 | 3.1.0 | Repaired Codex Neon MCP endpoint, OAuth and per-role transport/allowlists; verified a read-only branch listing for the linked project; custom-role invocation remains unverified. |
 | 2026-10-10 | 5.3.0 | 3.1.0 | Evolved shared database workflow policy: Planner must include conditional migration, privilege seed and Admin verification steps; Implementor must confirm plan coverage, exact target authorization, and apply/verify only when needed. Session contents and product code were excluded. |
 | 2026-10-10 | 5.3.0 | 3.2.1 | Evolved the explicitly invoked work-item skill route for default Copilot and Codex, preserving role grants and requiring runtime authorization plus explicit issue approval; Codex issue creation and screenshot upload remain blocked/unverified. Refreshed only the five approved policy/binding baselines. |
+| 2026-10-15 | 9.3.0 | 3.5.0 | Evolved the Claude Code fallback-route repository search binding to read-only `Bash` `grep`/`find` (C032) after 2.1.300 fallback sessions lacked `Glob`/`Grep`; native route unchanged; full fallback role run remains unverified. |
 
 After future edits, update answers, pristine baseline and customization register together. Use maintain-agentic-system for upgrades. Use the generated Knowledge Builder for topic-scoped evidence refresh, author-repo-skill for reusable procedures, and manage-work-item when ticket creation or update is explicitly requested.
 
@@ -230,3 +254,4 @@ Native default-Codex creation verified: https://github.com/violabg/serviceDeskDe
 | 2026-10-13 | 8.0.0 | 3.3.0 | Evolve: removed the Codex environment by user approval. Deleted `.codex/`, the Codex binding and canonical copies, the maintenance history folder and dated maintenance reports/plans (including baseline mirrors); removed Codex entries from answers, native adapters, preservation plan, audits and decision register (`github-app` row deleted; `mcp` and `environments` values pruned); updated root routing, README and integration router. Bootstrap skill and third-party shadcn reference intentionally unchanged. Environments now: copilot, claude-code. Native runtime verification of the two remaining environments remains unverified. |
 | 2026-10-13 | 9.2.0 | 3.4.0 | Upgrade 8.0.0→9.2.0: Vision remnants removed, `IMAGE_INSPECTION` (Markdown evidence; Claude Code haiku delegate, Copilot inline), role entrypoints and fresh-context Implementor handoff via bindings, `ROLE_ACTIVATION` in planning skills, batched Planner clarifications through the question tool, client guides under `docs/agentic-system/`. Deferred: gap-detector skill; blocked: diagnostics slot; unverified: native role entrypoints, handoff and image inspection. |
 | 2026-10-14 | 9.2.0 | 3.4.0 | Evolve: six Claude Code role fallback skills (`/demo-<role>-fallback`) for clients that cannot pass `--agent`; they load the binding and canonical contract and state tool restrictions as instructions; `--agent` stays the enforced route; the `--agent`-only restriction is removed in the binding, rule and guides (C031). Canonical contracts, `AGENTS.md`, settings and planning skills unchanged. Unverified: skill discovery in the VS Code extension and fallback role runs. |
+| 2026-10-15 | 9.3.0 | 3.5.0 | Upgrade 9.2.0→9.3.0: dual role route. Claude Code fallback skills conformed (no restated role rules; refuse inside any running role) and recorded per surface in answers; C031 retired; binding start/handoff steps and guides labelled by enforcement; Copilot fallback offer declined. Deferred: gap-detector skill; blocked: diagnostics slot; unverified: both routes on each surface and fallback refusal. |
