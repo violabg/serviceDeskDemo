@@ -266,9 +266,10 @@ placeholders:
     kind: both
     question: Which approved binding performs each capability token this generated role uses?
     fill_from: discovery
-    recommend: One Markdown table row per token listed in this role's capability sidecar, as `| `#capability:<token>` | <binding> |`. Start from the sidecar's `substitute` text, fill its slot values, and replace every reference to the Bootstrap registry with the concrete approved tool, repository path, or fallback procedure. Never cite Bootstrap or maintenance files, source services, or tools of another environment.
+    recommend: One Markdown table row per token listed in this role's capability sidecar, as `| `#capability:<token>` | <binding> |`. Start from the sidecar's `substitute` text, fill its slot values, and replace every reference to the Bootstrap registry with the concrete approved tool, repository path, or fallback procedure. When the role has an approved dual route whose tool lists differ, a row may name one binding per route, keyed by the route's start step, with the same operation, scope, and exclusions, for example `native route = workspace search tools; fallback route = read-only shell find/grep with the same exclusions`. A route-specific binding that gives the role a tool it does not otherwise have, such as a shell for a read-only role, is an explicit user decision. Never cite Bootstrap or maintenance files, source services, or tools of another environment.
     infer_from:
       - capabilities entries in the selected templates/agents/<role>.capabilities.yaml sidecar
+      - effective tool list of each approved route per client surface
       - approved capability resolutions and fallbacks in the decision register
       - approved PLATFORM_TOOLS, APPROVED_MCP_TOOLS, WORK_ITEM_RETRIEVAL, SESSION_ROOT, and schema paths for this role
 

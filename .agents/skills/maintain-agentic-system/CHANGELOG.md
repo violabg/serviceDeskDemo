@@ -4,7 +4,13 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.5.0`
+- `3.6.0`
+
+## 2026-10-15
+
+### 3.6.0
+
+- Treat a change in a selected client's version as a trigger to re-check each role-entry route's tool list per surface. An existing dual route with no per-route tool list recorded is `unknown` until verified, and a route that no longer covers an operation its role is bound to is `requires update`, resolved by a route-specific binding or a block on that route.
 
 ## 2026-10-14
 
