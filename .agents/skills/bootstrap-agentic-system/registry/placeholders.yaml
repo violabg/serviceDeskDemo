@@ -204,7 +204,7 @@ placeholders:
     question: After plan approval, how does the user start Implementor in a new conversation with the Planning Session ID in this environment?
     fill_from: discovery
     capability: role-selection
-    recommend: "Tell the user to start Implementor in a new conversation with fresh context and print the exact step for this environment with the approved Planning Session ID filled in: the verified start command with an initial prompt where the client supports one, otherwise the steps to open a new conversation, select or enter the Implementor entrypoint, and paste `Resume implementation for Planning Session <planning-session-id>`. Never continue implementation in the planning conversation, and keep other clients' syntax out of this value."
+    recommend: "Tell the user to start Implementor in a new conversation with fresh context and print the exact step for this environment with the approved Planning Session ID filled in: the verified start command with an initial prompt where the client supports one, otherwise the steps to open a new conversation, select or enter the Implementor entrypoint, and paste `Resume implementation for Planning Session <planning-session-id>`. With an approved dual route, show both steps and label which one enforces Implementor's tool limits. Never continue implementation in the planning conversation, and keep other clients' syntax out of this value."
     infer_from:
       - verified Implementor entrypoint for this environment
       - client support for starting a session with an initial prompt
@@ -215,9 +215,10 @@ placeholders:
     question: How does a role-bound skill make sure it runs under its required role in this environment?
     fill_from: discovery
     capability: role-selection
-    recommend: "With native main-session role selection, run the skill only when the conversation is already working as the required role; otherwise stop and tell the user the exact step to start that role. With a role-entry adapter, load the required role's entry first when the conversation is not already working as that role, then continue with the skill. Record whether tool limits are runtime-enforced or instruction-only."
+    recommend: "With native main-session role selection, run the skill only when the conversation is already working as the required role; otherwise stop and tell the user the exact step to start that role. With a role-entry adapter, load the required role's entry first when the conversation is not already working as that role, then continue with the skill. With an approved dual route, accept a role started by either route; otherwise stop and show both start steps, with the enforced route first. Record whether tool limits are runtime-enforced or instruction-only."
     infer_from:
       - verified role entrypoints for this environment
+      - approved dual-route decision per client surface
       - selected client's skill invocation and main-session agent selection documentation
 
   - name: CLIENT_GUIDE_ROOT

@@ -31,7 +31,7 @@ Discovery lanes:
 - Validation Surface: package scripts, CI, lint/test commands, PR templates, contribution docs, and commands generated agents should run.
 - Role Capability Scope: read each selected agent's capability sidecar, `templates/agents/<role>.capabilities.yaml`: its `tooling_intent` categories, then its `capabilities` tokens. For every category and token, record source role, supported operation, whether that role needs it for its selected workflow, and target-repository evidence for candidate tools or services. Profiles and tokens describe capability needs, not names of MCP servers to install.
 - Image Inspection: for each selected environment, check whether each image-handling role can read images itself and whether the environment's delegation accepts a model choice, so Bootstrap can recommend inline inspection or an approved cheaper vision-capable delegate.
-- Role Entrypoints: for each selected environment, find how a user starts each user-invokable role as the main conversation, whether a new conversation can start with an initial prompt, and how explicitly invoked skills are discovered and kept from automatic use, following `contracts/platform-compatibility.md`.
+- Role Entrypoints: for each selected environment and each client surface the team uses, find how a user starts each user-invokable role as the main conversation, whether a new conversation can start with an initial prompt, whether a running role can tell which surface it is on, and how explicitly invoked skills are discovered and kept from automatic use, following `contracts/platform-compatibility.md`.
 
 For every role capability need, search target MCP configuration, existing agent tool lists and repository skills, tracker and knowledge sources, package manifests, lockfiles, and project documentation before proposing a candidate. A framework, vendor, library, or API dependency may justify a documentation capability for the role that needs current external contracts. Do not infer a specific provider from the source mirror; prefer an already configured target-repository service, then a platform-native tool, then a documented fallback.
 
@@ -63,7 +63,7 @@ Required decisions for the selected workflow (mark conditional items not applica
 - session root and current-session-only restriction,
 - dedicated top-level maintenance root (default `.agentic-system-maintenance/`) for provenance, maintenance skills/resources, baselines, research, and reports; runtime discovery exclusions and any guarded native entrypoint, following `contracts/context-boundaries.md`,
 - image inspection per environment: inline by the role, or delegation to an explicitly approved cheaper vision-capable model,
-- role entrypoints per environment and user-invokable role, role-bound skill activation, and the Planner-to-Implementor handoff step,
+- role entrypoints per environment, client surface, and user-invokable role; where native selection does not cover every surface, whether to add a fallback role-entry adapter beside it, and for which roles; role-bound skill activation; and the Planner-to-Implementor handoff step,
 - client guide root (default `docs/agentic-system/`) for one user guide per selected environment,
 - Canonical Template Mirror skills to generate, skip, or defer,
 - approval owner and batch approval plan, including each batch's composition, order, split/combine/skip/defer choices, and approval checkpoint.

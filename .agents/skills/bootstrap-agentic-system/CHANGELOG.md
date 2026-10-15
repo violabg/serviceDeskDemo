@@ -4,7 +4,13 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `9.2.0`
+- `9.3.0`
+
+## 2026-10-14
+
+### 9.3.0
+
+- Offer a dual role route beside native main-session selection. For Claude Code, Bootstrap asks during environment intake whether the team uses the VS Code extension. Only a yes leads to the offer; otherwise roles use native selection alone and no fallback adapter is generated. For other environments, Bootstrap makes the offer when evidence shows native selection does not cover every surface the team uses, or when a team using several surfaces runs roles that cannot tell which one they are on. If the user accepts, Bootstrap adds a role-entry adapter beside native selection, for every role or only some. Native selection stays the primary route and enforces tool limits. The fallback adapter has its own name, refuses to start inside a conversation that already runs a role, and loads the complete role without restating its rules. Role-bound skills accept either route, and the Planner handoff and client guides show both start steps, labeled by enforcement.
 
 ## 2026-10-13
 
