@@ -52,6 +52,12 @@
     ".claude/rules/planning-sessions.md",
     ".github/instructions/agent-integrations.instructions.md",
     ".claude/rules/agent-integrations.md",
+    ".claude/skills/demo-planner-fallback/SKILL.md",
+    ".claude/skills/demo-implementor-fallback/SKILL.md",
+    ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
+    ".claude/skills/demo-integration-tester-fallback/SKILL.md",
+    ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
+    ".claude/skills/demo-ask-fallback/SKILL.md",
     ".claude/settings.json",
     ".mcp.json"
   ],
@@ -731,6 +737,66 @@
       ],
       "references": [
         "docs/agents/bindings/claude-code.md"
+      ]
+    },
+    {
+      "output": ".claude/skills/demo-planner-fallback/SKILL.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/canonical/claude-code/agents/demo-planner.agent.md"
+      ]
+    },
+    {
+      "output": ".claude/skills/demo-implementor-fallback/SKILL.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md"
+      ]
+    },
+    {
+      "output": ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md"
+      ]
+    },
+    {
+      "output": ".claude/skills/demo-integration-tester-fallback/SKILL.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md"
+      ]
+    },
+    {
+      "output": ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md"
+      ]
+    },
+    {
+      "output": ".claude/skills/demo-ask-fallback/SKILL.md",
+      "environments": [
+        "claude-code"
+      ],
+      "references": [
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/canonical/claude-code/agents/demo-ask.agent.md"
       ]
     },
     {

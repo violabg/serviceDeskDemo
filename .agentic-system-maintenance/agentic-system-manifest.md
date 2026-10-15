@@ -16,7 +16,7 @@
 - Bootstrap Snapshot Source Status: copied from installed skill changelog
 - Maintain Skill Version Available: 3.4.0
 - Maintain Skill Version Last Applied: 3.4.0
-- Last Maintenance Date: 2026-10-13
+- Last Maintenance Date: 2026-10-14
 
 ## Generated System Paths
 
@@ -30,6 +30,7 @@
 - Native Agents: `.github/agents/demo-<role>.agent.md`, `.claude/agents/demo-<role>-claude.md` (six roles; Vision retired 2026-10-11)
 - Canonical Agents: `docs/agents/canonical/{copilot,claude-code}/agents/`; role bodies identical across environments, frontmatter tools differ
 - Skills and complete canonical copies: `.agents/skills/<original-name>/SKILL.md` (six, incl. `manage-work-item`); Claude Code discovers them through `.claude/skills/<name>` links
+- Claude Code Role Fallback Skills: `.claude/skills/demo-<role>-fallback/SKILL.md` (six; entrypoints that load the binding and canonical contract, not shared skills; C031)
 - Native Configuration: `.claude/settings.json` (maintenance skills user-invocable-only; roles denied for automatic delegation), `.mcp.json` (adds `next-devtools`)
 - Claude Code Rules: `.claude/rules/`
 - Shared Instructions: `docs/agents/instructions/`
@@ -66,7 +67,7 @@
 - Canonical Source Snapshots: `.agentic-system-maintenance/sources/` (maintenance-only)
 - Preservation Plan: `.agentic-system-maintenance/preservation-plan.json`
 - Preservation Plan SHA-256: 378888aa61cbd64efe0556fdd72c9b61772f872b7fa0060fb41212d9a7dc4cb7
-- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: febcbcfa7ba466749043874e25705bf2f372831259a0f0cd8caf616aa598860a
+- Environment Audit: `.agentic-system-maintenance/environment-audit.json`; SHA-256: f9f49db6e4912140641acf1ca9b464a981a3eaac423b33b50285ed6dcf7a9067
 - Native Body Mapping: `.agentic-system-maintenance/native-adapters.json`
 - Structural Verification: `.agentic-system-maintenance/validation-report.md`
 - Contract Audit: `.agentic-system-maintenance/contract-audit.md`
@@ -74,7 +75,7 @@
 | Environment | Registration | Status | Limitations |
 | --- | --- | --- | --- |
 | Copilot | Six Markdown agents, six canonical skills, scoped instruction adapters; roles start from the Agent dropdown, Implementor handoff via New Chat | unverified | Image inspection inline; `vscode/askQuestions` limits unknown. Also discovers `.claude/agents` (`demo-*-claude`) and `.claude/skills` links; tool picker and handoffs require client verification |
-| Claude Code | Six `demo-<role>-claude` subagents run as main sessions with `claude --agent`, six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Image inspection via approved haiku `general-purpose` delegate with inline fallback; `AskUserQuestion` max 4 questions per call; Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, Agent() deny behaviour and skillOverrides not exercised; diagnostics blocked |
+| Claude Code | Six `demo-<role>-claude` subagents run as main sessions with `claude --agent`, or in a new conversation through six `/demo-<role>-fallback` skills (tool limits instruction-only), six skills via `.claude/skills` links, native `AGENTS.md`, `.claude/rules`, `.claude/settings.json` | unverified | Image inspection via approved haiku `general-purpose` delegate with inline fallback; `AskUserQuestion` max 4 questions per call; Main-session GitHub MCP `issue_read` verified 2026-10-11; `claude --agent` role runs, fallback-skill role runs, Agent() deny behaviour and skillOverrides not exercised; diagnostics blocked |
 
 ## Customization Register
 
@@ -115,6 +116,7 @@
 | C028 | Planner/Direct Implementor `IMAGE_INSPECTION`, visual-evidence capability rows, integration policy, both bindings | image inspection and evidence format | slot-override | User approved 2026-10-13: Markdown `<image-name>_visual_evidence.md` per image (upstream 9.0); Copilot inline; Claude Code `general-purpose` delegate with `model: haiku`, inline fallback when the model cannot be passed; supersedes C024 | extends-canonical within declared slot and bindings | re-evaluate on client model or delegation changes; last checked 9.2.0 |
 | C029 | Planner `ROLE_HANDOFF` and `QUESTION_TOOL`, planning-skill `ROLE_ACTIVATION`, both bindings | role entrypoints, handoff, question delivery | slot-override | User approved 2026-10-13 (Q3): neutral slot values point to the active binding, which holds the exact start, handoff and question-tool steps; extends C026; Claude Code `AskUserQuestion` takes at most 4 questions per call, so larger batches use consecutive calls | extends-canonical within declared slots | always; re-evaluate on client entrypoint or question-tool changes; last checked 9.2.0 |
 | C030 | `docs/agentic-system/` | client guides | added-section | Bootstrap 9.0 client guides at the recommended root, written from recorded evidence; linked from `README.md` | independent repository documentation | always; regenerate when an environment, role, entrypoint or handoff step changes |
+| C031 | `.claude/skills/demo-<role>-fallback/SKILL.md`, Claude Code binding `## Registration and invocation` and `## Role entrypoints and handoff`, `.claude/rules/agent-integrations.md`, client guides, root README | role fallback entrypoints | new-skill | User approved 2026-10-14: the VS Code extension cannot pass `--agent`, so each role gets a user-only fallback skill that loads the binding and complete canonical contract (no copied text) and states the role's tool restrictions as instructions; the extension cannot be detected, so the `--agent`-only restriction is removed for every client; extends C025 and C029 | independent native entrypoint; canonical bodies and planning skills unchanged | re-evaluate on client entrypoint, skill-frontmatter or tool-restriction changes; runtime unverified |
 
 Retired or superseded 2026-10-11: C001, C002, C007, C008 (Vision retired; see C024), C016 and C020 (see C023), C021 (8.0 `manage-work-item` route). C010 remains resolved. C003, C013, C014, C015 re-checked for claude-code on 8.0.0.
 
@@ -227,3 +229,4 @@ Native default-Codex creation verified: https://github.com/violabg/serviceDeskDe
 | 2026-10-11 | 8.0.0 | 3.3.0 | Upgrade 5.3.0→8.0.0 (6.0 deferral lifted, `manage-work-item`, capability bindings) plus evolve: claude-code environment with `-claude` subagents and shared neutral bodies, Vision retired, Codex GitHub via MCP, `create-work-item-from-description` retired. Deferred: business-logic-gap-detector; blocked: diagnostics slot gap; unverified: native role execution in all clients and Codex GitHub authentication. |
 | 2026-10-13 | 8.0.0 | 3.3.0 | Evolve: removed the Codex environment by user approval. Deleted `.codex/`, the Codex binding and canonical copies, the maintenance history folder and dated maintenance reports/plans (including baseline mirrors); removed Codex entries from answers, native adapters, preservation plan, audits and decision register (`github-app` row deleted; `mcp` and `environments` values pruned); updated root routing, README and integration router. Bootstrap skill and third-party shadcn reference intentionally unchanged. Environments now: copilot, claude-code. Native runtime verification of the two remaining environments remains unverified. |
 | 2026-10-13 | 9.2.0 | 3.4.0 | Upgrade 8.0.0→9.2.0: Vision remnants removed, `IMAGE_INSPECTION` (Markdown evidence; Claude Code haiku delegate, Copilot inline), role entrypoints and fresh-context Implementor handoff via bindings, `ROLE_ACTIVATION` in planning skills, batched Planner clarifications through the question tool, client guides under `docs/agentic-system/`. Deferred: gap-detector skill; blocked: diagnostics slot; unverified: native role entrypoints, handoff and image inspection. |
+| 2026-10-14 | 9.2.0 | 3.4.0 | Evolve: six Claude Code role fallback skills (`/demo-<role>-fallback`) for clients that cannot pass `--agent`; they load the binding and canonical contract and state tool restrictions as instructions; `--agent` stays the enforced route; the `--agent`-only restriction is removed in the binding, rule and guides (C031). Canonical contracts, `AGENTS.md`, settings and planning skills unchanged. Unverified: skill discovery in the VS Code extension and fallback role runs. |
