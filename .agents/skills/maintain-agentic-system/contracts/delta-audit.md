@@ -44,6 +44,8 @@ When the installed contract adds role entrypoints, the Planner handoff step, or 
 
 A repository may already carry role-entry adapters next to native role selection, recorded as a customization. Check them against the installed dual-route rules. When they conform, propose moving the customization register row into the answers file's role-entrypoint record. When an adapter falls short, for example it restates the role's rules or does not refuse to start inside a running role, classify it `requires update` and show the gap. Do not remove the row or the adapters without approval.
 
+A selected client whose current version differs from the recorded one is a platform-compatibility delta even when no file changed: re-check each route's tool list per surface under the sibling compatibility contract. An existing dual route without a recorded tool list per route is `unknown` and maps to that verification step. A route whose tools no longer cover an operation its role is bound to is `requires update`, with a route-specific binding or a block on that route as the proposed resolution.
+
 ## Missing Provenance
 
 When no manifest or snapshot exists, do not assume every entry is missing. Infer the likely applied contract from the existing files, mark the uncertain entries `unknown`, and propose creating the manifest, answers file, and baseline as the first operation. The plan must say the delta audit is best-effort until that provenance is written.

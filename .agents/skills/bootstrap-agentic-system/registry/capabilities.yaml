@@ -104,8 +104,11 @@ capabilities:
       canonical role body before the role operates. Its tool limits are instruction-only and must
       be recorded as such. When native selection works on some client surfaces but not on others,
       or the role cannot tell which surface it runs on, offer such an adapter as a fallback beside
-      native selection, which stays the primary route that enforces tool limits. When neither works,
-      block the role in that environment.
+      native selection, which stays the primary route that enforces tool limits. Routes may expose
+      different tool lists even on the same surface, so record each route's effective tool list and
+      never assume a fallback route has the native route's tools. When a route cannot cover an
+      operation the role is bound to, bind an approved route-specific alternative or block the role
+      on that route. When neither works, block the role in that environment.
 
   - id: subagent-delegation
     essential: false
