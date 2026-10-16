@@ -49,7 +49,7 @@ This catalog is a menu, not a fixed contract. Use repository discovery and failu
 | Gate | Purpose | Typical Owner | Artifact Record |
 | --- | --- | --- | --- |
 | Scope Intake | Stop wrong workflow early | Planner | issue or request evidence artifact |
-| Clarification Resolved | Avoid planning over blocking ambiguity | Planner + user | `clarification-questions.md` |
+| Clarification Resolved | Avoid planning over blocking ambiguity | Planner + user | `clarification_questions.md` |
 | Knowledge Selected | Read the knowledge index first, then load only task-matched knowledge | Planner | selected-knowledge summary or implementation-plan section |
 | Rule Inventory | Convert docs into explicit planning constraints | Planner | `normative_rules_inventory.md` |
 | Bounded Discovery | Avoid broad repository tours | Planner or scout | implementation-plan notes plus supporting evidence artifacts when needed |

@@ -175,7 +175,7 @@ placeholders:
     question: How should work-item evidence gathering run?
     fill_from: discovery
     capability: subagent-delegation
-    recommend: Delegate the following gathering task through this environment's verified tool schema and default-agent invocation; never infer a registered name or selector from the word default. Use an approved inline procedure when delegation is unavailable. Preserve retrieval scope and artifact output, and keep other clients' syntax out of this value.
+    recommend: Delegate the following gathering task through this environment's verified tool schema and default-agent invocation; never infer a registered name or selector from the word default. Use an approved inline procedure when delegation is unavailable. Preserve retrieval scope and artifact output, and keep other clients' syntax out of this value. When the task runs inline, its hand-back is an internal step, so read the artifact and continue in the same turn instead of stopping there.
     infer_from:
       - target delegation tools and supported arguments
       - approved tracker adapter and capability bindings
@@ -216,7 +216,7 @@ placeholders:
     question: How does a role-bound skill make sure it runs under its required role in this environment?
     fill_from: discovery
     capability: role-selection
-    recommend: "On the native route, run the skill only when the conversation is already working as the required role; otherwise stop and tell the user the exact step to start that role. On the skill route, this skill is the role's entrypoint: refuse to start when the conversation already runs under a role and tell the user to open a new conversation; otherwise load the complete canonical role body from its runtime copy first, then continue with the skill. Record whether tool limits are runtime-enforced or instruction-only."
+    recommend: "On the native route, run the skill only when the conversation is already working as the required role; otherwise stop and tell the user the exact step to start that role. On the skill route, this skill is the role's entrypoint: refuse to start when the conversation already runs under a role and tell the user to open a new conversation; otherwise load the complete canonical role body from its runtime copy first, then continue with the skill. On the skill route, also state that the loaded role contract governs gate order, stop points, and session persistence, that the skill supplies only its intake and the stops it names, and that the client's built-in defaults, such as its own memory feature, never replace a contract operation. Record whether tool limits are runtime-enforced or instruction-only."
     infer_from:
       - verified role route for this environment
       - selected client's skill invocation and main-session agent selection documentation

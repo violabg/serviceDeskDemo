@@ -78,7 +78,7 @@ Each `#capability:<token>` in this contract runs through its binding below. Use 
 ### Session managment
 
 - Activate session once. If you have an already active session, reuse it and do not activate a new one.
-- Read execution report and agent memory once. If you have already read them, reuse that information and do not read them again.
+- Read execution report and session memory once. If you have already read them, reuse that information and do not read them again.
 - Resume only the explicitly supplied or already active Planning Session ID. When resuming and the ID is unknown, ask for it. Never scan, list, or guess other sessions.
 
 ### Unit tests constraints
@@ -112,7 +112,9 @@ This is not a guideline. It is a mechanical constraint:
 **Flow control rules:**
 Gates cannot be merged, skipped or reordered.
 If there are N gates, you must execute N gates in strict linear order, from 1 to N.
-Gate failures must be logged and user must be advised with a clear explanation of the failure and the next steps.
+Gate failures must be logged with #capability:session-event-log and user must be advised with a clear explanation of the failure and the next steps.
+
+**Gate closure persistence:** Before the next gate starts, the closing gate saves the session artifacts it produced with #capability:session-artifact-write, records one event with #capability:session-event-log, and appends its outcome with #capability:session-memory-append. A gate that waits for the user saves before it waits. Gate 0 runs before the session exists, and Gate 3 and Gate 9 Phase 1 are chat-only: they persist nothing.
 
 **The ONLY valid stop points (where you wait for the user) are:**
 1. Gate 1 — session selection (only when no valid session is already active).
@@ -301,7 +303,7 @@ If no ambiguities or gaps, write "No ambiguities or gaps identified from the req
 
 ### Chat Output
 
-All output for this gate must be produced exclusively in chat. Do not create files, do not create artifacts, do not write to agent memory.
+All output for this gate must be produced exclusively in chat. Do not create files, do not create artifacts, do not write to session memory or the session log.
 
 Produce the output following this exact structure:
 
@@ -349,10 +351,9 @@ Immediately after producing the output above, invoke `#capability:knowledge-inde
 
 The agent must not introduce, assume, or invent any concept, entity, behavior, or detail that is not explicitly stated in the requirement. Every output item must be traceable to a concrete statement in the requirement. If traceability is absent, the item is an assumption and must be removed; if the missing piece is necessary for coherence, it must be recorded as a gap in Phase 5 instead.
 
-If the requirement is so vague that it does not allow even one functional capability (C1 ❌), the gate fails immediately. The agent asks the user to reformulate the requirement and halts.
+If the requirement is so vague that it does not allow even one functional capability, the gate fails immediately. The agent asks the user to reformulate the requirement and halts.
 
-Do not proceed to the next gate until the verification table has all ✅.
-Once the verification table has all ✅, proceed immediately to Gate `Knowledge Catalog` without stopping or waiting for user prompt.
+Once the chat output is complete, proceed immediately to Gate `Knowledge Catalog` without stopping or waiting for user prompt.
 
 Do not read knowledge files. Do not explore the codebase. Do not formulate architectural design decisions.
 
@@ -405,7 +406,7 @@ For every rule marked `N`, provide a concrete, result-specific justification.
 Never mark a rule as `N` because it appears less important, is already covered by another rule, or because you believe it does not matter.
 Treat the completed inventory as the normative contract governing every subsequent gate.
 Store the inventory as the session artifact `normative_rules_inventory`.
-Store the list of all read knowledge `file_id`s in agent memory.
+Store the list of all read knowledge `file_id`s with #capability:session-memory-append.
 Whenever the execution context changes, re-evaluate the applicable `PerContext` and `PerComponent` knowledge files, re-read every applicable knowledge file, update the `normative_rules_inventory`, and store the updated inventory again.
 
 **Continue:** proceed immediately to Gate 5 - Codebase cold start understanding in the same turn. Do not stop, do not wait for user prompt.
@@ -514,10 +515,11 @@ Format every question exactly as follows:
 
 After sending the questions:
 
-1. Log the interview.
-2. Store the complete question list in agent memory.
-3. Halt execution.
-4. Wait for the user's responses before proceeding.
+1. Log the interview with #capability:session-event-log.
+2. Store the complete question list with #capability:session-memory-append.
+3. Write the complete question list to the session artifact `clarification_questions` with #capability:session-artifact-write.
+4. Halt execution.
+5. Wait for the user's responses before proceeding.
 
 If the user does not respond, send exactly one follow-up message and then halt again until a response is received.
 
@@ -528,8 +530,8 @@ Do not generate more than 30 questions.
 
 ## Gate 8 - Answer Validation
 
-Log receipt of the user's responses.
-Store the user's answers verbatim in agent memory.
+Log receipt of the user's responses with #capability:session-event-log.
+Store the user's answers verbatim with #capability:session-memory-append.
 Validate the responses against all outstanding implementation blockers, knowledge gaps, ambiguities, and unanswered interview questions.
 Determine whether the responses introduce any new concepts, domains, components, or implementation contexts.
 
@@ -596,7 +598,7 @@ Activate this phase only when Phase 2 produced at least one gap that knowledge c
 Identify only the gap-driven topics that require additional reconnaissance. Target only the components, folders, symbols, flows, or conventions directly linked to the gap inventory.
 Re-read applicable PerContext and PerComponent knowledge files before and during this phase whenever the context shifts.
 Confirm whether the original insertion points, reuse decisions, and naming conventions from previous codebase reconnaissance still hold or must be refined against the new evidence.
-Stop immediately once every gap is resolved or logged as an explicit blocker. Log completion and append a concise delta discovery summary to agent memory.
+Stop immediately once every gap is resolved or logged as an explicit blocker. Log completion with #capability:session-event-log and append a concise delta discovery summary with #capability:session-memory-append.
 
 Phase 3 prohibitions:
 - Never execute Phase 3 when knowledge rules and existing reconnaissance provide complete information.
@@ -646,7 +648,7 @@ Stop immediately and wait.
 
 If approved:
 Set approval_status.is_approved = true with timestamp.
-Log approval and update memory.
+Log approval with #capability:session-event-log and update memory with #capability:session-memory-append.
 Re-read latest plan from the active plan path selected in Gate `Plan Drafting` to include subagent/user modifications.
 Save latest plan via #capability:implementation-plan-save using the same active plan path selected in Gate `Plan Drafting`.
 Send exact message: "Plan approved. Switching to implementation agent to proceed with implementation."
@@ -654,7 +656,7 @@ Then tell the user to start Implementor in a new conversation with fresh context
 
 If modifications requested, must do:
 Send exact message: "Please provide modifications or integrations to the proposed <path_to_plan>."
-Log/update memory.
+Log the modification request with #capability:session-event-log and update memory with #capability:session-memory-append.
 Return to Gate `Plan Drafting`.
 
 **Continue:** after approval handling, proceed immediately to Gate 13 - Final Handoff in the same turn. Do not stop, do not wait for user prompt. (When modifications are requested, waiting for those modifications is a valid stop point.)

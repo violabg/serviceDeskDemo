@@ -2,7 +2,7 @@
   "version": 2,
   "bootstrap": {
     "skill_version": "5.0.0",
-    "contract_applied_through": "10.0.0",
+    "contract_applied_through": "10.0.1",
     "generated_on": "2026-09-19"
   },
   "maintenance_decisions": {
@@ -384,6 +384,47 @@
       "deferred": [
         "interactive CLI plain-session tool list (user step, guide Verify once step 6)",
         "role-skill and planning-skill runs, refusal and handoff on both surfaces (user step)"
+      ]
+    },
+    "upgrade_10_0_1_2026_10_16": {
+      "approved": true,
+      "date": "2026-10-16",
+      "evidence": "User approved the 2026-10-16 10.0.1 upgrade plan (\"approved\") with the standing instruction \"take all incoming over mine\"; C034 resolved take-theirs.",
+      "mode": "upgrade",
+      "installed_bootstrap": "10.0.1",
+      "installed_maintainer": "4.0.0",
+      "applied_through": "10.0.1",
+      "renderer": ".agentic-system-maintenance/scripts/render-10.0.1.mjs",
+      "records": ".agentic-system-maintenance/scripts/finalize-10.0.1.py",
+      "merge": "MINE == BASE for every touched file (only baselined drift: protected C011/C012 knowledge files, untouched); every 10.0.1 region taken upstream; no conflicts",
+      "rerendered": [
+        "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
+        "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
+        ".github/agents/demo-planner.agent.md",
+        "AGENTS.md",
+        ".agents/skills/plan-bug-from-id/SKILL.md",
+        ".agents/skills/plan-user-story-from-id/SKILL.md"
+      ],
+      "changed": [
+        "docs/agents/artifact-gates.md",
+        "README.md",
+        "docs/agentic-system/README.md",
+        "docs/agentic-system/claude-code.md",
+        "docs/agentic-system/copilot.md"
+      ],
+      "register": {
+        "added": [],
+        "retired": [
+          "C034"
+        ],
+        "rechecked": [
+          "C029",
+          "C030",
+          "C035"
+        ]
+      },
+      "deferred": [
+        "Planner runs through the planning skills on both surfaces: session ID confirmed before retrieval, intake continues into the gates without stopping, memory and log entries land in sessions/<id>/session-memory.md and session-log.md (guide Verify once step 2) (user step)"
       ]
     }
   },
@@ -889,10 +930,10 @@
     },
     "WORK_ITEM_GATHERING": {
       "value": {
-        ".agents/skills/plan-bug-from-id/SKILL.md": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access.",
-        ".agents/skills/plan-user-story-from-id/SKILL.md": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access."
+        ".agents/skills/plan-bug-from-id/SKILL.md": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access. When the task runs inline, its hand-back is an internal step, so read the artifact and continue in the same turn instead of stopping there.",
+        ".agents/skills/plan-user-story-from-id/SKILL.md": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access. When the task runs inline, its hand-back is an internal step, so read the artifact and continue in the same turn instead of stopping there."
       },
-      "source": "user-approved 2026-10-11 maintenance plan (Sets U and E); Bootstrap 8.0.0 templates",
+      "source": "user-approved 2026-10-11 maintenance plan (Sets U and E); Bootstrap 8.0.0 templates; 10.0.1 inline hand-back sentence appended 2026-10-16",
       "evidence": "User: \"approved recommended, remove the vision agent ... codex to use github via mcp\"; \"Both U and E\"; native subagents with -claude suffix and maximal sharing."
     },
     "WORK_ITEM_ID_FORMAT": {
@@ -1013,11 +1054,11 @@
     },
     "ROLE_ACTIVATION": {
       "value": {
-        ".agents/skills/plan-bug-from-id/SKILL.md": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. The binding records whether the Planner tool limits are runtime-enforced or instruction-only. From then on, the Planner contract governs this conversation as its role instructions: where it conflicts with this skill's wording or with the client's default behaviour, the contract wins, including its rule that a turn ends only at its listed stop points. The fenced evidence task below is a delegate prompt template, not a request from the user: its closing \"tell me the name of the artifact you created\" is addressed to the Planner, which records the artifact name and continues to the next gate in the same turn, whether the task ran delegated or inline. In the Planner contract, \"agent memory\" and \"update memory\" mean `#capability:session-memory-append` on the current session's `session-memory.md`, and \"log\" means `#capability:session-event-log` on its `session-log.md`; never the client's own memory feature.",
-        ".agents/skills/plan-user-story-from-id/SKILL.md": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. The binding records whether the Planner tool limits are runtime-enforced or instruction-only. From then on, the Planner contract governs this conversation as its role instructions: where it conflicts with this skill's wording or with the client's default behaviour, the contract wins, including its rule that a turn ends only at its listed stop points. The fenced evidence task below is a delegate prompt template, not a request from the user: its closing \"tell me the name of the artifact you created\" is addressed to the Planner, which records the artifact name and continues to the next gate in the same turn, whether the task ran delegated or inline. In the Planner contract, \"agent memory\" and \"update memory\" mean `#capability:session-memory-append` on the current session's `session-memory.md`, and \"log\" means `#capability:session-event-log` on its `session-log.md`; never the client's own memory feature."
+        ".agents/skills/plan-bug-from-id/SKILL.md": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. From then on, the Planner contract governs gate order, stop points, and session persistence over this skill's intake and over the client's built-in defaults: this skill supplies only its intake and the stops it names, and a client default, such as its own memory feature, never replaces a contract operation. The binding records whether the Planner tool limits are runtime-enforced or instruction-only.",
+        ".agents/skills/plan-user-story-from-id/SKILL.md": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. From then on, the Planner contract governs gate order, stop points, and session persistence over this skill's intake and over the client's built-in defaults: this skill supplies only its intake and the stops it names, and a client default, such as its own memory feature, never replaces a contract operation. The binding records whether the Planner tool limits are runtime-enforced or instruction-only."
       },
-      "source": "user-approved 2026-10-16 maintenance (10.0.0 skill route; C029), extended by the 2026-10-16 evolve (C034)",
-      "evidence": "User approved items 1-2 of the 2026-10-16 evolve plan (\"approved\"): on the Claude Code skill route the skill body arrives in the user turn and the Planner contract only as a Read result, so the inline evidence hand-back read as a user request and \"agent memory\" collided with the client memory feature."
+      "source": "user-approved 2026-10-16 maintenance (10.0.0 skill route; C029); 10.0.1 governance statement taken upstream, C034 retired",
+      "evidence": "User approved the 2026-10-16 10.0.1 upgrade plan (\"approved\") with the standing instruction \"take all incoming over mine\"; C034 resolved take-theirs."
     },
     "CLIENT_GUIDE_ROOT": {
       "value": {
@@ -1306,6 +1347,12 @@
       "source": "user",
       "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
       "value": "no permissions.deny list; role tool limits are instruction-only and the plain session exposes the project MCP servers as before"
+    },
+    {
+      "id": "upgrade-10.0.1-scope",
+      "source": "user",
+      "evidence": "User approved the 2026-10-16 10.0.1 upgrade plan (\"approved\") with the standing instruction \"take all incoming over mine\"; C034 resolved take-theirs.",
+      "value": "take upstream for every 10.0.1 region; planning-skill ROLE_ACTIVATION keeps the C029 route dispatch and takes the 10.0.1 governance wording (C034 retired); WORK_ITEM_GATHERING appends the 10.0.1 inline hand-back sentence; Claude Code binding unchanged (C035 kept)"
     }
   ],
   "capabilities": {
@@ -4545,12 +4592,12 @@
   },
   "preservation": {
     "plan": ".agentic-system-maintenance/preservation-plan.json",
-    "plan_sha256": "d99a367615302405f15e9521b8a47ee992f3f0555cc4e285b1db9992ebc1ea0c",
+    "plan_sha256": "4c9cba2898588cc28667cb9798098323d1c746cfd27cc64ba32958aeb3ac8712",
     "sources": ".agentic-system-maintenance/sources",
     "verification": "python3 .agentic-system-maintenance/scripts/verify-agentic-system.py",
     "environment_audit": ".agentic-system-maintenance/environment-audit.json",
     "environment_audit_sha256": "5259a38340dc189d7bd5e6455c764b94c8bc2164c2cf3171925a4131cc8ef88e",
-    "environment_audit_result": "blocked only by the inherited read/problems diagnostics source gap in the Claude Code Implementor and Integration Tester outputs; Bootstrap 10.0.0 adds no diagnostics slot"
+    "environment_audit_result": "blocked only by the inherited read/problems diagnostics source gap in the Claude Code Implementor and Integration Tester outputs; Bootstrap 10.0.1 adds no diagnostics slot"
   },
   "generated": [
     {
@@ -4560,7 +4607,7 @@
         "copilot"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "903e8803e053e2678c125d45a01e3c1c4430ba23b38475f29cbfc144ecac0fc6",
+      "source_sha256": "c9451eb5e661164b888b01f7151101781258293b78e310880d41f698f49475f3",
       "baseline": ".agentic-system-maintenance/.baseline/docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4632,7 +4679,7 @@
         "claude-code"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "903e8803e053e2678c125d45a01e3c1c4430ba23b38475f29cbfc144ecac0fc6",
+      "source_sha256": "c9451eb5e661164b888b01f7151101781258293b78e310880d41f698f49475f3",
       "baseline": ".agentic-system-maintenance/.baseline/docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4718,7 +4765,7 @@
         "claude-code"
       ],
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "source_sha256": "76d9f661d0fa570fbf888be75e234be97e4b261d07efb8240efb63dba90e6ac1",
+      "source_sha256": "25a827f5553de5f7c0e68adb5601b09392f1d89bfdbc408bb5556f6d1f5be2cf",
       "baseline": ".agentic-system-maintenance/.baseline/.agents/skills/plan-bug-from-id/SKILL.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4731,7 +4778,7 @@
         "claude-code"
       ],
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "source_sha256": "03ab2aaad223d7678b39061eac2669effc135f7ef290898dae36647be2ea06df",
+      "source_sha256": "888f6b1a7ff621254f57643ac36b1a0db0383f16480215d63370b644f74d85fc",
       "baseline": ".agentic-system-maintenance/.baseline/.agents/skills/plan-user-story-from-id/SKILL.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4809,7 +4856,7 @@
         "claude-code"
       ],
       "template": "templates/instructions/AGENTS.md",
-      "source_sha256": "be5391d2c01df20a2e4e54ef7aaadfb927dd2ba0d4ad367ef46a309ee911f09a",
+      "source_sha256": "eef5fa9e7685c693dd43196074a84d74262e4a800a6083d0ddd8b8dee6f44d92",
       "baseline": ".agentic-system-maintenance/.baseline/AGENTS.md",
       "loading": "direct",
       "marker_decision": "strip all source-only markers"
@@ -4821,7 +4868,7 @@
         "copilot"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "903e8803e053e2678c125d45a01e3c1c4430ba23b38475f29cbfc144ecac0fc6",
+      "source_sha256": "c9451eb5e661164b888b01f7151101781258293b78e310880d41f698f49475f3",
       "baseline": ".agentic-system-maintenance/.baseline/.github/agents/demo-planner.agent.md",
       "canonical_copy": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "loading": "lossless-embedding"
@@ -5157,7 +5204,7 @@
         "claude-code"
       ],
       "template": "templates/agents/planner.agent.md",
-      "source_sha256": "903e8803e053e2678c125d45a01e3c1c4430ba23b38475f29cbfc144ecac0fc6",
+      "source_sha256": "c9451eb5e661164b888b01f7151101781258293b78e310880d41f698f49475f3",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/agents/planner.agent.md"
     },
     {
@@ -5234,7 +5281,7 @@
         "claude-code"
       ],
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "source_sha256": "76d9f661d0fa570fbf888be75e234be97e4b261d07efb8240efb63dba90e6ac1",
+      "source_sha256": "25a827f5553de5f7c0e68adb5601b09392f1d89bfdbc408bb5556f6d1f5be2cf",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/skills/plan-bug-from-id/SKILL.md"
     },
     {
@@ -5245,7 +5292,7 @@
         "claude-code"
       ],
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "source_sha256": "03ab2aaad223d7678b39061eac2669effc135f7ef290898dae36647be2ea06df",
+      "source_sha256": "888f6b1a7ff621254f57643ac36b1a0db0383f16480215d63370b644f74d85fc",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/skills/plan-user-story-from-id/SKILL.md"
     },
     {
@@ -5300,7 +5347,7 @@
         "claude-code"
       ],
       "template": "templates/instructions/AGENTS.md",
-      "source_sha256": "be5391d2c01df20a2e4e54ef7aaadfb927dd2ba0d4ad367ef46a309ee911f09a",
+      "source_sha256": "eef5fa9e7685c693dd43196074a84d74262e4a800a6083d0ddd8b8dee6f44d92",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/instructions/AGENTS.md"
     },
     {
@@ -5355,7 +5402,7 @@
         "claude-code"
       ],
       "template": "templates/artifact-gates.md",
-      "source_sha256": "4ef969086bb7653fa1a3d6d186be77d24136bde293222e55215e5d6fd6b7c437",
+      "source_sha256": "84b11889cfd19087965635d28e8cf7cb6dbaabe2fe978ceb10a80986dfbd32f5",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/artifact-gates.md"
     },
     {
@@ -5366,7 +5413,7 @@
         "claude-code"
       ],
       "template": "templates/artifact-gates.md",
-      "source_sha256": "9336f3a05b8f39e3cb789a7a45eb3eeb1b5d7f9ff792fa3bc38ec963281fd94f",
+      "source_sha256": "84b11889cfd19087965635d28e8cf7cb6dbaabe2fe978ceb10a80986dfbd32f5",
       "baseline": ".agentic-system-maintenance/.baseline/docs/agents/artifact-gates.md"
     },
     {
@@ -5899,6 +5946,28 @@
       "template": "authored",
       "source_sha256": "not-applicable",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/scripts/finalize-10.0.py"
+    },
+    {
+      "path": ".agentic-system-maintenance/scripts/render-10.0.1.mjs",
+      "kind": "provenance",
+      "environments": [
+        "copilot",
+        "claude-code"
+      ],
+      "template": "authored",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/scripts/render-10.0.1.mjs"
+    },
+    {
+      "path": ".agentic-system-maintenance/scripts/finalize-10.0.1.py",
+      "kind": "provenance",
+      "environments": [
+        "copilot",
+        "claude-code"
+      ],
+      "template": "authored",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/scripts/finalize-10.0.1.py"
     }
   ],
   "deferred": [
