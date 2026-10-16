@@ -4,9 +4,13 @@ Install-safe release history for the `maintain-agentic-system` skill. Maintainer
 
 ## Current Version
 
-- `3.6.0`
+- `4.0.0`
 
 ## 2026-10-15
+
+### 4.0.0
+
+- Breaking: an environment recorded with two role routes, or with fallback adapters added as a customization, is `requires update`. Maintainer re-decides that environment's single route and proposes the migration as one approved change: for the skill route, remove native user-invokable role registrations and fallback adapters, generate the prefixed role skills, regenerate planning-skill activation, environment-level bindings, handoff, and client guides; for the native route, remove the fallback adapters.
 
 ### 3.6.0
 

@@ -10,7 +10,7 @@ The proposal must cover:
 
 - costly repository workflow failures Bootstrap is addressing,
 - selected environments, compatibility evidence, shared canonical copies, native adapters, and instruction hierarchy,
-- selected custom agent prefix,
+- selected custom agent and role skill prefix,
 - root instruction strategy,
 - tracker/session contract,
 - context glossary decision,
@@ -36,7 +36,7 @@ The file plan must include:
 - schema file destination copied from `templates/plan-schema.md`, plus any approved repo-local equivalent or adaptation; include `templates/test-plan-schema.md` or a verified compatible local schema when Integration Tester is selected,
 - context glossary operation or no-op reason,
 - issue tracker or local Markdown adapter contract,
-- role entrypoint for each selected environment and user-invokable role, role-entry adapters with complete instruction-loading evidence, and client guide paths,
+- role route per selected environment, role entrypoint for each user-invokable role, role skills with complete instruction-loading evidence, and client guide paths,
 - maintenance baseline plan: answers file path, baseline directory path, and the promise that every generated file gets a pristine copy,
 - batch approval checkpoints,
 - rollback notes.
@@ -80,7 +80,7 @@ For generated work-item planning skills:
 - do not add skill-level `tools:` frontmatter,
 - name the selected external tracker adapter or local Markdown adapter in the body,
 - preserve Planner-only invocation,
-- fill `ROLE_ACTIVATION` with the consuming environment's approved activation: a run-only-in-Planner check with the exact start step where the client selects the main-session role natively, loading the Planner role-entry adapter first where it does not, or, with an approved dual route, a check that accepts a Planner started by either route and otherwise shows both start steps,
+- fill `ROLE_ACTIVATION` with the consuming environment's approved activation: on the native route, a run-only-in-Planner check with the exact start step; on the skill route, a refusal inside a conversation that already runs a role, then loading the complete Planner role body before the skill's own steps,
 - fill `WORK_ITEM_GATHERING` with the approved target invocation or an explicit inline gathering instruction; verify any named delegate and selector in the intended client, preserve the following evidence task and its artifact contract, and never combine different clients' invocations in a shared skill,
 - define adapter name, exact approved retrieval tools when available, supported issue types, External Issue ID format, required retrieved fields, rich-content and attachment Markdown conversion, missing/duplicate/unreadable/invalid-ID behavior, and local lookup rules when applicable,
 - retrieve only requested External Issue ID by default. Read each issue explicitly referenced or linked by the current issue before deciding relevance; record retrieval reason as dependency evidence and do not recurse,
@@ -105,7 +105,7 @@ For generated instruction files:
 
 For role entrypoints and client guides:
 
-- register each user-invokable role through the role-entry method approved in `contracts/platform-compatibility.md`; a role-entry adapter is generated from the complete canonical copy, is invocable only explicitly by the user, has automatic invocation disabled where the client supports it, and records its tool limits as instruction-only; a fallback adapter beside native selection also follows the dual-route rules there,
+- register each user-invokable role through its environment's single route in `contracts/platform-compatibility.md`; on the skill route, generate no native registration for user-invokable roles, generate each prefixed role skill from the complete canonical copy, keep role and role-bound skills user-invoked only with automatic invocation disabled where the client supports it, bind the roles' operations at environment level, and record tool limits as instruction-only,
 - fill `CLIENT_GUIDE_ROOT` in root instructions and write `<client-guide-root>/README.md` plus one `<client-guide-root>/<environment-id>.md` per selected environment, following the Client Guides batch in `templates/generated-system-blueprint.md`,
 - write guides only from recorded evidence, for people rather than agents; exclude the guide root from knowledge indexing and runtime loading, and never copy credential values into a guide.
 

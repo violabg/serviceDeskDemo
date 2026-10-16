@@ -20,12 +20,13 @@
 placeholders:
   - name: AGENT_PREFIX
     kind: value
-    question: Which prefix should every generated custom agent name carry?
+    question: Which prefix should every generated custom agent or role skill name carry?
     fill_from: user
     recommend: A short slug derived from the repository name, for example `shop-` for `shop-api`.
     infer_from:
       - repository folder name
       - existing agent file names under .github/agents/, .claude/agents/, or .cursor/rules/
+      - existing role skill names in selected skill-route environments
 
   - name: TARGET_PLATFORM
     kind: value
@@ -204,7 +205,7 @@ placeholders:
     question: After plan approval, how does the user start Implementor in a new conversation with the Planning Session ID in this environment?
     fill_from: discovery
     capability: role-selection
-    recommend: "Tell the user to start Implementor in a new conversation with fresh context and print the exact step for this environment with the approved Planning Session ID filled in: the verified start command with an initial prompt where the client supports one, otherwise the steps to open a new conversation, select or enter the Implementor entrypoint, and paste `Resume implementation for Planning Session <planning-session-id>`. With an approved dual route, show both steps and label which one enforces Implementor's tool limits. Never continue implementation in the planning conversation, and keep other clients' syntax out of this value."
+    recommend: "Tell the user to start Implementor in a new conversation with fresh context and print the exact step for this environment with the approved Planning Session ID filled in: the verified start command with an initial prompt where the client supports one, otherwise the steps to open a new conversation, select or enter the Implementor entrypoint, and paste `Resume implementation for Planning Session <planning-session-id>`. On the skill route, the step invokes the prefixed Implementor role skill in the new conversation. Never continue implementation in the planning conversation, and keep other clients' syntax out of this value."
     infer_from:
       - verified Implementor entrypoint for this environment
       - client support for starting a session with an initial prompt
@@ -215,10 +216,9 @@ placeholders:
     question: How does a role-bound skill make sure it runs under its required role in this environment?
     fill_from: discovery
     capability: role-selection
-    recommend: "With native main-session role selection, run the skill only when the conversation is already working as the required role; otherwise stop and tell the user the exact step to start that role. With a role-entry adapter, load the required role's entry first when the conversation is not already working as that role, then continue with the skill. With an approved dual route, accept a role started by either route; otherwise stop and show both start steps, with the enforced route first. Record whether tool limits are runtime-enforced or instruction-only."
+    recommend: "On the native route, run the skill only when the conversation is already working as the required role; otherwise stop and tell the user the exact step to start that role. On the skill route, this skill is the role's entrypoint: refuse to start when the conversation already runs under a role and tell the user to open a new conversation; otherwise load the complete canonical role body from its runtime copy first, then continue with the skill. Record whether tool limits are runtime-enforced or instruction-only."
     infer_from:
-      - verified role entrypoints for this environment
-      - approved dual-route decision per client surface
+      - verified role route for this environment
       - selected client's skill invocation and main-session agent selection documentation
 
   - name: CLIENT_GUIDE_ROOT
@@ -266,10 +266,10 @@ placeholders:
     kind: both
     question: Which approved binding performs each capability token this generated role uses?
     fill_from: discovery
-    recommend: One Markdown table row per token listed in this role's capability sidecar, as `| `#capability:<token>` | <binding> |`. Start from the sidecar's `substitute` text, fill its slot values, and replace every reference to the Bootstrap registry with the concrete approved tool, repository path, or fallback procedure. When the role has an approved dual route whose tool lists differ, a row may name one binding per route, keyed by the route's start step, with the same operation, scope, and exclusions, for example `native route = workspace search tools; fallback route = read-only shell find/grep with the same exclusions`. A route-specific binding that gives the role a tool it does not otherwise have, such as a shell for a read-only role, is an explicit user decision. Never cite Bootstrap or maintenance files, source services, or tools of another environment.
+    recommend: One Markdown table row per token listed in this role's capability sidecar, as `| `#capability:<token>` | <binding> |`. Start from the sidecar's `substitute` text, fill its slot values, and replace every reference to the Bootstrap registry with the concrete approved tool, repository path, or fallback procedure. When the environment's route lacks the row's tool, a row may name an approved alternative with the same operation, scope, and exclusions, for example `read-only shell find/grep with the same exclusions` in place of workspace search tools. An alternative that gives the role a tool it does not otherwise have, such as a shell for a read-only role, is an explicit user decision. Never cite Bootstrap or maintenance files, source services, or tools of another environment.
     infer_from:
       - capabilities entries in the selected templates/agents/<role>.capabilities.yaml sidecar
-      - effective tool list of each approved route per client surface
+      - effective tool list of the environment's role route per client surface
       - approved capability resolutions and fallbacks in the decision register
       - approved PLATFORM_TOOLS, APPROVED_MCP_TOOLS, WORK_ITEM_RETRIEVAL, SESSION_ROOT, and schema paths for this role
 
@@ -395,7 +395,7 @@ placeholders:
     kind: value
     question: Which generated agents should the root instructions route to?
     fill_from: generator
-    recommend: One line per agent approved in the generation batch, naming the agent and the request type that should reach it.
+    recommend: One line per agent approved in the generation batch, naming the agent and the request type that should reach it. On the skill route, name the user-invoked skill that starts each role instead; Planner starts only through `plan-bug-from-id` and `plan-user-story-from-id`.
     infer_from: []
 
   - name: AGENT_ROOT

@@ -11,7 +11,7 @@ Capture these initial facts:
 - target repository and working root,
 - selected target environments (multi-select, including Other with user-entered names) and the separate execution host, following `contracts/platform-compatibility.md`,
 - output language,
-- desired custom agent prefix or permission for Bootstrap to propose one,
+- desired prefix for custom agents and role skills, or permission for Bootstrap to propose one,
 - known workflow risks,
 - whether the user wants planning only or approved generation.
 
@@ -46,7 +46,7 @@ Ask one unresolved material decision at a time. Present routine evidence-backed 
 Required decisions for the selected workflow (mark conditional items not applicable when their workflow is omitted):
 
 - selected environment IDs, clients/versions, native roots, shared-file strategy, and compatibility evidence,
-- custom agent prefix,
+- custom agent and role skill prefix,
 - shared canonical root instructions and verified native entrypoints for every selected environment,
 - tracker/session model,
 - selected work-item adapter and exact approved retrieval tools, or local Markdown adapter name, only when tracker-backed or ID-based planning or `manage-work-item` is selected,
@@ -63,7 +63,7 @@ Required decisions for the selected workflow (mark conditional items not applica
 - session root and current-session-only restriction,
 - dedicated top-level maintenance root (default `.agentic-system-maintenance/`) for provenance, maintenance skills/resources, baselines, research, and reports; runtime discovery exclusions and any guarded native entrypoint, following `contracts/context-boundaries.md`,
 - image inspection per environment: inline by the role, or delegation to an explicitly approved cheaper vision-capable model,
-- role entrypoints per environment, client surface, and user-invokable role; where native selection does not cover every surface, whether to add a fallback role-entry adapter beside it, and for which roles; role-bound skill activation; and the Planner-to-Implementor handoff step,
+- the role route per environment (native or skill) with its evidence per client surface, role entrypoints per user-invokable role, role-bound skill activation, and the Planner-to-Implementor handoff step,
 - client guide root (default `docs/agentic-system/`) for one user guide per selected environment,
 - Canonical Template Mirror skills to generate, skip, or defer,
 - approval owner and batch approval plan, including each batch's composition, order, split/combine/skip/defer choices, and approval checkpoint.
@@ -81,6 +81,6 @@ After user confirmation, create an approved decision register. Every approved to
 
 The decision register is the source of the answers file written in Phase E. Every resolved slot must carry its final value, how it was settled (discovery, user answer, accepted recommendation, or capability fallback), and the evidence behind it, so no decision has to be re-interviewed during later maintenance.
 
-Resolve platform invocation slots alongside capability assignments. `PLATFORM_TOOLS` is environment- and role-specific: load the matching Baseline Tool Surface row in `templates/agent-role-contracts.md` as the source operation list, then preserve supported baseline tools and translate unsupported names only to discovered equivalents for the same operations. `QUESTION_TOOL`, `WORK_ITEM_GATHERING`, `KNOWLEDGE_DISCOVERY_DELEGATION`, and `IMAGE_INSPECTION` must name working native invocations or explicit inline/manual procedures. `ROLE_ACTIVATION` and `ROLE_HANDOFF` must name verified role start steps or approved role-entry adapters for their environment. A platform without subagents runs the same bounded evidence tasks inline; it does not keep an instruction to invoke an unavailable subagent.
+Resolve platform invocation slots alongside capability assignments. `PLATFORM_TOOLS` is environment- and role-specific: load the matching Baseline Tool Surface row in `templates/agent-role-contracts.md` as the source operation list, then preserve supported baseline tools and translate unsupported names only to discovered equivalents for the same operations. `QUESTION_TOOL`, `WORK_ITEM_GATHERING`, `KNOWLEDGE_DISCOVERY_DELEGATION`, and `IMAGE_INSPECTION` must name working native invocations or explicit inline/manual procedures. `ROLE_ACTIVATION` and `ROLE_HANDOFF` must name verified role start steps or role skills for their environment's route. A platform without subagents runs the same bounded evidence tasks inline; it does not keep an instruction to invoke an unavailable subagent.
 
 When Integration Tester is selected, inspect an existing target test-plan schema against `templates/test-plan-schema.md` and the Tester lifecycle. Prefer a compatible existing schema; otherwise propose copying the shipped local fallback. Never bind schema retrieval to a document that only discusses gates. Record incompatibilities as blocking decisions or explicitly approved runtime adaptations.
