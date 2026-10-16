@@ -12,10 +12,10 @@
 ## Installed Contract Versions
 
 - Bootstrap Skill Version Used: 5.0.0
-- Bootstrap Contract Applied Through: 9.3.0 (includes 9.0, 9.1, 9.2; earlier: 6.0, 6.1, 7.0, 7.0.1, 8.0; 7.1 superseded by 8.0 `manage-work-item`)
-- Bootstrap Snapshot Source Status: copied from installed skill changelog
-- Maintain Skill Version Available: 3.5.0
-- Maintain Skill Version Last Applied: 3.5.0
+- Bootstrap Contract Applied Through: 9.4.0 (includes 9.0, 9.1, 9.2, 9.3; route tool-list verification deferred for claude-code, copilot unchanged; earlier: 6.0, 6.1, 7.0, 7.0.1, 8.0; 7.1 superseded by 8.0 `manage-work-item`)
+- Bootstrap Snapshot Source Status: copied from installed skill changelog (refreshed to 9.4.0 on 2026-10-15)
+- Maintain Skill Version Available: 3.6.0
+- Maintain Skill Version Last Applied: 3.6.0
 - Last Maintenance Date: 2026-10-15
 
 ## Generated System Paths
@@ -255,3 +255,5 @@ Native default-Codex creation verified: https://github.com/violabg/serviceDeskDe
 | 2026-10-13 | 9.2.0 | 3.4.0 | Upgrade 8.0.0→9.2.0: Vision remnants removed, `IMAGE_INSPECTION` (Markdown evidence; Claude Code haiku delegate, Copilot inline), role entrypoints and fresh-context Implementor handoff via bindings, `ROLE_ACTIVATION` in planning skills, batched Planner clarifications through the question tool, client guides under `docs/agentic-system/`. Deferred: gap-detector skill; blocked: diagnostics slot; unverified: native role entrypoints, handoff and image inspection. |
 | 2026-10-14 | 9.2.0 | 3.4.0 | Evolve: six Claude Code role fallback skills (`/demo-<role>-fallback`) for clients that cannot pass `--agent`; they load the binding and canonical contract and state tool restrictions as instructions; `--agent` stays the enforced route; the `--agent`-only restriction is removed in the binding, rule and guides (C031). Canonical contracts, `AGENTS.md`, settings and planning skills unchanged. Unverified: skill discovery in the VS Code extension and fallback role runs. |
 | 2026-10-15 | 9.3.0 | 3.5.0 | Upgrade 9.2.0→9.3.0: dual role route. Claude Code fallback skills conformed (no restated role rules; refuse inside any running role) and recorded per surface in answers; C031 retired; binding start/handoff steps and guides labelled by enforcement; Copilot fallback offer declined. Deferred: gap-detector skill; blocked: diagnostics slot; unverified: both routes on each surface and fallback refusal. |
+| 2026-10-15 | 9.4.0 | 3.6.0 | Upgrade 9.3.0→9.4.0, claude-code only (copilot out of scope by user decision): recorded per-route tool-surface check as `route_tool_surface_check`; gaps (fallback Agent/AskUserQuestion/WebFetch/MCP; five non-Planner native roles) stay unknown pending read-only probes. Applied-through 9.4.0 with route verification deferred. Refreshed baseline and changelog snapshot; removed stale baseline copy of `create-work-item-from-description`. No binding, fallback skill or agent changes. Deferred: tool-surface probes (user step). |
+| 2026-10-15 | 9.4.0 | 3.6.0 | Evolve (claude-code): recorded native and fallback init tool lists from headless probes; recorded Agent/Task naming as applied alias; AskUserQuestion absence and Grep/Glob absence for Implementor, Direct Implementor and Integration Tester left open pending an interactive check. Binding unchanged. Approved fallback chat question route. |
