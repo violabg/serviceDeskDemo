@@ -11,6 +11,8 @@ Each role listed here runs as the main conversation of its session. `{{CLIENT_GU
 
 Full role contracts live in `{{AGENT_ROOT}}`. Do not restate them here.
 
+Once a role contract is loaded, its operations replace the client's built-in equivalents: session memory and the session log are the files under `{{SESSION_ROOT}}/<planning-session-id>/`, never the client's own memory feature. A delegated or inline evidence task that returns its result is never a stop point.
+
 ## Skills
 
 <!-- CANONICAL-TEMPLATE-SLOT: SKILL_ROOT START replaces=none -->
