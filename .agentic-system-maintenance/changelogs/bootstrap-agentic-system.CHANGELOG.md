@@ -4,7 +4,13 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `9.3.0`
+- `9.4.0`
+
+## 2026-10-15
+
+### 9.4.0
+
+- Record each role-entry route's effective tool list per client surface, not only its enforcement. A session started through a fallback adapter can lack tools that the native registration grants, for example workspace search tools that only an agent start option adds. Every operation a role is bound to must be available on every route that starts it; otherwise Bootstrap binds an approved route-specific alternative in `CAPABILITY_BINDINGS` with the same operation, scope, and exclusions, or blocks the role on that route. An alternative that gives a role a tool it does not otherwise have, such as a shell for a read-only role, is an explicit user decision. Entrypoint verification now exercises each essential bound operation per role, route, and surface instead of stopping at the role's first gate; a route that cannot be exercised is compared against the tool list the host session exposes, with every gap recorded. The contract audit checks that every route's tool list covers its roles' bound operations or records an approved alternative or block.
 
 ## 2026-10-14
 

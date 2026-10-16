@@ -2,7 +2,7 @@
   "version": 2,
   "bootstrap": {
     "skill_version": "5.0.0",
-    "contract_applied_through": "9.3.0",
+    "contract_applied_through": "9.4.0",
     "generated_on": "2026-09-19"
   },
   "maintenance_decisions": {
@@ -242,6 +242,35 @@
         "full fallback-started Planner run through Gate 5 in the VS Code extension (user step)",
         "native and fallback role entrypoint verification on each surface"
       ]
+    },
+    "upgrade_9_4_2026_10_15": {
+      "approved": true,
+      "date": "2026-10-15",
+      "evidence": "User approved the 2026-10-15 maintenance plan for claude-code only, leaving copilot out of scope. Applied-through set to 9.4.0 with route verification deferred, using the recommended defaults for the two open decisions (applied-through; re-approval of the deferral under the 9.4.0 scope). Probe execution remains a user step.",
+      "mode": "upgrade",
+      "changed": [
+        ".agentic-system-maintenance/agentic-system.answers.yaml",
+        ".agentic-system-maintenance/agentic-system-manifest.md",
+        "docs/agentic-system/claude-code.md"
+      ],
+      "rule": "Bootstrap 9.4.0: route effective tool lists per role and surface",
+      "outcome": "record added as route_tool_surface_check; gaps recorded as unknown; no binding, fallback skill, or agent change",
+      "deferred": [
+        "fallback and native tool-surface probes for Agent, AskUserQuestion, WebFetch, MCP tools, and the five non-Planner native roles (user step)",
+        "native and fallback role entrypoint verification on each surface"
+      ],
+      "approved_alternatives": [
+        {
+          "route": "claude-code fallback",
+          "operation": "foreground question route (AskUserQuestion)",
+          "alternative": "ask the batch in chat, collect answers in consecutive calls per the binding; no structured question tool on the fallback route",
+          "roles": ["planner", "implementor", "direct-implementor", "integration-tester", "knowledge-builder", "ask"],
+          "approved": "2026-10-15, user selected chat fallback (\"ok go\")"
+        }
+      ],
+      "out_of_scope": [
+        "copilot route tool list (D4), by user decision"
+      ]
     }
   },
   "execution_host": "Claude Code 2.1.300 in the VS Code Insiders extension (2026-10-15 maintenance); earlier: Claude Code 2.1.296 in VS Code (2026-10-11); Codex in VS Code Insiders; SDK environment path 0.153.0",
@@ -327,6 +356,47 @@
         "question_tool": "AskUserQuestion, at most 4 questions per call; larger batches use consecutive calls; availability in --agent sessions and fallback-started conversations unverified",
         "evidence": "claude --help 2.1.296; https://code.claude.com/docs/en/sub-agents retrieved 2026-10-13; https://code.claude.com/docs/en/skills, /vs-code and /env-vars retrieved 2026-10-14; Bootstrap 9.3.0 dual-route rules applied 2026-10-15; 2026-10-15 probes with Claude Code 2.1.300: `claude -p --agent demo-planner-claude` init tools Read, Edit, Write, Task, WebFetch, Grep, Glob (Glob call returned paths; Bash call refused \"No such tool available\"); plain `claude -p` and the VS Code Insiders extension session expose no Glob/Grep (grep/find are shell functions over embedded ugrep/bfs); binding grep/find commands returned real paths with zero excluded-path hits.",
         "status": "unverified",
+        "route_tool_surface_check": {
+          "bootstrap_rule": "9.4.0: every route's effective tool list covers each operation its roles are bound to, or records an approved route-specific alternative or block",
+          "scope": "claude-code only; copilot out of scope by user decision 2026-10-15",
+          "observed": "Planner native (CLI and VS Code extension): Glob, Grep present, Bash absent (2026-10-15, Claude Code 2.1.300). Fallback route (plain `claude -p`, 2.1.300, user probe): 441 tools including Read, Edit, Write, Bash, WebFetch, WebSearch, Task, Skill, ToolSearch, and mcp__github, mcp__neon, mcp__next-devtools tools; no Glob, no Grep, no AskUserQuestion. The subagent tool is named Task in the init list, while the binding says Agent.",
+          "gaps": {
+            "fallback_AskUserQuestion": "absent on fallback; binding routes the batch to chat. Needs an explicit approval as the approved route-specific alternative for every role that asks questions (all six)",
+            "fallback_Agent_name": "binding names Agent; observed name is Task. Naming to confirm before treating the delegation operation as covered"
+          },
+          "unknown": {
+            "native_other_roles": "Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask: registration tools list not observed in a session"
+          },
+          "subagent_name_alias": {
+            "status": "applied",
+            "finding": "frontmatter and binding name the delegation tool Agent; init lists show Task in native sessions (Planner, Direct Implementor, Knowledge Builder) and fallback sessions",
+            "decision": "treat Agent and Task as the same delegation operation; no binding change",
+            "approved": "2026-10-15 evolve pass, user \"go\""
+          },
+          "native_probe_2026_10_15": {
+            "method": "claude -p --agent demo-<role>-claude \"Reply with OK only.\" --output-format stream-json --verbose; init tool list read, Claude Code 2.1.300, repository root",
+            "caveat": "headless -p mode; interactive sessions not probed, so AskUserQuestion absence may be a headless limit",
+            "results": {
+              "planner": "Read, Edit, Write, Task, WebFetch, Grep, Glob, 11 MCP tools; AskUserQuestion absent",
+              "implementor": "Read, Edit, Write, Bash, 15 MCP tools; Grep and Glob absent (binding lists them); AskUserQuestion absent",
+              "direct-implementor": "Read, Edit, Write, Bash, Task, 15 MCP tools; Grep and Glob absent (binding lists them); AskUserQuestion absent",
+              "integration-tester": "Read, Edit, Write, Bash, Task, no MCP; Grep and Glob absent (binding lists them); AskUserQuestion absent",
+              "knowledge-builder": "Read, Edit, Write, Task, WebFetch, Grep, Glob, 10 MCP tools; AskUserQuestion absent",
+              "ask": "Read, WebFetch, Grep, Glob, 10 MCP tools; AskUserQuestion absent"
+            },
+            "open": "confirm in an interactive session: AskUserQuestion, and Grep/Glob for implementor, direct-implementor and integration-tester"
+          },
+          "interactive_self_report_2026_10_15": {
+            "role": "demo-implementor-claude, interactive session started with claude --agent",
+            "evidence_type": "model self-report of its tool definitions, not the harness init list; Claude Code transcripts do not persist the init event, so it cannot be checked against the log",
+            "reported": "20 tools: AskUserQuestion, Read, Edit, Write, Bash, 15 MCP tools (github issue_read, neon x9, next-devtools x5)",
+            "consistent_with": "headless init for implementor: same Read/Edit/Write/Bash and the same 15 MCP tools",
+            "result": "AskUserQuestion present (self-report); Grep and Glob absent (self-report and headless init agree)",
+            "status": "unverified: needs a harness-level check before closing; Grep/Glob gap is a candidate requires-update for implementor, direct-implementor and integration-tester"
+          },
+          "verification": "fallback and native headless probes done; interactive confirmation pending (user step)",
+          "deferred_under": "upgrade_9_4_2026_10_15 (per-surface entrypoint verification, re-approved with the 9.4.0 scope)"
+        },
         "routes": [
           {
             "surface": "CLI",
