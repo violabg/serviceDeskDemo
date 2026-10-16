@@ -139,7 +139,7 @@ knowledge/                         # project knowledge only; no installation or 
   <environment-id>.md
 <environment-native-roots>/        # discovered only for selected clients/versions
   <native-registrations>           # direct copies or minimal verified adapters loading <runtime-root>/canonical/
-  <role-entry-adapters>            # only where the client cannot run a role as the main conversation
+  <role-skills>                    # skill-route environments only: prefixed, user-invoked role skills loading <runtime-root>/canonical/
 ```
 
 Existing repository conventions win only on evidence and approval: an established session root, issue folder, or schema location stays where it is and is recorded in the answers file.
@@ -160,6 +160,7 @@ Existing repository conventions win only on evidence and approval: an establishe
 - When a task depends on a shared rule or repo-specific extension partial, load that dependent partial too. Do not use selective loading to hide or omit mirrored constraints.
 - Leave room for repo-specific roles, role extensions, or split templates when the repository has stable needs beyond the baseline Agentic System roles. Apply selective loading only to those non-mirrored additions.
 - Start every generated agent from the baseline tool surface in `agent-role-contracts.md`; add only discovered or approved MCP tools that fit the role.
+- In a skill-route environment, generate no native registration for user-invokable roles. Bind the union of those roles' baseline tool surfaces and approved MCP tools once at environment level, and keep each role's own surface as its instruction-only limit.
 - Discover tools and delegation for each selected environment; preserve the required operations and report any unavailable capability.
 - Copy or adapt templates into the target repository so future agents can cite repo-local paths.
 - Add scripts only when they reduce repeated manual work and can be validated deterministically.
@@ -186,7 +187,7 @@ Before asking for approval or handing off, confirm:
 - Tester cannot modify production code unless the repo explicitly uses a combined implementation/testing role and the user approved that boundary.
 - Knowledge Builder can create or refine the knowledge index and propose glossary terms without editing application code.
 - Roles that inspect images record one Markdown visual-evidence artifact per image; any image-inspection delegate uses an explicitly approved model.
-- Every user-invokable role has a verified way to start it as the main conversation in each selected environment, or a recorded blocked or unverified status.
+- Every user-invokable role has a verified way to start it as the main conversation in each selected environment, or a recorded blocked or unverified status. Each environment uses exactly one role route; skill-route role skills and planning skills are user-invoked only.
 - Planner's approval handoff gives the exact step to start Implementor in a new conversation with the Planning Session ID for its environment.
 - Client guides exist for every selected environment and the final report links them.
 - Handoff envelope includes session ID, current gate, approval state, selected knowledge, open questions, blocking risks, and next-agent definition of done.
