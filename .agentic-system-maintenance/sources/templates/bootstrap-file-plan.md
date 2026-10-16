@@ -79,9 +79,13 @@ Batch Change Choices: select | defer | skip | reorder | split | combine.
 
 ## Role Entrypoints And Client Guides
 
+- Role Route Per Environment (Exactly One): native \| skill — evidence per client surface:
+- Environment-Level Bindings (Skill Route Only): every operation the environment's roles need, or not applicable
+
 | Environment | Role | Start Method | Enforcement | Status |
 | --- | --- | --- | --- | --- |
-| `<id>` | Planner | native main-session selection `<exact-command-or-ui-step>` \| role-entry adapter `<path>` | runtime-enforced \| instruction-only | verified-native \| verified-fallback \| blocked \| unverified |
+| `<id>` | Planner | native agent `<exact-command-or-ui-step>` \| planning skills `plan-bug-from-id`, `plan-user-story-from-id` | runtime-enforced \| instruction-only | verified \| blocked \| unverified |
+| `<id>` | `<other-role>` | native agent `<exact-command-or-ui-step>` \| role skill `<agent-prefix><role>` | runtime-enforced \| instruction-only | verified \| blocked \| unverified |
 
 - Role-Bound Skill Activation Per Environment:
 - Planner To Implementor Handoff Step Per Environment (New Conversation, Planning Session ID):

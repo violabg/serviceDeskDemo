@@ -191,9 +191,9 @@
   },
   {
     "id": "role-entrypoints",
-    "value": "copilot: native main-session selection only (dual route declined); claude-code: dual route, native --agent primary and /demo-<role>-fallback beside it for all six roles; exact steps in the bindings",
+    "value": "copilot: native route (Agent dropdown), single surface; claude-code: skill route on CLI and VS Code extension, Planner through plan-bug-from-id/plan-user-story-from-id, other roles through /demo-<role>-claude role skills; exact steps in the bindings",
     "source": "user",
-    "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback."
+    "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list."
   },
   {
     "id": "client-guide-root",
@@ -209,14 +209,44 @@
   },
   {
     "id": "client-surfaces",
-    "value": "copilot: VS Code only, dual route declined; claude-code: VS Code extension and CLI, dual route accepted",
+    "value": "copilot: VS Code only, native route; claude-code: VS Code extension and CLI; the extension cannot pass --agent, so native selection does not cover every surface and Bootstrap 10.0.0 selects the skill route",
     "source": "user",
-    "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback."
+    "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list."
   },
   {
-    "id": "fallback-repository-search",
-    "value": "claude-code fallback route: file/path and text search bind to read-only Bash find/grep with maintenance, session, dependency and VCS exclusions; native route keeps Glob/Grep",
+    "id": "claude-code-repository-search",
+    "value": "claude-code environment-level binding: file/path and text search use read-only Bash find/grep with maintenance, session, dependency and VCS exclusions for all six roles (the plain session has no Glob/Grep); for Planner, Knowledge Builder and Ask that is their only Bash use",
     "source": "user",
-    "evidence": "User approved the 2026-10-15 evolve plan (\"approved\"): fallback-route repository search binds to read-only Bash grep/find for all six Claude Code roles because a session started without --agent has no Glob or Grep (Claude Code 2.1.300)."
+    "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list. Supersedes the 2026-10-15 fallback-route decision; register row C032 retired."
+  },
+  {
+    "id": "upgrade-10.0-scope",
+    "source": "user",
+    "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+    "value": "Bootstrap 9.4.0 -> 10.0.0: one role route per environment; claude-code moves to the skill route; copilot native route already conforms"
+  },
+  {
+    "id": "claude-code-role-skill-names",
+    "source": "user",
+    "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+    "value": "role skills are named demo-<role>-claude instead of demo-<role> so Copilot, which also discovers .claude/skills, does not list skills with the same names as its demo-<role> agents (register C033)"
+  },
+  {
+    "id": "copilot-skill-discovery-conflict",
+    "source": "user",
+    "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+    "value": "recorded, not isolated: Copilot lists the demo-<role>-claude role skills; each stops outside Claude Code, and the Copilot binding, instruction adapter and guide say never to invoke them"
+  },
+  {
+    "id": "claude-code-mcp-guard",
+    "source": "user",
+    "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+    "value": "no permissions.deny list; role tool limits are instruction-only and the plain session exposes the project MCP servers as before"
+  },
+  {
+    "id": "planner-skill-route-authority",
+    "source": "user",
+    "evidence": "User approved the revised 2026-10-16 evolve plan (\"approved\"), items 1-2.",
+    "value": "planning-skill ROLE_ACTIVATION states that the Planner contract governs over skill wording and client defaults, that the evidence-task hand-back is not a stop, and that agent memory/log mean session-memory.md/session-log.md (C034); Claude Code binding adds the session memory/log row and the delegation check (C035)"
   }
 ]

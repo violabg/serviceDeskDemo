@@ -188,7 +188,10 @@ def main():
     check(baseline_files==set(inventory),'No orphan or missing baseline entries')
     for env in ENVS:
         names={a['role'] for a in adapters if a['environment']==env and a['role']!='instruction'}
-        check(names==set(ROLES),'Six-role roster: '+env)
+        if env=='copilot':
+            check(names==set(ROLES),'Six-role native roster: '+env)
+        else:
+            check(not names,'Skill route has no native role registrations: '+env)
         planner=(DOCS/f'canonical/{env}/agents/demo-planner.agent.md').read_text()
         check(all(x in planner for x in ['knowledge/knowledge-index.md','docs/agents/plan-schema.md','When to read','never bulk-load','Schema compliance overrides Markdown cleanup']),'Planner schema and index gates: '+env)
         check(answers['environments'][env]['compatibility']=='unverified','No false native compatibility claim: '+env)
@@ -207,16 +210,32 @@ def main():
         check(all(bodies[ENVS[0]][r]==bodies[e][r] for e in ENVS for r in ROLES),'Role bodies identical across environments (S1)')
     settings=load(ROOT/'.claude/settings.json')
     check(settings['skillOverrides']=={'bootstrap-agentic-system':'user-invocable-only','maintain-agentic-system':'user-invocable-only'},'Claude maintenance skills user-invocable only')
-    check(sorted(settings['permissions']['deny'])==sorted(f'Agent(demo-{r}-claude)' for r in ROLES),'Claude roles excluded from automatic delegation')
+    check('agent' not in settings and not any(x.startswith('Agent(demo-') for x in settings.get('permissions',{}).get('deny',[])),'Claude settings: no default role and no stale role-agent denies')
+    # Bootstrap 10.0.0 skill route: Planner through the planning skills, other roles through role skills (C033 names).
+    agents_dir=ROOT/'.claude/agents'
+    check(not agents_dir.exists() or not any(agents_dir.glob('demo-*')),'No Claude Code native role agents')
+    check(not any((ROOT/'.claude/skills').glob('demo-*-fallback')),'No Claude Code fallback adapters')
+    role_skills={p for p,i in inventory.items() if i['kind']=='role-skill'}
+    check(role_skills=={f'.claude/skills/demo-{r}-claude/SKILL.md' for r in ROLES if r!='planner'},'Five Claude Code role skills, none for Planner')
+    for path in sorted(role_skills):
+        text=(ROOT/path).read_text(); meta,body=decode_md(text,True); role=Path(path).parent.name[len('demo-'):-len('-claude')]
+        check(meta.get('name')==Path(path).parent.name and meta.get('disable-model-invocation') is True and 'tools' not in meta,'Role skill metadata, user-invoked only: '+path)
+        check(all(x in body for x in ['## Activation guard','Claude Code only','load nothing and stop','`docs/agents/bindings/claude-code.md`',f'`docs/agents/canonical/claude-code/agents/demo-{role}.agent.md`','instruction-only']),'Role skill guard and complete-contract loading: '+path)
+        check(len(body.splitlines())<40,'Role skill does not restate the contract: '+path)
+    for name in ['plan-bug-from-id','plan-user-story-from-id']:
+        text=(ROOT/'.agents/skills'/name/'SKILL.md').read_text()
+        check('On the skill route, this skill is the Planner\'s entrypoint' in text and 'load nothing, stop' in text,'Planning skill activation covers the skill route: '+name)
+    binding=(DOCS/'bindings/claude-code.md').read_text()
+    check('/demo-implementor-claude Resume implementation for Planning Session <planning-session-id>' in binding and 'claude --agent' not in binding,'Claude Code handoff on the skill route')
     check(not any(a['role']=='skill' for a in adapters),'No duplicate native skill adapters')
     for path in sorted(skills):
         meta,_=decode_md((ROOT/path).read_text(),True)
         check('tools' not in meta and meta['name']==(ROOT/path).parent.name,'Direct skill metadata: '+path)
-    retired=answers['maintenance_decisions']['environment_isolation_2026_10_08']['retired']+decisions['retired']
-    check(all(not (ROOT/p).is_file() and not (MAINT/'.baseline'/p).is_file() for p in retired),'Retired skill outputs and baselines absent')
+    retired=answers['maintenance_decisions']['environment_isolation_2026_10_08']['retired']+decisions['retired']+answers['maintenance_decisions']['upgrade_10_0_2026_10_16']['retired']
+    check(all(not (ROOT/p).is_file() and not (MAINT/'.baseline'/p).is_file() for p in retired),'Retired outputs and baselines absent')
     audit=load(MAINT/'environment-audit.json')
     check(digest((MAINT/'environment-audit.json').read_bytes())==answers['preservation']['environment_audit_sha256'],'Environment audit hash')
-    runtime={p for p,i in inventory.items() if i['kind'] in ['canonical-copy','native-adapter','native-instruction-adapter','native-config']}
+    runtime={p for p,i in inventory.items() if i['kind'] in ['canonical-copy','native-adapter','native-instruction-adapter','native-config','role-skill']}
     runtime.update(p for p,i in inventory.items() if i['kind']=='shared-resource' and p!='README.md' and not p.startswith('knowledge/'))
     runtime.update(decisions['runtime_source_resources'])
     check(set(audit['runtime_outputs'])==runtime,'Complete runtime environment audit coverage')
@@ -262,7 +281,7 @@ def main():
         check(sorted(p.name for p in (fixture/'sessions').iterdir())==['bug-123'],'Fixture confined to owning session')
     count=len(CHECKS)
     report='# Structural Validation Report\n\n'
-    report+='Date: 2026-10-11. Result: **'+('FAIL' if ERRORS else 'PASS')+'** for structural checks'+(', with recorded blocked items' if BLOCKED else '')+'.\n\n'
+    report+='Date: 2026-10-16 (Bootstrap 10.0.0 upgrade; Claude Code skill route). Result: **'+('FAIL' if ERRORS else 'PASS')+'** for structural checks'+(', with recorded blocked items' if BLOCKED else '')+'.\n\n'
     report+=f'{count} checks passed; {len(ERRORS)} failed; {len(BLOCKED)} recorded blocked. Environments: copilot, claude-code. Canonical copies: {len(plan["copies"])}. Native adapters: {len(adapters)}. Primary/baseline files: {len(inventory)}.\n\n'
     report+='Method: independent Python reconstruction of the declared slot recipe, SHA-256 source checks, exact canonical/body comparisons, constrained YAML/TOML/JSON syntax checks, roster/skill/link/settings checks, cross-environment body identity, baseline equality, the shipped Node canonical, context-boundary and environment-binding verifiers, and a disposable file-contract fixture outside existing sessions.\n\n'
     report+='Live checks (2026-10-11): Claude Code main session GitHub MCP issue_read get on violabg/serviceDeskDemo#1 succeeded (read-only). The Codex environment was removed on 2026-10-13; its GitHub MCP checks no longer apply. No issue_write call was made. Generated-role discovery and execution remain **unverified** in all three clients.\n\n'

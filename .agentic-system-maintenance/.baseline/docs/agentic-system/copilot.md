@@ -15,7 +15,7 @@ Open the Chat view and choose the role in the **Agent** dropdown, then send your
 | Knowledge Builder | `demo-knowledge-builder` | Add or refresh repository knowledge |
 | Ask | `demo-ask` | Read-only questions about the code |
 
-VS Code also lists Claude Code agents ending in `-claude`. Never choose those in Copilot; they carry Claude Code tool names.
+VS Code also lists Claude Code role skills ending in `-claude` (for example `/demo-implementor-claude`). Never run those in Copilot; they stop outside Claude Code. Start roles from the Agent dropdown.
 
 **Enforced vs instructions only.** Each agent's `tools` frontmatter limits its tool picker. Limits inside a granted tool, such as Planner writing only session artifacts, are instructions only.
 

@@ -123,3 +123,18 @@ The manifest, answers, this approved file plan, validation report and audit repo
 ## 2026-10-08 Inventory Successor
 
 The table above is historical first-install provenance. Current generated ownership and canonical discovery are defined by agentic-system.answers.yaml, preservation-plan.json, native-adapters.json, environment-audit.json and maintenance/2026-10-08-plan.md. The approved successor retires demo-prefixed skill adapters and four legacy .github skills, makes the five original-name .agents skills complete canonical outputs, separates bindings and retains native instruction scope adapters. No installed source mirror is a configured runtime skill; the host's source-template catalog exposure remains recorded discovery debt.
+
+## Role Entrypoints And Client Guides (Bootstrap 10.0.0, 2026-10-16)
+
+- Role Route Per Environment (Exactly One): copilot native (single surface, VS Code Chat view); claude-code skill (CLI and VS Code extension; the extension cannot pass `--agent`).
+- Environment-Level Bindings (Skill Route Only): claude-code binds the union of the six role tool rows once for the plain session (`.mcp.json` servers, no `permissions.deny`), read-only `Bash` `find`/`grep` in place of `Glob`/`Grep`, `ToolSearch` loading for deferred tools; each row stays its role's instruction-only limit.
+
+| Environment | Role | Start Method | Enforcement | Status |
+| --- | --- | --- | --- | --- |
+| `copilot` | every role | native agent: Agent dropdown, `demo-<role>` | runtime-enforced tool picker | unverified |
+| `claude-code` | Planner | planning skills `plan-bug-from-id`, `plan-user-story-from-id` | instruction-only | unverified |
+| `claude-code` | Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask | role skill `demo-<role>-claude` (C033 suffix) | instruction-only | unverified |
+
+- Role-Bound Skill Activation Per Environment: copilot runs the planning skills only in a `demo-planner` chat; claude-code planning skills refuse inside a running role, then load the binding and the complete Planner contract.
+- Planner To Implementor Handoff Step Per Environment (New Conversation, Planning Session ID): copilot New Chat, `demo-implementor`, `Resume implementation for Planning Session <id>`; claude-code new conversation, `/demo-implementor-claude Resume implementation for Planning Session <id>`.
+- Client Guides: `docs/agentic-system/README.md`, `copilot.md`, `claude-code.md`.

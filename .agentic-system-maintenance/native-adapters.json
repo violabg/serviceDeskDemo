@@ -48,54 +48,6 @@
     "environment": "copilot"
   },
   {
-    "path": ".claude/agents/demo-planner-claude.md",
-    "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
-    "format": "markdown",
-    "body_sha256": "3d90f19ccec1e5ed0aeb2627729696554ffbfbb6be50ad4acf45f3cef61ddf60",
-    "role": "planner",
-    "environment": "claude-code"
-  },
-  {
-    "path": ".claude/agents/demo-implementor-claude.md",
-    "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
-    "format": "markdown",
-    "body_sha256": "26cf68c59ec67923f66e980b9cd29e72296325f48429678677416ca9bab810f5",
-    "role": "implementor",
-    "environment": "claude-code"
-  },
-  {
-    "path": ".claude/agents/demo-direct-implementor-claude.md",
-    "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
-    "format": "markdown",
-    "body_sha256": "130db33baf5e8970710adef5afb47e7b2fde8e0933d143414bf99b02bb516b2f",
-    "role": "direct-implementor",
-    "environment": "claude-code"
-  },
-  {
-    "path": ".claude/agents/demo-integration-tester-claude.md",
-    "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
-    "format": "markdown",
-    "body_sha256": "276a3b23488d4984c207e3842c88ad842dd9305e566548b9083e41b3ff8ac7ba",
-    "role": "integration-tester",
-    "environment": "claude-code"
-  },
-  {
-    "path": ".claude/agents/demo-knowledge-builder-claude.md",
-    "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
-    "format": "markdown",
-    "body_sha256": "1900e1f92fc5b479557205f93dc4543cb0a19a08dda6c4398bda771fb15efc3a",
-    "role": "knowledge-builder",
-    "environment": "claude-code"
-  },
-  {
-    "path": ".claude/agents/demo-ask-claude.md",
-    "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
-    "format": "markdown",
-    "body_sha256": "f0613d25aa25dcbc4ffdfef5838cef0c59a449ddba260c33244d24f124f2351c",
-    "role": "ask",
-    "environment": "claude-code"
-  },
-  {
     "path": ".github/instructions/knowledge-guard.instructions.md",
     "canonical_copy": "docs/agents/instructions/knowledge-guard.instructions.md",
     "format": "markdown",

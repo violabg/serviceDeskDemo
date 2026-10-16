@@ -2,8 +2,7 @@
 # Stable capability needs. Resolve tools from selected-environment evidence at runtime.
 # Choices are a multi-select intake aid, not supported-platform claims or an enum.
 # Other requires free text; neither an unlisted platform nor an unknown version is rejected.
-# A choice's optional `surfaces` question is asked when that choice is selected; the
-# role-entry dual route is offered only when the answer selects `dual_route_when`.
+# Each selected environment gets exactly one role route, chosen from discovery evidence.
 # Fallbacks still require approval and working prerequisites for the selected operation.
 
 resolution: runtime-discovery
@@ -12,9 +11,6 @@ platform_choices:
     label: GitHub Copilot in VS Code
   - id: claude-code
     label: Claude Code
-    surfaces:
-      question: Will the team use Claude Code through the VS Code extension?
-      dual_route_when: VS Code extension
   - id: codex
     label: Codex
   - id: opencode
@@ -99,13 +95,16 @@ capabilities:
       conversation of its session. Users need a verified way to start each role, role-bound
       skills need to run under their role, and the Planner handoff must name a fresh-context start.
     fallback: >-
-      Where the client cannot run a role as the main conversation, generate a user-only
-      role-entry adapter (for example a skill invoked explicitly by name) that loads the complete
-      canonical role body before the role operates. Its tool limits are instruction-only and must
-      be recorded as such. When native selection works on some client surfaces but not on others,
-      or the role cannot tell which surface it runs on, offer such an adapter as a fallback beside
-      native selection, which stays the primary route that enforces tool limits. When neither works,
-      block the role in that environment.
+      Each environment uses exactly one role route; never generate a second route beside the
+      first. Use native main-session selection only when it works on every client surface the
+      team uses. Otherwise use the skill route: generate no native registration for user-invokable
+      roles, bind every operation the environment's roles need once at environment level, and
+      start each role through a user-only skill that loads the complete canonical role body.
+      Planner starts only through its work-item planning skills; every other role gets one
+      prefixed role skill. Tool limits on the skill route are instruction-only and must be
+      recorded as such. Record the route's effective tool list; when it cannot cover an
+      operation a role is bound to, bind an approved alternative or block the role in that
+      environment.
 
   - id: subagent-delegation
     essential: false

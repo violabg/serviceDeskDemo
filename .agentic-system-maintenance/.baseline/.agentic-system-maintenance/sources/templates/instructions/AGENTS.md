@@ -15,6 +15,7 @@ Full role contracts live in `{{AGENT_ROOT}}`. Do not restate them here.
 
 <!-- CANONICAL-TEMPLATE-SLOT: SKILL_ROOT START replaces=none -->
 - When the user explicitly invokes `manage-work-item` by name, load and run that skill directly. This standalone workflow creates a bug or user story, or updates an existing work item after reading it, and bypasses normal agent role routing and the Planner flow. Every create or update needs explicit approval of the complete proposal and runs only through the tracker bindings approved for that skill; without them, stop without changing anything.
+- When the user explicitly invokes the installed Bootstrap or Maintainer skill, run it in a default session outside agent role routing: no generated role, role tool limits, or role gates apply to it. If this conversation already runs under a generated role, stop and tell the user to open a new default session.
 <!-- CANONICAL-TEMPLATE-SLOT: SKILL_ROOT END -->
 Repository skills live in `{{SKILL_ROOT}}`. Read a skill's `SKILL.md` before running its workflow.
 

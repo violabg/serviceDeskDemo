@@ -141,29 +141,22 @@
     ".github/agents/demo-ask.agent.md",
     "docs/agents/bindings/claude-code.md",
     "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
-    ".claude/agents/demo-planner-claude.md",
     "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
-    ".claude/agents/demo-implementor-claude.md",
     "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
-    ".claude/agents/demo-direct-implementor-claude.md",
     "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
-    ".claude/agents/demo-integration-tester-claude.md",
     "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
-    ".claude/agents/demo-knowledge-builder-claude.md",
     "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
-    ".claude/agents/demo-ask-claude.md",
     ".github/instructions/knowledge-guard.instructions.md",
     ".claude/rules/knowledge-guard.md",
     ".github/instructions/planning-sessions.instructions.md",
     ".claude/rules/planning-sessions.md",
     ".github/instructions/agent-integrations.instructions.md",
     ".claude/rules/agent-integrations.md",
-    ".claude/skills/demo-planner-fallback/SKILL.md",
-    ".claude/skills/demo-implementor-fallback/SKILL.md",
-    ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
-    ".claude/skills/demo-integration-tester-fallback/SKILL.md",
-    ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
-    ".claude/skills/demo-ask-fallback/SKILL.md",
+    ".claude/skills/demo-implementor-claude/SKILL.md",
+    ".claude/skills/demo-direct-implementor-claude/SKILL.md",
+    ".claude/skills/demo-integration-tester-claude/SKILL.md",
+    ".claude/skills/demo-knowledge-builder-claude/SKILL.md",
+    ".claude/skills/demo-ask-claude/SKILL.md",
     ".claude/settings.json",
     ".mcp.json",
     ".agents/skills/bootstrap-agentic-system/templates/agents/ask.capabilities.yaml",
@@ -1225,16 +1218,6 @@
       ]
     },
     {
-      "output": ".claude/agents/demo-planner-claude.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
       "output": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
       "kind": "runtime",
       "references": [
@@ -1256,16 +1239,6 @@
         },
         {
           "output": "docs/agents/github-issues-adapter.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".claude/agents/demo-implementor-claude.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
           "when": "ordinary"
         }
       ]
@@ -1297,16 +1270,6 @@
       ]
     },
     {
-      "output": ".claude/agents/demo-direct-implementor-claude.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
       "output": "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
       "kind": "runtime",
       "references": [
@@ -1328,16 +1291,6 @@
         },
         {
           "output": "docs/agents/test-plan-schema.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".claude/agents/demo-integration-tester-claude.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
           "when": "ordinary"
         }
       ]
@@ -1369,16 +1322,6 @@
       ]
     },
     {
-      "output": ".claude/agents/demo-knowledge-builder-claude.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
       "output": "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
       "kind": "runtime",
       "references": [
@@ -1400,16 +1343,6 @@
         },
         {
           "output": "docs/agents/test-plan-schema.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".claude/agents/demo-ask-claude.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
           "when": "ordinary"
         }
       ]
@@ -1455,21 +1388,7 @@
       ]
     },
     {
-      "output": ".claude/skills/demo-planner-fallback/SKILL.md",
-      "kind": "runtime",
-      "references": [
-        {
-          "output": "docs/agents/bindings/claude-code.md",
-          "when": "ordinary"
-        },
-        {
-          "output": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
-          "when": "ordinary"
-        }
-      ]
-    },
-    {
-      "output": ".claude/skills/demo-implementor-fallback/SKILL.md",
+      "output": ".claude/skills/demo-implementor-claude/SKILL.md",
       "kind": "runtime",
       "references": [
         {
@@ -1483,7 +1402,7 @@
       ]
     },
     {
-      "output": ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
+      "output": ".claude/skills/demo-direct-implementor-claude/SKILL.md",
       "kind": "runtime",
       "references": [
         {
@@ -1497,7 +1416,7 @@
       ]
     },
     {
-      "output": ".claude/skills/demo-integration-tester-fallback/SKILL.md",
+      "output": ".claude/skills/demo-integration-tester-claude/SKILL.md",
       "kind": "runtime",
       "references": [
         {
@@ -1511,7 +1430,7 @@
       ]
     },
     {
-      "output": ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
+      "output": ".claude/skills/demo-knowledge-builder-claude/SKILL.md",
       "kind": "runtime",
       "references": [
         {
@@ -1525,7 +1444,7 @@
       ]
     },
     {
-      "output": ".claude/skills/demo-ask-fallback/SKILL.md",
+      "output": ".claude/skills/demo-ask-claude/SKILL.md",
       "kind": "runtime",
       "references": [
         {
