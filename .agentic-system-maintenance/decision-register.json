@@ -247,6 +247,13 @@
     "id": "planner-skill-route-authority",
     "source": "user",
     "evidence": "User approved the revised 2026-10-16 evolve plan (\"approved\"), items 1-2.",
-    "value": "planning-skill ROLE_ACTIVATION states that the Planner contract governs over skill wording and client defaults, that the evidence-task hand-back is not a stop, and that agent memory/log mean session-memory.md/session-log.md (C034); Claude Code binding adds the session memory/log row and the delegation check (C035)"
+    "value": "planning-skill ROLE_ACTIVATION states that the Planner contract governs over skill wording and client defaults, that the evidence-task hand-back is not a stop, and that agent memory/log mean session-memory.md/session-log.md (C034); Claude Code binding adds the session memory/log row and the delegation check (C035)",
+    "status": "C034 superseded 2026-10-16 by Bootstrap 10.0.1 (Planner gates name the session capabilities, planning skills carry the inline hand-back and settle the session ID before retrieval, ROLE_ACTIVATION takes the 10.0.1 governance statement); C035 kept"
+  },
+  {
+    "id": "upgrade-10.0.1-scope",
+    "source": "user",
+    "evidence": "User approved the 2026-10-16 10.0.1 upgrade plan (\"approved\") with the standing instruction \"take all incoming over mine\"; C034 resolved take-theirs.",
+    "value": "take upstream for every 10.0.1 region; planning-skill ROLE_ACTIVATION keeps the C029 route dispatch and takes the 10.0.1 governance wording (C034 retired); WORK_ITEM_GATHERING appends the 10.0.1 inline hand-back sentence; Claude Code binding unchanged (C035 kept)"
   }
 ]

@@ -4,7 +4,15 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `10.0.0`
+- `10.0.1`
+
+## 2026-10-16
+
+### 10.0.1
+
+- Fix the Planner on the skill route, where the client's defaults overrode the Planner contract. Generated Planner gates now name the session memory and event-log operations at every call site, so memory and log entries go to the session files, never to a client's own memory feature. Each gate saves its artifacts, one log event, and its memory before the next gate starts; a gate that waits for the user saves before waiting, and Gates 0, 3, and Gate 9 Phase 1 save nothing. The structured interview writes `clarification_questions.md` before waiting. Gate 3 no longer refers to an undefined verification table, and the artifact and gate template uses one spelling for the clarification file.
+- `plan-bug-from-id` and `plan-user-story-from-id` now settle the Planning Session ID before retrieval: they propose `bug-<id>` or `us-<id>` from their own issue type, wait for confirmation, check only that exact folder and ask when it already exists, create it, then gather evidence and continue into the Planner gates without stopping. A retrieved issue of the other type is reported and the user chooses how to continue. The evidence task is marked as a delegate prompt whose hand-back is never a stop point, including inline. On the skill route, `ROLE_ACTIVATION` states that the Planner contract governs gate order, stop points, and session persistence over the skill's intake and the client's defaults, and generated root instructions say the same for every loaded role.
+- Entrypoint verification now exercises the session memory append and event log on each route, and on the skill route confirms that planning asks for the session ID before retrieval and runs from intake into the gates without stopping.
 
 ## 2026-10-15
 

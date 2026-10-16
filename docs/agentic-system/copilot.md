@@ -50,6 +50,6 @@ Session files live in `sessions/<planning-session-id>/`: `session-memory.md`, `s
 ## Verify once
 
 1. Choose `demo-planner` and confirm it loads and can ask you a question.
-2. Run `/plan-user-story-from-id <id>` in that chat and confirm it reaches its first gate.
+2. Run `/plan-user-story-from-id <id>` in that chat and confirm it asks you to confirm the session ID before it retrieves the issue, reaches the Planner gates, and writes memory and log entries to `sessions/<id>/session-memory.md` and `session-log.md`.
 3. Follow the Implementor handoff steps with a test session ID and confirm it resumes from that session.
 4. Give Planner a local screenshot and confirm a `_visual_evidence.md` artifact appears.

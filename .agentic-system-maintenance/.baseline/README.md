@@ -18,7 +18,7 @@ The demo shows the difference between a traditional prompt and an enterprise age
 
 ## Layout
 
-Generated workflow artifacts live in local, gitignored `sessions/<planning-session-id>/` packages. Planning starts from a GitHub issue such as `#12`. After retrieving its type, the default session is `bug-12` or `us-12`; the issue ID and session ID are distinct. Resume only an explicitly supplied or active session, including previously approved custom IDs. The Planner writes the artifacts required by [the artifact contract](docs/agents/artifact-gates.md) and [plan schema](docs/agents/plan-schema.md). Integration Tester uses [the YAML test-plan schema](docs/agents/test-plan-schema.md).
+Generated workflow artifacts live in local, gitignored `sessions/<planning-session-id>/` packages. Planning starts from a GitHub issue such as `#12`. Before retrieving the issue, the planning skill proposes the session ID from its own type, `bug-12` or `us-12`, and waits for your confirmation; the issue ID and session ID are distinct. Resume only an explicitly supplied or active session, including previously approved custom IDs. The Planner writes the artifacts required by [the artifact contract](docs/agents/artifact-gates.md) and [plan schema](docs/agents/plan-schema.md). Integration Tester uses [the YAML test-plan schema](docs/agents/test-plan-schema.md).
 
 ## Demo Stack
 

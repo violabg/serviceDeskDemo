@@ -11,7 +11,7 @@ These guides explain how to use the serviceDeskDemo agent roles from each instal
 
 - Each role runs as the main conversation of its own session. Start a new session or chat to change role; do not ask one role to delegate to another.
 - After you approve a plan, start Implementor in a new conversation with the Planning Session ID. Do not continue implementation in the planning conversation.
-- Planning sessions live in `sessions/<planning-session-id>/` (local and gitignored). Planning from GitHub issue `#12` suggests the session ID `us-12` or `bug-12`.
+- Planning sessions live in `sessions/<planning-session-id>/` (local and gitignored). Planning from GitHub issue `#12` proposes the session ID `us-12` (`/plan-user-story-from-id`) or `bug-12` (`/plan-bug-from-id`) and waits for your confirmation before it retrieves the issue.
 - Images are inspected by Planner and Direct Implementor themselves; each image gets a Markdown artifact `sessions/<id>/artifacts/<image-name>_visual_evidence.md`. Give a local file path for private issue images.
 - `manage-work-item` creates or updates a GitHub issue only when you invoke it by name in the default agent, and only after you approve the exact proposal.
 

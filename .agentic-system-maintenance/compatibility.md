@@ -165,3 +165,9 @@ Consequence: fallback-started roles cannot use the `Glob`/`Grep` binding; C032 b
 | Same session, after deleting `.claude/agents/demo-*-claude.md` | The harness still announced the deleted agents as available types | Session-start agent cache; new sessions load no Claude Code role agents. Not used as evidence of registration |
 
 Consequence: tool limits for all Claude Code roles are instruction-only; skill-route role skills `/demo-<role>-claude` (C033 names) and the planning skills refuse inside a running role and set `disable-model-invocation: true`. Not exercised: role-skill and planning-skill runs, refusal and Implementor handoff on either surface; the interactive CLI tool list.
+
+## 2026-10-16: Bootstrap 10.0.1 entrypoint verification
+
+| Evidence source | Established behavior | Local result |
+| --- | --- | --- |
+| Bootstrap 10.0.1 `platform-compatibility.md` entrypoint verification | Per route, exercise the session memory append and event log writing the session files, not a client memory feature; on the skill route, confirm a planning skill asks for the Planning Session ID before retrieval and continues from evidence intake into the Planner gates without stopping | Not exercised on either surface (Claude Code 2.1.300 unchanged; Copilot unchanged); added to both client guides as Verify once step 2; status `unverified` |

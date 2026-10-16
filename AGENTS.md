@@ -18,6 +18,8 @@ Shared skills use only the already selected environment binding. Invoke the comp
 
 Full role contracts live in `docs/agents/canonical/<environment>/agents (copilot or claude-code)`. Do not restate them here.
 
+Once a role contract is loaded, its operations replace the client's built-in equivalents: session memory and the session log are the files under `sessions/<planning-session-id>/`, never the client's own memory feature. A delegated or inline evidence task that returns its result is never a stop point.
+
 ## Skills
 
 - When the user explicitly invokes `manage-work-item` by name, load and run that skill directly. This standalone workflow creates a bug or user story, or updates an existing work item after reading it, and bypasses normal agent role routing and the Planner flow. Every create or update needs explicit approval of the complete proposal and runs only through the tracker bindings approved for that skill; without them, stop without changing anything.

@@ -53,7 +53,7 @@ Session files live in `sessions/<planning-session-id>/`: `session-memory.md`, `s
 ## Verify once
 
 1. In the VS Code extension chat, open a new conversation, type `/` and confirm the five `demo-<role>-claude` skills and the two planning skills are listed.
-2. Run `/plan-user-story-from-id <id>` and confirm it loads the binding and the Planner contract, can ask you a question with the question tool, and that its Gate 5 repository search runs with read-only `grep` and `find`.
+2. Run `/plan-user-story-from-id <id>` and confirm it loads the binding and the Planner contract, asks you to confirm the session ID before it retrieves the issue, then runs from evidence intake into the Planner gates without stopping, can ask you a question with the question tool, and that its Gate 5 repository search runs with read-only `grep` and `find`. Confirm memory and log entries land in `sessions/<id>/session-memory.md` and `session-log.md`, not in Claude Code's own memory.
 3. In that same conversation, run `/demo-ask-claude` and confirm it loads nothing and tells you a role is already running.
 4. Run the Implementor handoff with a test session ID in a new conversation and confirm it resumes from that session.
 5. Give Planner a local screenshot and confirm a `_visual_evidence.md` artifact appears, naming the haiku subagent as inspector.

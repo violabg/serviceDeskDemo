@@ -3,7 +3,7 @@
     "path": ".github/agents/demo-planner.agent.md",
     "canonical_copy": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
     "format": "markdown",
-    "body_sha256": "3d90f19ccec1e5ed0aeb2627729696554ffbfbb6be50ad4acf45f3cef61ddf60",
+    "body_sha256": "79c2d09915c0f378b10963de3136faad36b97dd7425b0de818e24eddc65976ce",
     "role": "planner",
     "environment": "copilot"
   },

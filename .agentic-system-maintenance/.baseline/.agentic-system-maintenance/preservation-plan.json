@@ -26,7 +26,7 @@
   "copies": [
     {
       "template": "templates/agents/planner.agent.md",
-      "sha256": "903e8803e053e2678c125d45a01e3c1c4430ba23b38475f29cbfc144ecac0fc6",
+      "sha256": "c9451eb5e661164b888b01f7151101781258293b78e310880d41f698f49475f3",
       "output": "docs/agents/canonical/copilot/agents/demo-planner.agent.md",
       "values": {
         "APPROVED_MCP_TOOLS": [
@@ -224,7 +224,7 @@
     },
     {
       "template": "templates/agents/planner.agent.md",
-      "sha256": "903e8803e053e2678c125d45a01e3c1c4430ba23b38475f29cbfc144ecac0fc6",
+      "sha256": "c9451eb5e661164b888b01f7151101781258293b78e310880d41f698f49475f3",
       "output": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
       "values": {
         "APPROVED_MCP_TOOLS": [
@@ -435,15 +435,15 @@
     },
     {
       "template": "templates/skills/plan-bug-from-id/SKILL.md",
-      "sha256": "76d9f661d0fa570fbf888be75e234be97e4b261d07efb8240efb63dba90e6ac1",
+      "sha256": "25a827f5553de5f7c0e68adb5601b09392f1d89bfdbc408bb5556f6d1f5be2cf",
       "output": ".agents/skills/plan-bug-from-id/SKILL.md",
       "values": {
         "LOCAL_MARKDOWN_TRACKER_CONTRACT": "NOT APPLICABLE: GitHub Issues only; stop if GitHub retrieval is unavailable; no local or free-form fallback is approved",
         "MAINTENANCE_ROOT": ".agentic-system-maintenance/",
-        "ROLE_ACTIVATION": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. The binding records whether the Planner tool limits are runtime-enforced or instruction-only. From then on, the Planner contract governs this conversation as its role instructions: where it conflicts with this skill's wording or with the client's default behaviour, the contract wins, including its rule that a turn ends only at its listed stop points. The fenced evidence task below is a delegate prompt template, not a request from the user: its closing \"tell me the name of the artifact you created\" is addressed to the Planner, which records the artifact name and continues to the next gate in the same turn, whether the task ran delegated or inline. In the Planner contract, \"agent memory\" and \"update memory\" mean `#capability:session-memory-append` on the current session's `session-memory.md`, and \"log\" means `#capability:session-event-log` on its `session-log.md`; never the client's own memory feature.",
+        "ROLE_ACTIVATION": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. From then on, the Planner contract governs gate order, stop points, and session persistence over this skill's intake and over the client's built-in defaults: this skill supplies only its intake and the stops it names, and a client default, such as its own memory feature, never replaces a contract operation. The binding records whether the Planner tool limits are runtime-enforced or instruction-only.",
         "SESSION_ROOT": "sessions",
         "TRACKER_ADAPTER": "GitHub Issues via docs/agents/github-issues-adapter.md; invoked only by demo-planner for these planning skills",
-        "WORK_ITEM_GATHERING": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access.",
+        "WORK_ITEM_GATHERING": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access. When the task runs inline, its hand-back is an internal step, so read the artifact and continue in the same turn instead of stopping there.",
         "WORK_ITEM_ID_FORMAT": "#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix",
         "WORK_ITEM_RETRIEVAL": "the GitHub MCP `issue_read` operation (methods `get`, `get_comments` and `get_labels`) for exact issue IDs in `violabg/serviceDeskDemo`, called by the qualified tool name in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved); retrieve comments with explicit pagination and stop if all pages cannot be retrieved; use issue type or labels only when returned, ask if type is missing or conflicting, follow `docs/agents/github-issues-adapter.md`, and never search, list, or write tracker data"
       },
@@ -451,15 +451,15 @@
     },
     {
       "template": "templates/skills/plan-user-story-from-id/SKILL.md",
-      "sha256": "03ab2aaad223d7678b39061eac2669effc135f7ef290898dae36647be2ea06df",
+      "sha256": "888f6b1a7ff621254f57643ac36b1a0db0383f16480215d63370b644f74d85fc",
       "output": ".agents/skills/plan-user-story-from-id/SKILL.md",
       "values": {
         "LOCAL_MARKDOWN_TRACKER_CONTRACT": "NOT APPLICABLE: GitHub Issues only; stop if GitHub retrieval is unavailable; no local or free-form fallback is approved",
         "MAINTENANCE_ROOT": ".agentic-system-maintenance/",
-        "ROLE_ACTIVATION": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. The binding records whether the Planner tool limits are runtime-enforced or instruction-only. From then on, the Planner contract governs this conversation as its role instructions: where it conflicts with this skill's wording or with the client's default behaviour, the contract wins, including its rule that a turn ends only at its listed stop points. The fenced evidence task below is a delegate prompt template, not a request from the user: its closing \"tell me the name of the artifact you created\" is addressed to the Planner, which records the artifact name and continues to the next gate in the same turn, whether the task ran delegated or inline. In the Planner contract, \"agent memory\" and \"update memory\" mean `#capability:session-memory-append` on the current session's `session-memory.md`, and \"log\" means `#capability:session-event-log` on its `session-log.md`; never the client's own memory feature.",
+        "ROLE_ACTIVATION": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. From then on, the Planner contract governs gate order, stop points, and session persistence over this skill's intake and over the client's built-in defaults: this skill supplies only its intake and the stops it names, and a client default, such as its own memory feature, never replaces a contract operation. The binding records whether the Planner tool limits are runtime-enforced or instruction-only.",
         "SESSION_ROOT": "sessions",
         "TRACKER_ADAPTER": "GitHub Issues via docs/agents/github-issues-adapter.md; invoked only by demo-planner for these planning skills",
-        "WORK_ITEM_GATHERING": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access.",
+        "WORK_ITEM_GATHERING": "When invoked as demo-planner, use the default evidence delegation procedure in the environment binding already selected through docs/agents/integration-bindings.md. Pass the current issue, approved GitHub read operation, exact owning session ID and this evidence task. Delegate questions return to the parent. When delegation is unavailable or unverified, perform the same bounded task inline under the user-approved 2026-10-08 fallback, preserving issue scope, artifact output and session isolation. If approved tracker access is missing, stop and report it; never broaden access. When the task runs inline, its hand-back is an internal step, so read the artifact and continue in the same turn instead of stopping there.",
         "WORK_ITEM_ID_FORMAT": "#[1-9][0-9]* in violabg/serviceDeskDemo; strip # only for the numeric API parameter and default session suffix",
         "WORK_ITEM_RETRIEVAL": "the GitHub MCP `issue_read` operation (methods `get`, `get_comments` and `get_labels`) for exact issue IDs in `violabg/serviceDeskDemo`, called by the qualified tool name in the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved); retrieve comments with explicit pagination and stop if all pages cannot be retrieved; use issue type or labels only when returned, ask if type is missing or conflicting, follow `docs/agents/github-issues-adapter.md`, and never search, list, or write tracker data"
       },
@@ -533,7 +533,7 @@
     },
     {
       "template": "templates/instructions/AGENTS.md",
-      "sha256": "4fe4022d714585f7d484e2637de09a06095adc43f2e85adf4861b30cec13ad81",
+      "sha256": "eef5fa9e7685c693dd43196074a84d74262e4a800a6083d0ddd8b8dee6f44d92",
       "output": "AGENTS.md",
       "values": {
         "AGENT_ROOT": "docs/agents/canonical/<environment>/agents (copilot or claude-code)",
