@@ -2,15 +2,5 @@
   "skillOverrides": {
     "bootstrap-agentic-system": "user-invocable-only",
     "maintain-agentic-system": "user-invocable-only"
-  },
-  "permissions": {
-    "deny": [
-      "Agent(demo-planner-claude)",
-      "Agent(demo-implementor-claude)",
-      "Agent(demo-direct-implementor-claude)",
-      "Agent(demo-integration-tester-claude)",
-      "Agent(demo-knowledge-builder-claude)",
-      "Agent(demo-ask-claude)"
-    ]
   }
 }

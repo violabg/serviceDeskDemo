@@ -155,3 +155,13 @@ Execution host: Claude Code 2.1.300 in the VS Code Insiders extension; terminal 
 | Binding fallback search commands in the extension session | `grep -rnI --exclude-dir=...` and `find ... -prune ... -print` returned real paths with zero hits under `sessions/`, the maintenance root, `node_modules` or the Bootstrap/Maintainer skills |
 
 Consequence: fallback-started roles cannot use the `Glob`/`Grep` binding; C032 binds fallback search to read-only `Bash`. A full fallback-started Planner run through Gate 5 is not exercised.
+
+## 2026-10-16: Bootstrap 10.0.0 single role route
+
+| Evidence source | Established behavior | Local result |
+| --- | --- | --- |
+| Bootstrap 10.0.0 `platform-compatibility.md` Role Entrypoints | One route per environment; native only when main-session selection works on every surface the team uses, otherwise the skill route | Claude Code surfaces are CLI and VS Code extension; the extension cannot pass `--agent`, so Claude Code uses the skill route. Copilot (single surface, Agent dropdown) keeps the native route |
+| This maintenance session: interactive plain default session, VS Code Insiders extension, Claude Code 2.1.300 | Tools loaded: `Read`, `Edit`, `Write`, `Bash`, `Agent`, `AskUserQuestion`, `Skill`, `ToolSearch`; deferred behind `ToolSearch`: `WebFetch`, `WebSearch`, project MCP tools (`github`, `neon`, `context7`, `next-devtools`); no `Glob` or `Grep` | Skill-route tool list for the extension surface. Every bound operation is covered, with `Glob`/`Grep` replaced by the approved read-only `Bash` search; the question tool is present in the interactive session (absent only in headless `claude -p`); the delegation tool is named `Agent` here |
+| Same session, after deleting `.claude/agents/demo-*-claude.md` | The harness still announced the deleted agents as available types | Session-start agent cache; new sessions load no Claude Code role agents. Not used as evidence of registration |
+
+Consequence: tool limits for all Claude Code roles are instruction-only; skill-route role skills `/demo-<role>-claude` (C033 names) and the planning skills refuse inside a running role and set `disable-model-invocation: true`. Not exercised: role-skill and planning-skill runs, refusal and Implementor handoff on either surface; the interactive CLI tool list.

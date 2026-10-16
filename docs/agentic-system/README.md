@@ -4,7 +4,7 @@ These guides explain how to use the serviceDeskDemo agent roles from each instal
 
 | Client | Guide | Start Planner | Hand off to Implementor |
 | --- | --- | --- | --- |
-| Claude Code | [claude-code.md](claude-code.md) | `claude --agent demo-planner-claude` (tool limits enforced), or `/demo-planner-fallback` in a new conversation (instructions only) | New terminal session: `claude --agent demo-implementor-claude "Resume implementation for Planning Session <id>"` (tool limits enforced), or new conversation: `/demo-implementor-fallback Resume implementation for Planning Session <id>` (instructions only) |
+| Claude Code | [claude-code.md](claude-code.md) | New conversation: `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>` (tool limits are instructions only) | New conversation: `/demo-implementor-claude Resume implementation for Planning Session <id>` |
 | GitHub Copilot in VS Code | [copilot.md](copilot.md) | New chat, choose `demo-planner` in the Agent dropdown | New chat, choose `demo-implementor`, send `Resume implementation for Planning Session <id>` |
 
 ## Rules that apply in every client

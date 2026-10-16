@@ -5,7 +5,7 @@ Route the current request through this file, then load only what that request ne
 ## Agents
 
 Each role listed here runs as the main conversation of its session. `docs/agentic-system/README.md` explains, for every installed client, how to start each role and how to hand off from Planner to Implementor in a new conversation with the Planning Session ID.
-Resolve the active environment from the client/session identity first: use `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Native registrations may carry a client suffix (Claude Code: `<role>-claude`); the selected binding names them.
+Resolve the active environment from the client/session identity first: use `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Copilot selects each role natively in its Agent dropdown. Claude Code has no role agents: Planner starts only through the `plan-bug-from-id` and `plan-user-story-from-id` skills, and every other role through its user-invoked `demo-<role>-claude` role skill. The selected binding names each start step.
 
 - `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.
 - `demo-implementor`: approved-plan implementation. Load `docs/agents/canonical/<environment>/agents/demo-implementor.agent.md`.
@@ -21,6 +21,7 @@ Full role contracts live in `docs/agents/canonical/<environment>/agents (copilot
 ## Skills
 
 - When the user explicitly invokes `manage-work-item` by name, load and run that skill directly. This standalone workflow creates a bug or user story, or updates an existing work item after reading it, and bypasses normal agent role routing and the Planner flow. Every create or update needs explicit approval of the complete proposal and runs only through the tracker bindings approved for that skill; without them, stop without changing anything.
+- When the user explicitly invokes the installed Bootstrap or Maintainer skill, run it in a default session outside agent role routing: no generated role, role tool limits, or role gates apply to it. If this conversation already runs under a generated role, stop and tell the user to open a new default session.
 Repository skills live in `.agents/skills`. Read a skill's `SKILL.md` before running its workflow.
 
 ## Instructions

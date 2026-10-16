@@ -4,7 +4,7 @@ applyTo: "**"
 
 # Agent Integration Routing
 
-Owner: copilot. Load only docs/agents/bindings/copilot.md and the complete selected role contract under docs/agents/canonical/copilot/agents/. Never select a `demo-*-claude` agent: those are Claude Code registrations.
+Owner: copilot. Load only docs/agents/bindings/copilot.md and the complete selected role contract under docs/agents/canonical/copilot/agents/. Never invoke a `demo-*-claude` skill: those are Claude Code role entrypoints.
 
 Scope: all selected agent-system workflows. Use English and preserve the selected role's authority boundaries. Load the current role's full contract and only its already selected environment binding before acting.
 

@@ -1,48 +1,40 @@
 # Using the Agent Roles in Claude Code
 
-Applies to Claude Code 2.1.296 (CLI and VS Code extension). Status of every start method: documented, not exercised in this repository.
+Applies to Claude Code 2.1.300 (CLI and VS Code extension). Status of every start method: documented, not exercised in this repository.
 
 ## Start a role
 
-Each role has two start routes. Use either one in any client:
+Every role starts through a skill that you type in a new conversation: a new `claude` session in the terminal, or a new conversation in the VS Code extension chat. The same skills work on both. There are no Claude Code agents for these roles, so `claude --agent` is no longer used.
 
-- **Terminal:** run the command from the repository root. Each role's tool list is enforced.
-- **Fallback skill:** open a new conversation (for example a new tab in the VS Code extension chat) and type the skill. It loads the same role contract, but its tool limits are instructions only. It does not start in a conversation that already runs a role: keep working with that role by sending your request without the command, or open a new conversation.
+| Role | Start it with | Use it for |
+| --- | --- | --- |
+| Planner | `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>` | Plan from a GitHub issue; clarification and implementation plan |
+| Implementor | `/demo-implementor-claude` | Execute an approved plan |
+| Direct Implementor | `/demo-direct-implementor-claude` | Implement validated requirements without a plan; never writes tests |
+| Integration Tester | `/demo-integration-tester-claude` | Plan and run integration tests |
+| Knowledge Builder | `/demo-knowledge-builder-claude` | Add or refresh repository knowledge |
+| Ask | `/demo-ask-claude` | Read-only questions about the code |
 
-| Role | Terminal command | Fallback skill | Use it for |
-| --- | --- | --- | --- |
-| Planner | `claude --agent demo-planner-claude` | `/demo-planner-fallback` | Plan from a GitHub issue; clarification and implementation plan |
-| Implementor | `claude --agent demo-implementor-claude` | `/demo-implementor-fallback` | Execute an approved plan |
-| Direct Implementor | `claude --agent demo-direct-implementor-claude` | `/demo-direct-implementor-fallback` | Implement validated requirements without a plan; never writes tests |
-| Integration Tester | `claude --agent demo-integration-tester-claude` | `/demo-integration-tester-fallback` | Plan and run integration tests |
-| Knowledge Builder | `claude --agent demo-knowledge-builder-claude` | `/demo-knowledge-builder-fallback` | Add or refresh repository knowledge |
-| Ask | `claude --agent demo-ask-claude` | `/demo-ask-fallback` | Read-only questions about the code |
+You can add the first message after the skill name. Planner always starts from an issue ID: planning without a GitHub issue is not offered in Claude Code. Use one role per conversation: a role skill does not start in a conversation that already runs a role. To keep working with that role, send your request without the command; to change role, open a new conversation. Do not set `agent` in `.claude/settings.json`; that would run every session under one role.
 
-You can add the first message in quotes after the command, or after the skill name. Use one role per conversation: there is no documented way to switch role inside a session, so start a new one. Do not set `agent` in `.claude/settings.json`; that would run every session under one role.
+**Tool limits are instructions only.** Each role's limits come from its row in the binding's tool table and from the role contract, but Claude Code does not block the tools: Ask is told not to edit or run commands, and Planner and Knowledge Builder are told not to run shell commands. Limits inside a granted tool, such as Planner writing only session artifacts, are instructions too. Claude cannot start these roles on its own: every role and planning skill sets `disable-model-invocation: true`.
 
-**Enforced vs instructions only.** With the terminal command, each role's `tools` list is enforced by Claude Code: Ask cannot edit or run commands, and Planner and Knowledge Builder cannot run shell commands. With a fallback skill, the same limits come from the role's row in the binding's tool table and the role contract, as instructions, but Claude Code does not block the tools. A fallback-started conversation also has no `Glob` or `Grep` search tools, so roles search the repository with read-only `grep` and `find` commands instead; for Planner, Knowledge Builder and Ask that is the only shell use allowed. Limits inside a granted tool, such as Planner writing only session artifacts, are instructions only in both routes. Claude cannot start these roles on its own: the subagents are denied in `.claude/settings.json` and the fallback skills set `disable-model-invocation: true`.
-
-**Tool access per route.** Each route can expose different tools. Observed on Claude Code 2.1.300: the terminal Planner session has `Glob` and `Grep` and no `Bash`; a fallback-started session has neither `Glob` nor `Grep`. A fallback-started session also has `WebFetch`, `Bash`, `Read`, `Edit`, `Write` and the project MCP tools (`github`, `neon`, `next-devtools`), but no `AskUserQuestion`: a fallback role asks its questions in chat. Its subagent tool is named `Task`. Not yet observed: the tool lists of the five terminal roles other than Planner. These are recorded in the answers file (`route_tool_surface_check`).
+**Tool access.** Every role runs in a normal Claude Code session. Observed on Claude Code 2.1.300 in the VS Code extension: the session has `Read`, `Edit`, `Write`, `Bash`, `Agent` (subagents) and `AskUserQuestion`, and loads `WebFetch` and the project MCP tools (`github`, `neon`, `next-devtools`) on demand. It has no `Glob` or `Grep` search tools, so roles search the repository with read-only `grep` and `find` commands instead; for Planner, Knowledge Builder and Ask that is the only shell use allowed. A terminal session has not been observed yet.
 
 ## Common flows
 
-- **Plan a user story or bug.** Start Planner by either route, then run `/plan-user-story-from-id 12` or `/plan-bug-from-id 12`. These skills only run under Planner; in any other conversation they stop and tell you to start Planner. Planner asks all blocking questions together and collects the answers with the question tool, at most four per prompt.
-- **Hand off to implementation.** When you approve the plan, Planner prints the next step. Start Implementor with fresh context, either in a new terminal session (tool limits enforced):
-
-  ```bash
-  claude --agent demo-implementor-claude "Resume implementation for Planning Session <planning-session-id>"
-  ```
-
-  or in a new conversation (tool limits instructions only):
+- **Plan a user story or bug.** Open a new conversation and run `/plan-user-story-from-id 12` or `/plan-bug-from-id 12`. The skill loads the Planner role, then plans. Planner asks all blocking questions together and collects the answers with the question tool, at most four per prompt.
+- **Hand off to implementation.** When you approve the plan, Planner prints the next step. Start Implementor with fresh context in a new conversation:
 
   ```text
-  /demo-implementor-fallback Resume implementation for Planning Session <planning-session-id>
+  /demo-implementor-claude Resume implementation for Planning Session <planning-session-id>
   ```
 
-- **Implement without a plan.** Start Direct Implementor and describe the change.
-- **Ask a question.** Start Ask; it never edits files.
-- **Build knowledge.** Start Knowledge Builder; it writes only under `knowledge/` and its index.
-- **Create or update an issue.** In a normal `claude` session, run `/manage-work-item`. It writes only after you approve the exact proposal.
+- **Implement without a plan.** Run `/demo-direct-implementor-claude` and describe the change.
+- **Ask a question.** Run `/demo-ask-claude`; it never edits files.
+- **Build knowledge.** Run `/demo-knowledge-builder-claude`; it writes only under `knowledge/` and its index.
+- **Create or update an issue.** In a normal session with no role running, run `/manage-work-item`. It writes only after you approve the exact proposal.
+- **Maintain the agent system.** Run `/maintain-agentic-system` only in a normal session with no role running.
 
 ## Images
 
@@ -60,10 +52,9 @@ Session files live in `sessions/<planning-session-id>/`: `session-memory.md`, `s
 
 ## Verify once
 
-1. `claude --agent demo-planner-claude`: confirm the role loads and can ask you a question with the question tool.
-2. In that session, run `/plan-user-story-from-id <id>` and confirm it reaches its first gate.
-3. Run the Implementor handoff command with a test session ID and confirm it resumes from that session.
-4. Give Planner a local screenshot and confirm a `_visual_evidence.md` artifact appears, naming the haiku subagent as inspector.
-5. In the VS Code extension chat, open a new conversation, type `/` and confirm the six `demo-<role>-fallback` skills are listed. Run `/demo-ask-fallback` with a question and confirm it reads the binding and the Ask contract before answering, and does not edit files.
-6. In another new conversation, run `/demo-planner-fallback`, then `/plan-user-story-from-id <id>`, and confirm the planning skill accepts the fallback-started Planner and that its Gate 5 repository search runs with read-only `grep` and `find`.
-7. In that same conversation, run `/demo-ask-fallback` and confirm it loads nothing and tells you a role is already running.
+1. In the VS Code extension chat, open a new conversation, type `/` and confirm the five `demo-<role>-claude` skills and the two planning skills are listed.
+2. Run `/plan-user-story-from-id <id>` and confirm it loads the binding and the Planner contract, can ask you a question with the question tool, and that its Gate 5 repository search runs with read-only `grep` and `find`.
+3. In that same conversation, run `/demo-ask-claude` and confirm it loads nothing and tells you a role is already running.
+4. Run the Implementor handoff with a test session ID in a new conversation and confirm it resumes from that session.
+5. Give Planner a local screenshot and confirm a `_visual_evidence.md` artifact appears, naming the haiku subagent as inspector.
+6. In a terminal, start `claude`, run `/demo-ask-claude` with a question, and confirm the session has the tools listed above (no `Glob` or `Grep`) and that Ask does not edit files.

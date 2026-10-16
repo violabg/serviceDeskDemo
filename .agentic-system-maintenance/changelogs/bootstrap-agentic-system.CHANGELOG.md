@@ -4,9 +4,14 @@ Install-safe release history for the `bootstrap-agentic-system` skill. Bootstrap
 
 ## Current Version
 
-- `9.4.0`
+- `10.0.0`
 
 ## 2026-10-15
+
+### 10.0.0
+
+- Breaking: each selected environment now gets exactly one role route, and the dual route is removed, including the Claude Code VS Code extension question. Clients whose native agent picker works on every surface the team uses keep native role agents. Other clients, such as Claude Code and Codex, use the skill route: Bootstrap generates no custom agents for user-invokable roles, binds every tool and integration the roles need once for the whole environment, and starts each role through a skill the user invokes by hand. Planner starts only through `plan-bug-from-id` and `plan-user-story-from-id`, which load the complete Planner role first; every other role gets one skill named with the approved agent prefix, for example `shop-implementor`. Role and role-bound skills refuse to start inside a conversation that already runs a role, are not model-invocable where the client can prevent it, and record their tool limits as instruction-only. The Planner handoff names the prefixed Implementor skill on that route. The shipped file-plan and blueprint templates record one route per environment, the skill-route start methods and environment-level bindings, and list role skills in the target layout in place of role-entry adapters.
+- Bootstrap and maintenance run outside agent role routing, in the client's default session, and stop when invoked inside a conversation that runs a generated role. Generated root instructions now say so next to the `manage-work-item` exception.
 
 ### 9.4.0
 

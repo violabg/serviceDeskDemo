@@ -2,7 +2,7 @@
   "version": 2,
   "bootstrap": {
     "skill_version": "5.0.0",
-    "contract_applied_through": "9.4.0",
+    "contract_applied_through": "10.0.0",
     "generated_on": "2026-09-19"
   },
   "maintenance_decisions": {
@@ -197,7 +197,7 @@
       ],
       "register": "C031",
       "not_used": "skill disallowed-tools: the documented restriction clears on the next user message, so it cannot hold role limits",
-      "status": "superseded 2026-10-15: conformed to Bootstrap 9.3.0 dual-route rules; register row C031 retired into environments.claude-code.role_entrypoints"
+      "status": "removed 2026-10-16: Bootstrap 10.0.0 single-route rule; the six fallback skills were deleted with the native agents"
     },
     "upgrade_9_3_2026_10_15": {
       "approved": true,
@@ -241,7 +241,8 @@
       "deferred": [
         "full fallback-started Planner run through Gate 5 in the VS Code extension (user step)",
         "native and fallback role entrypoint verification on each surface"
-      ]
+      ],
+      "status": "superseded 2026-10-16: now the environment-level search binding of the skill route; C032 retired"
     },
     "upgrade_9_4_2026_10_15": {
       "approved": true,
@@ -264,12 +265,125 @@
           "route": "claude-code fallback",
           "operation": "foreground question route (AskUserQuestion)",
           "alternative": "ask the batch in chat, collect answers in consecutive calls per the binding; no structured question tool on the fallback route",
-          "roles": ["planner", "implementor", "direct-implementor", "integration-tester", "knowledge-builder", "ask"],
+          "roles": [
+            "planner",
+            "implementor",
+            "direct-implementor",
+            "integration-tester",
+            "knowledge-builder",
+            "ask"
+          ],
           "approved": "2026-10-15, user selected chat fallback (\"ok go\")"
         }
       ],
       "out_of_scope": [
         "copilot route tool list (D4), by user decision"
+      ]
+    },
+    "upgrade_10_0_2026_10_16": {
+      "approved": true,
+      "date": "2026-10-16",
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+      "mode": "upgrade",
+      "installed_bootstrap": "10.0.0",
+      "installed_maintainer": "4.0.0",
+      "applied_through": "10.0.0",
+      "renderer": ".agentic-system-maintenance/scripts/render-10.0.mjs",
+      "records": ".agentic-system-maintenance/scripts/finalize-10.0.py",
+      "retired": [
+        ".claude/agents/demo-planner-claude.md",
+        ".claude/agents/demo-implementor-claude.md",
+        ".claude/agents/demo-direct-implementor-claude.md",
+        ".claude/agents/demo-integration-tester-claude.md",
+        ".claude/agents/demo-knowledge-builder-claude.md",
+        ".claude/agents/demo-ask-claude.md",
+        ".claude/skills/demo-planner-fallback/SKILL.md",
+        ".claude/skills/demo-implementor-fallback/SKILL.md",
+        ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
+        ".claude/skills/demo-integration-tester-fallback/SKILL.md",
+        ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
+        ".claude/skills/demo-ask-fallback/SKILL.md"
+      ],
+      "added": [
+        ".claude/skills/demo-implementor-claude/SKILL.md",
+        ".claude/skills/demo-direct-implementor-claude/SKILL.md",
+        ".claude/skills/demo-integration-tester-claude/SKILL.md",
+        ".claude/skills/demo-knowledge-builder-claude/SKILL.md",
+        ".claude/skills/demo-ask-claude/SKILL.md"
+      ],
+      "rerendered": [
+        "AGENTS.md",
+        ".agents/skills/plan-bug-from-id/SKILL.md",
+        ".agents/skills/plan-user-story-from-id/SKILL.md"
+      ],
+      "changed": [
+        ".claude/settings.json",
+        "docs/agents/bindings/claude-code.md",
+        "docs/agents/bindings/copilot.md",
+        ".claude/rules/agent-integrations.md",
+        ".github/instructions/agent-integrations.instructions.md",
+        "README.md",
+        "docs/agentic-system/README.md",
+        "docs/agentic-system/claude-code.md",
+        "docs/agentic-system/copilot.md"
+      ],
+      "register": {
+        "added": [
+          "C033"
+        ],
+        "retired": [
+          "C025",
+          "C032"
+        ],
+        "rechecked": [
+          "C029",
+          "C030"
+        ]
+      },
+      "superseded_route_checks": {
+        "bootstrap_rule": "9.4.0: every route's effective tool list covers each operation its roles are bound to, or records an approved route-specific alternative or block",
+        "scope": "claude-code only; copilot out of scope by user decision 2026-10-15",
+        "observed": "Planner native (CLI and VS Code extension): Glob, Grep present, Bash absent (2026-10-15, Claude Code 2.1.300). Fallback route (plain `claude -p`, 2.1.300, user probe): 441 tools including Read, Edit, Write, Bash, WebFetch, WebSearch, Task, Skill, ToolSearch, and mcp__github, mcp__neon, mcp__next-devtools tools; no Glob, no Grep, no AskUserQuestion. The subagent tool is named Task in the init list, while the binding says Agent.",
+        "gaps": {
+          "fallback_AskUserQuestion": "absent on fallback; binding routes the batch to chat. Needs an explicit approval as the approved route-specific alternative for every role that asks questions (all six)",
+          "fallback_Agent_name": "binding names Agent; observed name is Task. Naming to confirm before treating the delegation operation as covered"
+        },
+        "unknown": {
+          "native_other_roles": "Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask: registration tools list not observed in a session"
+        },
+        "subagent_name_alias": {
+          "status": "applied",
+          "finding": "frontmatter and binding name the delegation tool Agent; init lists show Task in native sessions (Planner, Direct Implementor, Knowledge Builder) and fallback sessions",
+          "decision": "treat Agent and Task as the same delegation operation; no binding change",
+          "approved": "2026-10-15 evolve pass, user \"go\""
+        },
+        "native_probe_2026_10_15": {
+          "method": "claude -p --agent demo-<role>-claude \"Reply with OK only.\" --output-format stream-json --verbose; init tool list read, Claude Code 2.1.300, repository root",
+          "caveat": "headless -p mode; interactive sessions not probed, so AskUserQuestion absence may be a headless limit",
+          "results": {
+            "planner": "Read, Edit, Write, Task, WebFetch, Grep, Glob, 11 MCP tools; AskUserQuestion absent",
+            "implementor": "Read, Edit, Write, Bash, 15 MCP tools; Grep and Glob absent (binding lists them); AskUserQuestion absent",
+            "direct-implementor": "Read, Edit, Write, Bash, Task, 15 MCP tools; Grep and Glob absent (binding lists them); AskUserQuestion absent",
+            "integration-tester": "Read, Edit, Write, Bash, Task, no MCP; Grep and Glob absent (binding lists them); AskUserQuestion absent",
+            "knowledge-builder": "Read, Edit, Write, Task, WebFetch, Grep, Glob, 10 MCP tools; AskUserQuestion absent",
+            "ask": "Read, WebFetch, Grep, Glob, 10 MCP tools; AskUserQuestion absent"
+          },
+          "open": "confirm in an interactive session: AskUserQuestion, and Grep/Glob for implementor, direct-implementor and integration-tester"
+        },
+        "interactive_self_report_2026_10_15": {
+          "role": "demo-implementor-claude, interactive session started with claude --agent",
+          "evidence_type": "model self-report of its tool definitions, not the harness init list; Claude Code transcripts do not persist the init event, so it cannot be checked against the log",
+          "reported": "20 tools: AskUserQuestion, Read, Edit, Write, Bash, 15 MCP tools (github issue_read, neon x9, next-devtools x5)",
+          "consistent_with": "headless init for implementor: same Read/Edit/Write/Bash and the same 15 MCP tools",
+          "result": "AskUserQuestion present (self-report); Grep and Glob absent (self-report and headless init agree)",
+          "status": "unverified: needs a harness-level check before closing; Grep/Glob gap is a candidate requires-update for implementor, direct-implementor and integration-tester"
+        },
+        "verification": "fallback and native headless probes done; interactive confirmation pending (user step)",
+        "deferred_under": "upgrade_9_4_2026_10_15 (per-surface entrypoint verification, re-approved with the 9.4.0 scope)"
+      },
+      "deferred": [
+        "interactive CLI plain-session tool list (user step, guide Verify once step 6)",
+        "role-skill and planning-skill runs, refusal and handoff on both surfaces (user step)"
       ]
     }
   },
@@ -307,16 +421,17 @@
             "enforcement": "tools frontmatter limits the tool picker; path limits instruction-only",
             "status": "unverified"
           }
-        ]
+        ],
+        "route": "native"
       },
       "surfaces": {
         "used": [
           "VS Code (Chat view)"
         ],
-        "dual_route": "declined",
         "source": "user",
         "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback.",
-        "note": "Single surface; native Agent dropdown documented but unverified, so 9.3.0 required the offer; the user declined it."
+        "note": "Single surface; native Agent dropdown documented but unverified, so 9.3.0 required the offer; the user declined it.",
+        "route": "native (single surface; conforms to Bootstrap 10.0.0 without change)"
       }
     },
     "claude-code": {
@@ -324,11 +439,11 @@
       "client": "Claude Code CLI and VS Code extension",
       "version": "2.1.296 observed 2026-10-11; 2.1.300 observed 2026-10-15 (CLI and VS Code Insiders extension)",
       "roots": {
-        "agents": ".claude/agents (demo-<role>-claude)",
         "skills": ".claude/skills/<name> links to .agents/skills/<name>",
         "instructions": "AGENTS.md (native, no CLAUDE.md) and .claude/rules",
         "settings": ".claude/settings.json",
-        "mcp": ".mcp.json"
+        "mcp": ".mcp.json",
+        "role_skills": ".claude/skills/demo-<role>-claude/SKILL.md (five; no Planner role skill)"
       },
       "evidence": ".agentic-system-maintenance/compatibility.md",
       "compatibility": "unverified",
@@ -339,109 +454,64 @@
         "integration-tester/diagnostics": "inherited read/problems outside tooling slots"
       },
       "role_entrypoints": {
-        "method": "native main-session selection: claude --agent demo-<role>-claude; fallback: /demo-<role>-fallback in a new conversation",
-        "enforcement": "--agent: registration tools list runtime-enforced; fallback skill: binding Exact role tools row as instructions only; path limits instruction-only in both; fallback route search substitution: the row's Glob/Grep are replaced by read-only Bash grep/find (binding), the only Bash use for Planner, Knowledge Builder and Ask",
-        "handoff": "claude --agent demo-implementor-claude \"Resume implementation for Planning Session <planning-session-id>\" in a new terminal session (tool limits enforced), or /demo-implementor-fallback Resume implementation for Planning Session <planning-session-id> in a new conversation (instructions only)",
-        "role_activation": "planning skills run only in a conversation running Planner by either route; otherwise show both start steps, enforced first (binding)",
-        "fallback_skills": [
-          ".claude/skills/demo-planner-fallback/SKILL.md",
-          ".claude/skills/demo-implementor-fallback/SKILL.md",
-          ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
-          ".claude/skills/demo-integration-tester-fallback/SKILL.md",
-          ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
-          ".claude/skills/demo-ask-fallback/SKILL.md"
+        "route": "skill",
+        "method": "Planner: /plan-bug-from-id <issue-id> or /plan-user-story-from-id <issue-id> in a new conversation; other roles: /demo-<role>-claude in a new conversation; no native user-invokable role registrations",
+        "planner": "planning skills only; they refuse inside a running role, then load the binding and the complete Planner contract; planning without a work-item ID is not offered",
+        "role_skills": [
+          ".claude/skills/demo-implementor-claude/SKILL.md",
+          ".claude/skills/demo-direct-implementor-claude/SKILL.md",
+          ".claude/skills/demo-integration-tester-claude/SKILL.md",
+          ".claude/skills/demo-knowledge-builder-claude/SKILL.md",
+          ".claude/skills/demo-ask-claude/SKILL.md"
         ],
-        "fallback_detection": "none: no documented signal distinguishes the VS Code extension from the CLI, so both routes are valid in every client (user decision 2026-10-14)",
-        "in_conversation_switch": "not documented; start a new session or conversation",
-        "question_tool": "AskUserQuestion, at most 4 questions per call; larger batches use consecutive calls; availability in --agent sessions and fallback-started conversations unverified",
-        "evidence": "claude --help 2.1.296; https://code.claude.com/docs/en/sub-agents retrieved 2026-10-13; https://code.claude.com/docs/en/skills, /vs-code and /env-vars retrieved 2026-10-14; Bootstrap 9.3.0 dual-route rules applied 2026-10-15; 2026-10-15 probes with Claude Code 2.1.300: `claude -p --agent demo-planner-claude` init tools Read, Edit, Write, Task, WebFetch, Grep, Glob (Glob call returned paths; Bash call refused \"No such tool available\"); plain `claude -p` and the VS Code Insiders extension session expose no Glob/Grep (grep/find are shell functions over embedded ugrep/bfs); binding grep/find commands returned real paths with zero excluded-path hits.",
-        "status": "unverified",
-        "route_tool_surface_check": {
-          "bootstrap_rule": "9.4.0: every route's effective tool list covers each operation its roles are bound to, or records an approved route-specific alternative or block",
-          "scope": "claude-code only; copilot out of scope by user decision 2026-10-15",
-          "observed": "Planner native (CLI and VS Code extension): Glob, Grep present, Bash absent (2026-10-15, Claude Code 2.1.300). Fallback route (plain `claude -p`, 2.1.300, user probe): 441 tools including Read, Edit, Write, Bash, WebFetch, WebSearch, Task, Skill, ToolSearch, and mcp__github, mcp__neon, mcp__next-devtools tools; no Glob, no Grep, no AskUserQuestion. The subagent tool is named Task in the init list, while the binding says Agent.",
-          "gaps": {
-            "fallback_AskUserQuestion": "absent on fallback; binding routes the batch to chat. Needs an explicit approval as the approved route-specific alternative for every role that asks questions (all six)",
-            "fallback_Agent_name": "binding names Agent; observed name is Task. Naming to confirm before treating the delegation operation as covered"
-          },
-          "unknown": {
-            "native_other_roles": "Implementor, Direct Implementor, Integration Tester, Knowledge Builder, Ask: registration tools list not observed in a session"
-          },
-          "subagent_name_alias": {
-            "status": "applied",
-            "finding": "frontmatter and binding name the delegation tool Agent; init lists show Task in native sessions (Planner, Direct Implementor, Knowledge Builder) and fallback sessions",
-            "decision": "treat Agent and Task as the same delegation operation; no binding change",
-            "approved": "2026-10-15 evolve pass, user \"go\""
-          },
-          "native_probe_2026_10_15": {
-            "method": "claude -p --agent demo-<role>-claude \"Reply with OK only.\" --output-format stream-json --verbose; init tool list read, Claude Code 2.1.300, repository root",
-            "caveat": "headless -p mode; interactive sessions not probed, so AskUserQuestion absence may be a headless limit",
-            "results": {
-              "planner": "Read, Edit, Write, Task, WebFetch, Grep, Glob, 11 MCP tools; AskUserQuestion absent",
-              "implementor": "Read, Edit, Write, Bash, 15 MCP tools; Grep and Glob absent (binding lists them); AskUserQuestion absent",
-              "direct-implementor": "Read, Edit, Write, Bash, Task, 15 MCP tools; Grep and Glob absent (binding lists them); AskUserQuestion absent",
-              "integration-tester": "Read, Edit, Write, Bash, Task, no MCP; Grep and Glob absent (binding lists them); AskUserQuestion absent",
-              "knowledge-builder": "Read, Edit, Write, Task, WebFetch, Grep, Glob, 10 MCP tools; AskUserQuestion absent",
-              "ask": "Read, WebFetch, Grep, Glob, 10 MCP tools; AskUserQuestion absent"
-            },
-            "open": "confirm in an interactive session: AskUserQuestion, and Grep/Glob for implementor, direct-implementor and integration-tester"
-          },
-          "interactive_self_report_2026_10_15": {
-            "role": "demo-implementor-claude, interactive session started with claude --agent",
-            "evidence_type": "model self-report of its tool definitions, not the harness init list; Claude Code transcripts do not persist the init event, so it cannot be checked against the log",
-            "reported": "20 tools: AskUserQuestion, Read, Edit, Write, Bash, 15 MCP tools (github issue_read, neon x9, next-devtools x5)",
-            "consistent_with": "headless init for implementor: same Read/Edit/Write/Bash and the same 15 MCP tools",
-            "result": "AskUserQuestion present (self-report); Grep and Glob absent (self-report and headless init agree)",
-            "status": "unverified: needs a harness-level check before closing; Grep/Glob gap is a candidate requires-update for implementor, direct-implementor and integration-tester"
-          },
-          "verification": "fallback and native headless probes done; interactive confirmation pending (user step)",
-          "deferred_under": "upgrade_9_4_2026_10_15 (per-surface entrypoint verification, re-approved with the 9.4.0 scope)"
+        "enforcement": "instruction-only on every surface: the binding Exact role tools row per role plus the environment-level search substitution; path limits instruction-only",
+        "model_invocation": "every role skill and planning skill sets disable-model-invocation: true",
+        "refusal": "every role skill and planning skill refuses when the conversation already runs a role",
+        "handoff": "/demo-implementor-claude Resume implementation for Planning Session <planning-session-id> in a new conversation",
+        "role_activation": "planning skills: on the skill route, refuse inside a running role, otherwise load the binding and the complete Planner contract first (binding)",
+        "in_conversation_switch": "not documented; start a new conversation",
+        "question_tool": "AskUserQuestion, at most 4 questions per call; larger batches use consecutive calls; present in the interactive VS Code extension plain session (2026-10-16); absent in headless claude -p",
+        "environment_bindings": {
+          "source": ".mcp.json servers github, neon, context7, next-devtools (approved when Claude Code asks); .claude/settings.json keeps only the maintenance skillOverrides; no permissions.deny list (Q4)",
+          "union": "the six Exact role tools rows in the binding; each row stays that role's instruction-only limit",
+          "repository_search": "read-only Bash find/grep with maintenance, session, dependency and VCS exclusions, all six roles (approved alternative; C032 retired)",
+          "deferred_tools": "WebFetch and MCP tools load through ToolSearch select:<name> before first use",
+          "delegation": "Agent with subagent_type general-purpose (image inspection with model haiku); the subagent tool may be listed as Task in headless init output"
         },
+        "tool_surface_observed": "2026-10-16, Claude Code 2.1.300, interactive plain default session in the VS Code Insiders extension (the session every role skill starts in): Read, Edit, Write, Bash, Agent, AskUserQuestion, Skill, ToolSearch loaded; WebFetch, WebSearch and the project MCP tools (github, neon, context7, next-devtools) listed as deferred and loaded through ToolSearch; no Glob, no Grep.",
+        "copilot_discovery_conflict": "Copilot discovers .claude/skills and lists the demo-<role>-claude role skills; guarded and recorded (Q2), not isolated",
+        "evidence": "https://code.claude.com/docs/en/skills and /sub-agents retrieved 2026-10-13/14; 2026-10-16, Claude Code 2.1.300, interactive plain default session in the VS Code Insiders extension (the session every role skill starts in): Read, Edit, Write, Bash, Agent, AskUserQuestion, Skill, ToolSearch loaded; WebFetch, WebSearch and the project MCP tools (github, neon, context7, next-devtools) listed as deferred and loaded through ToolSearch; no Glob, no Grep.",
+        "status": "unverified",
         "routes": [
           {
-            "surface": "CLI",
-            "route": "native",
-            "role": "primary",
-            "start": "claude --agent demo-<role>-claude",
-            "enforcement": "registration tools list runtime-enforced; path limits instruction-only",
-            "status": "unverified",
-            "tool_surface": "registration tools list only (Glob and Grep present; Bash absent for Planner, verified 2026-10-15 with 2.1.300)",
-            "repository_search": "Glob for paths, Grep for text"
-          },
-          {
             "surface": "VS Code extension",
-            "route": "native",
-            "role": "primary",
-            "start": "claude --agent demo-<role>-claude from the integrated terminal",
-            "enforcement": "registration tools list runtime-enforced; path limits instruction-only",
+            "route": "skill",
+            "start": "/plan-*-from-id or /demo-<role>-claude in a new conversation",
+            "enforcement": "instruction-only",
             "status": "unverified",
-            "tool_surface": "registration tools list only (Glob and Grep present; Bash absent for Planner, verified 2026-10-15 with 2.1.300)",
-            "repository_search": "Glob for paths, Grep for text"
+            "tool_surface": "2026-10-16, Claude Code 2.1.300, interactive plain default session in the VS Code Insiders extension (the session every role skill starts in): Read, Edit, Write, Bash, Agent, AskUserQuestion, Skill, ToolSearch loaded; WebFetch, WebSearch and the project MCP tools (github, neon, context7, next-devtools) listed as deferred and loaded through ToolSearch; no Glob, no Grep.",
+            "repository_search": "read-only Bash find/grep (binding)"
           },
           {
-            "surface": "CLI and VS Code extension",
-            "route": "fallback",
-            "role": "fallback",
-            "start": "/demo-<role>-fallback in a new conversation",
-            "enforcement": "binding Exact role tools row as instructions only",
+            "surface": "CLI",
+            "route": "skill",
+            "start": "claude, then /plan-*-from-id or /demo-<role>-claude",
+            "enforcement": "instruction-only",
             "status": "unverified",
-            "tool_surface": "default session tools: no Glob or Grep; Bash with grep/find over embedded ugrep/bfs (observed 2026-10-15 with 2.1.300)",
-            "repository_search": "read-only Bash: find ... -prune ... -print for paths, grep -rnI --exclude-dir=... for text (binding operations table)"
+            "tool_surface": "interactive plain session not observed; headless claude -p 2026-10-15: no Glob, Grep or AskUserQuestion",
+            "repository_search": "read-only Bash find/grep (binding)"
           }
-        ],
-        "fallback_rules": {
-          "distinct_name": "demo-<role>-fallback differs from demo-<role>-claude; never re-registers the role",
-          "refuses_inside_running_role": "loads nothing when any demo role already runs (either route, including the same role); tells the user to resend without the command or open a new conversation",
-          "restates_role_rules": "no: loads the binding and the complete canonical contract; names the binding tool row and the enforced --agent route only",
-          "automatic_invocation": "disabled (disable-model-invocation: true)"
-        }
+        ]
       },
       "surfaces": {
-        "question": "Will the team use Claude Code through the VS Code extension?",
-        "answer": "yes: VS Code extension and CLI",
-        "dual_route": "accepted for all six roles",
+        "used": [
+          "CLI",
+          "VS Code extension"
+        ],
+        "route": "skill",
         "source": "user",
-        "evidence": "C031 approval 2026-10-14 (the VS Code extension cannot pass --agent); confirmed by the 2026-10-15 plan approval."
+        "reason": "the VS Code extension cannot pass --agent, so native main-session selection does not work on every surface the team uses (Bootstrap 10.0.0 Role Entrypoints rule)",
+        "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list."
       }
     }
   },
@@ -888,7 +958,7 @@
     },
     "AGENT_ROSTER": {
       "value": {
-        "AGENTS.md": "Resolve the active environment from the client/session identity first: use `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Native registrations may carry a client suffix (Claude Code: `<role>-claude`); the selected binding names them.\n\n- `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.\n- `demo-implementor`: approved-plan implementation. Load `docs/agents/canonical/<environment>/agents/demo-implementor.agent.md`.\n- `demo-direct-implementor`: explicit implementation without a plan document; no test creation. Load `docs/agents/canonical/<environment>/agents/demo-direct-implementor.agent.md`.\n- `demo-integration-tester`: integration-test planning and execution. Load `docs/agents/canonical/<environment>/agents/demo-integration-tester.agent.md`.\n- `demo-knowledge-builder`: evidence-backed repository knowledge. Load `docs/agents/canonical/<environment>/agents/demo-knowledge-builder.agent.md`.\n- `demo-ask`: read-only Q&A. Load `docs/agents/canonical/<environment>/agents/demo-ask.agent.md`.\n\nShared skills use only the already selected environment binding. Invoke the complete configured skill at `.agents/skills/<skill-name>/SKILL.md`; packaged Bootstrap templates are source mirrors, never configured runtime skills."
+        "AGENTS.md": "Resolve the active environment from the client/session identity first: use `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Copilot selects each role natively in its Agent dropdown. Claude Code has no role agents: Planner starts only through the `plan-bug-from-id` and `plan-user-story-from-id` skills, and every other role through its user-invoked `demo-<role>-claude` role skill. The selected binding names each start step.\n\n- `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.\n- `demo-implementor`: approved-plan implementation. Load `docs/agents/canonical/<environment>/agents/demo-implementor.agent.md`.\n- `demo-direct-implementor`: explicit implementation without a plan document; no test creation. Load `docs/agents/canonical/<environment>/agents/demo-direct-implementor.agent.md`.\n- `demo-integration-tester`: integration-test planning and execution. Load `docs/agents/canonical/<environment>/agents/demo-integration-tester.agent.md`.\n- `demo-knowledge-builder`: evidence-backed repository knowledge. Load `docs/agents/canonical/<environment>/agents/demo-knowledge-builder.agent.md`.\n- `demo-ask`: read-only Q&A. Load `docs/agents/canonical/<environment>/agents/demo-ask.agent.md`.\n\nShared skills use only the already selected environment binding. Invoke the complete configured skill at `.agents/skills/<skill-name>/SKILL.md`; packaged Bootstrap templates are source mirrors, never configured runtime skills."
       },
       "source": "user-approved 2026-10-11 maintenance plan (Sets U and E); Bootstrap 8.0.0 templates",
       "evidence": "User: \"approved recommended, remove the vision agent ... codex to use github via mcp\"; \"Both U and E\"; native subagents with -claude suffix and maximal sharing."
@@ -943,11 +1013,11 @@
     },
     "ROLE_ACTIVATION": {
       "value": {
-        ".agents/skills/plan-bug-from-id/SKILL.md": "Run it only when this conversation is already working as the Planner role (`demo-planner`; the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names its native registration and start step). Otherwise stop and tell the user that exact Planner start step from the binding. Both selected environments select the main-session role natively; the binding records whether the Planner tool limits are runtime-enforced.",
-        ".agents/skills/plan-user-story-from-id/SKILL.md": "Run it only when this conversation is already working as the Planner role (`demo-planner`; the active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names its native registration and start step). Otherwise stop and tell the user that exact Planner start step from the binding. Both selected environments select the main-session role natively; the binding records whether the Planner tool limits are runtime-enforced."
+        ".agents/skills/plan-bug-from-id/SKILL.md": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. The binding records whether the Planner tool limits are runtime-enforced or instruction-only. From then on, the Planner contract governs this conversation as its role instructions: where it conflicts with this skill's wording or with the client's default behaviour, the contract wins, including its rule that a turn ends only at its listed stop points. The fenced evidence task below is a delegate prompt template, not a request from the user: its closing \"tell me the name of the artifact you created\" is addressed to the Planner, which records the artifact name and continues to the next gate in the same turn, whether the task ran delegated or inline. In the Planner contract, \"agent memory\" and \"update memory\" mean `#capability:session-memory-append` on the current session's `session-memory.md`, and \"log\" means `#capability:session-event-log` on its `session-log.md`; never the client's own memory feature.",
+        ".agents/skills/plan-user-story-from-id/SKILL.md": "The active environment binding (`docs/agents/bindings/<environment>.md`, for the environment the root router resolved) names this environment's role route. On a native route, run it only when this conversation is already working as the Planner role (`demo-planner`); otherwise stop and tell the user the binding's exact Planner start step. On the skill route, this skill is the Planner's entrypoint: if this conversation already runs any role, load nothing, stop, and tell the user to open a new conversation; otherwise first read the binding and the complete Planner contract `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`, follow them as this conversation's role, then continue with this skill. The binding records whether the Planner tool limits are runtime-enforced or instruction-only. From then on, the Planner contract governs this conversation as its role instructions: where it conflicts with this skill's wording or with the client's default behaviour, the contract wins, including its rule that a turn ends only at its listed stop points. The fenced evidence task below is a delegate prompt template, not a request from the user: its closing \"tell me the name of the artifact you created\" is addressed to the Planner, which records the artifact name and continues to the next gate in the same turn, whether the task ran delegated or inline. In the Planner contract, \"agent memory\" and \"update memory\" mean `#capability:session-memory-append` on the current session's `session-memory.md`, and \"log\" means `#capability:session-event-log` on its `session-log.md`; never the client's own memory feature."
       },
-      "source": "user-approved 2026-10-13 maintenance plan; Bootstrap 9.2.0 templates",
-      "evidence": "User approved the 2026-10-13 upgrade plan (\"Approve all\"): Q1 Markdown visual evidence, Q2 Claude Code haiku image delegate with Copilot inline, Q3 environment-specific steps in the bindings (C026)."
+      "source": "user-approved 2026-10-16 maintenance (10.0.0 skill route; C029), extended by the 2026-10-16 evolve (C034)",
+      "evidence": "User approved items 1-2 of the 2026-10-16 evolve plan (\"approved\"): on the Claude Code skill route the skill body arrives in the user turn and the Planner contract only as a Read result, so the inline evidence hand-back read as a user request and \"agent memory\" collided with the client memory feature."
     },
     "CLIENT_GUIDE_ROOT": {
       "value": {
@@ -1174,7 +1244,8 @@
       "id": "claude-roles",
       "value": "native subagents demo-<role>-claude; Agent() deny for automatic delegation; shared neutral bodies (S1)",
       "source": "user",
-      "evidence": "User: native subagents with claude subfix ... keep as much content as possible shared"
+      "evidence": "User: native subagents with claude subfix ... keep as much content as possible shared",
+      "status": "superseded 2026-10-16: Bootstrap 10.0.0 skill route removed the native demo-<role>-claude subagents and the Agent() deny entries"
     },
     {
       "id": "upgrade-9.2-scope",
@@ -1184,9 +1255,9 @@
     },
     {
       "id": "role-entrypoints",
-      "value": "copilot: native main-session selection only (dual route declined); claude-code: dual route, native --agent primary and /demo-<role>-fallback beside it for all six roles; exact steps in the bindings",
+      "value": "copilot: native route (Agent dropdown), single surface; claude-code: skill route on CLI and VS Code extension, Planner through plan-bug-from-id/plan-user-story-from-id, other roles through /demo-<role>-claude role skills; exact steps in the bindings",
       "source": "user",
-      "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback."
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list."
     },
     {
       "id": "client-guide-root",
@@ -1202,15 +1273,39 @@
     },
     {
       "id": "client-surfaces",
-      "value": "copilot: VS Code only, dual route declined; claude-code: VS Code extension and CLI, dual route accepted",
+      "value": "copilot: VS Code only, native route; claude-code: VS Code extension and CLI; the extension cannot pass --agent, so native selection does not cover every surface and Bootstrap 10.0.0 selects the skill route",
       "source": "user",
-      "evidence": "User approved the 2026-10-15 upgrade plan (\"Approve all\"): Q1 take 9.3.0 (fallback skills point to the binding tool row instead of restating limits), Q2 refuse with a clear hint whenever any role already runs, Q3 decline a Copilot fallback."
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list."
     },
     {
-      "id": "fallback-repository-search",
-      "value": "claude-code fallback route: file/path and text search bind to read-only Bash find/grep with maintenance, session, dependency and VCS exclusions; native route keeps Glob/Grep",
+      "id": "claude-code-repository-search",
+      "value": "claude-code environment-level binding: file/path and text search use read-only Bash find/grep with maintenance, session, dependency and VCS exclusions for all six roles (the plain session has no Glob/Grep); for Planner, Knowledge Builder and Ask that is their only Bash use",
       "source": "user",
-      "evidence": "User approved the 2026-10-15 evolve plan (\"approved\"): fallback-route repository search binds to read-only Bash grep/find for all six Claude Code roles because a session started without --agent has no Glob or Grep (Claude Code 2.1.300)."
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list. Supersedes the 2026-10-15 fallback-route decision; register row C032 retired."
+    },
+    {
+      "id": "upgrade-10.0-scope",
+      "source": "user",
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+      "value": "Bootstrap 9.4.0 -> 10.0.0: one role route per environment; claude-code moves to the skill route; copilot native route already conforms"
+    },
+    {
+      "id": "claude-code-role-skill-names",
+      "source": "user",
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+      "value": "role skills are named demo-<role>-claude instead of demo-<role> so Copilot, which also discovers .claude/skills, does not list skills with the same names as its demo-<role> agents (register C033)"
+    },
+    {
+      "id": "copilot-skill-discovery-conflict",
+      "source": "user",
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+      "value": "recorded, not isolated: Copilot lists the demo-<role>-claude role skills; each stops outside Claude Code, and the Copilot binding, instruction adapter and guide say never to invoke them"
+    },
+    {
+      "id": "claude-code-mcp-guard",
+      "source": "user",
+      "evidence": "User approved the 2026-10-16 upgrade plan (\"approved\") after resolving Q1 skill route for Claude Code, Q2 record the Copilot discovery conflict with a guard and keep a -claude suffix on the role skills, Q3 approve read-only Bash find/grep as the environment-level search binding and retire C032, Q4 no MCP deny list.",
+      "value": "no permissions.deny list; role tool limits are instruction-only and the plain session exposes the project MCP servers as before"
     }
   ],
   "capabilities": {
@@ -4450,12 +4545,12 @@
   },
   "preservation": {
     "plan": ".agentic-system-maintenance/preservation-plan.json",
-    "plan_sha256": "378888aa61cbd64efe0556fdd72c9b61772f872b7fa0060fb41212d9a7dc4cb7",
+    "plan_sha256": "d99a367615302405f15e9521b8a47ee992f3f0555cc4e285b1db9992ebc1ea0c",
     "sources": ".agentic-system-maintenance/sources",
     "verification": "python3 .agentic-system-maintenance/scripts/verify-agentic-system.py",
     "environment_audit": ".agentic-system-maintenance/environment-audit.json",
-    "environment_audit_sha256": "f9f49db6e4912140641acf1ca9b464a981a3eaac423b33b50285ed6dcf7a9067",
-    "environment_audit_result": "blocked only by the inherited read/problems diagnostics source gap in the Claude Code Implementor and Integration Tester outputs; Bootstrap 9.3.0 adds no diagnostics slot"
+    "environment_audit_sha256": "5259a38340dc189d7bd5e6455c764b94c8bc2164c2cf3171925a4131cc8ef88e",
+    "environment_audit_result": "blocked only by the inherited read/problems diagnostics source gap in the Claude Code Implementor and Integration Tester outputs; Bootstrap 10.0.0 adds no diagnostics slot"
   },
   "generated": [
     {
@@ -4792,78 +4887,6 @@
       "loading": "lossless-embedding"
     },
     {
-      "path": ".claude/agents/demo-planner-claude.md",
-      "kind": "native-adapter",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "templates/agents/planner.agent.md",
-      "source_sha256": "903e8803e053e2678c125d45a01e3c1c4430ba23b38475f29cbfc144ecac0fc6",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/agents/demo-planner-claude.md",
-      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-planner.agent.md",
-      "loading": "lossless-embedding"
-    },
-    {
-      "path": ".claude/agents/demo-implementor-claude.md",
-      "kind": "native-adapter",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "templates/agents/implementor.agent.md",
-      "source_sha256": "f146271166a77d74d90e1e39192d94770c971a94f06ad2773fd5e5905256b799",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/agents/demo-implementor-claude.md",
-      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
-      "loading": "lossless-embedding"
-    },
-    {
-      "path": ".claude/agents/demo-direct-implementor-claude.md",
-      "kind": "native-adapter",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "templates/agents/direct-implementor.agent.md",
-      "source_sha256": "c0e0ed0aefe5c0dcbc021bfeb66854c4bc9dd05ba2827017f9cc4748c0abf6ee",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/agents/demo-direct-implementor-claude.md",
-      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
-      "loading": "lossless-embedding"
-    },
-    {
-      "path": ".claude/agents/demo-integration-tester-claude.md",
-      "kind": "native-adapter",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "templates/agents/integration-tester.agent.md",
-      "source_sha256": "83d4537003f672d7ab4d994a4217fbb5a7d2e3f42d792429a18ad7763e3d4bab",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/agents/demo-integration-tester-claude.md",
-      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
-      "loading": "lossless-embedding"
-    },
-    {
-      "path": ".claude/agents/demo-knowledge-builder-claude.md",
-      "kind": "native-adapter",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "templates/agents/knowledge-builder.agent.md",
-      "source_sha256": "588db364b5ac545669dcc7330ffd1e475519876e7cb5835fa321c3bca168ac80",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/agents/demo-knowledge-builder-claude.md",
-      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
-      "loading": "lossless-embedding"
-    },
-    {
-      "path": ".claude/agents/demo-ask-claude.md",
-      "kind": "native-adapter",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "templates/agents/ask.agent.md",
-      "source_sha256": "dcc5fa4a1847928970c04211cc97ed8893e252f9cf194823498760e9b851a126",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/agents/demo-ask-claude.md",
-      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
-      "loading": "lossless-embedding"
-    },
-    {
       "path": ".github/instructions/knowledge-guard.instructions.md",
       "kind": "native-instruction-adapter",
       "environments": [
@@ -4994,66 +5017,6 @@
       "template": "authored",
       "source_sha256": "not-applicable",
       "baseline": ".agentic-system-maintenance/.baseline/.claude/rules/agent-integrations.md"
-    },
-    {
-      "path": ".claude/skills/demo-planner-fallback/SKILL.md",
-      "kind": "shared-resource",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "Bootstrap 9.3.0 dual-route fallback adapter (contract rules in platform-compatibility.md; no shipped template)",
-      "source_sha256": "not-applicable",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-planner-fallback/SKILL.md"
-    },
-    {
-      "path": ".claude/skills/demo-implementor-fallback/SKILL.md",
-      "kind": "shared-resource",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "Bootstrap 9.3.0 dual-route fallback adapter (contract rules in platform-compatibility.md; no shipped template)",
-      "source_sha256": "not-applicable",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-implementor-fallback/SKILL.md"
-    },
-    {
-      "path": ".claude/skills/demo-direct-implementor-fallback/SKILL.md",
-      "kind": "shared-resource",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "Bootstrap 9.3.0 dual-route fallback adapter (contract rules in platform-compatibility.md; no shipped template)",
-      "source_sha256": "not-applicable",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-direct-implementor-fallback/SKILL.md"
-    },
-    {
-      "path": ".claude/skills/demo-integration-tester-fallback/SKILL.md",
-      "kind": "shared-resource",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "Bootstrap 9.3.0 dual-route fallback adapter (contract rules in platform-compatibility.md; no shipped template)",
-      "source_sha256": "not-applicable",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-integration-tester-fallback/SKILL.md"
-    },
-    {
-      "path": ".claude/skills/demo-knowledge-builder-fallback/SKILL.md",
-      "kind": "shared-resource",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "Bootstrap 9.3.0 dual-route fallback adapter (contract rules in platform-compatibility.md; no shipped template)",
-      "source_sha256": "not-applicable",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-knowledge-builder-fallback/SKILL.md"
-    },
-    {
-      "path": ".claude/skills/demo-ask-fallback/SKILL.md",
-      "kind": "shared-resource",
-      "environments": [
-        "claude-code"
-      ],
-      "template": "Bootstrap 9.3.0 dual-route fallback adapter (contract rules in platform-compatibility.md; no shipped template)",
-      "source_sha256": "not-applicable",
-      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-ask-fallback/SKILL.md"
     },
     {
       "path": ".claude/settings.json",
@@ -5854,6 +5817,88 @@
       "template": "authored",
       "source_sha256": "not-applicable",
       "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/scripts/finalize-9.3.py"
+    },
+    {
+      "path": ".claude/skills/demo-implementor-claude/SKILL.md",
+      "kind": "role-skill",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "Bootstrap 10.0.0 skill-route role skill (platform-compatibility.md Role Entrypoints; no shipped template)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-implementor-claude/SKILL.md",
+      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-implementor.agent.md",
+      "loading": "reference: binding plus complete canonical copy"
+    },
+    {
+      "path": ".claude/skills/demo-direct-implementor-claude/SKILL.md",
+      "kind": "role-skill",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "Bootstrap 10.0.0 skill-route role skill (platform-compatibility.md Role Entrypoints; no shipped template)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-direct-implementor-claude/SKILL.md",
+      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-direct-implementor.agent.md",
+      "loading": "reference: binding plus complete canonical copy"
+    },
+    {
+      "path": ".claude/skills/demo-integration-tester-claude/SKILL.md",
+      "kind": "role-skill",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "Bootstrap 10.0.0 skill-route role skill (platform-compatibility.md Role Entrypoints; no shipped template)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-integration-tester-claude/SKILL.md",
+      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-integration-tester.agent.md",
+      "loading": "reference: binding plus complete canonical copy"
+    },
+    {
+      "path": ".claude/skills/demo-knowledge-builder-claude/SKILL.md",
+      "kind": "role-skill",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "Bootstrap 10.0.0 skill-route role skill (platform-compatibility.md Role Entrypoints; no shipped template)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-knowledge-builder-claude/SKILL.md",
+      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-knowledge-builder.agent.md",
+      "loading": "reference: binding plus complete canonical copy"
+    },
+    {
+      "path": ".claude/skills/demo-ask-claude/SKILL.md",
+      "kind": "role-skill",
+      "environments": [
+        "claude-code"
+      ],
+      "template": "Bootstrap 10.0.0 skill-route role skill (platform-compatibility.md Role Entrypoints; no shipped template)",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.claude/skills/demo-ask-claude/SKILL.md",
+      "canonical_copy": "docs/agents/canonical/claude-code/agents/demo-ask.agent.md",
+      "loading": "reference: binding plus complete canonical copy"
+    },
+    {
+      "path": ".agentic-system-maintenance/scripts/render-10.0.mjs",
+      "kind": "provenance",
+      "environments": [
+        "copilot",
+        "claude-code"
+      ],
+      "template": "authored",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/scripts/render-10.0.mjs"
+    },
+    {
+      "path": ".agentic-system-maintenance/scripts/finalize-10.0.py",
+      "kind": "provenance",
+      "environments": [
+        "copilot",
+        "claude-code"
+      ],
+      "template": "authored",
+      "source_sha256": "not-applicable",
+      "baseline": ".agentic-system-maintenance/.baseline/.agentic-system-maintenance/scripts/finalize-10.0.py"
     }
   ],
   "deferred": [
