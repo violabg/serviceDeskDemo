@@ -45,26 +45,3 @@ pnpm db:migrate
 pnpm db:push
 pnpm db:studio
 ```
-
-## Agent Flow
-
-Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approved-plan execution. Select `demo-direct-implementor` explicitly for direct implementation from validated requirements without a plan document; it never creates tests.
-
-| Agent | Purpose |
-| --- | --- |
-| demo-planner | Issue intake, clarification, knowledge selection and implementation planning |
-| demo-implementor | Approved-plan execution and authorized unit-test work |
-| demo-direct-implementor | Direct implementation with knowledge/session/validation gates; no test creation |
-| demo-integration-tester | Integration-test planning and execution |
-| demo-knowledge-builder | Evidence-backed knowledge and index maintenance |
-| demo-ask | Read-only codebase and programming Q&A |
-
-Planner and Direct Implementor inspect images themselves (in Claude Code through an approved haiku subagent) and record one Markdown visual-evidence artifact per image; there is no separate Vision agent.
-
-How to start each role, plan from an issue and hand off to Implementor in a new conversation, per client: [agentic system user guides](docs/agentic-system/README.md).
-
-Registrations per client: Copilot agents in `.github/agents/`; Claude Code has no role agents and starts roles through skills in a new conversation (`/plan-user-story-from-id 12` or `/plan-bug-from-id 12` for Planner, `/demo-<role>-claude` skills in `.claude/skills/` for the other roles), in the CLI and the VS Code extension alike. Role instructions are identical across clients; the full contracts live in `docs/agents/canonical/<environment>/agents/` and exact tools in `docs/agents/bindings/{copilot,claude-code}.md`.
-
-Generated skills are single shared copies under `.agents/skills/<name>/SKILL.md` (Claude Code reaches them through `.claude/skills/` links): `author-repo-skill`, `plan-bug-from-id`, `plan-user-story-from-id`, `user-story-analysis`, `integration-test-knowledge-checklist`, and `manage-work-item`. The two issue-planning skills run within `demo-planner`. Invoke `manage-work-item` explicitly to create a bug or user story, or to update an existing issue after reading it; every write needs your approval of the exact proposal. The gap-detector skill is deferred.
-
-Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. GitHub MCP access in Claude Code reads its token from the `GITHUB_TOKEN` environment variable. Reload each client after changes and confirm role and skill discovery before relying on an unverified operation.
