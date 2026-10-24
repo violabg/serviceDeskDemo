@@ -6,7 +6,7 @@ Lab-authored contract. The captured server returns clusters named after file-nam
 
 `#capability:codebase-clusters` — arguments `WorkspacePath` (also accepted as `workspacePath`; defaults to the workspace root) and `fileExtension` (`.tsx` or `tsx`).
 
-1. List the workspace files with `git ls-files -co --exclude-standard`; outside git, walk the tree skipping `.git`, `node_modules`, `bin`, `obj`, `dist`, `build`, `coverage`, `.next` and `target`.
+1. List the workspace files with `git ls-files -co --exclude-standard`; outside git, walk the tree skipping `.git`, `node_modules`, `bin`, `obj`, `dist`, `build`, `coverage`, `.next` and `target`, and listing a symlink as an entry without descending into it.
 2. Keep the files with the extension.
 3. Split each base name into words: drop the extension and a secondary suffix (`.test`, `.spec`, `.stories`, `.story`, `.module`, `.d`), split camelCase, PascalCase, digits and punctuation, lowercase, and drop one-letter and numeric words. `useCentralConstraints.tsx` gives `use`, `central`, `constraints`.
 4. A file belongs to one cluster per word, so a file can be in several clusters.

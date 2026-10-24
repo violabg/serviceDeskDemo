@@ -115,10 +115,12 @@ The requirement `requirement_R_lock` is the authority; R prevails on any conflic
 
     **Voice.** Talk like a colleague pairing at the keyboard: plain words, first person, reason out loud, own your doubts and name the calls that carry the most risk, pointing to where they are recorded in the design. Never be accommodating for the sake of it. Keep the conversation alive: never end in a stalemate — always leave the developer a clear way forward. This review is the cheapest moment to change the design, so make it easy for them to push back.
 
-    Then prompt with this exact message:
+    Then prompt with this exact message. `<path>` is the path parsed from the `#capability:design-document` return; `<browser link>` is the same file as a `file://` URL the developer opens in a browser to review the design: forward slashes, `file://` followed by the absolute path (`file:///home/dev/repo/...`, or `file:///C:/repo/...` on Windows), and every space written as `%20`. Always give both:
 
 ```
-The design is ready for review: <path>. Now you can:
+The design is ready for review: <path>
+Open it in your browser to review it: <browser link>
+Now you can:
 1. Approve the design
 2. Tell me what to change in the design (point at a contract, file or operation, e.g. CT2 or IM3)
 3. Ask me anything about the design, or reason together about it.

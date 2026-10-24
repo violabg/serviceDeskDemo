@@ -2,7 +2,7 @@
 // to one cluster per word of its base name; clusters with fewer than MIN_CLUSTER_SIZE files are dissolved
 // and files left without a cluster go to `Uncategorized`.
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { RuntimeError, arg, requireString } from "./util.mjs";
 
@@ -30,10 +30,10 @@ function listFiles(workspace) {
   } catch {
     const files = [];
     const walk = (dir) => {
-      for (const entry of readdirSync(dir)) {
-        if (WALK_EXCLUDES.has(entry)) continue;
-        const path = join(dir, entry);
-        if (statSync(path).isDirectory()) walk(path);
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (WALK_EXCLUDES.has(entry.name)) continue;
+        const path = join(dir, entry.name);
+        if (entry.isDirectory()) walk(path);
         else files.push(relative(workspace, path).split("\\").join("/"));
       }
     };

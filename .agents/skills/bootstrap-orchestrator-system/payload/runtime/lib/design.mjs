@@ -1,7 +1,7 @@
 // Design operations (contracts/design-model.md): row writes with server-assigned immutable ids, the single
 // design submission, approval, operation status and implementation iterations.
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { crowdedPlaceholders, overviewFindings, runChecks } from "./checks.mjs";
 import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
@@ -409,10 +409,10 @@ function workspaceFiles(workspace, excludeRoot) {
   } catch {
     files = [];
     const walk = (dir) => {
-      for (const entry of readdirSync(dir)) {
-        if (WALK_EXCLUDES.has(entry)) continue;
-        const path = join(dir, entry);
-        if (statSync(path).isDirectory()) walk(path);
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (WALK_EXCLUDES.has(entry.name)) continue;
+        const path = join(dir, entry.name);
+        if (entry.isDirectory()) walk(path);
         else files.push(relative(workspace, path).split("\\").join("/"));
       }
     };
@@ -422,11 +422,19 @@ function workspaceFiles(workspace, excludeRoot) {
   const result = {};
   for (const file of files) {
     if (excluded && !excluded.startsWith("..") && excluded !== "" && (file === excluded || file.startsWith(`${excluded}/`))) continue;
-    const path = join(workspace, file);
-    if (!existsSync(path)) continue;
-    result[file] = sha256(readFileSync(path));
+    const hash = entryHash(join(workspace, file));
+    if (hash) result[file] = hash;
   }
   return result;
+}
+
+// A symlink is recorded by its target path, as git stores it, and never followed: a link to a directory (the
+// skills installer links .claude/skills/<name> to .agents/skills/<name>) is not a file to read. Anything that
+// is neither a file nor a link (a submodule, a deleted path) is left out.
+function entryHash(path) {
+  const stat = lstatSync(path, { throwIfNoEntry: false });
+  if (stat?.isSymbolicLink()) return sha256(`symlink:${readlinkSync(path)}`);
+  return stat?.isFile() ? sha256(readFileSync(path)) : null;
 }
 
 export function iterationOpen(ctx, args) {
