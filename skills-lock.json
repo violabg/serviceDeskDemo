@@ -1,6 +1,18 @@
 {
   "version": 1,
   "skills": {
+    "bootstrap-orchestrator-system": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "skills/orchestrator-system/bootstrap-orchestrator-system/SKILL.md",
+      "computedHash": "8b51aa9a27a431946a0aa258820d578c06ac39233b779f7ae3da5b95a7a5d239"
+    },
+    "maintain-orchestrator-system": {
+      "source": "violabg/agentic-system-kit",
+      "sourceType": "github",
+      "skillPath": "skills/orchestrator-system/maintain-orchestrator-system/SKILL.md",
+      "computedHash": "391ece034567d961a39c96747fd2eb5c1ce80b98b83e7d070c1a19372c603831"
+    },
     "migrate-radix-to-base": {
       "source": "shadcn/ui",
       "sourceType": "github",

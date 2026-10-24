@@ -42,3 +42,7 @@ tmp/
 sessions/
 opencode/
 .opencode/
+
+# agentic-system:start
+.agentic-system-sessions/
+# agentic-system:end

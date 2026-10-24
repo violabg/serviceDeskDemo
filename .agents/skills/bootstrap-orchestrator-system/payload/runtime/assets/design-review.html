@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design</title>
+<style>
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --surface-2: #f0f2f5; --text: #1c2129; --muted: #5b6573; --border: #dde2e8;
+  --accent: #2f6fde; --accent-soft: #e5eefc; --ok: #1f8a4c; --ok-soft: #e3f4ea; --warn: #a86300; --warn-soft: #fbf0dc;
+  --err: #c0362c; --err-soft: #fbe6e4; --chip: #eef0f4; --code: #f2f4f7; --shadow: 0 1px 2px rgba(16, 24, 40, .06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1216; --surface: #171b21; --surface-2: #1d222a; --text: #e6e9ee; --muted: #9aa4b2; --border: #2a313b;
+    --accent: #6ea2ff; --accent-soft: #1b2a44; --ok: #4cc283; --ok-soft: #15301f; --warn: #e3a53c; --warn-soft: #33270f;
+    --err: #ff7b70; --err-soft: #3a1a17; --chip: #232a33; --code: #1f252d; --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1216; --surface: #171b21; --surface-2: #1d222a; --text: #e6e9ee; --muted: #9aa4b2; --border: #2a313b;
+  --accent: #6ea2ff; --accent-soft: #1b2a44; --ok: #4cc283; --ok-soft: #15301f; --warn: #e3a53c; --warn-soft: #33270f;
+  --err: #ff7b70; --err-soft: #3a1a17; --chip: #232a33; --code: #1f252d; --shadow: none;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header.top { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px 16px 12px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+header.top .wrap { padding: 0; }
+h1 { font-size: 22px; margin: 0 0 6px; }
+h2 { font-size: 18px; margin: 32px 0 12px; padding-top: 8px; }
+h3 { font-size: 15px; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; color: var(--muted); font-size: 13px; }
+nav.sections { position: sticky; top: 0; z-index: 2; background: var(--surface); border-bottom: 1px solid var(--border); }
+nav.sections .wrap { display: flex; gap: 4px; overflow-x: auto; padding-top: 6px; padding-bottom: 6px; }
+nav.sections a { white-space: nowrap; color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 6px; font-size: 13px; }
+nav.sections a:hover { background: var(--surface-2); color: var(--text); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin: 10px 0; box-shadow: var(--shadow); }
+.card.blocking { border-left: 4px solid var(--warn); }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.warn { background: var(--warn-soft); color: var(--warn); }
+.badge.err { background: var(--err-soft); color: var(--err); }
+.badge.accent { background: var(--accent-soft); color: var(--accent); }
+.id { font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); }
+.seal { font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 12px; padding: 3px 10px; border-radius: 6px; border: 2px solid currentColor; }
+.seal.approved { color: var(--ok); }
+.seal.draft { color: var(--warn); }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; background: var(--code); border-radius: 4px; }
+code { padding: 1px 4px; }
+pre { padding: 10px 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+a.chip, span.chip { display: inline-block; padding: 0 6px; border-radius: 4px; background: var(--chip); color: var(--text); text-decoration: none; font-size: 13px; }
+a.ref { font: 600 12px ui-monospace, monospace; color: var(--accent); background: var(--accent-soft); padding: 0 5px; border-radius: 4px; text-decoration: none; }
+.label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-top: 10px; }
+.muted { color: var(--muted); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 6px; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-top: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+.option { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+.option.chosen { border-color: var(--ok); background: var(--ok-soft); }
+.meter { display: inline-flex; align-items: center; gap: 6px; }
+.meter span.bar { width: 80px; height: 6px; border-radius: 3px; background: var(--chip); overflow: hidden; display: inline-block; }
+.meter span.fill { display: block; height: 100%; background: var(--ok); }
+.tree { list-style: none; padding-left: 0; margin: 0; }
+.tree .dir { font-weight: 600; margin-top: 8px; font-family: ui-monospace, monospace; font-size: 13px; }
+details > summary { cursor: pointer; }
+button.theme { margin-left: auto; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer; font: inherit; font-size: 13px; }
+.empty { color: var(--muted); font-style: italic; }
+@media (max-width: 640px) { body { font-size: 14px; } h1 { font-size: 19px; } td, th { padding: 5px 4px; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap" id="header"></div></header>
+<nav class="sections"><div class="wrap" id="nav"></div></nav>
+<main class="wrap" id="main"></main>
+<script id="design-data" type="application/json">/*__DESIGN_DATA__*/null</script>
+<script>
+(function () {
+  "use strict";
+  var raw = document.getElementById("design-data").textContent;
+  var data = raw.trim().slice(0, 2) === "/*" ? null : JSON.parse(raw);
+  if (!data || !data.design) {
+    // Opened as the bare template: the runtime inlines a design here when it renders design.html.
+    document.getElementById("header").innerHTML = "<h1>Design review template</h1>" +
+      '<p class="meta">This file is the template the runtime fills when it renders a design. Open a rendered design.html from a session instead.</p>';
+    return;
+  }
+  var design = data.design;
+  var checks = data.checks;
+  var main = document.getElementById("main");
+
+  function esc(text) {
+    return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  // Inline formatting: [name](path) chips, `code`, **bold**, {{O#.k}} references and design ids.
+  function inline(text) {
+    var html = esc(text);
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<span class="chip" title="$2">$1</span>');
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+    html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\{\{(O\d+(?:\.\d+)?)\}\}/g, function (_, ref) { return '<a class="ref" href="#' + ref.split(".")[0] + '">' + ref + "</a>"; });
+    return html;
+  }
+  function para(text) {
+    if (!text) return '<p class="empty">Not recorded.</p>';
+    return String(text).split(/\n{2,}/).map(function (p) { return "<p>" + inline(p).replace(/\n/g, "<br>") + "</p>"; }).join("");
+  }
+  function refLink(id) { return '<a class="ref" href="#' + esc(id) + '">' + esc(id) + "</a>"; }
+  function refs(list) { return list && list.length ? list.map(refLink).join(" ") : '<span class="muted">none</span>'; }
+  function badge(text, kind) { return '<span class="badge ' + (kind || "") + '">' + esc(text) + "</span>"; }
+  function section(id, title, body) { main.insertAdjacentHTML("beforeend", '<section id="' + id + '"><h2>' + esc(title) + "</h2>" + body + "</section>"); }
+  function empty(text) { return '<p class="empty">' + esc(text) + "</p>"; }
+  function statusBadge(status) {
+    if (status === "Completed") return badge("completed", "ok");
+    if (status === "InProgress") return badge("in progress", "accent");
+    return badge("not started");
+  }
+
+  // Header
+  var c = checks.coverage;
+  var pct = c.elementsTotal ? Math.round((c.elementsRealized / c.elementsTotal) * 100) : 0;
+  var approved = design.status === "Approved";
+  document.getElementById("header").innerHTML =
+    "<h1>" + esc(design.path.title || design.designId) + "</h1>" +
+    '<div class="meta">' +
+    '<span class="seal ' + (approved ? "approved" : "draft") + '">' + esc(design.status) + "</span>" +
+    (design.modifiedAfterApproval ? badge("modified after approval", "warn") : "") +
+    (design.planName ? "<span>plan <strong>" + esc(design.planName) + "</strong></span>" : "") +
+    (design.approvedAt ? "<span>approved " + esc(design.approvedAt.slice(0, 16).replace("T", " ")) + "Z</span>" : "") +
+    (design.path.requirementRef ? "<span>requirement <code>" + esc(design.path.requirementRef) + "</code></span>" : "") +
+    '<span class="meter">elements ' + c.elementsRealized + "/" + c.elementsTotal + ' <span class="bar"><span class="fill" style="width:' + pct + '%"></span></span></span>' +
+    "<span>obligations " + c.obligationsRealized + "/" + c.obligationsTotal + "</span>" +
+    (checks.errors.length ? badge(checks.errors.length + " errors", "err") : badge("no errors", "ok")) +
+    (checks.warnings.length ? badge(checks.warnings.length + " warnings", "warn") : "") +
+    '<button class="theme" id="theme" type="button">Theme</button>' +
+    "</div>";
+
+  var sections = [
+    ["overview", "Overview"], ["decisions", "Decisions"], ["plan", "Implementation plan"], ["filesystem", "Filesystem"],
+    ["contracts", "Contracts"], ["obligations", "Obligations"], ["file-references", "File references"], ["history", "History"], ["checks", "Checks"]
+  ];
+  document.getElementById("nav").innerHTML = sections.map(function (s) { return '<a href="#' + s[0] + '">' + s[1] + "</a>"; }).join("");
+
+  // Overview
+  section("overview", "Overview",
+    '<div class="card"><div class="label">Current codebase</div>' + para(design.overview.currentState) +
+    '<div class="label">Gaps</div>' + para(design.overview.gaps) + "</div>");
+
+  // Decisions: blocking first
+  var decisions = design.decisions.slice().sort(function (a, b) { return (b.blocking ? 1 : 0) - (a.blocking ? 1 : 0); });
+  section("decisions", "Decisions", decisions.length ? decisions.map(function (d) {
+    return '<div class="card' + (d.blocking ? " blocking" : "") + '" id="' + esc(d.id) + '">' +
+      '<div class="row"><span class="id">' + esc(d.id) + "</span><h3>" + inline(d.topic) + "</h3>" + badge(d.source || "") +
+      (d.blocking ? badge("blocking", "warn") : "") + (d.highlight ? badge("highlight", "accent") : "") + "</div>" +
+      "<p><strong>" + inline(d.question) + "</strong></p>" +
+      (d.context ? '<div class="label">Context</div>' + para(d.context) : "") +
+      (d.why ? '<div class="label">Why it is asked</div>' + para(d.why) : "") +
+      (d.how ? '<div class="label">How the answer is used</div>' + para(d.how) : "") +
+      '<div class="label">Options</div>' + d.options.map(function (o) {
+        return '<div class="option' + (o.chosen ? " chosen" : "") + '"><span class="id">' + esc(o.id) + "</span> " + (o.chosen ? badge("chosen", "ok") + " " : "") + inline(o.text) + "</div>";
+      }).join("") +
+      '<div class="label">Realized in</div><p>' + refs(d.realizedIn) + "</p></div>";
+  }).join("") : empty("No decisions recorded."));
+
+  // Implementation plan
+  function arms(op) {
+    var html = "";
+    if (op.branches && op.branches.length) {
+      html += '<div class="label">Branches</div><table><tr><th>Question</th><th>Yes</th><th>No</th><th>Why</th></tr>' + op.branches.map(function (b) {
+        return "<tr><td>" + inline(b.question) + "</td><td><strong>" + inline(b.yes && b.yes.label) + "</strong><br>" + inline(b.yes && b.yes.note) +
+          "</td><td><strong>" + inline(b.no && b.no.label) + "</strong><br>" + inline(b.no && b.no.note) + "</td><td>" + inline(b.why) + "</td></tr>";
+      }).join("") + "</table>";
+    }
+    if (op.negatives && op.negatives.length) {
+      html += '<div class="label">Negatives</div><table><tr><th>Cause</th><th>Behavior</th><th>Impact</th></tr>' + op.negatives.map(function (n) {
+        return "<tr><td>" + inline(n.cause) + "</td><td>" + inline(n.behavior) + "</td><td>" + badge(n.impact || "n/a", n.impact === "High" ? "err" : n.impact === "Medium" ? "warn" : "") + "</td></tr>";
+      }).join("") + "</table>";
+    }
+    if (op.exceptions && op.exceptions.length) {
+      html += '<div class="label">Exceptions</div><table><tr><th>Trigger</th><th>Recovery</th></tr>' + op.exceptions.map(function (x) {
+        return "<tr><td>" + inline(x.trigger) + "</td><td>" + inline(x.recovery) + "</td></tr>";
+      }).join("") + "</table>";
+    }
+    return html;
+  }
+  section("plan", "Implementation plan",
+    (design.path.operationsIntro ? '<div class="card">' + para(design.path.operationsIntro) + "</div>" : "") +
+    (design.path.operations.length ? design.path.operations.map(function (op) {
+      return '<div class="card" id="' + esc(op.id) + '"><div class="row"><span class="id">' + esc(op.id) + "</span><h3>" + inline(op.operation) + "</h3>" +
+        badge(op.kind, "accent") + statusBadge(op.implementationStatus) + (op.source ? badge("source: " + op.source) : "") + "</div>" +
+        '<div class="label">Instructions</div>' + para(op.instructions) +
+        (op.sourceRef ? '<div class="label">Source reference</div>' + para(op.sourceRef) : "") +
+        '<div class="label">Depends on</div><p>' + refs(op.dependsOn) + "</p>" +
+        '<div class="label">Carries out</div><p>' + refs((op.refObligations || []).concat(op.refElements || [])) + "</p>" +
+        '<div class="label">Files</div><p>' + (op.files && op.files.length ? op.files.map(function (f) { return "<code>" + esc(f) + "</code>"; }).join(" ") : '<span class="muted">none</span>') + "</p>" +
+        arms(op) + "</div>";
+    }).join("") : empty("No operations scheduled.")));
+
+  // Filesystem grouped by directory
+  var groups = {};
+  design.path.filesystem.files.forEach(function (f) {
+    var dir = f.path.indexOf("/") >= 0 ? f.path.slice(0, f.path.lastIndexOf("/")) : ".";
+    (groups[dir] = groups[dir] || []).push(f);
+  });
+  section("filesystem", "Filesystem",
+    (design.path.filesystem.intro ? '<div class="card">' + para(design.path.filesystem.intro) + "</div>" : "") +
+    (design.path.filesystem.files.length ? '<div class="card"><ul class="tree">' + Object.keys(groups).sort().map(function (dir) {
+      return '<li class="dir">' + esc(dir) + "/</li>" + groups[dir].map(function (f) {
+        return '<li id="' + esc(f.id) + '"><details><summary><span class="id">' + esc(f.id) + "</span> " + badge(f.status, f.status === "Added" ? "ok" : "accent") +
+          " <code>" + esc(f.path.slice(f.path.lastIndexOf("/") + 1)) + "</code> " + (f.module ? '<span class="muted">' + esc(f.module) + "</span>" : "") + "</summary>" +
+          '<div class="label">Reason</div>' + para(f.reason) + '<div class="label">Change</div>' + para(f.change) + '<div class="label">Impact</div>' + para(f.impact) + "</details></li>";
+      }).join("");
+    }).join("") + "</ul></div>" : empty("No files declared.")));
+
+  // Contracts
+  var apis = design.path.apis.map(function (a) {
+    return '<div class="card" id="' + esc(a.id) + '"><div class="row"><span class="id">' + esc(a.id) + "</span><h3><code>" + esc(a.method) + " " + esc(a.path) + "</code></h3>" +
+      (a.confidence ? badge("confidence " + a.confidence) : "") + (a.evidence ? badge("evidence " + a.evidence) : "") + "</div>" + para(a.purpose) +
+      '<div class="label">Auth</div>' + para(a.auth) + '<div class="label">Request</div><pre>' + esc(a.request || "") + "</pre>" +
+      '<div class="label">Responses</div><table><tr><th>Status</th><th>Description</th><th>Body</th></tr>' + (a.responses || []).map(function (r) {
+        return "<tr><td><code>" + esc(r.status) + "</code></td><td>" + inline(r.description) + "</td><td><pre>" + esc(r.body || "") + "</pre></td></tr>";
+      }).join("") + "</table></div>";
+  }).join("");
+  var internal = design.path.contracts.map(function (ct) {
+    return '<div class="card" id="' + esc(ct.id) + '"><div class="row"><span class="id">' + esc(ct.id) + "</span><h3>" + esc(ct.module || "") + "</h3>" + badge(ct.type || "") +
+      (ct.confidence ? badge("confidence " + ct.confidence, ct.confidence === "Low" ? "warn" : "") : "") + (ct.evidence ? badge("evidence " + ct.evidence, ct.evidence === "None" ? "warn" : "") : "") + "</div>" +
+      (ct.file ? "<p><code>" + esc(ct.file) + "</code></p>" : "") + '<div class="label">Promises</div>' + para(ct.promises) +
+      '<div class="label">Signature</div><pre>' + esc(ct.signature || "") + "</pre>" +
+      (ct.premortem && ct.premortem.length ? '<div class="label">Premortem</div><table><tr><th>What breaks it</th><th>Mitigation</th></tr>' + ct.premortem.map(function (m) {
+        return "<tr><td>" + inline(m.what) + "</td><td>" + inline(m.mitigation) + "</td></tr>";
+      }).join("") + "</table>" : "") + (ct.evidenceNote ? '<div class="label">Evidence note</div>' + para(ct.evidenceNote) : "") + "</div>";
+  }).join("");
+  section("contracts", "Contracts", "<h3>Public APIs</h3>" + (apis || empty("The design exposes no HTTP surface.")) + '<h3 style="margin-top:18px">Internal contracts</h3>' + (internal || empty("No internal contracts.")));
+
+  // Obligations
+  var carried = {};
+  design.path.operations.forEach(function (op) { (op.refElements || []).concat(op.refObligations || []).forEach(function (r) { carried[r] = true; }); });
+  section("obligations", "Obligations", design.obligations.length ? design.obligations.map(function (o) {
+    var els = o.elements || [];
+    var done = els.length ? els.every(function (e) { return carried[o.id + "." + e.id]; }) : carried[o.id];
+    return '<div class="card" id="' + esc(o.id) + '"><div class="row"><span class="id">' + esc(o.id) + "</span>" + badge((o.origin || "Requirement").toLowerCase(), o.origin === "Developer" ? "accent" : "") +
+      (done ? badge("realized", "ok") : badge("not realized", "warn")) + "</div><p>" + inline(o.behavior) + "</p>" +
+      (o.class ? '<div class="label">Class</div><p>' + inline(o.class) + "</p>" : "") + (o.boundaries ? '<div class="label">Boundaries</div><p>' + inline(o.boundaries) + "</p>" : "") +
+      (o.sourceRef ? '<div class="label">Source</div><p class="muted">' + inline(o.sourceRef) + "</p>" : "") +
+      (els.length ? '<table><tr><th>Element</th><th>Kind</th><th>Condition</th></tr>' + els.map(function (e) {
+        var ref = o.id + "." + e.id;
+        return "<tr><td><span class=\"id\">" + ref + "</span>" + (carried[ref] ? "" : " " + badge("open", "warn")) + "</td><td>" + badge(e.kind) + "</td><td>" + inline(e.text) + "</td></tr>";
+      }).join("") + "</table>" : "") + "</div>";
+  }).join("") : empty("No obligations recorded."));
+
+  // File references
+  section("file-references", "File references", design.fileReferences.length ? '<div class="card"><table><tr><th>Symbol</th><th>Example files</th></tr>' + design.fileReferences.map(function (fr) {
+    return '<tr id="' + esc(fr.id) + '"><td><span class="id">' + esc(fr.id) + "</span> <code>" + esc(fr.symbol) + "</code></td><td>" + (fr.files || []).map(function (f) {
+      var d = (fr.details || []).filter(function (x) { return x.path === f; })[0];
+      return "<div><code>" + esc(f) + "</code>" + (d ? '<div class="muted">why: ' + inline(d.why) + " · purpose: " + inline(d.purpose) + "</div>" : ' <span class="badge warn">no detail</span>') + "</div>";
+    }).join("") + "</td></tr>";
+  }).join("") + "</table></div>" : empty("No file references recorded."));
+
+  // History
+  section("history", "History", design.iterations.length ? design.iterations.map(function (it) {
+    return '<div class="card" id="' + esc(it.id) + '"><div class="row"><span class="id">' + esc(it.id) + "</span>" + badge(it.status, it.status === "Closed" ? "ok" : "accent") +
+      '<span class="muted">' + esc((it.createdAt || "").slice(0, 16).replace("T", " ")) + (it.closedAt ? " → " + esc(it.closedAt.slice(0, 16).replace("T", " ")) : "") + "</span></div>" +
+      para(it.request) +
+      (it.files && it.files.length ? '<div class="label">Files</div><table><tr><th>Change</th><th>Path</th></tr>' + it.files.map(function (f) {
+        return "<tr><td>" + badge(f.change, f.change === "Added" ? "ok" : f.change === "Deleted" ? "err" : "accent") + "</td><td><code>" + esc(f.path) + "</code>" + (f.detail ? "<br>" + inline(f.detail) : "") + "</td></tr>";
+      }).join("") + "</table>" : "") +
+      (it.verifications && it.verifications.length ? '<div class="label">Verifications</div><table><tr><th>Kind</th><th>Name</th><th>Outcome</th></tr>' + it.verifications.map(function (v) {
+        return "<tr><td>" + badge(v.kind) + "</td><td>" + inline(v.name) + "</td><td>" + inline(v.outcome) + "</td></tr>";
+      }).join("") + "</table>" : "") +
+      (it.blocks && it.blocks.length ? '<div class="label">Blocks</div><ul>' + it.blocks.map(function (b) { return "<li>" + inline(typeof b === "string" ? b : JSON.stringify(b)) + "</li>"; }).join("") + "</ul>" : "") +
+      (it.notes ? '<div class="label">Notes</div>' + para(it.notes) : "") + "</div>";
+  }).join("") : empty("No implementation iteration yet."));
+
+  // Checks
+  function findings(list, kind) {
+    return list.map(function (f) { return "<tr><td>" + badge(f.rule, kind) + "</td><td>" + refLink(f.element) + "</td><td>" + inline(f.detail) + "</td></tr>"; }).join("");
+  }
+  section("checks", "Checks", checks.errors.length || checks.warnings.length
+    ? '<div class="card"><table><tr><th>Rule</th><th>Element</th><th>Detail</th></tr>' + findings(checks.errors, "err") + findings(checks.warnings, "warn") + "</table></div>"
+    : '<div class="card"><p>' + badge("clean", "ok") + " No mechanical finding.</p></div>");
+
+  // Theme toggle (remembered per browser when storage is available)
+  var root = document.documentElement;
+  try { var saved = localStorage.getItem("design-theme"); if (saved) root.setAttribute("data-theme", saved); } catch (e) {}
+  document.getElementById("theme").addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("design-theme", next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
