@@ -1,35 +1,38 @@
-# Enterprise Agentic Development Demo Pack
+# Enterprise Service Desk Demo
 
-This folder contains a standalone agentic development demo pack for an enterprise Service Desk IT application. It is inspired by the MoltiAgent workflow, but it is adapted for a teaching demo and does not replace or modify the existing company tooling.
+A Next.js demo of an enterprise IT Service Desk application, developed with an agentic system. The application code and the agentic system live side by side in this repository.
 
-## Purpose
+## Agentic system
 
-The demo shows the difference between a traditional prompt and an enterprise agentic workflow:
+The repository is driven by an orchestration system bootstrapped into `.agentic-system/`. [AGENTS.md](AGENTS.md) is the router: it lists the roles, the runtime, the skills, and the validation rules.
 
-1. Intake a GitHub issue from `violabg/serviceDeskDemo`.
-2. Create or reuse a named planning session under `sessions/<session-id>/`.
-3. Analyze gaps, ambiguity, risks, and missing acceptance criteria.
-4. Ask focused grooming questions.
-5. Produce a specification and task breakdown.
-6. Produce an implementation plan with file-level intent, proposed diffs, and test coverage scenarios.
-7. Hand the approved plan to an implementor.
-8. Create or update tests.
-9. Review the result and produce PR-ready artifacts.
+- **Roles** are started by the developer as the main conversation of a session: `orchestrator` (runs the `DESIGN`, `FAST_IMPLEMENTATION` or `DOCUMENTATION` workflow), `ask` (answers project questions) and `knowledge-builder` (builds project knowledge). Role definitions live in `.claude/agents` and `.github/agents`.
+- **Skills** for planning bugs and user stories from work-item IDs live in `.claude/skills` and `.github/skills`.
+- **Knowledge** lives in `knowledge/`, indexed by `knowledge/knowledge-index.md`. Vocabulary is resolved in `CONTEXT.md`.
+- **Session state** (memory, event log, artifacts) is written to `.agentic-system-sessions/`, which is gitignored along with `sessions/`.
 
-## Layout
+Runtime-owned files (`.agentic-system/`, designs, jobs and integrity seals) are changed only through `node .agentic-system/bin/agentic-system.mjs <operation>`, never by hand.
 
-Generated workflow artifacts live in local, gitignored `sessions/<planning-session-id>/` packages. Planning starts from a GitHub issue such as `#12`. Before retrieving the issue, the planning skill proposes the session ID from its own type, `bug-12` or `us-12`, and waits for your confirmation; the issue ID and session ID are distinct. Resume only an explicitly supplied or active session, including previously approved custom IDs. The Planner writes the artifacts required by [the artifact contract](docs/agents/artifact-gates.md) and [plan schema](docs/agents/plan-schema.md). Integration Tester uses [the YAML test-plan schema](docs/agents/test-plan-schema.md).
-
-## Demo Stack
+## Demo stack
 
 - Next.js App Router
 - React + TypeScript
 - Prisma
 - Neon DB
 - Neon Auth
-- GitHub Issues and Projects
 - Vitest
 - React Testing Library
+
+## Development
+
+```bash
+pnpm dev        # start the Next.js dev server
+pnpm lint
+pnpm typecheck
+pnpm test
+```
+
+Every change is validated with `pnpm lint && pnpm typecheck && pnpm test`.
 
 ## Prisma and Neon
 
