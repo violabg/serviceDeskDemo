@@ -1,10 +1,13 @@
+---
+intent: "Before adding a database entity needing independent privileges or a new ACCESS_SECTIONS boundary and wiring its routes or navigation."
+---
 # When to read this
 
 Use this checklist before adding a database entity that needs an independent permission boundary or a new ACCESS_SECTIONS entry for a dashboard/admin section or gateway. Nested routes and entities accessed only inside an existing gated workflow use that section's permission and do not automatically need a separate section key.
 
 ## Last verified
 
-2026-09-26, dirty worktree. Evidence from repository files:
+2026-10-24, current working tree. Evidence from repository files:
 
 - lib/access-control.ts
 - lib/access-control/server.ts
@@ -14,6 +17,8 @@ Use this checklist before adding a database entity that needs an independent per
 - prisma/seed.ts
 - prisma/schema.prisma
 - app/(dashboard)/admin/_lib/current-application-user.ts
+- app/(dashboard)/customers/page.tsx
+- app/(dashboard)/customers/actions.ts
 - app/(dashboard)/(admin)/users/page.tsx
 - knowledge/access-control.md
 
@@ -21,15 +26,16 @@ Use this checklist before adding a database entity that needs an independent per
 
 ## Evidence
 
-- Base permissions are generated from ACCESS_SECTIONS and ACCESS_OPERATIONS, not manually entered in UI: lib/access-control.ts.
+- Base permissions are generated from ACCESS_SECTIONS and ACCESS_OPERATIONS, not manually entered in UI: lib/access-control.ts. The current sections are dashboard, users, roles, tickets and customers.
 - Bootstrap and seed flow upserts permissions and binds them to the Admin role: lib/access-control/server.ts, prisma/seed.ts.
 - Sidebar visibility is permission-driven from grouped navigation config: lib/service-desk-navigation.ts.
 - Admin routes enforce permission gates server-side before rendering: app/(dashboard)/(admin)/users/page.tsx, app/(dashboard)/admin/_lib/current-application-user.ts.
+- The customers section is a completed example of this flow: it has an ACCESS_SECTIONS entry, a sidebar item with `customers:read`, server-gated pages in app/(dashboard)/customers, and write/manage gates in app/(dashboard)/customers/actions.ts.
 - Tests verify grouping, filtering, and permission model assumptions: lib/service-desk-navigation.test.ts, lib/access-control.test.ts.
 
 ## Unified Add-a-Section Runbook
 
-Use this sequence when introducing an independently protected section such as customers, assets, or technicians. A new Prisma model alone does not create privileges: Customer and Asset data currently participate in ticket workflows under tickets permissions. Keep a new access boundary's permissions, navigation, routes, and tests in one change set.
+Use this sequence when introducing an independently protected section such as assets or technicians. A new Prisma model alone does not create privileges: Asset data currently participates in ticket workflows under tickets permissions, while Customer data has its own customers section. Keep a new access boundary's permissions, navigation, routes, and tests in one change set.
 
 1. Extend permission source of truth
 
@@ -47,10 +53,10 @@ Use this sequence when introducing an independently protected section such as cu
 
 3. Scaffold protected dashboard routes
 
-- Create route files under app/(dashboard)/... following existing section patterns (for example tickets and admin users).
+- Create route files under app/(dashboard)/... following existing section patterns (for example tickets, customers and admin users). A route folder without a page file serves no URL.
 - In each page, resolve current application access server-side and gate rendering with hasPermission(..., "section-id", "read").
 - Redirect unauthorized access to /dashboard from server components.
-- In server actions, gate mutations with write (and manage where higher-impact actions exist).
+- In server actions, gate mutations with write (and manage where higher-impact actions exist). Customer status changes are the manage-gated example in app/(dashboard)/customers/actions.ts.
 - Keep actor identity server-derived using requireCurrentApplicationAccess; do not trust client-submitted actor ids.
 
 4. Update automated tests in the same PR

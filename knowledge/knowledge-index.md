@@ -1,6 +1,9 @@
+---
+
+---
 # Agent Knowledge Index
 
-This repo-local knowledge index is derived from `.agents/skills/bootstrap-agentic-system/templates/knowledge-index-schema.md`.
+This repo-local knowledge index lists the project knowledge documents and when an agent should read each one.
 
 ## Purpose
 

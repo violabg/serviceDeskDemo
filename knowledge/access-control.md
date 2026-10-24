@@ -1,3 +1,6 @@
+---
+intent: "When changing existing roles, permission assignments, read/write/manage policy, or diagnosing seed and effective-permission behavior."
+---
 # Access Control Reference
 
 ## When to read this
@@ -6,15 +9,15 @@ Use this reference for existing roles, permission assignments, operation policy,
 
 ## Last verified
 
-2026-09-26, dirty worktree.
+2026-10-24, current working tree. Read-only source inspection; no seed, database or product test execution was performed.
 
 ## Evidence
 
-- `lib/access-control.ts` defines code-owned sections, operations, and generated base permissions.
+- `lib/access-control.ts` defines code-owned sections (`dashboard`, `users`, `roles`, `tickets`, `customers`), operations, and generated base permissions.
 - `lib/access-control/server.ts` bootstraps permissions, binds them to the Admin role, and resolves effective permissions from user roles.
 - `prisma/seed.ts` runs the bootstrap flow and reports whether the configured initial administrator received the Admin role.
 - `prisma/schema.prisma` defines Customer, Asset, and Ticket models separately from the code-defined access sections.
-- `app/(dashboard)/layout.tsx`, `app/(dashboard)/(admin)/actions.ts`, and `app/(dashboard)/tickets/actions.ts` enforce server-side gates.
+- `app/(dashboard)/layout.tsx`, `app/(dashboard)/(admin)/actions.ts`, `app/(dashboard)/tickets/actions.ts`, and `app/(dashboard)/customers/actions.ts` enforce server-side gates.
 
 ## Permission Vocabulary
 
@@ -26,7 +29,7 @@ Application permissions are created from code, not from the admin UI.
 
 ## Independent Entity Privileges
 
-A database entity does not automatically create a permission. When a new entity needs its own read/write/manage boundary, add it to `ACCESS_SECTIONS` and let `INITIAL_PERMISSIONS` generate its operation keys. An entity accessed only inside an existing gated workflow can use that workflow's section: current Customer and Asset reads in ticket workflows are gated by tickets permissions. Never reuse an unrelated section merely to avoid defining an independent boundary. Gate new routes and mutations on the server; add permission-filtered navigation when users need to browse the section. Source: `prisma/schema.prisma`, `lib/access-control.ts`, `lib/service-desk-navigation.ts`, `app/(dashboard)/tickets/new/page.tsx`, `app/(dashboard)/tickets/actions.ts`.
+A database entity does not automatically create a permission. When a new entity needs its own read/write/manage boundary, add it to `ACCESS_SECTIONS` and let `INITIAL_PERMISSIONS` generate its operation keys. Customer is the current example: it has its own `customers` section, so its pages and actions gate on `customers:read`, `customers:write` and `customers:manage`. Asset has no section of its own; its reads and writes inside ticket workflows are gated by tickets permissions. An entity accessed only inside an existing gated workflow can use that workflow's section. Never reuse an unrelated section merely to avoid defining an independent boundary. Gate new routes and mutations on the server; add permission-filtered navigation when users need to browse the section. Source: `prisma/schema.prisma`, `lib/access-control.ts`, `lib/service-desk-navigation.ts`, `app/(dashboard)/customers/page.tsx`, `app/(dashboard)/customers/actions.ts`, `app/(dashboard)/tickets/new/page.tsx`, `app/(dashboard)/tickets/actions.ts`.
 
 ## Admin Grants and Seed Verification
 
@@ -36,4 +39,4 @@ Bootstrap deletes permissions whose sections are no longer in `ACCESS_SECTIONS` 
 
 ## Operation and Assignment Gates
 
-`getEffectivePermissionKeys` unions grants from all the user's roles. `hasPermission` checks one exact `section:operation` key; `manage` does not implicitly grant `write` or `read`. The dashboard layout requires dashboard read; section pages check read before protected data renders. Role assignment requires users write, role management requires roles read/write, and reopening a closed ticket requires tickets manage. Keep the actor identity derived from the server session and gate writes on the server. Source: `lib/access-control.ts`, `lib/access-control/server.ts`, `app/(dashboard)/layout.tsx`, `app/(dashboard)/(admin)/actions.ts`, `app/(dashboard)/tickets/actions.ts`.
+`getEffectivePermissionKeys` unions grants from all the user's roles. `hasPermission` checks one exact `section:operation` key; `manage` does not implicitly grant `write` or `read`. The dashboard layout requires dashboard read; section pages check read before protected data renders. Role assignment requires users write, role management requires roles read/write, reopening a closed ticket requires tickets manage, and customer status changes require customers manage. Keep the actor identity derived from the server session and gate writes on the server. Source: `lib/access-control.ts`, `lib/access-control/server.ts`, `app/(dashboard)/layout.tsx`, `app/(dashboard)/(admin)/actions.ts`, `app/(dashboard)/tickets/actions.ts`, `app/(dashboard)/customers/actions.ts`.

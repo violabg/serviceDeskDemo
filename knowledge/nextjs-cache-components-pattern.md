@@ -1,3 +1,6 @@
+---
+intent: "When adding or refactoring pages, Server Action invalidation, or instant-navigation behavior involving caching or Suspense."
+---
 # Next.js Cache Components and PPR Rendering Pattern
 
 ## When to read this
@@ -7,11 +10,14 @@ states, or must opt out of full dynamic rendering per request.
 
 ## Last verified
 
-2026-09-26, dirty worktree. Evidence from repository files and the Next.js 16.3.6 caching, revalidation, and instant-navigation guides:
+2026-10-24, current working tree. Evidence from repository files and the Next.js 16.3.6 caching, revalidation, and instant-navigation guides:
 
 - `next.config.ts` — `cacheComponents: true` and custom `days` life preset
-- `app/(dashboard)/admin/_lib/cache-tags.ts` — tag factory functions
+- `app/(dashboard)/admin/_lib/cache-tags.ts` — admin tag factory functions
 - `app/(dashboard)/tickets/_lib/cache-tags.ts` — ticket tag factory functions
+- `app/(dashboard)/customers/_lib/cache-tags.ts` — customer tag factory functions
+- `app/(dashboard)/customers/page.tsx` and `[id]/page.tsx` — customer page pattern
+- `app/(dashboard)/customers/actions.ts` — `updateTag` after customer mutations
 - `app/(dashboard)/(admin)/roles/page.tsx` and `[roleId]/page.tsx` — full page pattern
 - `app/(dashboard)/(admin)/users/page.tsx` and `[userId]/page.tsx` — full page pattern
 - `app/(dashboard)/layout.tsx` — layout Suspense shell
@@ -26,9 +32,9 @@ states, or must opt out of full dynamic rendering per request.
 
 - `next.config.ts` sets `cacheComponents: true` and defines a `days` preset (stale: 7d, revalidate: 7d, expire: 30d).
 - Admin pages put access-gated content behind Suspense; `requireCurrentApplicationAccess()` calls `connection()` before checking the session. Public pages call `connection()` in their async content components.
-- Admin and ticket data-fetching functions use `"use cache"`, `cacheLife("days")`, and shared `cacheTag(...)` values; new-ticket reference data uses `cacheLife("minutes")`.
+- Admin, customer and ticket data-fetching functions use `"use cache"`, `cacheLife("days")`, and shared `cacheTag(...)` values; new-ticket reference data uses `cacheLife("minutes")`.
 - Server actions call `updateTag` for immediately fresh data after writes.
-- Cache tag factories are feature-local under route-domain `_lib/cache-tags.ts` modules, with separate factories for admin and tickets.
+- Cache tag factories are feature-local under route-domain `_lib/cache-tags.ts` modules, with separate factories for admin, customers and tickets.
 
 ## Static-First Principle
 
@@ -123,7 +129,7 @@ async function getAdminData(actorUserId: string) {
 - `"use cache"` goes at the top of the function body.
 - `cacheLife("days")` uses the repo's custom preset: stale 7d, revalidate 7d, expire 30d.
 - Actor inputs remain part of the cache key and access-aware service call. The tag is shared across actor-keyed entries backed by the same records, so a write invalidates other authorized viewers' cached entries too.
-- New-ticket Customer, Asset, and technician options have a separate `ticketReferenceTag()` and use `cacheLife("minutes")`; ticket mutations do not invalidate unrelated reference data.
+- New-ticket Customer, Asset, and technician options have a separate `ticketReferenceTag()` and use `cacheLife("minutes")`; ticket mutations do not invalidate unrelated reference data. Customer mutations do invalidate `ticketReferenceTag()`, because customer options appear in those choices.
 - These functions are module-level and not exported outside their page file unless the component is shared across routes.
 
 ## Component-Level Data Ownership
@@ -199,6 +205,8 @@ Tag factories live in feature-local `_lib/cache-tags.ts` modules. Shared records
 | `adminUsersListTag()` | `admin:users` | User list |
 | `adminUserDetailTag(targetUserId)` | `admin:users:{targetUserId}` | Single user detail |
 | `adminUserRoleOptionsTag()` | `admin:user-role-options` | User detail views listing assignable roles |
+| `customerListTag()` | `customers:list` | Customer list |
+| `customerDetailTag(customerId)` | `customers:detail:{customerId}` | Single customer |
 | `ticketListTag()` | `tickets:list` | Ticket list |
 | `ticketDetailTag(ticketId)` | `tickets:detail:{ticketId}` | Single ticket |
 | `ticketReferenceTag()` | `tickets:reference` | New-ticket Customer, Asset, and technician choices |
@@ -212,7 +220,7 @@ updateTag(adminUserDetailTag(targetUserId))
 updateTag(adminUsersListTag())
 ```
 
-Role creation invalidates the roles list and user role options; role updates additionally invalidate that role's detail. Ticket creation invalidates the list before redirect; status, priority, and technician changes invalidate detail and list; notes invalidate only detail. Invalidate each affected data dependency, not every tag in the feature. `revalidateTag(tag, "max")` allows stale content while refreshing and is suitable only when that delay is acceptable. `revalidatePath` remains supported with Cache Components for route-wide invalidation, but known tags are more precise. Source: the action modules listed above and the Next.js 16.3.6 revalidation guide.
+Role creation invalidates the roles list and user role options; role updates additionally invalidate that role's detail. Ticket creation invalidates the list before redirect; status, priority, and technician changes invalidate detail and list; notes invalidate only detail. Customer creation invalidates the customer list, the ticket list and `ticketReferenceTag()`. Customer updates and status changes (manage-gated) additionally invalidate that customer's detail and the detail of each ticket linked to it. Invalidate each affected data dependency, not every tag in the feature. `revalidateTag(tag, "max")` allows stale content while refreshing and is suitable only when that delay is acceptable. `revalidatePath` remains supported with Cache Components for route-wide invalidation, but known tags are more precise. Source: the action modules listed above and the Next.js 16.3.6 revalidation guide.
 
 ## Instant Navigation Check
 
