@@ -24,15 +24,15 @@ Each ticket also stores `requesterContact`, `pendingAssetLink`, `slaBreachedAt`,
 
 ## Ticket Creation
 
-`createTicketAction` requires `tickets:write`. It reads the form fields, trims text, and checks the enumerated values with the `is*` guards. It also checks that the chosen customer is Active. When any check fails, the action returns without creating anything.
+`createTicketAction` requires `tickets:write`. It reads the form fields, trims text, and checks the enumerated values with the `is*` guards. It also checks that the chosen customer is Active. Every outcome returns a result object, and no failed check creates anything: `forbidden` when `tickets:write` is missing, `invalid` when a field or enumerated value fails, and `not-found` when the chosen customer is not Active. On success the result is `{ ok: true, reason: null, ticketId }`, and the new-ticket form navigates to that ticket.
 
 ```ts
 const customer = await getActiveCustomerById(customerId)
-if (!customer) return { success: false, error: "Select a valid active Customer." }
+if (!customer) return { ok: false, reason: "not-found" }
 
 const ticket = await createTicket({ ...fields, assetId, assignedToId }, access.user.id)
 updateTag(ticketListTag())
-redirect(`/tickets/${ticket.id}`)
+return { ok: true, reason: null, ticketId: ticket.id }
 ```
 
 `createTicket` runs in one transaction. It stores the ticket with:
@@ -42,6 +42,16 @@ redirect(`/tickets/${ticket.id}`)
 - an activity record of type `Created`, whose new value is the initial status.
 
 Reference data for the new-ticket form comes from three reads: `getActiveCustomers` returns Active customers with id, name, email and company; `getAssets` returns assets with id, name, serial number and category; `getAvailableTechnicians` returns users with id, name and email. The new-ticket page caches them under the ticket reference tag, and customer changes expire that tag.
+
+## Result Contract
+
+Every ticket action in scope returns `{ ok, reason }`. On success `ok` is `true` and `reason` is `null`. `createTicketAction` also returns the created `ticketId`, and `checkDuplicateTicketAction` also returns its `duplicate` boolean.
+
+- `forbidden`: the write permission is missing. Reopening a Closed ticket also needs `tickets:manage`. A caller without `tickets:write` is forbidden before any lookup.
+- `invalid`: a missing `ticketId`, a failed enumerated guard, an empty required field, an empty `customerId` or `title` in `checkDuplicateTicketAction`, or a `technicianId` entry that is absent from the form data or not a string. An empty `technicianId` clears the assignment and is not a failure.
+- `not-found`: the ticket looked up by `updateTicketStatusAction`, `updateTicketPriorityAction`, `assignTechnicianAction` or `addTicketNoteAction` does not exist, or `createTicketAction` or `checkDuplicateTicketAction` finds no Active customer. A reopen of a missing ticket returns `not-found` for a caller with `tickets:write`.
+
+When several checks fail, the first reason in this order is returned: `forbidden`, then `invalid`, then `not-found`.
 
 ## Status, Priority and Technician Changes
 

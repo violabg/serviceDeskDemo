@@ -30,15 +30,24 @@ import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 import { Controller, useForm } from "react-hook-form"
 
+type TicketFailureReason = "forbidden" | "invalid" | "not-found"
+
 type DuplicateState = {
-  success: boolean | null
-  error?: string
+  ok: boolean | null
+  reason: TicketFailureReason | null
   duplicate: boolean
 }
 
 const initialDuplicateState: DuplicateState = {
-  success: null,
+  ok: null,
+  reason: null,
   duplicate: false,
+}
+
+const REASON_MESSAGES: Record<TicketFailureReason, string> = {
+  forbidden: "You do not have permission to do this.",
+  invalid: "The submitted data is not valid.",
+  "not-found": "The selected record could not be found.",
 }
 
 const NONE_VALUE = "__none__"
@@ -84,6 +93,9 @@ export function NewTicketForm({
   const router = useRouter()
   const [duplicateState, setDuplicateState] = useState<DuplicateState>(
     initialDuplicateState
+  )
+  const [createReason, setCreateReason] = useState<TicketFailureReason | null>(
+    null
   )
   const [isSubmitting, startSubmitTransition] = useTransition()
   const [isCheckingDuplicate, startDuplicateTransition] = useTransition()
@@ -131,7 +143,15 @@ export function NewTicketForm({
 
   const submitNewTicket = handleSubmit((values) => {
     startSubmitTransition(async () => {
-      await createTicketAction(toFormData(values))
+      const result = await createTicketAction(toFormData(values))
+
+      if (result.ok) {
+        setCreateReason(null)
+        router.push(`/tickets/${result.ticketId}`)
+        return
+      }
+
+      setCreateReason(result.reason)
       router.refresh()
     })
   })
@@ -145,8 +165,8 @@ export function NewTicketForm({
       const response = await checkDuplicateTicketAction(formData)
 
       setDuplicateState({
-        success: response.success,
-        error: response.error,
+        ok: response.ok,
+        reason: response.reason,
         duplicate: response.duplicate,
       })
     })
@@ -408,13 +428,20 @@ export function NewTicketForm({
         </div>
       </form>
       <div className="flex items-center gap-2 mt-4">
-        {duplicateState.error ? (
-          <p className="text-red-600 text-sm">{duplicateState.error}</p>
+        {createReason ? (
+          <p className="text-red-600 text-sm">
+            {REASON_MESSAGES[createReason]}
+          </p>
+        ) : null}
+        {duplicateState.reason ? (
+          <p className="text-red-600 text-sm">
+            {REASON_MESSAGES[duplicateState.reason]}
+          </p>
         ) : duplicateState.duplicate ? (
           <p className="text-amber-700 text-sm">
             Similar ticket found in the last 24h. You can still create this one.
           </p>
-        ) : duplicateState.success ? (
+        ) : duplicateState.ok ? (
           <p className="text-muted-foreground text-sm">
             No duplicate detected for this customer.
           </p>

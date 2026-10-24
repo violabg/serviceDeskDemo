@@ -4,20 +4,21 @@ import React from "react"
 
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { NewTicketForm } from "@/app/(dashboard)/tickets/new/new-ticket-form"
 
 const createTicketActionMock = vi.hoisted(() => vi.fn())
 const checkDuplicateTicketActionMock = vi.hoisted(() => vi.fn())
 const refreshMock = vi.hoisted(() => vi.fn())
+const pushMock = vi.hoisted(() => vi.fn())
 
 vi.mock("@/app/(dashboard)/tickets/actions", () => ({
   createTicketAction: createTicketActionMock,
   checkDuplicateTicketAction: checkDuplicateTicketActionMock,
 }))
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ refresh: refreshMock }),
+  useRouter: () => ({ refresh: refreshMock, push: pushMock }),
 }))
 vi.mock("@/components/ui/button", () => ({
   Button: ({
@@ -123,6 +124,10 @@ const customers = [
 ]
 
 describe("NewTicketForm", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it("enables duplicate checks only after a title is present", async () => {
     const user = userEvent.setup()
 
@@ -142,7 +147,8 @@ describe("NewTicketForm", () => {
   it("checks duplicates and shows the returned result state", async () => {
     const user = userEvent.setup()
     checkDuplicateTicketActionMock.mockResolvedValue({
-      success: true,
+      ok: true,
+      reason: null,
       duplicate: true,
     })
 
@@ -171,9 +177,13 @@ describe("NewTicketForm", () => {
     ).toBeInTheDocument()
   })
 
-  it("submits the form, normalizes optional IDs, and refreshes the route", async () => {
+  it("submits the form, normalizes optional IDs, and navigates to the created ticket", async () => {
     const user = userEvent.setup()
-    createTicketActionMock.mockResolvedValue(undefined)
+    createTicketActionMock.mockResolvedValue({
+      ok: true,
+      reason: null,
+      ticketId: "ticket-1",
+    })
 
     render(<NewTicketForm customers={customers} assets={[]} technicians={[]} />)
 
@@ -199,7 +209,83 @@ describe("NewTicketForm", () => {
     expect(formData.get("intakeChannel")).toBe("Portal")
     expect(formData.get("assetId")).toBe("")
     expect(formData.get("assignedToId")).toBe("")
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith("/tickets/ticket-1")
+    })
+    expect(refreshMock).not.toHaveBeenCalled()
+  })
+
+  it("shows the failure reason and stays on the form when creation fails", async () => {
+    const user = userEvent.setup()
+    createTicketActionMock.mockResolvedValue({ ok: false, reason: "invalid" })
+
+    render(<NewTicketForm customers={customers} assets={[]} technicians={[]} />)
+
+    await user.type(screen.getByLabelText(/title/i), "Printer outage")
+    await user.type(screen.getByLabelText(/description/i), "Printer is offline")
+    await user.type(
+      screen.getByLabelText(/requester contact/i),
+      "user@example.com"
+    )
+    await user.click(screen.getByRole("button", { name: "Create Ticket" }))
+
+    expect(
+      await screen.findByText("The submitted data is not valid.")
+    ).toBeInTheDocument()
+    expect(pushMock).not.toHaveBeenCalled()
     expect(refreshMock).toHaveBeenCalledTimes(1)
+  })
+
+  it("shows the forbidden reason instead of a duplicate result when the duplicate check is refused", async () => {
+    const user = userEvent.setup()
+    checkDuplicateTicketActionMock.mockResolvedValue({
+      ok: false,
+      reason: "forbidden",
+      duplicate: false,
+    })
+
+    render(<NewTicketForm customers={customers} assets={[]} technicians={[]} />)
+
+    await user.type(screen.getByLabelText(/title/i), "VPN outage")
+    await user.type(screen.getByLabelText(/description/i), "Users cannot connect")
+    await user.type(
+      screen.getByLabelText(/requester contact/i),
+      "user@example.com"
+    )
+    await user.click(screen.getByRole("button", { name: "Check Duplicate" }))
+
+    expect(
+      await screen.findByText("You do not have permission to do this.")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(/no duplicate detected for this customer/i)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(/similar ticket found in the last 24h/i)
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows the no-duplicate message when the duplicate check succeeds with duplicate false", async () => {
+    const user = userEvent.setup()
+    checkDuplicateTicketActionMock.mockResolvedValue({
+      ok: true,
+      reason: null,
+      duplicate: false,
+    })
+
+    render(<NewTicketForm customers={customers} assets={[]} technicians={[]} />)
+
+    await user.type(screen.getByLabelText(/title/i), "VPN outage")
+    await user.type(screen.getByLabelText(/description/i), "Users cannot connect")
+    await user.type(
+      screen.getByLabelText(/requester contact/i),
+      "user@example.com"
+    )
+    await user.click(screen.getByRole("button", { name: "Check Duplicate" }))
+
+    expect(
+      await screen.findByText("No duplicate detected for this customer.")
+    ).toBeInTheDocument()
   })
 
   it("labels a customer with its company in the trigger and the option", () => {
@@ -245,7 +331,8 @@ describe("NewTicketForm", () => {
     const user = userEvent.setup()
     checkDuplicateTicketActionMock.mockClear()
     checkDuplicateTicketActionMock.mockResolvedValue({
-      success: true,
+      ok: true,
+      reason: null,
       duplicate: false,
     })
 

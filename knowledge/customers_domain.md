@@ -104,6 +104,14 @@ export async function createCustomerAction(formData: FormData) {
 - Update and status change also expire the customer detail and the detail of every linked ticket.
 - Status change requires `customers:manage`; create and update require `customers:write`.
 
+## Customer Action Results
+
+Each customer action returns `ok: true` with the service result on success. On failure it returns `ok: false` with one of the reasons below, and no other reason.
+
+- `createCustomerAction`: `forbidden` when `customers:write` is missing; `invalid` when the status field is unreadable or the service returns `invalid`; `duplicate` and `reactivation` as `createCustomer` returns them.
+- `updateCustomerAction`: `forbidden` when `customers:write` is missing; `invalid` when `customerId` is empty or the service returns `invalid`; `not-found` when no customer has the id; `duplicate` as `updateCustomer` returns it.
+- `changeCustomerStatusAction`: `forbidden` when `customers:manage` is missing; `invalid` when `customerId` is empty or the action is neither `deactivate` nor `reactivate`; `not-found` when no customer has the id; `critical-ticket` for `deactivate` as `deactivateCustomer` returns it; `invalid` and `duplicate` for `reactivate` as `reactivateCustomer` returns them.
+
 ## Pitfalls to avoid
 
 - Matching customers by company or email without the case-insensitive comparison. The service compares them case-insensitively.
