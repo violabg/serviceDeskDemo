@@ -10,8 +10,18 @@ export type CustomerProfileInput = {
   notes: string | null
 }
 
-export function getCustomerList() {
+export function getCustomerList(term?: string) {
+  const search = term?.trim()
   return prisma.customer.findMany({
+    where: search
+      ? {
+          OR: [
+            { company: { contains: search, mode: "insensitive" } },
+            { name: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
     orderBy: [{ company: "asc" }, { name: "asc" }],
     include: { _count: { select: { tickets: true } } },
   })

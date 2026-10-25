@@ -1,7 +1,8 @@
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { customerListTag } from "@/app/(dashboard)/customers/_lib/cache-tags"
-import { CustomerForm } from "@/app/(dashboard)/customers/customer-form"
 import { Button } from "@/components/ui/button"
+import { Field, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
 import { getCustomerList } from "@/lib/customers/service"
@@ -10,25 +11,47 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
-async function getCustomersData() {
+type CustomersSearchParams = {
+  q?: string
+}
+
+async function getCustomersData(term: string) {
   "use cache"
   cacheLife("days")
   cacheTag(customerListTag())
-  return getCustomerList()
+  return getCustomerList(term)
 }
 
-export default function CustomersPage() {
-  return <main className="flex flex-col flex-1 gap-6 p-4 pt-0"><h1 className="font-heading font-semibold text-3xl">Customers</h1><Suspense fallback={<Skeleton className="w-full h-48" />}><CustomersPageContent /></Suspense></main>
+export default function CustomersPage({ searchParams }: { searchParams: Promise<CustomersSearchParams> }) {
+  return <main className="flex flex-col flex-1 gap-6 p-4 pt-0"><h1 className="font-heading font-semibold text-3xl">Customers</h1><Suspense fallback={<Skeleton className="w-full h-48" />}><CustomersPageContent searchParams={searchParams} /></Suspense></main>
 }
 
-async function CustomersPageContent() {
-  const access = await requireCurrentApplicationAccess()
+export async function CustomersPageContent({ searchParams }: { searchParams: Promise<CustomersSearchParams> }) {
+  const [{ q }, access] = await Promise.all([searchParams, requireCurrentApplicationAccess()])
   const permissions = new Set(access.effectivePermissionKeys)
   if (!hasPermission(permissions, "customers", "read")) redirect("/dashboard")
   const canWrite = hasPermission(permissions, "customers", "write")
-  const customers = await getCustomersData()
-  const canManage = hasPermission(permissions, "customers", "manage")
-  return <section className="gap-4 grid"><CustomerForm mode="create" canWrite={canWrite} canManage={canManage} /><CustomerList customers={customers} canWrite={canWrite} /></section>
+  const term = q?.trim() ?? ""
+  const customers = await getCustomersData(term)
+  return (
+    <section className="gap-4 grid">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <form action="/customers" method="get" className="flex flex-wrap items-end gap-2">
+          <Field>
+            <FieldLabel htmlFor="customers-search">Search customers</FieldLabel>
+            <Input id="customers-search" name="q" defaultValue={term} placeholder="Company, primary contact or email" />
+          </Field>
+          <Button type="submit" variant="outline">Search</Button>
+        </form>
+        {canWrite ? (
+          <Button render={<Link href="/customers/new" />} nativeButton={false}>New Customer</Button>
+        ) : (
+          <Button disabled>New Customer</Button>
+        )}
+      </div>
+      <CustomerList customers={customers} canWrite={canWrite} />
+    </section>
+  )
 }
 
 type CustomerRow = Awaited<ReturnType<typeof getCustomerList>>[number]

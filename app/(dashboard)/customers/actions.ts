@@ -3,16 +3,22 @@
 import { customerDetailTag, customerListTag } from "@/app/(dashboard)/customers/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { hasPermission } from "@/lib/access-control"
-import { createCustomer, deactivateCustomer, getCustomerById, reactivateCustomer, updateCustomer } from "@/lib/customers/service"
+import {
+  createCustomer,
+  deactivateCustomer,
+  getCustomerById,
+  getDeactivatedCustomerMatches,
+  reactivateCustomer,
+  updateCustomer,
+} from "@/lib/customers/service"
 import { ticketDetailTag, ticketListTag, ticketReferenceTag } from "@/app/(dashboard)/tickets/_lib/cache-tags"
 import { updateTag } from "next/cache"
 
 export async function createCustomerAction(formData: FormData) {
   const access = await requireCurrentApplicationAccess()
   if (!hasPermission(new Set(access.effectivePermissionKeys), "customers", "write")) return { ok: false, reason: "forbidden" as const }
-  const status = readCustomerStatus(formData)
-  if (!status) return { ok: false, reason: "invalid" as const }
-  const result = await createCustomer(readCustomerInput(formData), status)
+  if (readString(formData, "status") !== "Active") return { ok: false, reason: "invalid" as const }
+  const result = await createCustomer(readCustomerInput(formData), "Active")
   if (result.ok) {
     updateTag(customerListTag())
     updateTag(ticketListTag())
@@ -75,7 +81,17 @@ function readCustomerInput(formData: FormData) {
   }
 }
 
-function readCustomerStatus(formData: FormData): "Active" | "Deactivated" | null {
-  const value = readString(formData, "status")
-  return value === "Active" || value === "Deactivated" ? value : null
+export async function findDeactivatedMatchesAction(
+  company: string,
+  email: string
+): Promise<
+  | { ok: true; matches: Awaited<ReturnType<typeof getDeactivatedCustomerMatches>> }
+  | { ok: false; reason: "forbidden" }
+> {
+  const access = await requireCurrentApplicationAccess()
+  if (!hasPermission(new Set(access.effectivePermissionKeys), "customers", "write")) return { ok: false, reason: "forbidden" }
+  const trimmedCompany = company.trim()
+  const normalizedEmail = email.trim().toLowerCase()
+  if (!trimmedCompany || !normalizedEmail) return { ok: true, matches: [] }
+  return { ok: true, matches: await getDeactivatedCustomerMatches(trimmedCompany, normalizedEmail) }
 }

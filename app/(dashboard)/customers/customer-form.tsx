@@ -3,16 +3,16 @@
 import {
   changeCustomerStatusAction,
   createCustomerAction,
+  findDeactivatedMatchesAction,
   updateCustomerAction,
 } from "@/app/(dashboard)/customers/actions"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 type Values = {
   company: string
@@ -29,14 +29,18 @@ type CustomerFormProps = {
   canManage: boolean
   customerId?: string
   initialValues?: Partial<Values>
+  onSaved?: () => void
 }
 
-export function CustomerForm({ mode, canWrite, canManage, customerId, initialValues }: CustomerFormProps) {
+type MatchView = { id: string; company: string | null; name: string; email: string | null }
+
+export function CustomerForm({ mode, canWrite, canManage, customerId, initialValues, onSaved }: CustomerFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [, startLookupTransition] = useTransition()
   const [message, setMessage] = useState("")
-  const [matches, setMatches] = useState<Array<{ id: string; company: string | null; name: string; email: string | null }>>([])
-  const { register, control, handleSubmit, formState: { errors } } = useForm<Values>({
+  const [matches, setMatches] = useState<MatchView[]>([])
+  const { register, getValues, handleSubmit, formState: { errors } } = useForm<Values>({
     defaultValues: {
       company: initialValues?.company ?? "",
       name: initialValues?.name ?? "",
@@ -46,6 +50,15 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
       status: initialValues?.status ?? "Active",
     },
   })
+
+  const companyField = register("company", { required: "Company name is required" })
+  const nameField = register("name", { required: "Primary contact is required" })
+  const emailField = register("email", {
+    required: "Contact email is required",
+    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Enter a valid email address" },
+  })
+  const phoneField = register("phone")
+  const notesField = register("notes")
 
   const submit = handleSubmit((values) => {
     const formData = new FormData()
@@ -65,11 +78,31 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
         setMessage(result.reason === "duplicate" ? "An active Customer already uses this company and email." : result.reason === "reactivation" ? "A deactivated match exists. Reactivate that record instead." : "Check the Customer fields and try again.")
         return
       }
+      if (mode === "create" && "customer" in result) {
+        router.push(`/customers/${result.customer.id}`)
+        return
+      }
       setMatches([])
       setMessage("Customer saved.")
+      onSaved?.()
       router.refresh()
     })
   })
+
+  function lookupDeactivatedMatches() {
+    if (mode !== "create" || !canWrite) return
+    const company = getValues("company").trim()
+    const email = getValues("email").trim()
+    if (!company || !email) return
+    startLookupTransition(async () => {
+      try {
+        const result = await findDeactivatedMatchesAction(company, email)
+        setMatches(result.ok ? result.matches : [])
+      } catch {
+        setMatches([])
+      }
+    })
+  }
 
   function reactivate(id: string) {
     const formData = new FormData()
@@ -82,62 +115,51 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
     })
   }
 
-  function changeCurrentStatus() {
-    if (!customerId) return
-    const formData = new FormData()
-    formData.set("customerId", customerId)
-    formData.set("action", initialValues?.status === "Active" ? "deactivate" : "reactivate")
-    startTransition(async () => {
-      const result = await changeCustomerStatusAction(formData)
-      if (!result.ok) {
-        setMessage(result.reason === "critical-ticket" ? "Resolve or close all Critical Tickets before deactivating this Customer." : "The Customer status could not be changed.")
-        return
-      }
-      setMessage("Customer status updated.")
-      router.refresh()
-    })
-  }
-
-  if (!canWrite) return null
-
   return (
     <form onSubmit={submit} className="gap-4 grid">
       <Field data-invalid={errors.company ? true : undefined}>
         <FieldLabel htmlFor="customer-company">Company name *</FieldLabel>
-        <Input id="customer-company" aria-invalid={errors.company ? true : undefined} {...register("company", { required: "Company name is required" })} />
+        <Input
+          id="customer-company"
+          disabled={!canWrite}
+          aria-invalid={errors.company ? true : undefined}
+          {...companyField}
+          onBlur={(event) => {
+            void companyField.onBlur(event)
+            lookupDeactivatedMatches()
+          }}
+        />
         <FieldError errors={[errors.company]} />
       </Field>
       <Field data-invalid={errors.name ? true : undefined}>
         <FieldLabel htmlFor="customer-contact">Primary contact *</FieldLabel>
-        <Input id="customer-contact" aria-invalid={errors.name ? true : undefined} {...register("name", { required: "Primary contact is required" })} />
+        <Input id="customer-contact" disabled={!canWrite} aria-invalid={errors.name ? true : undefined} {...nameField} />
         <FieldError errors={[errors.name]} />
       </Field>
       <Field data-invalid={errors.email ? true : undefined}>
         <FieldLabel htmlFor="customer-email">Contact email *</FieldLabel>
-        <Input id="customer-email" type="email" aria-invalid={errors.email ? true : undefined} {...register("email", { required: "Contact email is required", pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Enter a valid email address" } })} />
+        <Input
+          id="customer-email"
+          type="email"
+          disabled={!canWrite}
+          aria-invalid={errors.email ? true : undefined}
+          {...emailField}
+          onBlur={(event) => {
+            void emailField.onBlur(event)
+            lookupDeactivatedMatches()
+          }}
+        />
         <FieldError errors={[errors.email]} />
       </Field>
       <Field>
         <FieldLabel htmlFor="customer-phone">Phone</FieldLabel>
-        <Input id="customer-phone" {...register("phone")} />
+        <Input id="customer-phone" disabled={!canWrite} {...phoneField} />
       </Field>
       <Field>
         <FieldLabel htmlFor="customer-notes">Operational notes</FieldLabel>
-        <Textarea id="customer-notes" {...register("notes")} />
+        <Textarea id="customer-notes" disabled={!canWrite} {...notesField} />
       </Field>
-      {mode === "create" ? (
-        <Field>
-          <FieldLabel htmlFor="customer-status">Status *</FieldLabel>
-          <Controller name="status" control={control} render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger id="customer-status"><SelectValue /></SelectTrigger>
-              <SelectContent><SelectItem value="Active">Active</SelectItem><SelectItem value="Deactivated">Deactivated</SelectItem></SelectContent>
-            </Select>
-          )} />
-        </Field>
-      ) : null}
-      <Button type="submit" disabled={isPending}>{isPending ? "Saving…" : "Save Customer"}</Button>
-      {mode === "edit" && canManage ? <Button type="button" variant="outline" disabled={isPending} onClick={changeCurrentStatus}>{initialValues?.status === "Active" ? "Deactivate Customer" : "Reactivate Customer"}</Button> : null}
+      <Button type="submit" disabled={!canWrite || isPending}>{isPending ? "Saving…" : "Save Customer"}</Button>
       {message ? <p role="status">{message}</p> : null}
       {matches.map((match) => (
         <div key={match.id} className="flex items-center justify-between gap-3 border rounded-md p-3">
