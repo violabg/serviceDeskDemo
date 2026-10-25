@@ -265,6 +265,58 @@ describe("NewTicketForm", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("shows the invalid reason when the duplicate check returns invalid for an empty title", async () => {
+    const user = userEvent.setup()
+    checkDuplicateTicketActionMock.mockResolvedValue({
+      ok: false,
+      reason: "invalid",
+      duplicate: false,
+    })
+
+    render(<NewTicketForm customers={customers} assets={[]} technicians={[]} />)
+
+    await user.type(screen.getByLabelText(/title/i), "VPN outage")
+    await user.type(screen.getByLabelText(/description/i), "Users cannot connect")
+    await user.type(
+      screen.getByLabelText(/requester contact/i),
+      "user@example.com"
+    )
+    await user.click(screen.getByRole("button", { name: "Check Duplicate" }))
+
+    expect(
+      await screen.findByText("The submitted data is not valid.")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(/no duplicate detected for this customer/i)
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows the not-found reason when the duplicate check returns not-found for an unknown customer", async () => {
+    const user = userEvent.setup()
+    checkDuplicateTicketActionMock.mockResolvedValue({
+      ok: false,
+      reason: "not-found",
+      duplicate: false,
+    })
+
+    render(<NewTicketForm customers={customers} assets={[]} technicians={[]} />)
+
+    await user.type(screen.getByLabelText(/title/i), "VPN outage")
+    await user.type(screen.getByLabelText(/description/i), "Users cannot connect")
+    await user.type(
+      screen.getByLabelText(/requester contact/i),
+      "user@example.com"
+    )
+    await user.click(screen.getByRole("button", { name: "Check Duplicate" }))
+
+    expect(
+      await screen.findByText("The selected record could not be found.")
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(/no duplicate detected for this customer/i)
+    ).not.toBeInTheDocument()
+  })
+
   it("shows the no-duplicate message when the duplicate check succeeds with duplicate false", async () => {
     const user = userEvent.setup()
     checkDuplicateTicketActionMock.mockResolvedValue({

@@ -433,6 +433,23 @@ describe("ticket actions", () => {
       expect(serviceMock.assignTechnician).not.toHaveBeenCalled()
     })
 
+    it("returns invalid when the technicianId entry is present but not a string", async () => {
+      const formData = new FormData()
+      formData.set("ticketId", "ticket-1")
+      formData.set(
+        "technicianId",
+        new File(["tech-1"], "technician.txt", { type: "text/plain" })
+      )
+
+      await expect(assignTechnicianAction(formData)).resolves.toEqual({
+        ok: false,
+        reason: "invalid",
+      })
+      expect(serviceMock.getTicketById).not.toHaveBeenCalled()
+      expect(serviceMock.assignTechnician).not.toHaveBeenCalled()
+      expect(updateTagMock).not.toHaveBeenCalled()
+    })
+
     it("returns invalid when the ticketId is missing", async () => {
       await expect(
         assignTechnicianAction(makeFormData({ ticketId: "", technicianId: "tech-1" }))
