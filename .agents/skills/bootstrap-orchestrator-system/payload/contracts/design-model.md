@@ -48,7 +48,7 @@ Element `kind` is exactly one of `Direction | Conjunct | Quantifier | Guard | Ef
 
 **Identity.** The runtime assigns every id from `counters`, in order, and never renumbers, reuses or reorders one. The k-th element of an obligation is `O#.k`. Persisted references are prefixed (`IM1`, `O1.2`); `#capability:design-submit` takes cardinal numbers and converts them.
 
-**Validation.** A payload with an unknown property is refused and nothing is applied.
+**Validation.** A payload with an unknown property is refused and nothing is applied. Every design operation takes `sessionId`, `jobId` and `request`; a request field sent beside them (for example `operation` at the top level) is refused as misplaced, naming the field, and nothing is applied. Error paths are absolute: `/request/operation`, `/request/rows/0/<field>`. The misplaced-field refusal and the absolute paths are Lab-authored: the captured server leaves them unspecified.
 
 ## row-writes
 

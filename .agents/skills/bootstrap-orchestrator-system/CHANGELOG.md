@@ -2,6 +2,12 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 1.1.1
+
+- A design operation called with a request field beside `sessionId` and `jobId` (for example `operation: "Read"` at the top level) is refused with an error that names the field and says it belongs inside `request`. Before, the runtime answered `/operation: required property is missing`, which pointed the caller the wrong way, and a flat `design-overview` Read was taken for an empty write.
+- Error paths in rejected design requests are absolute: `/request/operation`, `/request/rows/0/<field>`.
+- The runtime binding in each role's skill and the repository router say the JSON payload is the operation's argument object, defined in the runtime contracts, with design fields inside `request`.
+
 ## 1.1.0
 
 - The design review document (`design.html`) is redesigned for reading:

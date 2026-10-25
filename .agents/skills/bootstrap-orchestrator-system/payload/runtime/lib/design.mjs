@@ -16,9 +16,9 @@ function schema(ctx) {
   return cachedSchema;
 }
 
-function check(ctx, defName, value, tool) {
+function check(ctx, defName, value, tool, path = "") {
   const root = schema(ctx);
-  const errors = validate(defName ? root.$defs[defName] : root, value, root);
+  const errors = validate(defName ? root.$defs[defName] : root, value, root, path);
   if (errors.length) {
     throw new RuntimeError(`${tool} rejected`, {
       status: "Rejected",
@@ -26,6 +26,23 @@ function check(ctx, defName, value, tool) {
       applied: "nothing was applied",
     });
   }
+}
+
+// Every design operation takes { sessionId, jobId, request }. A request field sent beside sessionId and jobId
+// is named as misplaced instead of validating an empty request, whose errors would point the caller the wrong way.
+function requestOf(ctx, args, defName, tool) {
+  const fields = Object.keys(schema(ctx).$defs[defName].properties ?? {}).map((k) => k.toLowerCase());
+  const misplaced = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request"].includes(k.toLowerCase()) && fields.includes(k.toLowerCase()));
+  if (misplaced.length) {
+    throw new RuntimeError(`${tool} rejected`, {
+      status: "Rejected",
+      errors: misplaced.map((key) => ({ rule: "invalid-request", element: tool, detail: `/${key}: '${key}' was sent beside sessionId and jobId; it belongs inside request: { "sessionId": "...", "jobId": "...", "request": { "${key}": ... } }` })),
+      applied: "nothing was applied",
+    });
+  }
+  const request = arg(args, "request") ?? {};
+  check(ctx, defName, request, tool, "/request");
+  return request;
 }
 
 // Resolves the design of a job. FAST_IMPLEMENTATION and DOCUMENTATION jobs have none.
@@ -94,13 +111,12 @@ function mergeFileReference(row, incoming) {
 
 export function rowTool(ctx, tool, args) {
   const table = ROW_TABLES[tool];
-  const request = arg(args, "request");
   const { design } = jobDesign(ctx, args, tool);
-  check(ctx, "rowRequest", request ?? {}, tool);
+  const request = requestOf(ctx, args, "rowRequest", tool);
   const rows = request.rows ?? [];
   const ids = request.ids ?? [];
   const collection = design[table.collection];
-  rows.forEach((row) => check(ctx, table.def, row, tool));
+  rows.forEach((row, index) => check(ctx, table.def, row, tool, `/request/rows/${index}`));
 
   switch (request.operation) {
     case "Read": {
@@ -177,9 +193,8 @@ export function rowTool(ctx, tool, args) {
 
 export function overview(ctx, args) {
   const tool = "design-overview";
-  const request = arg(args, "request") ?? {};
   const { design } = jobDesign(ctx, args, tool);
-  check(ctx, "overview", request, tool);
+  const request = requestOf(ctx, args, "overview", tool);
   if (request.operation === "Read") return JSON.stringify(design.overview, null, 2);
   const gaps = request.gaps ?? design.overview.gaps;
   const errors = request.gaps !== undefined ? overviewFindings(design, gaps) : [];
@@ -359,12 +374,11 @@ export function documentTool(ctx, args) {
 
 export function approve(ctx, args) {
   const tool = "design-approve";
-  const request = arg(args, "request") ?? {};
+  const { design } = jobDesign(ctx, args, tool);
+  const request = requestOf(ctx, args, "approve", tool);
   if (!/^[A-Za-z0-9_]{1,100}$/.test(request.planName)) {
     throw new RuntimeError(`${tool} rejected: planName must match ^[A-Za-z0-9_]{1,100}$. Provided value: '${request.planName}'.`);
   }
-  const { design } = jobDesign(ctx, args, tool);
-  check(ctx, "approve", request, tool);
   const findings = runChecks(design);
   if (findings.errors.length) {
     return {
@@ -385,9 +399,8 @@ export function approve(ctx, args) {
 
 export function operationStatus(ctx, args) {
   const tool = "design-operation-status";
-  const request = arg(args, "request") ?? {};
   const { design } = jobDesign(ctx, args, tool);
-  check(ctx, "operationStatus", request, tool);
+  const request = requestOf(ctx, args, "operationStatus", tool);
   const unknown = request.ids.filter((id) => !design.path.operations.some((o) => o.id === id));
   if (unknown.length) throw new RuntimeError(`${tool} rejected: unknown operation ids ${unknown.join(", ")}; no flag changed`);
   for (const operation of design.path.operations) if (request.ids.includes(operation.id)) operation.implementationStatus = request.status;
@@ -439,9 +452,8 @@ function entryHash(path) {
 
 export function iterationOpen(ctx, args) {
   const tool = "design-iteration-open";
-  const request = arg(args, "request") ?? {};
   const { design } = jobDesign(ctx, args, tool);
-  check(ctx, "iterationOpen", request, tool);
+  const request = requestOf(ctx, args, "iterationOpen", tool);
   const open = design.iterations.find((it) => it.status === "Open");
   if (open) throw new RuntimeError(`${tool} rejected: iteration ${open.id} is still open; close it with design-iteration-close first.`);
   const requested = arg(request, "workspacePath");
@@ -459,9 +471,8 @@ export function iterationOpen(ctx, args) {
 
 export function iterationClose(ctx, args) {
   const tool = "design-iteration-close";
-  const request = arg(args, "request") ?? {};
   const { design } = jobDesign(ctx, args, tool);
-  check(ctx, "iterationClose", request, tool);
+  const request = requestOf(ctx, args, "iterationClose", tool);
   const iteration = design.iterations.find((it) => it.id === request.iterationId);
   if (!iteration) throw new RuntimeError(`${tool} rejected: iteration ${request.iterationId} does not exist`);
   if (iteration.status === "Closed") throw new RuntimeError(`${tool} rejected: iteration ${iteration.id} is already closed; nothing was modified`);

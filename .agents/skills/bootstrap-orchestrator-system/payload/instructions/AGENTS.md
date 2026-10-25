@@ -18,7 +18,7 @@ Full role contracts live in `{{AGENT_ROOT}}`. Do not restate them here.
 
 ## Runtime
 
-Every `#capability:<token>` in a role, skill or workflow instruction is an operation of the agentic system runtime or of an approved integration, bound for this repository. Runtime operations run as `node {{RUNTIME_ROOT}}/bin/agentic-system.mjs <token>`; pass large payloads with `--json <file>`.
+Every `#capability:<token>` in a role, skill or workflow instruction is an operation of the agentic system runtime or of an approved integration, bound for this repository. Runtime operations run as `node {{RUNTIME_ROOT}}/bin/agentic-system.mjs <token>`; pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `{{RUNTIME_ROOT}}/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`. Read the contract before an operation's first call.
 
 - Session memory, the event log and artifacts are the session files under `{{SESSIONS_ROOT}}/<sessionId>/`, never the client's own memory feature.
 - Workflow instructions are served one at a time by the runtime. Never open `{{RUNTIME_ROOT}}/workflows/` directly.
