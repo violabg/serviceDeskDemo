@@ -1,3 +1,6 @@
+---
+
+---
 # When to read this
 
 Use this before creating or refactoring interactive dashboard forms, especially when forms call server actions.
@@ -39,6 +42,30 @@ Do not use this for static read-only views without user input, or for server-onl
 - Keep mutation authority on server actions; use client form state only for orchestration and validation.
 - Use `useTransition` for submit/check pending states when a form triggers async server actions.
 - Mark required fields visually with `*` in labels.
+- Build one form component per entity for both creation and edit (see Shared Create and Edit Forms).
+- Give every view that can be in edit state a Cancel control (see Cancel Control in Edit State).
+- Keep the search and filter state of every results list in the URL search params, with a Reset Filters control (see URL-Driven Filter Forms).
+
+## Shared Create and Edit Forms
+
+- An entity has one form component for both creating and editing it. Use a separate create form and edit form only when a documented use case requires different fields or behavior.
+- The shared form receives a mode (`create` or `edit`), the entity's current values when editing, and the server action for that mode. The mode decides only the defaults, the title, the submit label and the action; the fields and validation rules are the same.
+- Place the shared form by the shared component placement rule: in the `_components` folder of the lowest route folder that contains both the create and the edit routes.
+- The shared form owns field state through react-hook-form and submits through the mode's server action, using the same transition pattern as other client forms.
+- The server action for each mode keeps its own permission check. A shared form never decides access by itself.
+
+## Cancel Control in Edit State
+
+- Every view that can be in edit state shows a Cancel control while that state is active.
+- Cancel leaves edit state, discards unsaved field changes and restores the read-only view with the last saved values.
+- Cancel is a client click action with no mutation: use `type="button"` with an `onClick` handler, not a submit button and not a link.
+
+## URL-Driven Filter Forms
+
+- Every list that shows results from a search or filter keeps its query state in URL search params. The URL alone must reproduce the list, so the search is part of the history entry and the browser back and forward buttons restore it.
+- Filter forms read their initial values from the URL search params. Submitting a search or filter writes the new values into the URL; the URL, not client state, is the authoritative filter state.
+- Each filter form has a Reset Filters control. It clears every filter field of the list, including fields in separate forms on the same page, and navigates to the list's base path without search params.
+- Reset Filters is a navigation action: render it with `Link` to the base path and `nativeButton={false}`, following the Base UI rule for navigation controls. Do not reset only the visible client state.
 
 ## Field composition rules
 
@@ -92,3 +119,7 @@ Do not use this for static read-only views without user input, or for server-onl
 - Omitting required field marker `*` on mandatory inputs.
 - Using `useTransition` without exposing pending state in submit/check controls.
 - Replacing server action checks with client-only guard logic.
+- Building a separate create form and edit form for the same entity without a documented use case.
+- Keeping search or filter values only in client state, so a reload or back navigation loses the results.
+- Clearing only the visible filter fields with a Reset Filters control that does not change the URL.
+- Leaving an edit view without a Cancel control, or making Cancel a submit button that saves the changes.

@@ -86,7 +86,7 @@ Use this sequence when introducing an independently protected section such as as
 - Permission creation source of truth is code constants in access-control.
 - Permission persistence runs through bootstrapAccessControl in server access-control.
 - Role assignment happens through admin role management pages and actions.
-- User effective permissions are resolved server-side as an allow-only union of role permissions and then used to filter navigation and protect routes.
+- User effective permissions are resolved server-side as an allow-only union of role permissions, plus the keys implied by each manage and write (manage implies write and read; write implies read), and then used to filter navigation and protect routes.
 
 ## Security and Auth Implications
 
@@ -101,5 +101,6 @@ Use this sequence when introducing an independently protected section such as as
 - Adding a navigation item without requiredPermission.
 - Adding permission checks only in UI and skipping server enforcement.
 - Forgetting tests when introducing a new navigation group or permission-dependent section.
+- Writing a read check that excludes users who hold only manage or write. The implied chain already gives them read, so such a check already passes for them.
 - Adding an independently gated database entity but skipping Admin role grants or the configured administrator's Admin assignment.
 - Running seed against an unapproved target or dropping an existing ACCESS_SECTIONS key without accounting for permission deletion.

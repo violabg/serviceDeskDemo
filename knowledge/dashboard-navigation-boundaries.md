@@ -45,7 +45,7 @@ Use this before adding or changing dashboard breadcrumbs, sidebar groups or link
 ### Sidebar ownership and visibility
 
 - `SERVICE_DESK_NAVIGATION` defines `Ticket Management` containing Customers at `/customers` and Tickets at `/tickets`, and `Access Management` containing Users at `/users` and Roles at `/roles`. These are metadata groups, not route folders or destination pages (`lib/service-desk-navigation.ts`).
-- Each item's `requiredPermission` is its exact section `read` key: `customers:read`, `tickets:read`, `users:read`, `roles:read`. `getReadableServiceDeskNavigationGroups` includes each item only when that key is present, and removes groups with no readable items. `getReadableServiceDeskNavigation` flattens the filtered groups. Permission keys are the union of role grants; `hasPermission` does not infer read from write or manage (`lib/service-desk-navigation.ts`, `lib/access-control.ts`).
+- Each item's `requiredPermission` is its exact section `read` key: `customers:read`, `tickets:read`, `users:read`, `roles:read`. `getReadableServiceDeskNavigationGroups` includes each item only when that key is present, and removes groups with no readable items. `getReadableServiceDeskNavigation` flattens the filtered groups. Effective permission keys are the union of role grants plus the implied keys of the manage → write → read chain (see `access-control.md`). A user with only `section:manage` or `section:write` therefore sees that section's navigation item (`lib/service-desk-navigation.ts`, `lib/access-control.ts`).
 - `AppSidebar` marks an item active for an exact destination or a descendant starting with destination plus `/`. A group is active when any readable child is active. Its `/dashboard` header link is separate from the filtered group metadata (`components/app-sidebar.tsx`). Each section has an icon mapping in `components/app-sidebar.tsx`, including `customers`.
 - In expanded mode, `NavMain` renders group toggles and child destination links. It opens active groups initially and opens active groups when a new items reference is received, while preserving other stored toggles. Open state is keyed by group title (`components/nav-main.tsx`).
 - In collapsed mode, `NavMain` flattens all supplied child destinations into links with icons, active state, tooltips and accessible names. It does not make the group heading a destination (`components/nav-main.tsx`).
@@ -61,7 +61,7 @@ Use this before adding or changing dashboard breadcrumbs, sidebar groups or link
 - Use a parenthesized route group when a folder only organizes related pages and should not add a URL segment. Use a normal segment when it intentionally belongs in the URL; check whether a landing page is required.
 - Do not fix grouping-only URL leakage by hiding the segment later in breadcrumbs; establish the intended route structure first.
 - Do not assume every visible pathname segment is a safe breadcrumb destination. Verify actual parent destinations when adding nested routes.
-- Keep sidebar visibility tied to exact section read grants and preserve removal of empty groups. Hidden links are not authorization: keep server-side page and operation checks.
+- Keep sidebar visibility tied to effective section read keys, which include the read implied by write, and preserve removal of empty groups. Hidden links are not authorization: keep server-side page and operation checks.
 - Preserve exact-or-descendant active matching with a slash boundary, and preserve accessible collapsed destination links when modifying grouped navigation.
 - Treat active state and group expansion as distinct state. Group titles currently key stored expansion state; changing labels can change that identity.
 - Use approved domain labels when they differ from folder names. Sidebar labels do not automatically become breadcrumb labels.
@@ -80,7 +80,7 @@ Use this before adding or changing dashboard breadcrumbs, sidebar groups or link
 - Treating sidebar groups or the helper folder name `admin` as proof of corresponding landing pages.
 - Creating an empty route folder and expecting a destination: a folder without a page file serves no URL.
 - Using a plain string prefix for active matching and accidentally matching a sibling path.
-- Granting navigation read access implicitly from write/manage, or treating hidden navigation as the access-control gate.
+- Hiding navigation from users who hold manage or write but not read, or treating hidden navigation as the access-control gate. The chain already gives them read, so they must see the item.
 - Losing visible destinations or accessible names when the sidebar collapses, or resetting unrelated group toggles after navigation.
 - Treating the Queue/Operations values in `NavMain` tests as production navigation metadata; they are fixtures.
 

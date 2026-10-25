@@ -130,6 +130,7 @@ async function getAdminData(actorUserId: string) {
 - `cacheLife("days")` uses the repo's custom preset: stale 7d, revalidate 7d, expire 30d.
 - Actor inputs remain part of the cache key and access-aware service call. The tag is shared across actor-keyed entries backed by the same records, so a write invalidates other authorized viewers' cached entries too.
 - New-ticket Customer, Asset, and technician options have a separate `ticketReferenceTag()` and use `cacheLife("minutes")`; ticket mutations do not invalidate unrelated reference data. Customer mutations do invalidate `ticketReferenceTag()`, because customer options appear in those choices.
+- Lists whose results come from URL search params pass the search and filter values into the `"use cache"` function as arguments, the same way actor inputs are passed. Each filter combination then has its own cache entry, and the shared list tag still covers every entry for the records.
 - These functions are module-level and not exported outside their page file unless the component is shared across routes.
 
 ## Component-Level Data Ownership
@@ -237,3 +238,4 @@ Role creation invalidates the roles list and user role options; role updates add
 - Do not give the client donut shell any data-fetching responsibility; pass server-rendered JSX as `children` instead.
 - Do not hard-code cache tag strings; always use the factory from the feature-local `cache-tags.ts` module.
 - Do not use `cacheLife("days")` without `cacheComponents: true` in `next.config.ts`.
+- Do not omit a list's search or filter values from the arguments of its `"use cache"` function; otherwise different filter combinations share one cache entry.
