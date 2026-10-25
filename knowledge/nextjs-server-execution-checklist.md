@@ -1,5 +1,6 @@
 ---
-
+tier: "PerContext"
+intent: "Before adding or changing Next.js app router pages, layouts, server actions, form submit wiring, or session and permission checks in the dashboard."
 ---
 # When to read this
 

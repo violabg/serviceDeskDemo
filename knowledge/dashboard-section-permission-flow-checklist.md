@@ -1,4 +1,5 @@
 ---
+tier: "PerContext"
 intent: "Before adding a database entity needing independent privileges or a new ACCESS_SECTIONS boundary and wiring its routes or navigation."
 ---
 # When to read this

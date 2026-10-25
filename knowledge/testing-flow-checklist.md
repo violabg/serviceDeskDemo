@@ -1,4 +1,5 @@
 ---
+tier: "PerContext"
 intent: "Before planning, creating, changing, or running tests or validation for repository work."
 ---
 # Testing Flow Checklist

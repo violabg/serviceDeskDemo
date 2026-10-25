@@ -1,5 +1,6 @@
 ---
-
+tier: "PerComponent"
+intent: "Before creating or refactoring interactive dashboard forms, shared create and edit forms, URL-driven filter forms, or form fields that submit server actions."
 ---
 # When to read this
 

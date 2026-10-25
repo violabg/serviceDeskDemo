@@ -1,3 +1,7 @@
+---
+tier: "PerComponent"
+intent: "Before creating or editing shared UI primitives, or navigation and action controls built on Base UI wrappers (buttons rendered as links, sidebar, breadcrumbs, select, textarea)."
+---
 # When to read this
 
 Use this checklist before creating or editing shared UI primitives and navigation/actions built on Base UI wrappers.
@@ -18,8 +22,6 @@ Use this checklist before creating or editing shared UI primitives and navigatio
 - components/app-sidebar.tsx
 - components/auth/logout-button.tsx
 - components.json
-
-## Base UI Composition Checklist
 
 ## Evidence
 

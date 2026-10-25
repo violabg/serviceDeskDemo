@@ -1,5 +1,6 @@
 ---
-
+tier: "PerComponent"
+intent: "Before creating any new UI component in pages, navigation or app chrome, to reuse existing shared primitives and decide where a shared component lives."
 ---
 # When to read this
 

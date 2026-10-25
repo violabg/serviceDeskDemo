@@ -1,4 +1,5 @@
 ---
+tier: "PerContext"
 intent: "When changing existing roles, permission assignments, read/write/manage policy, or diagnosing seed and effective-permission behavior."
 ---
 # Access Control Reference

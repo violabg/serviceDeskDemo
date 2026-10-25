@@ -1,4 +1,5 @@
 ---
+tier: "PerContext"
 intent: "When adding or refactoring pages, Server Action invalidation, or instant-navigation behavior involving caching or Suspense."
 ---
 # Next.js Cache Components and PPR Rendering Pattern

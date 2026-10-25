@@ -1,4 +1,5 @@
 ---
+tier: "PerContext"
 intent: "Before adding or changing dashboard breadcrumbs, sidebar groups or links, navigation visibility or active state, or dashboard route structure."
 ---
 # When to read this
