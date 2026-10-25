@@ -18,7 +18,7 @@ Full role contracts live in `.claude/agents (Claude Code), .github/agents (GitHu
 
 ## Runtime
 
-Every `#capability:<token>` in a role, skill or workflow instruction is an operation of the agentic system runtime or of an approved integration, bound for this repository. Runtime operations run as `node .agentic-system/bin/agentic-system.mjs <token>`; pass large payloads with `--json <file>`.
+Every `#capability:<token>` in a role, skill or workflow instruction is an operation of the agentic system runtime or of an approved integration, bound for this repository. Runtime operations run as `node .agentic-system/bin/agentic-system.mjs <token>`; pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `.agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`. Read the contract before an operation's first call.
 
 - Session memory, the event log and artifacts are the session files under `.agentic-system-sessions/<sessionId>/`, never the client's own memory feature.
 - Workflow instructions are served one at a time by the runtime. Never open `.agentic-system/workflows/` directly.

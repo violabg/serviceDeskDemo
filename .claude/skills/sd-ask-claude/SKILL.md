@@ -247,7 +247,7 @@ Acceptance criteria:
 
 Installed for Claude Code. This is how each `#capability:<token>` in this file runs here.
 
-- Runtime operations: run `node .agentic-system/bin/agentic-system.mjs <token>` from the repository root, where `<token>` is the capability name; pass large payloads with `--json <file>`. The runtime is required; when it cannot run, follow the procedure its contract under `.agentic-system/contracts/` gives and record that the gate ran instruction-only.
+- Runtime operations: run `node .agentic-system/bin/agentic-system.mjs <token>` from the repository root, where `<token>` is the capability name; pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `.agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`. The runtime is required; when it cannot run, follow the procedure its contract under `.agentic-system/contracts/` gives and record that the gate ran instruction-only.
 - `#capability:visual-evidence`: Read a local image with the Read tool. For an image attached to an issue (github.com/user-attachments URL), the GitHub MCP server does not return its bytes: ask the user to save it into the session folder and read it from there.
 - Tool limits: this role may read files, search files, ask the user, run the runtime command. The client does not enforce them here, so they are instructions: stay within them.
 - Use the terminal only to run the runtime command above.

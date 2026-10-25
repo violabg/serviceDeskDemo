@@ -46,7 +46,9 @@ export function normalizeAnswers(raw, profiles) {
     const delegation = env.delegation ?? "native";
     need(["native", "subprocess"].includes(delegation), `${where}.delegation must be native or subprocess`);
     if (delegation === "subprocess") need(Boolean(profile?.delegation.subprocess), `${where}: ${env.profile} has no subprocess command; the workflows are blocked in this client`);
-    return { ...env, profile, profileId: env.profile, route, delegation, bindings: env.bindings ?? {}, roleTools: env.roleTools ?? {}, verification: env.verification ?? {} };
+    const skillSuffix = env.skillSuffix ?? "";
+    need(/^(-[a-z0-9]+)*$/.test(skillSuffix), `${where}.skillSuffix must be empty or hyphen-led lowercase segments, for example -claude`);
+    return { ...env, profile, profileId: env.profile, route, delegation, skillSuffix, bindings: env.bindings ?? {}, roleTools: env.roleTools ?? {}, verification: env.verification ?? {} };
   });
   if (errors.length) throw new InstallError(errors.join("\n"));
 

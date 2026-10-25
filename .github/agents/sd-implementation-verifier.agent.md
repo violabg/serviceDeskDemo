@@ -68,6 +68,6 @@ Termination: the orchestrator repairs what you report. Return `PASS` only when n
 
 Installed for GitHub Copilot in VS Code. This is how each `#capability:<token>` in this file runs here.
 
-- Runtime operations: run `node .agentic-system/bin/agentic-system.mjs <token>` from the repository root, where `<token>` is the capability name; pass large payloads with `--json <file>`. The runtime is required; when it cannot run, follow the procedure its contract under `.agentic-system/contracts/` gives and record that the gate ran instruction-only.
+- Runtime operations: run `node .agentic-system/bin/agentic-system.mjs <token>` from the repository root, where `<token>` is the capability name; pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `.agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`. The runtime is required; when it cannot run, follow the procedure its contract under `.agentic-system/contracts/` gives and record that the gate ran instruction-only.
 - Tool limits: this role may read files, search files, run the runtime command. The client enforces the tool list in this file.
 - Use the terminal only to run the runtime command above.
