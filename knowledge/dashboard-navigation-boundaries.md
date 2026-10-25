@@ -6,22 +6,7 @@ intent: "Before adding or changing dashboard breadcrumbs, sidebar groups or link
 
 Use this before adding or changing dashboard breadcrumbs, sidebar groups or links, navigation visibility or active state, or dashboard route structure.
 
-## Last verified
-
-2026-10-24, current working tree. Read-only source and existing-test inspection; no browser navigation, authenticated runtime, database operation or product test execution was performed.
-
-- `components/dashboard-breadcrumbs.tsx` and `components/dashboard-breadcrumbs.test.tsx`
-- `lib/service-desk-navigation.ts` and `lib/service-desk-navigation.test.ts`
-- `components/app-sidebar.tsx` and `components/app-sidebar.test.tsx`
-- `components/nav-main.tsx` and `components/nav-main.test.tsx`
-- `app/(dashboard)/layout.tsx` and the dashboard, customers, users, roles and tickets page sources listed below
-- `app/(dashboard)/admin/_lib/current-application-user.ts`, `lib/access-control.ts` and `getDashboardAccessForSessionUser` in `lib/access-control/server.ts`
-- `CONTEXT.md` records vocabulary.
-- [Official Next.js Route Groups documentation](https://nextjs.org/docs/app/api-reference/file-conventions/route-groups), retrieved 2026-09-27; displayed version 16.3.6 matches the repository dependency. Parenthesized organizational folders do not contribute public URL segments.
-
 ## Dashboard Navigation Boundaries
-
-## Evidence
 
 ### Route ownership
 
@@ -84,10 +69,3 @@ Use this before adding or changing dashboard breadcrumbs, sidebar groups or link
 - Hiding navigation from users who hold manage or write but not read, or treating hidden navigation as the access-control gate. The chain already gives them read, so they must see the item.
 - Losing visible destinations or accessible names when the sidebar collapses, or resetting unrelated group toggles after navigation.
 - Treating the Queue/Operations values in `NavMain` tests as production navigation metadata; they are fixtures.
-
-## Existing coverage and limits
-
-- Navigation helper tests cover read filtering, group removal/order and ticket inclusion. Sidebar tests cover readable items and nested active state while mocking `NavMain` and sidebar primitives (`lib/service-desk-navigation.test.ts`, `components/app-sidebar.test.tsx`).
-- `NavMain` tests cover collapsed destinations/icons/names/tooltips, expanded grouped links, empty groups and reopening a newly active group while preserving another toggle (`components/nav-main.test.tsx`).
-- Breadcrumb tests cover mapped/fallback labels, `/users` href, current-page markup, sibling list items and empty root output. They do not verify actual route availability, permission-aware destinations or record labels (`components/dashboard-breadcrumbs.test.tsx`).
-- The inspected test files were not re-run in this pass, and their assertions were not re-read for the Customers item; these statements describe source behavior, not a passing test run or verified authenticated navigation.

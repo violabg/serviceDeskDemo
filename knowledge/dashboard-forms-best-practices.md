@@ -1,6 +1,6 @@
 ---
 tier: "PerComponent"
-intent: "Before creating or refactoring interactive dashboard forms, shared create and edit forms, URL-driven filter forms, or form fields that submit server actions."
+intent: "Before creating or refactoring interactive dashboard forms, URL-driven filter forms, or form fields that submit server actions."
 ---
 # When to read this
 
@@ -10,30 +10,7 @@ Use this before creating or refactoring interactive dashboard forms, especially 
 
 Do not use this for static read-only views without user input, or for server-only data loaders with no client form state.
 
-## Last verified
-
-2026-07-22, dirty worktree. Evidence from repository files:
-
-- components.json
-- package.json
-- components/ui/field.tsx
-- components/ui/select.tsx
-- components/ui/textarea.tsx
-- app/(dashboard)/tickets/new/new-ticket-form.tsx
-- app/(dashboard)/tickets/[id]/ticket-detail-forms.tsx
-- app/(dashboard)/tickets/ticket-filters-form.tsx
-- app/(dashboard)/tickets/actions.ts
-
 ## Dashboard Forms Best Practices
-
-## Evidence
-
-- Project is configured for shadcn Base UI style (`base-vega`) and aliases in components.json.
-- Interactive ticket forms use react-hook-form `useForm` and `Controller` for managed field state.
-- The shared `Field` family exists in `components/ui/field.tsx` and is already used by ticket forms for labels and validation states.
-- Ticket forms use shadcn Base UI controls (`Select`, `Textarea`, `Input`) instead of native select/textarea styling blocks.
-- Client forms submit to server actions and then refresh navigation state.
-- Pending submission states are managed with `useTransition` in interactive forms.
 
 ## Core rules
 
@@ -43,14 +20,16 @@ Do not use this for static read-only views without user input, or for server-onl
 - Keep mutation authority on server actions; use client form state only for orchestration and validation.
 - Use `useTransition` for submit/check pending states when a form triggers async server actions.
 - Mark required fields visually with `*` in labels.
-- Build one form component per entity for both creation and edit (see Shared Create and Edit Forms).
 - Give every view that can be in edit state a Cancel control (see Cancel Control in Edit State).
 - Keep the search and filter state of every results list in the URL search params, with a Reset Filters control (see URL-Driven Filter Forms).
 
-## Shared Create and Edit Forms
+## Create and Edit Forms
 
-- An entity has one form component for both creating and editing it. Use a separate create form and edit form only when a documented use case requires different fields or behavior.
-- The shared form receives a mode (`create` or `edit`), the entity's current values when editing, and the server action for that mode. The mode decides only the defaults, the title, the submit label and the action; the fields and validation rules are the same.
+- The user story decides whether an entity's create and edit forms are one component or two. Record that decision in the plan.
+- When the user story does not decide it, assume one shared form component for creating and editing the entity. This assumption is not a project rule: remove it during evaluation planning.
+- A separate create form and edit form is allowed when the user story needs different fields or behavior. Report the separate forms in the plan; this is not a blocking question.
+- A form may also render read-only in the entity's view section. This is an option, not a requirement; use it when the user story or the plan asks for it.
+- The shared form receives a mode (`create` or `edit`), the entity's current values when editing, and the server action for that mode. The mode decides only the defaults, the title, the submit label and the action. A shared form keeps the same fields and validation rules in both modes.
 - Place the shared form by the shared component placement rule: in the `_components` folder of the lowest route folder that contains both the create and the edit routes.
 - The shared form owns field state through react-hook-form and submits through the mode's server action, using the same transition pattern as other client forms.
 - The server action for each mode keeps its own permission check. A shared form never decides access by itself.
@@ -120,7 +99,6 @@ Do not use this for static read-only views without user input, or for server-onl
 - Omitting required field marker `*` on mandatory inputs.
 - Using `useTransition` without exposing pending state in submit/check controls.
 - Replacing server action checks with client-only guard logic.
-- Building a separate create form and edit form for the same entity without a documented use case.
 - Keeping search or filter values only in client state, so a reload or back navigation loses the results.
 - Clearing only the visible filter fields with a Reset Filters control that does not change the URL.
 - Leaving an edit view without a Cancel control, or making Cancel a submit button that saves the changes.

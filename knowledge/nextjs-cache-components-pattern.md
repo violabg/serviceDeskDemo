@@ -9,34 +9,6 @@ intent: "When adding or refactoring pages, Server Action invalidation, or instan
 When adding or refactoring admin or dashboard pages that need caching, skeleton loading
 states, or must opt out of full dynamic rendering per request.
 
-## Last verified
-
-2026-10-24, current working tree. Evidence from repository files and the Next.js 16.3.6 caching, revalidation, and instant-navigation guides:
-
-- `next.config.ts` — `cacheComponents: true` and custom `days` life preset
-- `app/(dashboard)/admin/_lib/cache-tags.ts` — admin tag factory functions
-- `app/(dashboard)/tickets/_lib/cache-tags.ts` — ticket tag factory functions
-- `app/(dashboard)/customers/_lib/cache-tags.ts` — customer tag factory functions
-- `app/(dashboard)/customers/page.tsx` and `[id]/page.tsx` — customer page pattern
-- `app/(dashboard)/customers/actions.ts` — `updateTag` after customer mutations
-- `app/(dashboard)/(admin)/roles/page.tsx` and `[roleId]/page.tsx` — full page pattern
-- `app/(dashboard)/(admin)/users/page.tsx` and `[userId]/page.tsx` — full page pattern
-- `app/(dashboard)/layout.tsx` — layout Suspense shell
-- `app/(dashboard)/admin/_lib/current-application-user.ts` — request and access boundary
-- `app/(dashboard)/(admin)/actions.ts` — `updateTag` after mutations
-- `app/(dashboard)/tickets/actions.ts` — `updateTag` after ticket mutations
-- `app/(dashboard)/tickets/new/page.tsx` — separately cached reference data
-- `app/login/page.tsx`, `app/page.tsx`, `app/pending-access/page.tsx` — public page pattern
-- Next.js 16.3.6 docs: [Caching](https://nextjs.org/docs/app/getting-started/caching), [Revalidating](https://nextjs.org/docs/app/getting-started/revalidating), [Instant Navigation](https://nextjs.org/docs/app/guides/instant-navigation), and [Partial Prefetching](https://nextjs.org/docs/app/guides/adopting-partial-prefetching).
-
-## Evidence
-
-- `next.config.ts` sets `cacheComponents: true` and defines a `days` preset (stale: 7d, revalidate: 7d, expire: 30d).
-- Admin pages put access-gated content behind Suspense; `requireCurrentApplicationAccess()` calls `connection()` before checking the session. Public pages call `connection()` in their async content components.
-- Admin, customer and ticket data-fetching functions use `"use cache"`, `cacheLife("days")`, and shared `cacheTag(...)` values; new-ticket reference data uses `cacheLife("minutes")`.
-- Server actions call `updateTag` for immediately fresh data after writes.
-- Cache tag factories are feature-local under route-domain `_lib/cache-tags.ts` modules, with separate factories for admin, customers and tickets.
-
 ## Static-First Principle
 
 The primary goal is to render as much content as possible as static HTML at server time, before any data is fetched. Only content that genuinely depends on runtime data belongs inside a Suspense boundary.
@@ -222,11 +194,11 @@ updateTag(adminUserDetailTag(targetUserId))
 updateTag(adminUsersListTag())
 ```
 
-Role creation invalidates the roles list and user role options; role updates additionally invalidate that role's detail. Ticket creation invalidates the list before redirect; status, priority, and technician changes invalidate detail and list; notes invalidate only detail. Customer creation invalidates the customer list, the ticket list and `ticketReferenceTag()`. Customer updates and status changes (manage-gated) additionally invalidate that customer's detail and the detail of each ticket linked to it. Invalidate each affected data dependency, not every tag in the feature. `revalidateTag(tag, "max")` allows stale content while refreshing and is suitable only when that delay is acceptable. `revalidatePath` remains supported with Cache Components for route-wide invalidation, but known tags are more precise. Source: the action modules listed above and the Next.js 16.3.6 revalidation guide.
+Role creation invalidates the roles list and user role options; role updates additionally invalidate that role's detail. Ticket creation invalidates the list before redirect; status, priority, and technician changes invalidate detail and list; notes invalidate only detail. Customer creation invalidates the customer list, the ticket list and `ticketReferenceTag()`. Customer updates and status changes (manage-gated) additionally invalidate that customer's detail and the detail of each ticket linked to it. Invalidate each affected data dependency, not every tag in the feature. `revalidateTag(tag, "max")` allows stale content while refreshing and is suitable only when that delay is acceptable. `revalidatePath` remains supported with Cache Components for route-wide invalidation, but known tags are more precise.
 
 ## Instant Navigation Check
 
-`next.config.ts` enables Cache Components and Partial Prefetching. Page-level Suspense boundaries below a shared layout can provide fallbacks on client transitions; a boundary above an already-mounted shared layout cannot cover content changing beneath it. Automatic link prefetch does not run in `next dev`, so a clean development error report or visible skeleton does not prove instant navigation. Inspect the initial UI and navigation in a production build before promising instant transitions. Source: `next.config.ts`, the dashboard pages and layout, and the Next.js 16.3.6 instant-navigation and partial-prefetching guides.
+`next.config.ts` enables Cache Components and Partial Prefetching. Page-level Suspense boundaries below a shared layout can provide fallbacks on client transitions; a boundary above an already-mounted shared layout cannot cover content changing beneath it. Automatic link prefetch does not run in `next dev`, so a clean development error report or visible skeleton does not prove instant navigation. Inspect the initial UI and navigation in a production build before promising instant transitions.
 
 ## Pitfalls to avoid
 

@@ -14,6 +14,4 @@ Read this before changing ticket creation, ticket status, priority or technician
 - Every status, priority, technician or note change writes an activity record. The activity log is the audit trail.
 - Reopening a Closed ticket needs the manage permission; every other ticket change needs write.
 - Changing priority moves the SLA breach time, counted from the original creation time.
-- New-ticket reference data (customers, assets, technicians) is cached, and customer changes refresh it.
-- Each status, priority and technician edit has its own Cancel control, and Cancel writes no activity.
-- The ticket list keeps its filters in the URL, including the SLA-breached filter.
+- Cancelling a status, priority or technician edit writes no activity record.

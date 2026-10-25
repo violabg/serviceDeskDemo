@@ -6,26 +6,7 @@ intent: "Before creating any new UI component in pages, navigation or app chrome
 
 Use this checklist before creating new UI components in pages, navigation, or app chrome to avoid duplicating patterns already implemented in shared primitives.
 
-## Last verified
-
-2026-07-18, commit 71a9195, dirty worktree. Evidence from repository files:
-
-- components/ui/button.tsx
-- components/ui/input.tsx
-- components/ui/sidebar.tsx
-- components/ui/sheet.tsx
-- components/nav-main.tsx
-- components/nav-user.tsx
-- components/app-sidebar.tsx
-- lib/utils.ts
-
 ## Shared Component Reuse Checklist
-
-## Evidence
-
-- Shared UI wrappers already exist for common controls and composition: button, input, sidebar, and sheet.
-- Navigation components compose around shared sidebar primitives instead of custom one-off wrappers.
-- Shared utility for class merging is centralized in cn() and reused by UI wrappers.
 
 ## Reuse rules
 
@@ -38,8 +19,8 @@ Use this checklist before creating new UI components in pages, navigation, or ap
 ## When to create a new shared component
 
 - Share as much as possible: when two UI parts have similar functionality and purpose, build one common component and use it in both places, even when both live in the same feature.
-- Do not wait for a second feature surface before sharing. A single entity's creation form and edit form are one shared component.
-- An entity with a create flow and an edit flow uses one shared form component for both. Split them only when a documented use case requires different fields or behavior.
+- Do not wait for a second feature surface before sharing.
+- Create and edit forms follow the form rules in `dashboard-forms-best-practices.md`.
 - Prefer thin wrappers around existing primitives over custom isolated controls.
 
 ## Where a shared component lives
@@ -62,6 +43,5 @@ Use this checklist before creating new UI components in pages, navigation, or ap
 - Duplicating sidebar or menu behavior outside shared navigation components.
 - Creating local class-merging utilities instead of using cn().
 - Introducing one-off primitives that overlap with existing components/ui wrappers.
-- Keeping a duplicate create form and edit form for the same entity.
 - Copying a list's filter or results markup into a second page instead of sharing one component.
 - Leaving a shared component in one route folder while another route imports it, or copying it into the other route.

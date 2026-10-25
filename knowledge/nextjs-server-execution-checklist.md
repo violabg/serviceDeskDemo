@@ -6,36 +6,7 @@ intent: "Before adding or changing Next.js app router pages, layouts, server act
 
 Use this checklist before adding or changing pages, layouts, and mutations in the Next.js app router, especially in dashboard and admin areas.
 
-## Last verified
-
-2026-10-24, current working tree. Evidence from repository files:
-
-- AGENTS.md
-- app/(dashboard)/(admin)/actions.ts
-- app/(dashboard)/customers/actions.ts
-- app/(dashboard)/customers/page.tsx
-- app/(dashboard)/layout.tsx
-- app/(dashboard)/(admin)/roles/page.tsx
-- app/(dashboard)/(admin)/roles/[roleId]/page.tsx
-- app/(dashboard)/(admin)/users/[userId]/page.tsx
-- app/(dashboard)/tickets/actions.ts
-- app/(dashboard)/admin/_lib/current-application-user.ts
-- app/(dashboard)/tickets/new/new-ticket-form.tsx
-- app/(dashboard)/tickets/[id]/ticket-detail-forms.tsx
-- components/app-sidebar.tsx
-- lib/auth/server.ts
-- lib/auth/client.ts
-
 ## Next.js Server Execution Checklist
-
-## Evidence
-
-- Admin server actions are centralized in one module with "use server": app/(dashboard)/(admin)/actions.ts.
-- Customer server actions are centralized the same way in app/(dashboard)/customers/actions.ts. Each action returns a result object (`{ ok: true, ... }` or `{ ok: false, reason }`) instead of throwing for permission failures.
-- Admin pages invoke server actions via form action handlers: app/(dashboard)/(admin)/roles/page.tsx, app/(dashboard)/(admin)/roles/[roleId]/page.tsx, app/(dashboard)/(admin)/users/[userId]/page.tsx.
-- Ticket forms invoke server actions from client submit handlers when react-hook-form state and `useTransition` orchestration are needed: app/(dashboard)/tickets/new/new-ticket-form.tsx, app/(dashboard)/tickets/[id]/ticket-detail-forms.tsx, app/(dashboard)/tickets/actions.ts.
-- Dashboard layout is server-first and performs session plus permission gating before render: app/(dashboard)/layout.tsx.
-- Client-only auth helper is isolated behind "use client": lib/auth/client.ts, while server auth is separate in lib/auth/server.ts.
 
 ## Core rules
 

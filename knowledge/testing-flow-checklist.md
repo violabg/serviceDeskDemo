@@ -12,23 +12,6 @@ Read this before planning, creating, changing, or running tests for approved dem
 
 Do not use this for broad app architecture or UI composition decisions that do not change test scope or validation order.
 
-## Last verified
-
-2026-10-24, current working tree. Evidence from repository files:
-
-- `package.json` — scripts `lint` (`eslint`), `typecheck` (`tsc --noEmit`), `test` (`vitest run`), `db:seed`
-- `vitest.config.ts`
-- `AGENTS.md` — repository validation rule: `pnpm lint && pnpm typecheck && pnpm test` before handing work back
-- `.claude/agents/sd-implementation-verifier.md`, `.claude/agents/sd-design-verifier.md`, `.claude/agents/sd-code-implementor.md` and their `.github/agents/sd-*.agent.md` counterparts — current role contracts
-- The earlier demo agents (`demo-planner`, `demo-implementor`, `demo-integration-tester`) and `docs/agents/*` references no longer exist in this repository.
-
-## Evidence
-
-- Repo uses Vitest through `pnpm test`.
-- Repo uses `tsc --noEmit` through `pnpm typecheck`.
-- Repo does not define a dedicated lint script narrower than the top-level `eslint` entry.
-- Approved test work already targets repo-owned forms, pages, actions, and services rather than `components/ui/**` primitives. No test file exists under `components/ui/**`.
-
 ## Core rules
 
 - Never create or extend tests for files under `components/ui/**` unless the user explicitly overrides that rule.
