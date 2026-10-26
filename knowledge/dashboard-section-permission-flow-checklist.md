@@ -37,6 +37,7 @@ Use this sequence when introducing an independently protected section such as as
 4. Update automated tests in the same PR
 
 - Extend lib/access-control.test.ts to assert the new section is in ACCESS_SECTIONS and receives read/write/manage generated permissions.
+- Extend lib/access-control.test.ts to assert that a role holding only section-id:write or section-id:manage does not resolve section-id:read, and that a role holding section-id:write together with section-id:read resolves both.
 - Extend lib/service-desk-navigation.test.ts for section visibility with and without section-id:read.
 - Add or update route/action tests for server-side read and write/manage gates where the section introduces new behavior.
 
@@ -55,13 +56,14 @@ Use this sequence when introducing an independently protected section such as as
 - Confirm the intended administrator can read and use the new section after bootstrap and that another user lacking its key cannot access it.
 - For a navigable section, confirm it appears in sidebar only for users with section-id:read in effective permissions.
 - Confirm route-level access remains blocked when permission is missing even if a user can reach the URL manually.
+- When assigning a write or manage permission to a role through role management, confirm the same role also holds the section's read permission. A role without read does not reach the section's pages even with write or manage.
 
 ## Permission Assignment Flow
 
 - Permission creation source of truth is code constants in access-control.
 - Permission persistence runs through bootstrapAccessControl in server access-control.
 - Role assignment happens through admin role management pages and actions.
-- User effective permissions are resolved server-side as an allow-only union of role permissions, plus the keys implied by each manage and write (manage implies write and read; write implies read), and then used to filter navigation and protect routes.
+- User effective permissions are resolved server-side as the union of the permissions granted on the user's roles. No key is implied: write and manage grants do not add read, so the read permission is assigned explicitly next to any write or manage permission (see `access-control.md`). The resolved keys then filter navigation and protect routes.
 
 ## Security and Auth Implications
 
@@ -76,6 +78,7 @@ Use this sequence when introducing an independently protected section such as as
 - Adding a navigation item without requiredPermission.
 - Adding permission checks only in UI and skipping server enforcement.
 - Forgetting tests when introducing a new navigation group or permission-dependent section.
-- Writing a read check that excludes users who hold only manage or write. The implied chain already gives them read, so such a check already passes for them.
+- Writing a read check that excludes users who hold only manage or write. Such users still need the read key granted explicitly; the read check is correct and must not be relaxed.
+- Assigning a write or manage permission to a role or user without the section's read permission.
 - Adding an independently gated database entity but skipping Admin role grants or the configured administrator's Admin assignment.
 - Running seed against an unapproved target or dropping an existing ACCESS_SECTIONS key without accounting for permission deletion.

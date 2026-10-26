@@ -71,6 +71,16 @@ async function SomePageContent() {
 
 `requireCurrentApplicationAccess()` calls `connection()` and performs session and dashboard access checks. The page checks its section permission before rendering protected data. Do not add a duplicate `connection()` to every page.
 
+Pages that filter by URL search params receive `searchParams` as a Promise in Next.js 16. Await it in the content component, together with the access check, and not in the sync route shell, so the shell stays prerenderable. The searched values are then passed to the cached data function as arguments (see Cached data below).
+
+```tsx
+async function SomeListContent({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const [{ q }, access] = await Promise.all([searchParams, requireCurrentApplicationAccess()])
+  const data = await getSomeList(access.user.id, q)
+  return <SomeList data={data} />
+}
+```
+
 ### Cached data (within content or a separate section)
 
 ```tsx
@@ -194,7 +204,7 @@ updateTag(adminUserDetailTag(targetUserId))
 updateTag(adminUsersListTag())
 ```
 
-Role creation invalidates the roles list and user role options; role updates additionally invalidate that role's detail. Ticket creation invalidates the list before redirect; status, priority, and technician changes invalidate detail and list; notes invalidate only detail. Customer creation invalidates the customer list, the ticket list and `ticketReferenceTag()`. Customer updates and status changes (manage-gated) additionally invalidate that customer's detail and the detail of each ticket linked to it. Invalidate each affected data dependency, not every tag in the feature. `revalidateTag(tag, "max")` allows stale content while refreshing and is suitable only when that delay is acceptable. `revalidatePath` remains supported with Cache Components for route-wide invalidation, but known tags are more precise.
+Role creation invalidates the roles list and user role options; role updates additionally invalidate that role's detail. Ticket creation invalidates the list before redirect; status, priority, and technician changes invalidate detail and list; notes invalidate only detail. Customer creation invalidates the customer list, the ticket list and `ticketReferenceTag()`. Customer updates and status changes (manage-gated) additionally invalidate that customer's detail and the detail of each ticket linked to it. Invalidate each affected data dependency, not every tag in the feature. `revalidateTag(tag, "max")` marks the tag stale: the next visit serves stale content while fresh content loads in the background, so use it only when that delay is acceptable. `revalidatePath` remains supported with Cache Components for route-wide invalidation, but known tags are more precise.
 
 ## Instant Navigation Check
 
@@ -212,3 +222,4 @@ Role creation invalidates the roles list and user role options; role updates add
 - Do not hard-code cache tag strings; always use the factory from the feature-local `cache-tags.ts` module.
 - Do not use `cacheLife("days")` without `cacheComponents: true` in `next.config.ts`.
 - Do not omit a list's search or filter values from the arguments of its `"use cache"` function; otherwise different filter combinations share one cache entry.
+- Do not await `searchParams` in the sync route shell; await it in the content component.

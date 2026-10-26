@@ -20,7 +20,7 @@ Do not use this for static read-only views without user input, or for server-onl
 - Keep mutation authority on server actions; use client form state only for orchestration and validation.
 - Use `useTransition` for submit/check pending states when a form triggers async server actions.
 - Mark required fields visually with `*` in labels.
-- Give every view that can be in edit state a Cancel control (see Cancel Control in Edit State).
+- Keep the edit state of every view that can be edited in the URL search params, with a Cancel control that leaves that state through a URL change (see Cancel Control in Edit State).
 - Keep the search and filter state of every results list in the URL search params, with a Reset Filters control (see URL-Driven Filter Forms).
 
 ## Create and Edit Forms
@@ -36,14 +36,20 @@ Do not use this for static read-only views without user input, or for server-onl
 
 ## Cancel Control in Edit State
 
+- Edit state is a URL search param on the view's own path (for example `?edit=true`). The URL alone decides whether the view is read-only or editable, so the edit state survives a reload and the browser back and forward buttons restore it.
+- Entering edit state is a navigation: the Edit control is a `Link` or a `router.push` that adds the edit param. Do not keep edit state only in React state (`useState`).
 - Every view that can be in edit state shows a Cancel control while that state is active.
-- Cancel leaves edit state, discards unsaved field changes and restores the read-only view with the last saved values.
-- Cancel is a client click action with no mutation: use `type="button"` with an `onClick` handler, not a submit button and not a link.
+- Cancel leaves edit state by navigating to the same path without the edit param. Render it with `Link` and `nativeButton={false}`, following the Base UI rule for navigation controls. It is not a submit button and not a `type="button"` click handler.
+- Cancel discards unsaved field changes. Field values live only in the form, and the read-only view renders the last saved values that the server returns for the path.
+- Cancel never mutates data.
+- A successful save leaves edit state through the same URL change, so the read-only view shows the saved values.
 
 ## URL-Driven Filter Forms
 
 - Every list that shows results from a search or filter keeps its query state in URL search params. The URL alone must reproduce the list, so the search is part of the history entry and the browser back and forward buttons restore it.
+- Server pages read the params through the `searchParams` prop, which is a Promise in Next.js 16. Await it in the Server Component that renders the list, inside its Suspense boundary, and pass the values to the cached data function (see `nextjs-cache-components-pattern.md`). Client components read the params with `useSearchParams`.
 - Filter forms read their initial values from the URL search params. Submitting a search or filter writes the new values into the URL; the URL, not client state, is the authoritative filter state.
+- A filter form submits as a GET navigation: use `Form` from `next/form` with `action` set to the list's base path, or a native form with `method="GET"`, so each field name becomes a search param. A react-hook-form client form builds the same params with `URLSearchParams` and navigates with `router.push` or `router.replace`.
 - Each filter form has a Reset Filters control. It clears every filter field of the list, including fields in separate forms on the same page, and navigates to the list's base path without search params.
 - Reset Filters is a navigation action: render it with `Link` to the base path and `nativeButton={false}`, following the Base UI rule for navigation controls. Do not reset only the visible client state.
 
@@ -99,6 +105,8 @@ Do not use this for static read-only views without user input, or for server-onl
 - Omitting required field marker `*` on mandatory inputs.
 - Using `useTransition` without exposing pending state in submit/check controls.
 - Replacing server action checks with client-only guard logic.
-- Keeping search or filter values only in client state, so a reload or back navigation loses the results.
+- Keeping search, filter or edit state only in client state (`useState`), so a reload or back navigation loses it.
 - Clearing only the visible filter fields with a Reset Filters control that does not change the URL.
 - Leaving an edit view without a Cancel control, or making Cancel a submit button that saves the changes.
+- Making Cancel a `type="button"` click handler that only resets client state instead of navigating to the path without the edit param.
+- Awaiting `searchParams` in the route shell instead of the content component, which blocks the static shell from prerendering.
