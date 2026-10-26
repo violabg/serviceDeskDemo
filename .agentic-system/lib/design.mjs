@@ -54,10 +54,6 @@ function jobDesign(ctx, args, tool, options) {
   return { job, design: loadDesign(ctx, job.sessionId, job.designId, options) };
 }
 
-function documentPath(ctx, design) {
-  return designPaths(ctx, design.sessionId, design.designId).html;
-}
-
 // --- row tools --------------------------------------------------------------------------------------
 
 const ROW_TABLES = {
@@ -206,7 +202,7 @@ export function overview(ctx, args) {
   if (request.gaps !== undefined) design.overview.gaps = request.gaps;
   touch(ctx, design, "updated", "design-overview");
   saveDesign(ctx, design);
-  return JSON.stringify({ status: design.status, document: documentPath(ctx, design), currentState: Boolean(design.overview.currentState), gaps: Boolean(design.overview.gaps) });
+  return JSON.stringify({ status: design.status, currentState: Boolean(design.overview.currentState), gaps: Boolean(design.overview.gaps) });
 }
 
 // --- design submit ----------------------------------------------------------------------------------
@@ -317,7 +313,7 @@ export function submit(ctx, args) {
   }
   const findings = runChecks(design);
   return JSON.stringify(
-    { applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage, status: design.status, document: documentPath(ctx, design) },
+    { status: design.status, applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage },
     null,
     2,
   );
@@ -393,8 +389,8 @@ export function approve(ctx, args) {
   design.planDescription = request.description ?? null;
   design.modifiedAfterApproval = false;
   touch(ctx, design, "approved", `approved as ${request.planName}`);
-  const paths = saveDesign(ctx, design);
-  return `Design approved (${at.slice(0, 10)} ${at.slice(11, 19)}Z). Design document: ${paths.html}`;
+  saveDesign(ctx, design);
+  return `Design approved (${at.slice(0, 10)} ${at.slice(11, 19)}Z).`;
 }
 
 export function operationStatus(ctx, args) {
