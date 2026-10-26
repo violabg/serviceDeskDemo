@@ -1,5 +1,5 @@
 // Markdown projections of the design (contracts/projections.md). They are regenerated on every write.
-import { runChecks } from "./checks.mjs";
+import { placeholders, runChecks } from "./checks.mjs";
 import { shortTime } from "./util.mjs";
 
 const lower = (value) => (value ?? "").toString().toLowerCase();
@@ -96,8 +96,19 @@ export function snapshot(design) {
   return `${out.join("\n")}\n`;
 }
 
-// The per-obligation view the design verifier judges. Only obligation and element labels are kept: the
-// verifier judges the content presented, never the internal mapping.
+// The text each of the given anchors owns in an operation's instructions: from its placeholder to the next
+// placeholder. Instructions that name none of the anchors are returned whole.
+function mechanisms(instructions, refs) {
+  const text = instructions ?? "";
+  const found = placeholders(text);
+  const owned = found.flatMap((p, index) => (refs.has(p.ref) ? [oneLine(text.slice(p.start, found[index + 1]?.start ?? text.length))] : []));
+  return owned.length ? owned : [oneLine(text)];
+}
+
+// The view the design verifier judges. Only obligation and element labels are kept: the verifier judges the
+// content presented, never the internal mapping. Each obligation carries only the mechanisms its own
+// placeholders introduce; what an operation shares across obligations (failure arms, contracts, files) is
+// printed once, under the operation's name, so the view grows with the design and not with its fan-out.
 export function verificationView(design) {
   const p = design.path;
   const out = [`# Design verification view`, ""];
@@ -105,12 +116,12 @@ export function verificationView(design) {
     out.push("The design carries no obligation yet.");
     return `${out.join("\n")}\n`;
   }
+  const addressing = new Set();
   for (const obligation of design.obligations) {
     const refs = new Set([obligation.id, ...(obligation.elements ?? []).map((e) => `${obligation.id}.${e.id}`)]);
     const operations = p.operations.filter(
       (op) => (op.refObligations ?? []).includes(obligation.id) || (op.refElements ?? []).some((r) => refs.has(r)),
     );
-    const operationIds = new Set(operations.map((op) => op.id));
     const files = new Set(operations.flatMap((op) => op.files ?? []));
     out.push(`## ${obligation.id}`);
     out.push(`- claim: ${oneLine(obligation.behavior)}`);
@@ -120,20 +131,27 @@ export function verificationView(design) {
     out.push("- required elements:");
     for (const e of obligation.elements ?? []) out.push(`  - ${obligation.id}.${e.id} (${lower(e.kind)}) ${oneLine(e.text)}`);
     if (!obligation.elements?.length) out.push("  - none");
-    out.push("- operations that address it:");
+    out.push("- mechanisms (failure arms, contracts, files and decisions under Operations and Decisions):");
     if (operations.length === 0) out.push("  - none");
     for (const op of operations) {
-      out.push(`  - (${lower(op.kind)}) ${oneLine(op.operation)}`);
-      out.push(`    instructions: ${oneLine(op.instructions)}`);
-      for (const arm of failureArms(op)) out.push(`    ${arm}`);
+      addressing.add(op.id);
+      out.push(`  - in "${oneLine(op.operation)}" (${lower(op.kind)}):`);
+      for (const mechanism of mechanisms(op.instructions, refs)) out.push(`    - ${mechanism}`);
     }
-    const decisions = design.decisions.filter((d) => (d.realizedIn ?? []).some((r) => operationIds.has(r)));
-    out.push("- decisions behind them:");
-    if (decisions.length === 0) out.push("  - none");
-    for (const d of decisions) {
-      const chosen = d.options.find((o) => o.chosen);
-      out.push(`  - ${oneLine(d.question)} → ${oneLine(chosen?.text)}`);
-    }
+    const contracts = p.contracts.filter((c) => files.has(c.file));
+    const grounding = operations.filter((op) => op.source === "Knowledge").map((op) => oneLine(op.sourceRef));
+    for (const c of contracts) if (["Docs", "DocsPartial", "TeamKnowledge"].includes(c.evidence) && c.evidenceNote) grounding.push(oneLine(c.evidenceNote));
+    out.push(`- knowledge grounding: ${grounding.length ? [...new Set(grounding)].join("; ") : "none"}`);
+    out.push("");
+  }
+  out.push("# Operations", "");
+  for (const op of p.operations.filter((o) => addressing.has(o.id))) {
+    const files = new Set(op.files ?? []);
+    out.push(`## "${oneLine(op.operation)}" (${lower(op.kind)})`);
+    const arms = failureArms(op);
+    out.push("- failure arms:");
+    if (arms.length === 0) out.push("  - none");
+    for (const arm of arms) out.push(`  - ${arm}`);
     const contracts = p.contracts.filter((c) => files.has(c.file));
     out.push("- contracts:");
     if (contracts.length === 0) out.push("  - none");
@@ -142,10 +160,17 @@ export function verificationView(design) {
     out.push("- files:");
     if (fsRows.length === 0) out.push("  - none");
     for (const f of fsRows) out.push(`  - ${f.path} (${lower(f.status)}): ${oneLine(f.change)}`);
-    const grounding = operations.filter((op) => op.source === "Knowledge").map((op) => oneLine(op.sourceRef));
-    for (const c of contracts) if (["Docs", "DocsPartial", "TeamKnowledge"].includes(c.evidence) && c.evidenceNote) grounding.push(oneLine(c.evidenceNote));
-    out.push(`- knowledge grounding: ${grounding.length ? [...new Set(grounding)].join("; ") : "none"}`);
     out.push("");
   }
+  const operationName = new Map(p.operations.map((op) => [op.id, `"${oneLine(op.operation)}"`]));
+  const decisions = design.decisions.filter((d) => (d.realizedIn ?? []).some((r) => addressing.has(r)));
+  out.push("# Decisions", "");
+  if (decisions.length === 0) out.push("- none");
+  for (const d of decisions) {
+    const chosen = d.options.find((o) => o.chosen);
+    const realizedIn = (d.realizedIn ?? []).filter((r) => addressing.has(r)).map((r) => operationName.get(r));
+    out.push(`- ${oneLine(d.question)} → ${oneLine(chosen?.text)} | realized in: ${realizedIn.join(", ")}`);
+  }
+  out.push("");
   return `${out.join("\n")}`;
 }

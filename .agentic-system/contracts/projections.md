@@ -27,7 +27,20 @@ On a job without a design (FAST_IMPLEMENTATION, DOCUMENTATION) the snapshot says
 
 ## verification-view
 
-`#capability:design-verification-view` — arguments `sessionId`, `jobId`. The view the design verifier judges: for every obligation, its claim, class, boundaries, origin and required elements, then the design content that addresses it — the operations that carry it out (instructions and failure arms), the chosen answers of the decisions realized in those operations, the contracts and files those operations touch, and the knowledge the design grounds them in.
+`#capability:design-verification-view` — arguments `sessionId`, `jobId`. The view the design verifier judges, in three parts:
+
+```text
+# Design verification view
+## O1                     - claim / class / boundaries / origin / required elements: O1.1 (guard) ...
+                          - mechanisms: in "<operation name>" (<kind>): {{O1.1}} <the text up to the next placeholder>
+                          - knowledge grounding: ...
+# Operations
+## "<operation name>" (<kind>)   - failure arms / contracts (promises | signature) / files (path (status): change)
+# Decisions
+- <question> → <chosen answer> | realized in: "<operation name>", ...
+```
+
+Under each obligation, an operation contributes only the text its own placeholders introduce: from `{{O#.k}}` (or `{{O#}}`) to the next placeholder. Instructions that name none of the obligation's anchors are shown whole. What an operation shares across obligations — failure arms, contracts, files — and the chosen answers of the decisions realized in those operations are printed once, joined by the operation name. The view therefore grows with the design, not with how many obligations one operation carries (Lab-authored: upstream has no capture of the shape).
 
 Only obligation and element labels (`O#`, `O#.k`) are kept. Operation, decision, contract and file ids are left out, so the verifier judges the content presented and never reconstructs the mapping.
 
