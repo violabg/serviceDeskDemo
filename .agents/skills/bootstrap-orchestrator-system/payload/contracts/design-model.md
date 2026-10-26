@@ -77,7 +77,7 @@ Table rules:
 
 When the design carries obligations, the write is refused unless `gaps` anchors every element as `{{O#.k}}` (an obligation with no elements as `{{O#}}`), names no unknown element, and follows every placeholder with at least the minimum number of words before the next one (contracts/design-checks.md). The anchor is a standing invariant: re-send the overview whenever an obligation is added.
 
-Response: `{"status": "Draft", "document": "<path>", "currentState": true, "gaps": true}`, or `{"status": "Rejected", "errors": [ { "rule", "element", "detail" } ]}`.
+Response: `{"status": "Draft", "currentState": true, "gaps": true}`, or `{"status": "Rejected", "errors": [ { "rule", "element", "detail" } ]}`.
 
 ## design-submit
 
@@ -96,7 +96,9 @@ Response: `{"status": "Draft", "document": "<path>", "currentState": true, "gaps
 - An invalid row is not applied and is listed in `rejected` with its path and reason; valid rows in the same call are applied. Re-send only the rejected rows: re-sending applied rows answers `already exists`.
 - An empty request is refused.
 
-Response: `{"applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}, "status": "Draft", "document": "<path>"}`. `errors`, `warnings` and `coverage` are the full mechanical checks.
+Response: `{"status": "Draft", "applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}}`. `errors`, `warnings` and `coverage` are the full mechanical checks.
+
+No design write returns the document path: the rendered document is located only with `#capability:design-document` (see contracts/projections.md).
 
 ## approval
 
@@ -104,7 +106,7 @@ Response: `{"applied": {"added", "patched", "deleted"}, "rejected": [], "errors"
 
 - `planName` must match `^[A-Za-z0-9_]{1,100}$`.
 - Approval is refused while `#capability:design-checks` reports any error; warnings do not block it.
-- On success: `status` becomes `Approved`, `approvedAt` and `planName` are recorded. Response: `Design approved (<YYYY-MM-DD HH:MM:SS>Z). Design document: <path>`.
+- On success: `status` becomes `Approved`, `approvedAt` and `planName` are recorded. Response: `Design approved (<YYYY-MM-DD HH:MM:SS>Z).`
 
 The approval is permanent. A later write (a modification requested at the terminal hand-off, a design-gap repair during implementation) keeps `Approved`, sets `modifiedAfterApproval: true` and is recorded in `history`; the document shows `Approved, modified after approval`.
 
