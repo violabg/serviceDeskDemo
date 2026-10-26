@@ -1,6 +1,7 @@
 ---
-tier: "PerContext"
-intent: "When changing existing roles, permission assignments, read/write/manage policy, or diagnosing seed and effective-permission behavior."
+tier: "MustHave"
+keywords: [roles, permissions, admin, operator, rbac, hasPermission]
+intent: "When designing any permission-gated feature, translating requirement role statements (Admin, Operator) into permission keys, changing roles, permission assignments, read/write/manage policy, or diagnosing seed and effective-permission behavior."
 ---
 # Access Control Reference
 
@@ -43,3 +44,14 @@ Each section has three independent grants: `read`, `write` and `manage`. No gran
 - Test the rule in `lib/access-control.test.ts` with a role that holds only `section:write` or only `section:manage`: its effective keys must not include `section:read`. A role that holds `section:write` together with `section:read` must include both keys.
 - Gate examples: the dashboard layout requires dashboard read; section pages check read before protected data renders. Role assignment requires users write, role management requires roles read and write, reopening a closed ticket requires tickets manage, and customer status changes require customers manage. A user who should perform one of these actions also holds the read key of that section, because the page that hosts the action checks read first.
 - Keep the actor identity derived from the server session and gate writes on the server.
+
+## Requirement Roles and Permission Keys
+
+User stories and bugs name roles ("only Admin can …", "Operator can …"). The application never gates on a role name: every page, server action and navigation filter gates on an exact `section:operation` key through `hasPermission`. Translate each role statement into keys before designing; never add a role-name check.
+
+- **A role named in a requirement means the privileges it holds, not the role itself.** "Admin can do X" means "any role holding the key that gates X can do X". The key is the mechanism; the role name only tells which keys the requirement expects that role to hold. State the key (`section:read`, `section:write` or `section:manage`) in the obligation or decision.
+- **"Admin" means admin privileges, not the `Admin` role alone.** Bootstrap creates the `Admin` role as a system role (`isSystem`) and grants it every generated key. `isSystem` marks a role as code-owned and locked against editing in role management; it is not a privilege marker. Any other role an administrator grants the same keys has the same admin privileges, and a key gate already covers it. Do not gate on the role name, on `isSystem`, or on `isAdmin` (computed from the role name and informational only).
+- **"Only Admin" means a key that no other role receives from code.** Gate the action on a key (normally `section:manage`, or `section:write` for creation and editing) and grant that key to no role other than `Admin` in code. Granting it to another role later through role management is an administrator's deliberate choice, not a defect of the design.
+- **Admin is the only code-owned role.** Every other role is created and granted keys through role management, not by bootstrap or seed. When a requirement says a non-Admin role must be able to do something, the design adds the key it needs and records the grant as a `Procedure` operation: assign `section:read` plus the needed key to that role in role management, following the explicit-read rule above. Do not make a role code-owned (seeded role or seeded grant list) unless the requirement explicitly asks for it.
+- **Data shown inside another section is gated by the host section.** An entity displayed inside another section's workflow is read under the host section's key. The entity's own keys, when it has a section, gate only its own pages and actions.
+- **Every write path carries the gate.** When a requirement gates an action, the same key check guards every server entry point that performs it: create, edit, status change, bulk or override paths, and every action that calls the same service function. A conditional gate inside one action must be repeated in every other action that can reach the same change. Resolve the actor's keys on the server from the session; never pass a caller-built flag into a service as the gate.
