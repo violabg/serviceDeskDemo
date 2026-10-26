@@ -65,5 +65,5 @@ try {
 }
 const result = await call(createContext(), parsed.token, parsed.args);
 const stream = result.exitCode === 0 ? process.stdout : process.stderr;
-stream.write(result.output.endsWith("\n") ? result.output : `${result.output}\n`);
-process.exit(result.exitCode);
+// Writes to a pipe are asynchronous: exit only once the output is flushed, or a reader gets the first 64 KB.
+stream.write(result.output.endsWith("\n") ? result.output : `${result.output}\n`, () => process.exit(result.exitCode));

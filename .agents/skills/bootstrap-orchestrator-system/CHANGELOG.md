@@ -2,6 +2,11 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 1.1.3
+
+- The runtime CLI exits only after its output is written. On a pipe it used to stop at the first 64 KB, so a delegate reading a large design view through a shell saw only the first obligations.
+- `design-verification-view` no longer repeats an operation under every obligation it carries. Each obligation shows only the text its own `{{O#.k}}` placeholders introduce, by operation name. Failure arms, contracts and files are listed once under `# Operations`, and decisions once under `# Decisions`. A 66-obligation design went from 518 KB to 99 KB with the same content.
+
 ## 1.1.2
 
 - `design-overview`, `design-submit` and `design-approve` no longer return the design document path. `design-overview` answers `{"status", "currentState", "gaps"}`, `design-submit` answers `status` first, then `applied`, `rejected`, `errors`, `warnings` and `coverage`, and `design-approve` answers `Design approved (<YYYY-MM-DD HH:MM:SS>Z).`. The document is located only with `design-document`, which is where the workflows already read it.
