@@ -587,6 +587,7 @@
     "runtime/lib/design-store.mjs",
     "runtime/lib/design.mjs",
     "runtime/lib/documentation.mjs",
+    "runtime/lib/help.mjs",
     "runtime/lib/knowledge.mjs",
     "runtime/lib/projections.mjs",
     "runtime/lib/render.mjs",

@@ -79,6 +79,10 @@ When the design carries obligations, the write is refused unless `gaps` anchors 
 
 Response: `{"status": "Draft", "currentState": true, "gaps": true}`, or `{"status": "Rejected", "errors": [ { "rule", "element", "detail" } ]}`.
 
+## design-schema
+
+`#capability:design-schema` — no arguments. Return the JSON schema of the design requests, generated from the model (`runtime/assets/`): the argument shape of every design operation, every field, the allowed enum values, and the failure arms `negatives` and `exceptions` kept distinct. Call it once before the first `#capability:design-submit`.
+
 ## design-submit
 
 `#capability:design-submit` — arguments `sessionId`, `jobId`, `request`:

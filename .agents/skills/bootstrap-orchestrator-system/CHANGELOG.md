@@ -2,6 +2,13 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 1.2.1
+
+- A `request` object sent to an operation that takes none (anything except the ten design operations that write or act on the design) is read as top-level arguments, and a top-level value wins. Before, `session-artifact-read`, `knowledge-read` and the other plain operations ignored the fields inside `request`. That meant "'name' is required", "pass one or more file ids", or part 1 served again in place of the requested part.
+- `node agentic-system.mjs <token> --help` prints the operation's argument shape (request envelope or top-level) and its definition from the runtime contracts. Before, it failed with "'sessionId' is required".
+- `design-schema` has a contract definition in `contracts/design-model.md`.
+- The repository router and every role's runtime binding say that operations other than the design writes take top-level arguments, and that `--help` prints them.
+
 ## 1.2.0
 
 - Long runtime answers arrive in parts of at most 24,000 characters, below what a shell host shows of one command. This covers `knowledge-read`, `design-snapshot`, `design-verification-view` and the workflow instructions.

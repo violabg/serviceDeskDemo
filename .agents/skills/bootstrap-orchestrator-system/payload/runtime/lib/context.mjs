@@ -37,6 +37,8 @@ export function createContext(overrides = {}) {
     sessionsRoot,
     cacheRoot: pick("cacheRoot", "CACHE_ROOT", join(sessionsRoot, ".cache")),
     documentationRoot: pick("documentationRoot", "DOCUMENTATION_ROOT", "documentation"),
+    // Installed beside the runtime in a target (<runtime root>/contracts); in the Lab, beside runtime/.
+    contractsRoot: pick("contractsRoot", "CONTRACTS_ROOT", existsSync(join(runtimeRoot, "contracts")) ? "contracts" : "../contracts"),
     now: overrides.now ?? (() => new Date()),
   };
 }

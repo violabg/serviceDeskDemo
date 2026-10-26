@@ -56,12 +56,36 @@ export const handlers = {
   "documentation-check": (ctx, args) => documentation.checkDocument(ctx, args),
 };
 
+// The design operations whose arguments are { sessionId, jobId, request }. Every other token takes its
+// arguments at the top level.
+export const REQUEST_TOKENS = new Set([
+  "design-obligations",
+  "design-open-points",
+  "design-file-references",
+  "design-decisions",
+  "design-overview",
+  "design-submit",
+  "design-approve",
+  "design-operation-status",
+  "design-iteration-open",
+  "design-iteration-close",
+]);
+
+// Agents learn the design envelope and send it to every token. For a token without a request, the fields
+// inside `request` are read as top-level arguments (a top-level value wins), instead of being ignored.
+function unwrapRequest(token, args) {
+  const request = args?.request;
+  if (REQUEST_TOKENS.has(token) || !request || typeof request !== "object" || Array.isArray(request)) return args;
+  const { request: _, ...rest } = args;
+  return { ...request, ...rest };
+}
+
 // Runs one token and normalizes the result to { output, exitCode }.
 export async function call(ctx, token, args = {}) {
   const handler = handlers[token];
   if (!handler) return { output: `unknown command '${token}'. Commands: ${Object.keys(handlers).join(", ")}`, exitCode: 2 };
   try {
-    const result = await handler(ctx, args);
+    const result = await handler(ctx, unwrapRequest(token, args));
     return typeof result === "string" ? { output: result, exitCode: 0 } : result;
   } catch (error) {
     if (error && "payload" in error) {

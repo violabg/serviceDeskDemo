@@ -2,6 +2,7 @@
 // Thin CLI adapter over lib/api.mjs.
 //
 //   node agentic-system.mjs <token> [--json <file> | --json -] [--<argument> <value> ...]
+//   node agentic-system.mjs <token> --help      the token's arguments, from its contract
 //
 // The JSON payload is the operation's argument object (e.g. { "sessionId", "jobId", "request" }). Flags
 // set top-level arguments and override the payload. Large payloads must go through a file or stdin:
@@ -9,12 +10,14 @@
 import { readFileSync } from "node:fs";
 import { call, handlers } from "../lib/api.mjs";
 import { createContext } from "../lib/context.mjs";
+import { tokenHelp } from "../lib/help.mjs";
 
 const INLINE_LIMIT = 2000;
 
 function usage() {
   return [
     "usage: node agentic-system.mjs <command> [--json <file>|-] [--<argument> <value> ...]",
+    "       node agentic-system.mjs <command> --help   (the command's arguments, from its contract)",
     "",
     "commands:",
     ...Object.keys(handlers).map((name) => `  ${name}`),
@@ -61,14 +64,21 @@ if (argv.length === 0 || argv[0] === "--help" || argv[0] === "help") {
   console.log(usage());
   process.exit(argv.length === 0 ? 2 : 0);
 }
-let parsed;
-try {
-  parsed = parse(argv);
-} catch (error) {
-  console.error(`agentic-system: ${error.message}`);
-  process.exit(2);
-}
-const result = await call(createContext(), parsed.token, parsed.args);
-const stream = result.exitCode === 0 ? process.stdout : process.stderr;
 // Writes to a pipe are asynchronous: exit only once the output is flushed, or a reader gets the first 64 KB.
-stream.write(result.output.endsWith("\n") ? result.output : `${result.output}\n`, () => process.exit(result.exitCode));
+function finish(stream, text, exitCode) {
+  stream.write(text.endsWith("\n") ? text : `${text}\n`, () => process.exit(exitCode));
+}
+
+if (handlers[argv[0]] && argv.slice(1).some((a) => a === "--help" || a === "-h")) {
+  finish(process.stdout, tokenHelp(createContext(), argv[0]), 0);
+} else {
+  let parsed;
+  try {
+    parsed = parse(argv);
+  } catch (error) {
+    console.error(`agentic-system: ${error.message}`);
+    process.exit(2);
+  }
+  const result = await call(createContext(), parsed.token, parsed.args);
+  finish(result.exitCode === 0 ? process.stdout : process.stderr, result.output, result.exitCode);
+}
