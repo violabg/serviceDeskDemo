@@ -21,33 +21,38 @@ function usage() {
   ].join("\n");
 }
 
+function flagValue(name, value) {
+  if ((value.startsWith("{") || value.startsWith("[")) && value.length > INLINE_LIMIT) {
+    throw new Error(`--${name} carries ${value.length} characters of inline JSON; write it to a file and pass --json <file>`);
+  }
+  try {
+    return value.startsWith("{") || value.startsWith("[") ? JSON.parse(value) : value;
+  } catch {
+    return value;
+  }
+}
+
+// A flag takes every value up to the next flag, and a repeated flag adds to the earlier ones, so
+// `--fileIds 6 11` and `--fileIds 6 --fileIds 11` both pass [6, 11]; a single value stays a scalar.
 function parse(argv) {
   const [token, ...rest] = argv;
-  const args = {};
+  const values = new Map();
   let payload = {};
   for (let i = 0; i < rest.length; i++) {
     const flag = rest[i];
     if (!flag.startsWith("--")) throw new Error(`unexpected argument '${flag}'`);
     const name = flag.slice(2);
-    const value = rest[i + 1];
-    if (value === undefined || value.startsWith("--")) {
-      args[name] = "true";
-      continue;
-    }
-    i += 1;
+    const taken = [];
+    while (i + 1 < rest.length && !rest[i + 1].startsWith("--")) taken.push(rest[++i]);
     if (name === "json") {
-      payload = JSON.parse(value === "-" ? readFileSync(0, "utf8") : readFileSync(value, "utf8"));
+      if (taken.length !== 1) throw new Error("--json takes exactly one value: a file path, or - for stdin");
+      payload = JSON.parse(taken[0] === "-" ? readFileSync(0, "utf8") : readFileSync(taken[0], "utf8"));
       continue;
     }
-    if ((value.startsWith("{") || value.startsWith("[")) && value.length > INLINE_LIMIT) {
-      throw new Error(`--${name} carries ${value.length} characters of inline JSON; write it to a file and pass --json <file>`);
-    }
-    try {
-      args[name] = value.startsWith("{") || value.startsWith("[") ? JSON.parse(value) : value;
-    } catch {
-      args[name] = value;
-    }
+    if (!values.has(name)) values.set(name, []);
+    values.get(name).push(...(taken.length ? taken.map((v) => flagValue(name, v)) : ["true"]));
   }
+  const args = Object.fromEntries([...values].map(([name, list]) => [name, list.length === 1 ? list[0] : list.flat()]));
   return { token, args: { ...payload, ...args } };
 }
 

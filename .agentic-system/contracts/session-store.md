@@ -14,6 +14,7 @@ sessions/<sessionId>/
   artifacts/<name>.<ext>   the image file of an image artifact
   jobs/<jobId>.json        one job per workflow run (contracts/workflow-loop.md)
   designs/<designId>/      the structured design of a DESIGN job (contracts/design-model.md)
+  knowledge-reads.json     the knowledge documents served in the session, by path (contracts/knowledge-catalog.md)
 ```
 
 Session ids and job ids match `^[A-Za-z0-9_]{1,100}$`: a hyphen is refused. Artifact names match `^[A-Za-z0-9_.-]{1,150}$`.
@@ -72,7 +73,7 @@ updatedAt: "<this write>"
 
 Writing an existing name overwrites the content and keeps `createdAt`: re-create the same artifact to update it, never a new one per update. Response: the artifact name.
 
-`session-artifact-read` — arguments `sessionId`, `name`. Return the artifact file. A missing artifact is an error, never an empty answer.
+`session-artifact-read` — arguments `sessionId`, `name` (also accepted as `artifactName`, `artifactId` or `artifact`). Return the artifact file. A missing artifact is an error, never an empty answer.
 
 `session-artifact-list` — arguments `sessionId`. Return a JSON array of the artifacts' front matter, sorted by name.
 

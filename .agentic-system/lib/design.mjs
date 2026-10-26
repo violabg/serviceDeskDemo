@@ -5,9 +5,10 @@ import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { crowdedPlaceholders, overviewFindings, runChecks } from "./checks.mjs";
 import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
+import { designGrounding } from "./knowledge.mjs";
 import { snapshot, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
-import { RuntimeError, arg, iso, readJson, sha256, writeJson } from "./util.mjs";
+import { RuntimeError, arg, iso, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
 
 let cachedSchema = null;
@@ -351,12 +352,22 @@ export function snapshotTool(ctx, args) {
   if (!job.designId) {
     return `# Design snapshot\nThis job runs ${job.workflowType}, which has no design artifact. There is nothing to project.\n`;
   }
-  return snapshot(loadDesign(ctx, job.sessionId, job.designId));
+  // Parts start at a section heading or at an item, so a row is never split.
+  return servePart(snapshot(loadDesign(ctx, job.sessionId, job.designId)), args, {
+    tool: "design-snapshot",
+    starts: (line) => /^## /.test(line) || /^- /.test(line),
+    next: (k) => `call design-snapshot again with part ${k} (CLI: --part ${k}).`,
+  });
 }
 
 export function verificationViewTool(ctx, args) {
   const { design } = jobDesign(ctx, args, "design-verification-view");
-  return verificationView(design);
+  // Parts start at an obligation, an operation or a section heading, so none of them is ever split.
+  return servePart(verificationView(design, designGrounding(ctx, design)), args, {
+    tool: "design-verification-view",
+    starts: (line) => /^#{1,2} /.test(line),
+    next: (k) => `call design-verification-view again with part ${k} (CLI: --part ${k}).`,
+  });
 }
 
 export function documentTool(ctx, args) {

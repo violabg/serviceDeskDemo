@@ -50,7 +50,9 @@ The catalogue is rebuilt on every call, so a `file_id` is valid only for the cur
 
 ## read
 
-`#capability:knowledge-read` — arguments `fileIds` (one id, a list, or a comma-separated string). Answer each document in full under a `# file_id <n> — <title>` heading, separated by `---`. An id missing from the current index says so; it is never answered with another document.
+`#capability:knowledge-read` — arguments `fileIds` (one id, a list, or a comma-separated string), optional `sessionId` and `part`. Answer each document in full under a `# file_id <n> — <title>` heading, separated by `---`. An id missing from the current index says so; it is never answered with another document. A long answer is served in parts that each start at a document (`contracts/workflow-loop.md`, Parts): a document is never split.
+
+Every document served is recorded by path in `sessions/<sessionId>/knowledge-reads.json` (Lab-authored), in the session named by `sessionId` or, without one, the most recently activated session; with no session nothing is recorded. The verification view uses the record to show the verifier the knowledge the design was built on (`contracts/projections.md`).
 
 ## write
 

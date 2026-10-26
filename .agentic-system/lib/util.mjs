@@ -95,3 +95,54 @@ export function arg(source, name) {
   const key = Object.keys(source).find((k) => k.toLowerCase() === name.toLowerCase());
   return key === undefined ? undefined : source[key];
 }
+
+// Lab-authored: the largest part a long answer is served in. Shell hosts cap a command's visible output
+// (about 30,000 characters in Claude Code) and spill the rest to a file the agent then slices by hand,
+// losing text; a part below the cap arrives whole.
+export const PART_LIMIT = 24000;
+
+// Splits text into parts of at most PART_LIMIT characters. A part only ever starts at a unit boundary
+// (`starts(line, previous)` is true); a single unit longer than the limit is a part of its own.
+export function splitParts(text, starts) {
+  const lines = text.split("\n");
+  const units = [];
+  let unit = [];
+  lines.forEach((line, index) => {
+    if (unit.length && starts(line, lines[index - 1])) {
+      units.push(unit.join("\n"));
+      unit = [];
+    }
+    unit.push(line);
+  });
+  units.push(unit.join("\n"));
+  const parts = [];
+  let current = null;
+  for (const u of units) {
+    if (current !== null && current.length + 1 + u.length > PART_LIMIT) {
+      parts.push(current);
+      current = u;
+    } else current = current === null ? u : `${current}\n${u}`;
+  }
+  parts.push(current);
+  return parts;
+}
+
+// Serves part `args.part` (default 1, or "all") of a long answer, with a header and a footer that say where
+// the text continues. `next(k)` says how to request part k. An answer that fits is returned unchanged.
+export function servePart(text, args, { tool, starts, next }) {
+  const requested = arg(args, "part");
+  if (requested !== undefined && String(requested).toLowerCase() === "all") return text;
+  const parts = splitParts(text, starts);
+  const n = requested === undefined ? 1 : Number(requested);
+  if (!Number.isInteger(n) || n < 1 || n > parts.length) {
+    throw new RuntimeError(`${tool} failed: part must be a whole number from 1 to ${parts.length}, or "all". Provided value: '${requested}'.`);
+  }
+  if (parts.length === 1) return text;
+  const header = n > 1 ? `[part ${n} of ${parts.length}]\n` : "";
+  const body = parts[n - 1].replace(/\n+$/, "");
+  const footer =
+    n < parts.length
+      ? `[part ${n} of ${parts.length}. The answer continues: ${next(n + 1)} Read every part before acting on any of it.]`
+      : `[part ${n} of ${parts.length}: end of the answer.]`;
+  return `${header}${body}\n\n${footer}\n`;
+}
