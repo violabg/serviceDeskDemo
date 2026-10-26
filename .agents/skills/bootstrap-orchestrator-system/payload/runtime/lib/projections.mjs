@@ -109,13 +109,18 @@ function mechanisms(instructions, refs) {
 // content presented, never the internal mapping. Each obligation carries only the mechanisms its own
 // placeholders introduce; what an operation shares across obligations (failure arms, contracts, files) is
 // printed once, under the operation's name, so the view grows with the design and not with its fan-out.
-export function verificationView(design) {
+export function verificationView(design, grounding = []) {
   const p = design.path;
   const out = [`# Design verification view`, ""];
   if (design.obligations.length === 0) {
     out.push("The design carries no obligation yet.");
     return `${out.join("\n")}\n`;
   }
+  // The knowledge the whole design grounds in, beside the per-obligation grounding below: read each one.
+  out.push("## Knowledge grounding");
+  if (grounding.length === 0) out.push("- none");
+  for (const k of grounding) out.push(`- file_id ${k.file_id}: ${k.path} (${k.why.join(", ")})`);
+  out.push("");
   const addressing = new Set();
   for (const obligation of design.obligations) {
     const refs = new Set([obligation.id, ...(obligation.elements ?? []).map((e) => `${obligation.id}.${e.id}`)]);

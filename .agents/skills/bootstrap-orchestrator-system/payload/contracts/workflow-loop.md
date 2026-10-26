@@ -38,9 +38,9 @@ Response: `Agent job created;\nJobId: <jobId>\nDesignId: <designId given, or <no
 
 ## step-serving
 
-`workflow-step-pending` — arguments `sessionId`, `jobId`. Serve the current instruction; on a new job this is instruction 1. Calling it again re-serves the same instruction.
+`workflow-step-pending` — arguments `sessionId`, `jobId`, optional `part`. Serve the current instruction; on a new job this is instruction 1. Calling it again re-serves the same instruction, and `part` selects which part of it (see Parts).
 
-`workflow-step-next` — arguments `sessionId`, `jobId`. Advance `currentStep` by one and serve that instruction. After the last instruction it is refused: the final instruction says the workflow is complete and the orchestrator stays with the developer.
+`workflow-step-next` — arguments `sessionId`, `jobId`. Advance `currentStep` by one and serve part 1 of that instruction. After the last instruction it is refused: the final instruction says the workflow is complete and the orchestrator stays with the developer.
 
 The served text is:
 
@@ -56,5 +56,15 @@ Instruction <N>/<M>.
 ```
 
 The register section is appended from instruction 2 on, in every workflow. When the artifact does not exist, the section says so instead of being silently dropped.
+
+**Parts.** A shell host caps the output it shows of one command (about 30,000 characters in Claude Code) and spills the rest to a file the agent then slices by hand. So an answer longer than 24,000 characters (Lab-authored: `PART_LIMIT` in `runtime/lib/util.mjs`) is served in parts, by `workflow-step-next`/`workflow-step-pending`, `#capability:knowledge-read`, `#capability:design-snapshot` and `#capability:design-verification-view`. Each part starts at a unit of that answer: a paragraph of an instruction, a knowledge document, a snapshot item, an obligation or an operation of the view. A unit longer than the limit is a part of its own and is never cut. Part 1 is the answer's own text followed by:
+
+```text
+[part 1 of <M>. The answer continues: <the call that returns part 2> Read every part before acting on any of it.]
+```
+
+A later part opens with `[part <k> of <M>]` and the last part ends with `[part <M> of <M>: end of the answer.]`. The optional argument `part` selects a part (a whole number, default 1) or `all` for the whole answer; any other value is refused with the valid range. Parts are computed from the same state, so asking again returns the same part. An answer that fits is returned unchanged, with no marker. The rest of an instruction always comes from `workflow-step-pending`, which never advances the workflow.
+
+The CLI takes every value after a flag up to the next flag, and a repeated flag adds to the earlier values: `--fileIds 6 11`, `--fileIds 6 --fileIds 11` and `--fileIds 6,11` are the same call. `--json` takes exactly one value.
 
 **Halt points.** An instruction may end at an explicit halt (a review awaiting approval, an interview question, a required decision). At a halt the orchestrator presents what the instruction requires and stops; it calls `#capability:workflow-step-next` only after the developer answers. Everywhere else it keeps executing until the step's work is done.

@@ -23,14 +23,15 @@ status: Draft | plan: ... | approved: ... | title: ... | requirement: requiremen
 ## Coverage            - obligations 3/3 | elements 7/7
 ```
 
-On a job without a design (FAST_IMPLEMENTATION, DOCUMENTATION) the snapshot says the job has no design artifact.
+On a job without a design (FAST_IMPLEMENTATION, DOCUMENTATION) the snapshot says the job has no design artifact. A long snapshot is served in parts (optional argument `part`, `contracts/workflow-loop.md`, Parts) that start at a section heading or an item, so a row is never split.
 
 ## verification-view
 
-`#capability:design-verification-view` — arguments `sessionId`, `jobId`. The view the design verifier judges, in three parts:
+`#capability:design-verification-view` — arguments `sessionId`, `jobId`, optional `part`. The view the design verifier judges, in four sections:
 
 ```text
 # Design verification view
+## Knowledge grounding    - file_id <n>: <path> (MustHave, read during the design, named by the design)
 ## O1                     - claim / class / boundaries / origin / required elements: O1.1 (guard) ...
                           - mechanisms: in "<operation name>" (<kind>): {{O1.1}} <the text up to the next placeholder>
                           - knowledge grounding: ...
@@ -42,7 +43,11 @@ On a job without a design (FAST_IMPLEMENTATION, DOCUMENTATION) the snapshot says
 
 Under each obligation, an operation contributes only the text its own placeholders introduce: from `{{O#.k}}` (or `{{O#}}`) to the next placeholder. Instructions that name none of the obligation's anchors are shown whole. What an operation shares across obligations — failure arms, contracts, files — and the chosen answers of the decisions realized in those operations are printed once, joined by the operation name. The view therefore grows with the design, not with how many obligations one operation carries (Lab-authored: upstream has no capture of the shape).
 
+`## Knowledge grounding` lists the knowledge the whole design grounds in, so the verifier reads it: every `MustHave` document, every document `#capability:knowledge-read` served in the design's session (`contracts/knowledge-catalog.md`), and every document whose file name (without `.md`, at least six characters) appears anywhere in the design. Each line says which of the three applies; with none, it says `- none`. The per-obligation `knowledge grounding` line still names what an operation or contract cites. Lab-authored: before, the verifier read only cited knowledge, and a design that applied a rule without citing it was never checked against it.
+
 Only obligation and element labels (`O#`, `O#.k`) are kept. Operation, decision, contract and file ids are left out, so the verifier judges the content presented and never reconstructs the mapping.
+
+A long view is served in parts (`contracts/workflow-loop.md`, Parts) that start at a section, an obligation or an operation, so none of them is ever split. The stored `verification-view.md` is always whole.
 
 ## document
 

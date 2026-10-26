@@ -2,6 +2,7 @@
 // which records an integrity hash and re-renders the projections, so a reader never sees a stale view.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { designGrounding } from "./knowledge.mjs";
 import { renderDocument } from "./render.mjs";
 import { snapshot, verificationView } from "./projections.mjs";
 import { RuntimeError, iso, readJson, sha256, writeJson, writeText } from "./util.mjs";
@@ -90,7 +91,7 @@ export function saveDesign(ctx, design) {
   writeText(paths.json, text);
   writeJson(paths.integrity, { sha256: sha256(text), sealedAt: iso(ctx.now()) });
   writeText(paths.snapshot, snapshot(design));
-  writeText(paths.verification, verificationView(design));
+  writeText(paths.verification, verificationView(design, designGrounding(ctx, design)));
   const template = readFileSync(join(ctx.assetsRoot, "design-review.html"), "utf8");
   writeText(paths.html, renderDocument(template, design));
   return paths;

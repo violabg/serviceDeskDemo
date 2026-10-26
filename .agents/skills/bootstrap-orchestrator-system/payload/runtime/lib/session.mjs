@@ -31,12 +31,32 @@ export function requireSession(ctx, sessionId, tool) {
   return dir;
 }
 
-export function sessionList(ctx) {
-  if (!existsSync(ctx.sessionsRoot)) return "No sessions available.";
-  const ids = readdirSync(ctx.sessionsRoot)
+function sessionsByRecency(ctx) {
+  if (!existsSync(ctx.sessionsRoot)) return [];
+  return readdirSync(ctx.sessionsRoot)
     .filter((name) => existsSync(join(ctx.sessionsRoot, name, "session.json")))
     .map((name) => ({ name, at: readJson(join(ctx.sessionsRoot, name, "session.json"), {}).lastActivatedAt ?? "" }))
     .sort((a, b) => (b.at > a.at ? 1 : b.at < a.at ? -1 : a.name.localeCompare(b.name)));
+}
+
+const KNOWLEDGE_READS_FILE = "knowledge-reads.json";
+
+// Records the knowledge documents (by path: file ids change on rebuild) served in a session: the session
+// named in the call, or else the most recently activated one. Without any session nothing is recorded.
+export function recordKnowledgeReads(ctx, sessionId, paths) {
+  const id = sessionId && existsSync(join(sessionDir(ctx, sessionId), "session.json")) ? sessionId : sessionsByRecency(ctx)[0]?.name;
+  if (!id) return;
+  const file = join(sessionDir(ctx, id), KNOWLEDGE_READS_FILE);
+  const known = readJson(file, []);
+  writeJson(file, [...new Set([...known, ...paths])].sort());
+}
+
+export function knowledgeReads(ctx, sessionId) {
+  return readJson(join(sessionDir(ctx, sessionId), KNOWLEDGE_READS_FILE), []);
+}
+
+export function sessionList(ctx) {
+  const ids = sessionsByRecency(ctx);
   if (ids.length === 0) return "No sessions available.";
   return `Available sessions (most recent first):\n${ids.map((s) => `- ${s.name}`).join("\n")}`;
 }
@@ -168,7 +188,7 @@ export function artifactWrite(ctx, args) {
 
 export function artifactRead(ctx, args) {
   const dir = requireSession(ctx, arg(args, "sessionId"), "session-artifact-read");
-  const name = requireArtifactName(arg(args, "name") ?? arg(args, "artifactName"), "session-artifact-read");
+  const name = requireArtifactName(arg(args, "name") ?? arg(args, "artifactName") ?? arg(args, "artifactId") ?? arg(args, "artifact"), "session-artifact-read");
   const meta = readArtifactMeta(dir, name);
   if (!meta) throw new RuntimeError(`session-artifact-read failed: artifact '${name}' does not exist in session.`);
   return readFileSync(meta.path, "utf8");

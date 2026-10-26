@@ -4,7 +4,8 @@
 // cached under <cache root> (default <sessions root>/.cache/) for humans; the knowledge folder itself is never written by a read.
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { RuntimeError, arg, frontmatter, parseFrontmatter, requireString, writeText } from "./util.mjs";
+import { knowledgeReads, recordKnowledgeReads } from "./session.mjs";
+import { RuntimeError, arg, frontmatter, parseFrontmatter, requireString, servePart, writeText } from "./util.mjs";
 
 export const TIERS = {
   MustHave: "Mandatory knowledges for the project. Agent must always apply them",
@@ -108,16 +109,41 @@ function idsOf(args) {
 
 export function read(ctx, args) {
   const entries = buildCatalog(ctx);
+  const ids = idsOf(args);
   const parts = [];
-  for (const id of idsOf(args)) {
+  const served = [];
+  for (const id of ids) {
     const entry = entries.find((e) => e.file_id === id);
     if (!entry) {
       parts.push(`# file_id ${id}\n(not found in the current index: call knowledge-catalog again, file ids change on rebuild)`);
       continue;
     }
+    served.push(entry.path);
     parts.push(`# file_id ${id} — ${entry.title}\n${readFileSync(join(ctx.knowledgeRoot, entry.path), "utf8").trim()}`);
   }
-  return `${parts.join("\n\n---\n\n")}\n`;
+  recordKnowledgeReads(ctx, arg(args, "sessionId"), served);
+  // A part never splits a document: it starts only at a `# file_id` heading.
+  return servePart(`${parts.join("\n\n---\n\n")}\n`, args, {
+    tool: "knowledge-read",
+    starts: (line) => /^# file_id \d+/.test(line),
+    next: (k) => `call knowledge-read again with the same file ids and part ${k} (CLI: --fileIds ${ids.join(",")} --part ${k}).`,
+  });
+}
+
+// The knowledge a design grounds in, for the design verifier: every MustHave document, every document
+// served by knowledge-read in the design's session, and every document the design names by file name.
+export function designGrounding(ctx, design) {
+  if (!existsSync(ctx.knowledgeRoot)) return [];
+  const read = new Set(knowledgeReads(ctx, design.sessionId));
+  const text = JSON.stringify(design);
+  return buildCatalog(ctx).flatMap((entry) => {
+    const stem = entry.path.split("/").pop().replace(/\.md$/, "");
+    const why = [];
+    if (entry.tier === "MustHave") why.push("MustHave");
+    if (read.has(entry.path)) why.push("read during the design");
+    if (stem.length >= 6 && text.includes(stem)) why.push("named by the design");
+    return why.length ? [{ file_id: entry.file_id, path: entry.path, why }] : [];
+  });
 }
 
 function slug(title) {

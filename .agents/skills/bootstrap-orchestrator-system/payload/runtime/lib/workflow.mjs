@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createDesign, designExists } from "./design-store.mjs";
 import { readArtifactBody, requireSession } from "./session.mjs";
-import { RuntimeError, arg, iso, readJson, requireId, requireString, writeJson } from "./util.mjs";
+import { RuntimeError, arg, iso, readJson, requireId, requireString, servePart, writeJson } from "./util.mjs";
 
 // workflow-types.yaml is generated with a fixed, simple shape; this reader accepts exactly that shape.
 export function loadWorkflowTypes(ctx) {
@@ -98,6 +98,16 @@ function serve(ctx, job) {
   return text;
 }
 
+// A long instruction is served in parts that start at a paragraph. workflow-step-next always serves part 1;
+// the rest of the same instruction comes from workflow-step-pending, which never advances the workflow.
+function servePartOf(ctx, job, args, tool) {
+  return servePart(serve(ctx, job), args, {
+    tool,
+    starts: (line, previous) => line.trim() !== "" && previous !== undefined && previous.trim() === "",
+    next: (k) => `call workflow-step-pending with part ${k} (CLI: --part ${k}) to read the rest of instruction ${job.currentStep}; it does not advance the workflow.`,
+  });
+}
+
 export function stepPending(ctx, args) {
   const job = loadJob(ctx, args, "workflow-step-pending");
   if (job.currentStep === 0) {
@@ -105,7 +115,7 @@ export function stepPending(ctx, args) {
     job.servedAt = { ...(job.servedAt ?? {}), 1: iso(ctx.now()) };
     saveJob(ctx, job);
   }
-  return serve(ctx, job);
+  return servePartOf(ctx, job, args, "workflow-step-pending");
 }
 
 export function stepNext(ctx, args) {
@@ -119,5 +129,5 @@ export function stepNext(ctx, args) {
   job.currentStep += 1;
   job.servedAt = { ...(job.servedAt ?? {}), [job.currentStep]: iso(ctx.now()) };
   saveJob(ctx, job);
-  return serve(ctx, job);
+  return servePartOf(ctx, job, { part: 1 }, "workflow-step-next");
 }

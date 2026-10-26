@@ -2,6 +2,17 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 1.2.0
+
+- Long runtime answers arrive in parts of at most 24,000 characters, below what a shell host shows of one command. This covers `knowledge-read`, `design-snapshot`, `design-verification-view` and the workflow instructions.
+  - Each part starts at a whole unit (a knowledge document, a snapshot item, an obligation or operation, a paragraph) and ends with the call that returns the next part.
+  - `workflow-step-next` serves part 1, and `workflow-step-pending --part <k>` serves the rest of the same instruction without advancing the workflow.
+  - `part: "all"` returns the whole answer.
+  - The repository router and every role's runtime binding say to read every part before acting and never to cut an answer by bytes.
+- The CLI takes every value after a flag, and a repeated flag adds to it. `--fileIds 6 11`, `--fileIds 6 --fileIds 11` and `--fileIds 6,11` are the same call; before, the repeated form kept only the last id. `--json` takes exactly one value.
+- `knowledge-read` records the documents it serves in the session (`knowledge-reads.json`). `design-verification-view` opens with `## Knowledge grounding`: every MustHave document, every document read during the design and every document the design names. The design verifier now reads the knowledge the design was built on, not only what an operation cites.
+- `session-artifact-read` also accepts `artifactId` and `artifact` for the artifact name.
+
 ## 1.1.3
 
 - The runtime CLI exits only after its output is written. On a pipe it used to stop at the first 64 KB, so a delegate reading a large design view through a shell saw only the first obligations.
