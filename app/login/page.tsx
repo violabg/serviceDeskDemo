@@ -1,4 +1,4 @@
-import { NeonAuthUiProvider } from "@/components/auth/neon-auth-ui-provider"
+import { NeonAuthUiProvider } from "@/app/_components/neon-auth-ui-provider"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getDashboardAccessForSessionUser } from "@/lib/access-control/server"
 import { auth } from "@/lib/auth/server"

@@ -1,9 +1,11 @@
 "use client"
 
 import { changeCustomerStatusAction } from "@/app/(dashboard)/customers/actions"
-import { CustomerForm } from "@/app/(dashboard)/customers/customer-form"
+import { CustomerForm } from "@/app/(dashboard)/customers/_components/customer-form"
+import { customerPathForState, isCustomerEditState } from "@/app/(dashboard)/customers/_lib/edit-state"
 import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useTransition } from "react"
 
 export type CustomerDetailsView = {
@@ -26,7 +28,9 @@ export function CustomerDetails({
   canManage: boolean
 }) {
   const router = useRouter()
-  const [isEditing, setIsEditing] = useState(false)
+  const searchParams = useSearchParams()
+  const isEditing = isCustomerEditState(searchParams)
+  const basePath = `/customers/${customer.id}`
   const [message, setMessage] = useState("")
   const [isPending, startTransition] = useTransition()
 
@@ -61,15 +65,39 @@ export function CustomerDetails({
             notes: customer.notes ?? "",
             status: customer.status,
           }}
-          onSaved={() => setIsEditing(false)}
+          cancelHref={customerPathForState(basePath, false)}
         />
       ) : (
-        <div className="gap-2 grid">
-          <h2 className="font-heading font-semibold text-lg">{customer.company ?? "Company missing"}</h2>
-          <p>{customer.name} · {customer.email ?? "Email missing"} · {customer.status}</p>
-          <p>{customer.phone ?? "No phone"}</p>
-          <p className="whitespace-pre-wrap">{customer.notes ?? "No operational notes"}</p>
-          {canWrite ? <Button type="button" variant="outline" className="justify-self-start" onClick={() => setIsEditing(true)}>Edit</Button> : null}
+        <div className="gap-4 grid">
+          <dl className="gap-3 grid">
+            <div className="gap-1 grid">
+              <dt className="text-muted-foreground text-sm">Company</dt>
+              <dd><h2 className="font-heading font-semibold text-lg">{customer.company ?? "Company missing"}</h2></dd>
+            </div>
+            <div className="gap-1 grid">
+              <dt className="text-muted-foreground text-sm">Name</dt>
+              <dd>{customer.name}</dd>
+            </div>
+            <div className="gap-1 grid">
+              <dt className="text-muted-foreground text-sm">Email</dt>
+              <dd>{customer.email ?? "Email missing"}</dd>
+            </div>
+            <div className="gap-1 grid">
+              <dt className="text-muted-foreground text-sm">Status</dt>
+              <dd>{customer.status}</dd>
+            </div>
+            <div className="gap-1 grid">
+              <dt className="text-muted-foreground text-sm">Phone</dt>
+              <dd>{customer.phone ?? "No phone"}</dd>
+            </div>
+            <div className="gap-1 grid">
+              <dt className="text-muted-foreground text-sm">Notes</dt>
+              <dd className="whitespace-pre-wrap">{customer.notes ?? "No operational notes"}</dd>
+            </div>
+          </dl>
+          {canWrite ? (
+            <Button variant="outline" className="justify-self-start" render={<Link href={customerPathForState(basePath, true)} />} nativeButton={false}>Edit</Button>
+          ) : null}
         </div>
       )}
       {canManage ? (

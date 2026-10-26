@@ -1,5 +1,5 @@
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
-import { CustomerForm } from "@/app/(dashboard)/customers/customer-form"
+import { CustomerForm } from "@/app/(dashboard)/customers/_components/customer-form"
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
 import { redirect } from "next/navigation"

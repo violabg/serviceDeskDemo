@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { render, screen, within } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { CustomersPageContent } from "@/app/(dashboard)/customers/page"
@@ -86,6 +87,47 @@ describe("CustomersPageContent", () => {
 
     expect(getCustomerListMock).toHaveBeenCalledWith("Acme")
     expect(screen.getByRole("textbox", { name: "Search customers" })).toHaveValue("Acme")
+  })
+
+  it("renders a Reset Filters link to the customers base path inside the search form", async () => {
+    grant([READ])
+
+    const { container } = render(await renderList("Acme"))
+
+    const form = container.querySelector("form")
+    if (!form) throw new Error("search form not rendered")
+    const reset = within(form).getByRole("button", { name: "Reset Filters" })
+    expect(reset.tagName).toBe("A")
+    expect(reset).toHaveAttribute("href", "/customers")
+    expect(within(form).getByRole("button", { name: "Search" })).toHaveAttribute("type", "submit")
+  })
+
+  it("clears the search field on Reset Filters when the address carries a term", async () => {
+    grant([READ])
+    const user = userEvent.setup()
+
+    render(await renderList("Acme"))
+    const input = screen.getByRole("textbox", { name: "Search customers" })
+    expect(input).toHaveValue("Acme")
+    await user.click(screen.getByRole("button", { name: "Reset Filters" }))
+
+    expect(input).toHaveValue("")
+  })
+
+  it("clears the search field on Reset Filters when the address carries no term, on every activation", async () => {
+    grant([READ])
+    const user = userEvent.setup()
+
+    render(await renderList())
+    const input = screen.getByRole("textbox", { name: "Search customers" })
+    const reset = screen.getByRole("button", { name: "Reset Filters" })
+    await user.type(input, "zzz")
+    await user.click(reset)
+    expect(input).toHaveValue("")
+
+    await user.type(input, "yyy")
+    await user.click(reset)
+    expect(input).toHaveValue("")
   })
 
   it("passes an empty term to the service when no q is present", async () => {

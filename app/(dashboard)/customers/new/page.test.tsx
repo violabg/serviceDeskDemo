@@ -6,7 +6,7 @@ import { Component, type ReactNode } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import NewCustomerPage, { NewCustomerContent } from "@/app/(dashboard)/customers/new/page"
-import { CustomerForm } from "@/app/(dashboard)/customers/customer-form"
+import { CustomerForm } from "@/app/(dashboard)/customers/_components/customer-form"
 import { permissionKey } from "@/lib/access-control"
 
 const requireCurrentApplicationAccessMock = vi.hoisted(() => vi.fn())
@@ -99,7 +99,7 @@ describe("NewCustomerContent and the creation form", () => {
       expect(screen.getByLabelText("Contact email *")).toBeEnabled()
       expect(screen.getByLabelText("Phone")).toBeEnabled()
       expect(screen.getByLabelText("Operational notes")).toBeEnabled()
-      expect(screen.getByRole("button", { name: "Save Customer" })).toBeEnabled()
+      expect(screen.getByRole("button", { name: "Create Customer" })).toBeEnabled()
     })
 
     it("renders the same form disabled, with no enabled submit control, for a reader", async () => {
@@ -112,7 +112,7 @@ describe("NewCustomerContent and the creation form", () => {
       expect(screen.getByLabelText("Contact email *")).toBeDisabled()
       expect(screen.getByLabelText("Phone")).toBeDisabled()
       expect(screen.getByLabelText("Operational notes")).toBeDisabled()
-      expect(screen.getByRole("button", { name: "Save Customer" })).toBeDisabled()
+      expect(screen.getByRole("button", { name: "Create Customer" })).toBeDisabled()
     })
 
     it("does not render a status choice in create mode", async () => {
@@ -121,6 +121,33 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       expect(screen.queryByLabelText("Status *")).not.toBeInTheDocument()
+    })
+
+    it("renders empty fields in create mode even when initialValues are passed", () => {
+      render(
+        <CustomerForm
+          mode="create"
+          canWrite
+          canManage={false}
+          initialValues={{ company: "Acme", name: "Ana Rossi", email: "ana@acme.com", status: "Deactivated" }}
+        />
+      )
+
+      expect(screen.getByLabelText("Company name *")).toHaveValue("")
+      expect(screen.getByLabelText("Primary contact *")).toHaveValue("")
+      expect(screen.getByLabelText("Contact email *")).toHaveValue("")
+    })
+
+    it("renders the New Customer title and the Create Customer label with no Cancel control in create mode", async () => {
+      grant([READ, WRITE])
+
+      render(await NewCustomerContent())
+
+      expect(screen.getByText("New Customer", { selector: "h2" })).toBeInTheDocument()
+      expect(screen.getByRole("button", { name: "Create Customer" })).toBeEnabled()
+      expect(screen.queryByRole("button", { name: "Save Customer" })).not.toBeInTheDocument()
+      expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument()
+      expect(document.querySelector('a[href^="/customers/"][href*="edit=true"]')).toBeNull()
     })
   })
 
@@ -132,7 +159,7 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       await waitFor(() => expect(actionsMock.createCustomerAction).toHaveBeenCalledTimes(1))
       const formData = actionsMock.createCustomerAction.mock.calls[0][0] as FormData
@@ -150,7 +177,7 @@ describe("NewCustomerContent and the creation form", () => {
 
       await user.type(screen.getByLabelText("Primary contact *"), "Ana Rossi")
       await user.type(screen.getByLabelText("Contact email *"), "ana@acme.com")
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       expect(await screen.findByText("Company name is required")).toBeInTheDocument()
       expect(actionsMock.createCustomerAction).not.toHaveBeenCalled()
@@ -164,7 +191,7 @@ describe("NewCustomerContent and the creation form", () => {
       await user.type(screen.getByLabelText("Company name *"), "Acme")
       await user.type(screen.getByLabelText("Primary contact *"), "Ana Rossi")
       await user.type(screen.getByLabelText("Contact email *"), "not-an-email")
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       await waitFor(() => expect(actionsMock.createCustomerAction).not.toHaveBeenCalled())
       expect(routerMock.push).not.toHaveBeenCalled()
@@ -177,7 +204,7 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       expect(
         await screen.findByText("An active Customer already uses this company and email.")
@@ -196,7 +223,7 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       expect(
         await screen.findByText("A deactivated match exists. Reactivate that record instead.")
@@ -217,7 +244,7 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
       await user.click(await screen.findByRole("button", { name: "Reactivate" }))
 
       await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith("/customers/customer-old"))
@@ -237,7 +264,7 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       expect(await screen.findByText("Ask a Customer manager to reactivate this record.")).toBeInTheDocument()
       expect(screen.queryByRole("button", { name: "Reactivate" })).not.toBeInTheDocument()
@@ -253,9 +280,10 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith("/customers/customer-new"))
+      expect(routerMock.refresh).toHaveBeenCalled()
     })
 
     it("propagates a rejection of createCustomerAction to the error boundary and does not redirect", async () => {
@@ -271,7 +299,7 @@ describe("NewCustomerContent and the creation form", () => {
       )
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       await waitFor(() => expect(onError).toHaveBeenCalledWith(failure))
       expect(actionsMock.createCustomerAction).toHaveBeenCalledTimes(1)
@@ -285,7 +313,7 @@ describe("NewCustomerContent and the creation form", () => {
       render(await NewCustomerContent())
 
       await fillRequiredFields(user)
-      await user.click(screen.getByRole("button", { name: "Save Customer" }))
+      await user.click(screen.getByRole("button", { name: "Create Customer" }))
 
       expect(await screen.findByText("Check the Customer fields and try again.")).toBeInTheDocument()
       expect(screen.getByLabelText("Company name *")).toHaveValue("Acme")
@@ -338,7 +366,7 @@ describe("NewCustomerContent and the creation form", () => {
 
       await waitFor(() => expect(actionsMock.findDeactivatedMatchesAction).toHaveBeenCalledTimes(1))
       await waitFor(() => expect(screen.queryByRole("button", { name: "Reactivate" })).not.toBeInTheDocument())
-      expect(screen.getByRole("button", { name: "Save Customer" })).toBeEnabled()
+      expect(screen.getByRole("button", { name: "Create Customer" })).toBeEnabled()
     })
 
     it("never runs the lookup for a reader, even when company and email are already filled", async () => {
@@ -354,7 +382,7 @@ describe("NewCustomerContent and the creation form", () => {
       fireEvent.blur(screen.getByLabelText("Company name *"))
       fireEvent.blur(screen.getByLabelText("Contact email *"))
 
-      await waitFor(() => expect(screen.getByRole("button", { name: "Save Customer" })).toBeDisabled())
+      await waitFor(() => expect(screen.getByRole("button", { name: "Create Customer" })).toBeDisabled())
       expect(actionsMock.findDeactivatedMatchesAction).not.toHaveBeenCalled()
     })
   })

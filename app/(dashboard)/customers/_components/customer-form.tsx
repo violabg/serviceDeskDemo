@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
@@ -29,25 +30,26 @@ type CustomerFormProps = {
   canManage: boolean
   customerId?: string
   initialValues?: Partial<Values>
-  onSaved?: () => void
+  cancelHref?: string
 }
 
 type MatchView = { id: string; company: string | null; name: string; email: string | null }
 
-export function CustomerForm({ mode, canWrite, canManage, customerId, initialValues, onSaved }: CustomerFormProps) {
+export function CustomerForm({ mode, canWrite, canManage, customerId, initialValues, cancelHref }: CustomerFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [, startLookupTransition] = useTransition()
   const [message, setMessage] = useState("")
   const [matches, setMatches] = useState<MatchView[]>([])
+  const savedValues = mode === "edit" ? initialValues : undefined
   const { register, getValues, handleSubmit, formState: { errors } } = useForm<Values>({
     defaultValues: {
-      company: initialValues?.company ?? "",
-      name: initialValues?.name ?? "",
-      email: initialValues?.email ?? "",
-      phone: initialValues?.phone ?? "",
-      notes: initialValues?.notes ?? "",
-      status: initialValues?.status ?? "Active",
+      company: savedValues?.company ?? "",
+      name: savedValues?.name ?? "",
+      email: savedValues?.email ?? "",
+      phone: savedValues?.phone ?? "",
+      notes: savedValues?.notes ?? "",
+      status: savedValues?.status ?? "Active",
     },
   })
 
@@ -78,26 +80,26 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
         setMessage(result.reason === "duplicate" ? "An active Customer already uses this company and email." : result.reason === "reactivation" ? "A deactivated match exists. Reactivate that record instead." : "Check the Customer fields and try again.")
         return
       }
-      if (mode === "create" && "customer" in result) {
-        router.push(`/customers/${result.customer.id}`)
-        return
-      }
       setMatches([])
       setMessage("Customer saved.")
-      onSaved?.()
-      router.refresh()
+      const target = cancelHref ?? ("customer" in result ? `/customers/${result.customer.id}` : undefined)
+      try {
+        if (target) router.push(target)
+      } finally {
+        router.refresh()
+      }
     })
   })
 
   function lookupDeactivatedMatches() {
-    if (mode !== "create" || !canWrite) return
+    if (!canWrite) return
     const company = getValues("company").trim()
     const email = getValues("email").trim()
     if (!company || !email) return
     startLookupTransition(async () => {
       try {
         const result = await findDeactivatedMatchesAction(company, email)
-        setMatches(result.ok ? result.matches : [])
+        setMatches(result.ok ? result.matches.filter((match) => match.id !== customerId) : [])
       } catch {
         setMatches([])
       }
@@ -117,8 +119,9 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
 
   return (
     <form onSubmit={submit} className="gap-4 grid">
+      <h2 className="font-heading font-semibold text-lg">{mode === "create" ? "New Customer" : "Edit Customer"}</h2>
       <Field data-invalid={errors.company ? true : undefined}>
-        <FieldLabel htmlFor="customer-company">Company name *</FieldLabel>
+        <FieldLabel htmlFor="customer-company">Company name <span className="text-destructive">*</span></FieldLabel>
         <Input
           id="customer-company"
           disabled={!canWrite}
@@ -132,12 +135,12 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
         <FieldError errors={[errors.company]} />
       </Field>
       <Field data-invalid={errors.name ? true : undefined}>
-        <FieldLabel htmlFor="customer-contact">Primary contact *</FieldLabel>
+        <FieldLabel htmlFor="customer-contact">Primary contact <span className="text-destructive">*</span></FieldLabel>
         <Input id="customer-contact" disabled={!canWrite} aria-invalid={errors.name ? true : undefined} {...nameField} />
         <FieldError errors={[errors.name]} />
       </Field>
       <Field data-invalid={errors.email ? true : undefined}>
-        <FieldLabel htmlFor="customer-email">Contact email *</FieldLabel>
+        <FieldLabel htmlFor="customer-email">Contact email <span className="text-destructive">*</span></FieldLabel>
         <Input
           id="customer-email"
           type="email"
@@ -159,7 +162,12 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
         <FieldLabel htmlFor="customer-notes">Operational notes</FieldLabel>
         <Textarea id="customer-notes" disabled={!canWrite} {...notesField} />
       </Field>
-      <Button type="submit" disabled={!canWrite || isPending}>{isPending ? "Saving…" : "Save Customer"}</Button>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button type="submit" disabled={!canWrite || isPending}>{isPending ? "Saving…" : mode === "create" ? "Create Customer" : "Save Customer"}</Button>
+        {cancelHref ? (
+          <Button variant="outline" render={<Link href={cancelHref} />} nativeButton={false}>Cancel</Button>
+        ) : null}
+      </div>
       {message ? <p role="status">{message}</p> : null}
       {matches.map((match) => (
         <div key={match.id} className="flex items-center justify-between gap-3 border rounded-md p-3">

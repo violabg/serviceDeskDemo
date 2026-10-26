@@ -26,7 +26,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("next/server", () => ({
   connection: connectionMock,
 }))
-vi.mock("@/components/auth/neon-auth-ui-provider", () => ({
+vi.mock("@/app/_components/neon-auth-ui-provider", () => ({
   NeonAuthUiProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),

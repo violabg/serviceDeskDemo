@@ -1,8 +1,7 @@
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { customerListTag } from "@/app/(dashboard)/customers/_lib/cache-tags"
+import { CustomerSearchForm } from "@/app/(dashboard)/customers/customer-search-form"
 import { Button } from "@/components/ui/button"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { hasPermission } from "@/lib/access-control"
 import { getCustomerList } from "@/lib/customers/service"
@@ -36,13 +35,7 @@ export async function CustomersPageContent({ searchParams }: { searchParams: Pro
   return (
     <section className="gap-4 grid">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <form action="/customers" method="get" className="flex flex-wrap items-end gap-2">
-          <Field>
-            <FieldLabel htmlFor="customers-search">Search customers</FieldLabel>
-            <Input id="customers-search" name="q" defaultValue={term} placeholder="Company, primary contact or email" />
-          </Field>
-          <Button type="submit" variant="outline">Search</Button>
-        </form>
+        <CustomerSearchForm initialTerm={term} />
         {canWrite ? (
           <Button render={<Link href="/customers/new" />} nativeButton={false}>New Customer</Button>
         ) : (
