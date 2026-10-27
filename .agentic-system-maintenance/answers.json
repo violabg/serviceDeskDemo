@@ -106,7 +106,7 @@
       "verification": {
         "static install and runtime (verify.mjs)": {
           "status": "verified-native",
-          "note": "no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-26, kit 1.2.1)"
+          "note": "no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-27, kit 1.2.2)"
         },
         "work item read (issue_read get/get_labels/get_comments)": {
           "status": "verified-fallback",

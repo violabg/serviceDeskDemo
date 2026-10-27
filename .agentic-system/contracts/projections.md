@@ -32,6 +32,7 @@ On a job without a design (FAST_IMPLEMENTATION, DOCUMENTATION) the snapshot says
 ```text
 # Design verification view
 ## Knowledge grounding    - file_id <n>: <path> (MustHave, read during the design, named by the design)
+                          Read every document above before judging: call knowledge-read ... (CLI: --fileIds <ids>) ...
 ## O1                     - claim / class / boundaries / origin / required elements: O1.1 (guard) ...
                           - mechanisms: in "<operation name>" (<kind>): {{O1.1}} <the text up to the next placeholder>
                           - knowledge grounding: ...
@@ -43,7 +44,7 @@ On a job without a design (FAST_IMPLEMENTATION, DOCUMENTATION) the snapshot says
 
 Under each obligation, an operation contributes only the text its own placeholders introduce: from `{{O#.k}}` (or `{{O#}}`) to the next placeholder. Instructions that name none of the obligation's anchors are shown whole. What an operation shares across obligations — failure arms, contracts, files — and the chosen answers of the decisions realized in those operations are printed once, joined by the operation name. The view therefore grows with the design, not with how many obligations one operation carries (Lab-authored: upstream has no capture of the shape).
 
-`## Knowledge grounding` lists the knowledge the whole design grounds in, so the verifier reads it: every `MustHave` document, every document `#capability:knowledge-read` served in the design's session (`contracts/knowledge-catalog.md`), and every document whose file name (without `.md`, at least six characters) appears anywhere in the design. Each line says which of the three applies; with none, it says `- none`. The per-obligation `knowledge grounding` line still names what an operation or contract cites. Lab-authored: before, the verifier read only cited knowledge, and a design that applied a rule without citing it was never checked against it.
+`## Knowledge grounding` lists the knowledge the whole design grounds in, so the verifier reads it: every `MustHave` document, every document `#capability:knowledge-read` served in the design's session (`contracts/knowledge-catalog.md`), and every document whose file name (without `.md`, at least six characters) appears anywhere in the design. Each line says which of the three applies; with none, it says `- none`. A list that is not empty ends with the call that reads it: `Read every document above before judging: call knowledge-read with these file ids (CLI: --fileIds <ids>) and follow its parts.` (Lab-authored: verifiers that were only given the list grepped the files or skipped them.) The per-obligation `knowledge grounding` line still names what an operation or contract cites. Lab-authored: before, the verifier read only cited knowledge, and a design that applied a rule without citing it was never checked against it.
 
 Only obligation and element labels (`O#`, `O#.k`) are kept. Operation, decision, contract and file ids are left out, so the verifier judges the content presented and never reconstructs the mapping.
 

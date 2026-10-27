@@ -120,6 +120,11 @@ export function verificationView(design, grounding = []) {
   out.push("## Knowledge grounding");
   if (grounding.length === 0) out.push("- none");
   for (const k of grounding) out.push(`- file_id ${k.file_id}: ${k.path} (${k.why.join(", ")})`);
+  // Lab-authored: name the call, so the verifier reads the documents instead of grepping or skipping them.
+  if (grounding.length) {
+    const ids = grounding.map((k) => k.file_id).join(",");
+    out.push("", `Read every document above before judging: call knowledge-read with these file ids (CLI: --fileIds ${ids}) and follow its parts.`);
+  }
   out.push("");
   const addressing = new Set();
   for (const obligation of design.obligations) {

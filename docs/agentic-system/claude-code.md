@@ -24,7 +24,7 @@ The orchestrator always asks which workflow you want when you have not said it, 
 
 What Bootstrap verified for this client:
 
-- static install and runtime (verify.mjs): verified-native (no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-26, kit 1.2.1))
+- static install and runtime (verify.mjs): verified-native (no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-27, kit 1.2.2))
 - work item read (issue_read get/get_labels/get_comments): verified-fallback (exercised in the VS Code extension from the Bootstrap session on #6, not yet from inside sd-orchestrator-claude)
 - orchestrator starts via /sd-orchestrator-claude and asks for the workflow type: unverified (needs a new session (IDE and terminal))
 - session created through the runtime from the role: unverified (needs a new session)

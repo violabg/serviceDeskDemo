@@ -129,6 +129,8 @@ export function splitParts(text, starts) {
 
 // Serves part `args.part` (default 1, or "all") of a long answer, with a header and a footer that say where
 // the text continues. `next(k)` says how to request part k. An answer that fits is returned unchanged.
+// Lab-authored: the footer asks for the next call as a command of its own, because an agent that loops over
+// parts or pipes them through `head`, `cut` or `dd` exceeds the host cap again and loses text.
 export function servePart(text, args, { tool, starts, next }) {
   const requested = arg(args, "part");
   if (requested !== undefined && String(requested).toLowerCase() === "all") return text;
@@ -142,7 +144,7 @@ export function servePart(text, args, { tool, starts, next }) {
   const body = parts[n - 1].replace(/\n+$/, "");
   const footer =
     n < parts.length
-      ? `[part ${n} of ${parts.length}. The answer continues: ${next(n + 1)} Read every part before acting on any of it.]`
+      ? `[part ${n} of ${parts.length}. The answer continues: ${next(n + 1)} Run it as a shell command of its own, with nothing chained before or after it and no pipe. Read every part before acting on any of it.]`
       : `[part ${n} of ${parts.length}: end of the answer.]`;
   return `${header}${body}\n\n${footer}\n`;
 }

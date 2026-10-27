@@ -2,6 +2,13 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 1.2.2
+
+- One runtime operation per shell command. A verifier that fetched several parts in one loop, or piped a part through `head`, `tail`, `cut` or `dd`, went past what the shell host shows and then sliced the spilled output, so each round judged a different fragment of the design.
+  - The footer of a part that continues says to run the next call as a shell command of its own, with nothing chained and no pipe.
+  - The repository router and every role's runtime binding say: never join two runtime calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. This replaces "never cut an answer with `head`, `tail` or a byte count".
+- `design-verification-view`: a non-empty `## Knowledge grounding` ends with the `knowledge-read` call, with the listed file ids, that reads it.
+
 ## 1.2.1
 
 - A `request` object sent to an operation that takes none (anything except the ten design operations that write or act on the design) is read as top-level arguments, and a top-level value wins. Before, `session-artifact-read`, `knowledge-read` and the other plain operations ignored the fields inside `request`. That meant "'name' is required", "pass one or more file ids", or part 1 served again in place of the requested part.
