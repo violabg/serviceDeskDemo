@@ -2,6 +2,15 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 1.2.3
+
+- Every `#operation:<op>` a role or skill names is bound in its Bindings section to the client's native tool, and the binding says it is never a runtime command. In GitHub Copilot for VS Code the knowledge builder ran `agentic-system.mjs question`, read the refusal as a missing runtime and stopped with "required agentic system runtime operations are not available".
+  - `#operation:question` (the role's question tool) binds to `vscode/askQuestions` in GitHub Copilot for VS Code, `AskUserQuestion` in Claude Code and `question` in OpenCode. A client with no listed tool uses its own tool, or asks in the reply.
+  - The orchestrator's workflow choice says "using `#operation:question`" in place of "using your question tool", so it is bound like the rest.
+  - The runtime binding says `<token>` is a runtime capability name and that an `#operation:<op>` is never a runtime command.
+- The runtime refuses a host operation (`question`, `read`, `search`, `write`, `terminal`, `delegate`) by naming it as a host operation. Every unknown command now says the runtime is installed and working, so it is not reported as an outage.
+- The availability guard of `ask` and `knowledge-builder` says that only the runtime's own commands count, and that a refused `#operation:` call is not an outage.
+
 ## 1.2.2
 
 - One runtime operation per shell command. A verifier that fetched several parts in one loop, or piped a part through `head`, `tail`, `cut` or `dd`, went past what the shell host shows and then sliced the spilled output, so each round judged a different fragment of the design.

@@ -80,10 +80,25 @@ function unwrapRequest(token, args) {
   return { ...request, ...rest };
 }
 
+// The neutral operations a role runs with its client's own tools (conversion.yaml `valid_operations` minus
+// `runtime`). Agents send them here when they read `#operation:<op>` as a runtime token.
+export const HOST_OPERATIONS = new Set(["read", "search", "write", "terminal", "question", "delegate"]);
+
+// An unknown token is a wrong call, never a missing runtime: the answer says so, or agents halt on the
+// availability guard.
+function unknownCommand(token) {
+  const commands = `Runtime commands: ${Object.keys(handlers).join(", ")}`;
+  if (HOST_OPERATIONS.has(token)) {
+    const how = token === "question" ? "ask the user with your client's own question tool" : `use your client's own tool for \`#operation:${token}\``;
+    return `'${token}' is not a runtime command: it is a host operation, so ${how} (the Bindings section of your role file names it). The runtime is installed and working; this is not a runtime outage. ${commands}`;
+  }
+  return `unknown command '${token}'. The runtime is installed and working; this is not a runtime outage. ${commands}`;
+}
+
 // Runs one token and normalizes the result to { output, exitCode }.
 export async function call(ctx, token, args = {}) {
   const handler = handlers[token];
-  if (!handler) return { output: `unknown command '${token}'. Commands: ${Object.keys(handlers).join(", ")}`, exitCode: 2 };
+  if (!handler) return { output: unknownCommand(token), exitCode: 2 };
   try {
     const result = await handler(ctx, unwrapRequest(token, args));
     return typeof result === "string" ? { output: result, exitCode: 0 } : result;

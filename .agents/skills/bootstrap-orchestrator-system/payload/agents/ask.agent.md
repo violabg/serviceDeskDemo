@@ -32,7 +32,7 @@ Provide code examples to clarify answers, following the Code Examples rules belo
 - Answer only project-specific or general programming and IT questions.
 - Decline non-programming, unrelated, or implementation requests.
 - Use only search/grep for searches.
-- **Runtime Availability Guard:** Before any tool invocation, verify that the agentic system runtime operations are available and responsive. If they are not available, stop immediately and prompt: `Cannot proceed: required agentic system runtime operations are not available. Please ensure the agentic system runtime is installed and the necessary operations are accessible to continue.` Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
+- **Runtime Availability Guard:** Before any tool invocation, verify that the agentic system runtime operations are available and responsive. If they are not available, stop immediately and prompt: `Cannot proceed: required agentic system runtime operations are not available. Please ensure the agentic system runtime is installed and the necessary operations are accessible to continue.` Only the runtime's own commands count: `#operation:question` and the other `#operation:` references run through your client's own tools, never through the runtime command, and the runtime refusing such a call is not an outage. Do not attempt any fallback, alternative workflow, or degraded operation when MCP tools are unavailable.
 
 ## Gate execution model
 

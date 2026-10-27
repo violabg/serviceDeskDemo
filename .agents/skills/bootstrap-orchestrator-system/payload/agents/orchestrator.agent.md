@@ -109,7 +109,7 @@ Any behaviour that are not expressly allowed by the instructions received from `
 [MANDATORY INSTRUCTION]
 # the workflow is chosen by the user, never inferred
 The workflow to run is chosen by the user, explicitly. You are forbidden from inferring, deducing, guessing, assuming or defaulting the workflow type from the task, the requirement, the repository, the session, previous jobs, the fact that only one workflow type exists, or any other context.
-- If the user did not explicitly name a workflow type, you MUST call `#capability:workflow-types-list` and ask the user which workflow to start, using your question tool, before calling `#capability:workflow-job-activate`.
+- If the user did not explicitly name a workflow type, you MUST call `#capability:workflow-types-list` and ask the user which workflow to start, using `#operation:question`, before calling `#capability:workflow-job-activate`.
 - An answer to a different question is never a workflow choice: for example "skip the interview" or "fill the gaps on your own" do not authorize any workflow type.
 - Reasoning like "the user asked for a design, so the workflow is DESIGN" is a violation.
 

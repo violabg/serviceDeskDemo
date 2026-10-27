@@ -9,7 +9,7 @@ The payload has seven roles. Their frontmatter names their `invocation` and abst
 - `user` roles: `orchestrator`, `ask`, `knowledge-builder`. Each runs as the main conversation of its own session, because it asks the user questions and holds halt points.
 - `delegate` roles: `code-implementor`, `design-verifier`, `implementation-verifier`, `documentation-reviewer`. Only the orchestrator starts them.
 
-Operations map to the client's tools through the profile's `tools`: `read`, `search`, `write`, `terminal`, `question`, `runtime`, plus `delegate` for a role that has delegates. `runtime` means the runtime command and nothing else: a role with `runtime` but no `terminal` may use the terminal only for that command, which the installer states in the role's Bindings section.
+Operations map to the client's tools through the profile's `tools`: `read`, `search`, `write`, `terminal`, `question`, `runtime`, plus `delegate` for a role that has delegates. `runtime` means the runtime command and nothing else: a role with `runtime` but no `terminal` may use the terminal only for that command, which the installer states in the role's Bindings section. Every `#operation:<op>` a role or skill body names (for example `#operation:question`, the role's question tool) gets a line in its Bindings section naming the profile's native tools for that operation (`vscode/askQuestions` for GitHub Copilot in VS Code) and stating that it is never a runtime command; a profile with no tools listed for it falls back to the client's own tool.
 
 Native names are the prefix plus the canonical name (`shop-code-implementor`). Role bodies stay verbatim: they keep canonical names such as `role: code-implementor`, and each file's Bindings section maps them to native names.
 
