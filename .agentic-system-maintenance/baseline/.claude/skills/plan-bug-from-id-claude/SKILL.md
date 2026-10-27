@@ -80,7 +80,7 @@ After you follow the above rules, continue with the active workflow.
 The identified cause is enough to create a comprehensive and effective plan, so you can safely skip interview.
 ## Bindings
 
-Installed for Claude Code. This is how each `#capability:<token>` in this file runs here.
+Installed for Claude Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
 - `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
 - `#capability:work-item-retrieval`: Read the issue on violabg/serviceDeskDemo with the GitHub MCP server's `issue_read` (method `get`); it returns the title and Markdown body.

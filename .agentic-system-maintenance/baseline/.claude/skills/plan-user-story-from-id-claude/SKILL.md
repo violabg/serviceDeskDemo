@@ -34,7 +34,7 @@ then tell me the name of the artifact you created, so I can read it and create t
 
 ## Bindings
 
-Installed for Claude Code. This is how each `#capability:<token>` in this file runs here.
+Installed for Claude Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
 - `#capability:work-item-batch-retrieval`: Read each linked issue on violabg/serviceDeskDemo with `issue_read` (method `get`), one call per issue number; sub-issues with method `get_sub_issues`.
 - `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
