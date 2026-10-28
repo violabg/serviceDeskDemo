@@ -43,6 +43,10 @@ export function saveJob(ctx, job) {
   writeJson(jobPath(ctx, job.sessionId, job.jobId), job);
 }
 
+// A DESIGN job builds its design; a FAST_IMPLEMENTATION job keeps its obligations, open points and knowledge
+// references in a job design of its own, with no approval gate. DOCUMENTATION jobs have none.
+const JOB_DESIGN_WORKFLOWS = new Set(["DESIGN", "FAST_IMPLEMENTATION"]);
+
 export function jobActivate(ctx, args) {
   const tool = "workflow-job-activate";
   const sessionId = arg(args, "sessionId");
@@ -66,7 +70,7 @@ export function jobActivate(ctx, args) {
     requireId(requestedDesign, "designId", tool);
     if (!designExists(ctx, sessionId, requestedDesign)) throw new RuntimeError(`${tool} failed: design '${requestedDesign}' does not exist in session '${sessionId}'.`);
     designId = requestedDesign;
-  } else if (workflowType === "DESIGN") {
+  } else if (JOB_DESIGN_WORKFLOWS.has(workflowType)) {
     designId = jobId;
     if (!designExists(ctx, sessionId, designId)) createDesign(ctx, sessionId, designId, jobId);
   }

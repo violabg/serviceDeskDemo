@@ -2,8 +2,6 @@ Given a functional requirement R, you must decompose it into the complete set of
 independently checkable obligations that R imposes.
 Also, you must identify any open points or ambiguities in R that will be resolved at the design review before implementation.
 
-**R-lock (execute first).** Before decomposing, persist R verbatim as a session artifact by calling `#capability:session-artifact-write` with name `requirement_R_lock`, description `Verbatim functional requirement R`, intended use `immutable source of truth for R`, MIME type `text/markdown`, and R itself (byte-for-byte) as the content. Never summarize, translate, reorder or reformat R. R is read from this artifact instead of relying on conversation recall. R changes only on an explicit user revision, which replaces the artifact.
-
 ---
 
 **DECOMPOSITION RULES**
@@ -122,15 +120,13 @@ The job design artifact is a structured artifact managed by the server. Do NOT w
 
 - **Open points.** Add each question the requirement raises with `#capability:design-open-points` (operation `Add`): `question` (the gap, phrased as a question) and `whyAskingMySelf` (why you are asking it). Open points are a running list of every question — about R, architecture, implementation, or the situation (the codebase, the knowledge base, the environment, the process) — and are never closed here.
 
-**The emergence rule.** Beyond the gaps in R, record as an open point every construction choice the requirement does not fix: where the change will act, how the code will be organised, which abstractions, dependencies, contracts and state it introduces, what it reuses, when it runs, how it evolves. For each, ask: *was this imposed by R, or will I have to choose it?* If you will have to choose it, it is a question and belongs on the list. Questions about the **situation** — the codebase, the environment, the knowledge base, the process — are questions too: record them; the decision consolidation marks them as `blocking`.
+**The emergence rule.** Beyond the gaps in R, record as an open point every construction choice the requirement does not fix: where the change will act, how the code will be organised, which abstractions, dependencies, contracts and state it introduces, what it reuses, when it runs, how it evolves. For each, ask: *was this imposed by R, or will I have to choose it?* If you will have to choose it, it is a question and belongs on the list. Questions about the **situation** — the codebase, the environment, the knowledge base, the process — are questions too: record them; the decision consolidation marks them as `highlight`.
 
 **Failure arms.** Never proceed silently on a failed write.
-- `#capability:session-artifact-write` (the R-lock) fails or is refused: repair the arguments and retry once; if it still fails, record a blocker and halt.
 - A `#capability:design-obligations` (`Add`) or `#capability:design-open-points` (`Add`) call is rejected: repair the payload and retry once; if it still fails, record a blocker and halt.
 
 ---
 
 **Constraint Enforcement**
 No output outside the tool calls. No "implied" or "obvious" markers. No aggregation. No splitting unless explicit enumeration exists. No code, no external context, no inference. Leave blank fields untouched. Execute deterministically.
-
-After completing ALL the provided instructions, call the tool `#capability:workflow-step-next` again to receive the next instruction. Do not deviate from these instructions or take any action they do not authorize.
+In this step, you do not read the codebase (no bash, grep, or glob), you do not read the design, and you do not read the knowledge base. You only read the requirement R and write the obligations and open points it imposes.

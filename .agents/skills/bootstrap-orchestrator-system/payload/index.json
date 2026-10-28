@@ -114,6 +114,11 @@
       "summary": "Add, read, update or delete decisions (D#) and their options (D#.n).",
       "fallback": "contracts/design-model.md#row-writes"
     },
+    "design-knowledge-references": {
+      "kind": "runtime",
+      "summary": "Add, read, update or delete knowledge references (kid) — one prescription as a knowledge file id and an inclusive line range.",
+      "fallback": "contracts/design-model.md#knowledge-references"
+    },
     "design-submit": {
       "kind": "runtime",
       "summary": "Add, patch or delete contracts (CT#), APIs (API#), files (FS#) and operations (IM#) in one call.",
@@ -138,6 +143,21 @@
       "kind": "runtime",
       "summary": "Return the per-obligation projection the design verifier judges.",
       "fallback": "contracts/projections.md#verification-view"
+    },
+    "design-implementation-context": {
+      "kind": "runtime",
+      "summary": "Return the implementor's projection of the design — contracts, filesystem, decisions and file references, never an operation.",
+      "fallback": "contracts/projections.md#implementation-context"
+    },
+    "design-implementation-operation": {
+      "kind": "runtime",
+      "summary": "Serve the single operation to implement now, with its knowledge references expanded, or the batch terminator (batch-complete, complete).",
+      "fallback": "contracts/design-model.md#implementation-loop"
+    },
+    "design-implementation-operation-close": {
+      "kind": "runtime",
+      "summary": "Close the served operation as Implemented, which makes the next operation reachable.",
+      "fallback": "contracts/design-model.md#implementation-loop"
     },
     "design-document": {
       "kind": "runtime",
@@ -298,7 +318,7 @@
     },
     {
       "name": "code-implementor",
-      "description": "Generic TAD code implementor subagent. Implements the work unit described in the prompt by creating, modifying and deleting codebase files, following the procedure and the knowledge the prompt provides. It writes the production code first and then defines and writes the unit-tests that validate it, following the test-after pattern",
+      "description": "Generic code implementor subagent. Implements the work unit described in the prompt by creating, modifying and deleting codebase files, following the procedure and the specification the prompt and the served knowledge provide. It writes and runs tests only when the prompt or the served specification asks for tests",
       "invocation": "delegate",
       "operations": [
         "read",
@@ -309,7 +329,11 @@
       "delegates": [],
       "file": "agents/code-implementor.agent.md",
       "tokens": [
-        "design-snapshot",
+        "codebase-cluster-files",
+        "codebase-clusters",
+        "design-implementation-context",
+        "design-implementation-operation",
+        "design-implementation-operation-close",
         "knowledge-catalog",
         "knowledge-read",
         "session-activate",
@@ -319,7 +343,7 @@
     },
     {
       "name": "design-verifier",
-      "description": "Design coverage verifier: judges whether the design realizes R, per obligation and on requirement rules no obligation maps, and returns a short text report.",
+      "description": "Design coverage verifier: judges whether the design realizes the requirement, per obligation, and returns a short text report.",
       "invocation": "delegate",
       "operations": [
         "runtime"
@@ -329,9 +353,7 @@
       "tokens": [
         "design-verification-view",
         "knowledge-catalog",
-        "knowledge-read",
-        "session-artifact-list",
-        "session-artifact-read"
+        "knowledge-read"
       ]
     },
     {
@@ -426,8 +448,12 @@
         "design-decisions",
         "design-document",
         "design-file-references",
+        "design-implementation-context",
+        "design-implementation-operation",
+        "design-implementation-operation-close",
         "design-iteration-close",
         "design-iteration-open",
+        "design-knowledge-references",
         "design-obligations",
         "design-open-points",
         "design-operation-status",
@@ -555,11 +581,12 @@
     "workflows/documentation/07-review.md",
     "workflows/documentation/08-wrap-up.md",
     "workflows/fast-implementation/02-intake.md",
-    "workflows/fast-implementation/03-knowledge.md",
-    "workflows/fast-implementation/04-codebase-cold-start.md",
-    "workflows/fast-implementation/05-implementation.md",
-    "workflows/fast-implementation/06-validation.md",
-    "workflows/fast-implementation/07-terminal-handoff.md",
+    "workflows/fast-implementation/03-requirement-decomposition.md",
+    "workflows/fast-implementation/04-knowledge.md",
+    "workflows/fast-implementation/05-codebase-cold-start.md",
+    "workflows/fast-implementation/06-implementation.md",
+    "workflows/fast-implementation/07-validation.md",
+    "workflows/fast-implementation/08-terminal-handoff.md",
     "workflows/shared/01-user-instruction-space.md",
     "workflows/workflow-types.yaml"
   ],
@@ -589,6 +616,7 @@
     "runtime/lib/documentation.mjs",
     "runtime/lib/help.mjs",
     "runtime/lib/knowledge.mjs",
+    "runtime/lib/plan.mjs",
     "runtime/lib/projections.mjs",
     "runtime/lib/render.mjs",
     "runtime/lib/schema.mjs",

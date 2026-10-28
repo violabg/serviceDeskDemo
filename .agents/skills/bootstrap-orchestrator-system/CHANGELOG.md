@@ -2,6 +2,35 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 2.0.0
+
+The canonical system follows upstream 3.0.1. Several answers and outputs change, so a target re-installed from this version must re-read its workflows.
+
+- **The obligations are the requirement.** No workflow writes or reads the `requirement_R_lock` artifact any more. The design verifier judges the design and its obligations through the verification view, no longer reports unmapped requirement rules, and compares every design section with the knowledge the design is grounded in. `design-submit` no longer needs `header.requirementRef`; it is still accepted.
+- **FAST_IMPLEMENTATION serves 8 instructions.**
+  - A requirement decomposition step is new at 3/8; knowledge, codebase, implementation, validation and wrap-up move down one.
+  - A FAST job now creates a job design that holds its obligations, open points and knowledge references, with no approval gate.
+  - The workflow files are renamed: `03-requirement-decomposition` … `08-terminal-handoff`.
+- **Knowledge references.**
+  - Every knowledge read in a job with a design is followed by `design-knowledge-references`, which registers the applicable prescriptions as `kid`s (file id, line range, scope `Production` or `Test`).
+  - `knowledge-read` numbers every line.
+  - An operation lists the kids it needs, and the knowledge steps make the prescriptions bind every section of the design.
+- **The served implementation loop.**
+  - The implementor gets one operation at a time from `design-implementation-operation`, with the text of its knowledge references, and closes each one with `design-implementation-operation-close`.
+  - It reads the rest of the design once with `design-implementation-context`.
+  - Operations are served by weight class: `authoring`, `external-execution`, `unit-test`, `integration-test`, `verification`. Only `authoring` runs without the developer's authorisation, and the developer may authorise several operations together.
+  - The new operation kinds `UnitTest` and `IntegrationTest` are added. A plan with more than one `UnitTest` operation fails the `unit-test-operations` check.
+  - Only a work unit that writes production code is verified.
+- **Decisions.** `highlight` replaces `blocking`, which is still accepted and read as `highlight`. A contract signature change is always a highlighted decision.
+- **Codebase clusters are a partition.** Every file is in exactly one cluster:
+  - test infrastructure is in `Tests`;
+  - every other file is in a PascalCase domain named after its directory;
+  - residual files are in `General`; `Uncategorized` is gone.
+  - Names are matched exactly, and an unknown name answers `Cluster name '<name>' not found.`
+- **Review document.**
+  - The header shows the obligation count and the generator instead of the requirement reference.
+  - The document gains a Highlighted decisions group, operation weights and statuses, scope tags, and a Knowledge references section with the resolved text.
+
 ## 1.2.3
 
 - Every `#operation:<op>` a role or skill names is bound in its Bindings section to the client's native tool, and the binding says it is never a runtime command. In GitHub Copilot for VS Code the knowledge builder ran `agentic-system.mjs question`, read the refusal as a missing runtime and stopped with "required agentic system runtime operations are not available".

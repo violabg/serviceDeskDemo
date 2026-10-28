@@ -38,10 +38,11 @@ A placeholder is `{{O#.k}}` (an element) or `{{O#}}` (an obligation without elem
 | `obligation-not-realized` | operations exist and no operation carries out an obligation without elements |
 | `decision-chosen-count` | a decision does not have exactly one chosen option |
 | `decision-realized-unknown` | `realizedIn` names an id that does not exist |
-| `decision-not-realized` | operations exist and a non-blocking decision has no `IM#` in `realizedIn` |
+| `decision-not-realized` | operations exist and a decision that is not highlighted has no `IM#` in `realizedIn` |
 | `file-without-operation` | a filesystem row's path is listed by no operation |
+| `unit-test-operations` | the plan declares more than one `UnitTest` operation (the served walkthrough: "more than one `UnitTest` operation is a design error"); reported on the second |
 
-A blocking decision is exempt from `decision-not-realized`. Before any operation exists, the realization rules do not apply.
+A highlighted decision (`highlight: true`, or the 3.0.0 `blocking: true`) is exempt from `decision-not-realized`. Before any operation exists, the realization rules do not apply.
 
 ## Warnings
 

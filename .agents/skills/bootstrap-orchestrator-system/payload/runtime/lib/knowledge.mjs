@@ -107,6 +107,11 @@ function idsOf(args) {
   return ids;
 }
 
+// The lines of a knowledge document as stored, front matter included: a knowledge reference's range counts them.
+function documentLines(ctx, path) {
+  return readFileSync(join(ctx.knowledgeRoot, path), "utf8").replace(/\r\n/g, "\n").replace(/\s+$/, "").split("\n");
+}
+
 export function read(ctx, args) {
   const entries = buildCatalog(ctx);
   const ids = idsOf(args);
@@ -119,7 +124,9 @@ export function read(ctx, args) {
       continue;
     }
     served.push(entry.path);
-    parts.push(`# file_id ${id} — ${entry.title}\n${readFileSync(join(ctx.knowledgeRoot, entry.path), "utf8").trim()}`);
+    // Lab-authored: every line carries its number, so a knowledge reference can name its range (s to e).
+    const numbered = documentLines(ctx, entry.path).map((line, index) => `${index + 1}| ${line}`).join("\n");
+    parts.push(`# file_id ${id} — ${entry.title}\n${numbered}`);
   }
   recordKnowledgeReads(ctx, arg(args, "sessionId"), served);
   // A part never splits a document: it starts only at a `# file_id` heading.
@@ -128,6 +135,24 @@ export function read(ctx, args) {
     starts: (line) => /^# file_id \d+/.test(line),
     next: (k) => `call knowledge-read again with the same file ids and part ${k} (CLI: --fileIds ${ids.join(",")} --part ${k}).`,
   });
+}
+
+// A catalogue entry with its line count, for registering a knowledge reference against the current index.
+export function knowledgeFile(ctx, fileId) {
+  const entry = existsSync(ctx.knowledgeRoot) ? buildCatalog(ctx).find((e) => e.file_id === fileId) : undefined;
+  return entry ? { ...entry, lines: documentLines(ctx, entry.path).length } : null;
+}
+
+// The text a knowledge reference names, resolved from the document now; `resolutionNote` says why it is missing.
+export function resolveKnowledgeReference(ctx, reference) {
+  const path = join(ctx.knowledgeRoot, reference.filePath ?? "");
+  if (!reference.filePath || !existsSync(path)) {
+    return { text: null, resolutionNote: `the knowledge document ${reference.filePath ?? `of file id ${reference.fId}`} no longer exists` };
+  }
+  const lines = documentLines(ctx, reference.filePath);
+  const { s, e } = reference.range;
+  if (e > lines.length) return { text: null, resolutionNote: `lines ${s}–${e} are past the end of ${reference.filePath}, which now has ${lines.length} lines` };
+  return { text: lines.slice(s - 1, e).join("\n"), resolutionNote: null };
 }
 
 // The knowledge a design grounds in, for the design verifier: every MustHave document, every document

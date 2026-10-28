@@ -10,6 +10,9 @@ const ACCESSORY_KINDS = new Set(["Changelog", "Documentation"]);
 const FAILURE_ELEMENT_KINDS = new Set(["Guard", "Effect", "StateSemantics"]);
 const CODE_KINDS = new Set(["Code", "Wiring"]);
 
+// A decision stored before `highlight` replaced `blocking` reads its old flag as the highlight.
+export const isHighlighted = (decision) => Boolean(decision.highlight || decision.blocking);
+
 export function elementRef(obligationId, elementId) {
   return elementId === undefined ? obligationId : `${obligationId}.${elementId}`;
 }
@@ -141,6 +144,11 @@ export function runChecks(design) {
     }
   });
 
+  const unitTests = operations.filter((o) => o.kind === "UnitTest");
+  if (unitTests.length > 1) {
+    errors.push({ rule: "unit-test-operations", element: unitTests[1].id, detail: `${unitTests.map((o) => o.id).join(", ")} are UnitTest operations; the plan declares at most one, which implements and runs every unit test` });
+  }
+
   let elementsTotal = 0;
   let elementsRealized = 0;
   let obligationsRealized = 0;
@@ -168,7 +176,7 @@ export function runChecks(design) {
     for (const ref of decision.realizedIn ?? []) {
       if (!known.has(ref)) errors.push({ rule: "decision-realized-unknown", element: decision.id, detail: `${decision.id} is realized in ${ref}, which does not exist` });
     }
-    if (operations.length && !decision.blocking && !(decision.realizedIn ?? []).some((ref) => ref.startsWith("IM"))) {
+    if (operations.length && !isHighlighted(decision) && !(decision.realizedIn ?? []).some((ref) => ref.startsWith("IM"))) {
       errors.push({ rule: "decision-not-realized", element: decision.id, detail: `${decision.id} is not realized by any operation (realizedIn needs at least one IM#)` });
     }
   }

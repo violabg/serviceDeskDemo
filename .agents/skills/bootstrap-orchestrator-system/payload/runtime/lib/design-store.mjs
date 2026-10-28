@@ -2,7 +2,7 @@
 // which records an integrity hash and re-renders the projections, so a reader never sees a stale view.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { designGrounding } from "./knowledge.mjs";
+import { designGrounding, resolveKnowledgeReference } from "./knowledge.mjs";
 import { renderDocument } from "./render.mjs";
 import { snapshot, verificationView } from "./projections.mjs";
 import { RuntimeError, iso, readJson, sha256, writeJson, writeText } from "./util.mjs";
@@ -47,10 +47,12 @@ export function emptyDesign(sessionId, designId, jobId, now) {
     obligations: [],
     openPoints: [],
     fileReferences: [],
+    knowledgeReferences: [],
     overview: { currentState: "", gaps: "" },
     decisions: [],
     path: { title: null, generator: null, requirementRef: null, operationsIntro: null, contracts: [], apis: [], filesystem: { intro: null, files: [] }, operations: [] },
     iterations: [],
+    servedOperation: null,
     history: [],
   };
 }
@@ -82,7 +84,14 @@ export function loadDesign(ctx, sessionId, designId, { acceptExternalEdit = fals
       ],
     });
   }
-  return JSON.parse(text);
+  return withDefaults(JSON.parse(text));
+}
+
+// A design stored before knowledge references and the served operation existed reads as having none.
+function withDefaults(design) {
+  design.knowledgeReferences ??= [];
+  design.servedOperation ??= null;
+  return design;
 }
 
 export function saveDesign(ctx, design) {
@@ -93,14 +102,19 @@ export function saveDesign(ctx, design) {
   writeText(paths.snapshot, snapshot(design));
   writeText(paths.verification, verificationView(design, designGrounding(ctx, design)));
   const template = readFileSync(join(ctx.assetsRoot, "design-review.html"), "utf8");
-  writeText(paths.html, renderDocument(template, design));
+  const knowledge = design.knowledgeReferences.map((ref) => ({ kid: ref.kid, ...resolveKnowledgeReference(ctx, ref) }));
+  writeText(paths.html, renderDocument(template, design, { knowledge }));
   return paths;
 }
+
+// Implementation progress — flags, the served operation, iterations — is recorded in the history but is not a
+// change of the design, so it never marks an approved design as modified.
+const PROGRESS_ACTIONS = new Set(["status", "served", "operation-closed", "iteration-open", "iteration-close"]);
 
 // Records a content change: bumps updatedAt, appends history and marks an approved design as modified.
 export function touch(ctx, design, action, summary) {
   const at = iso(ctx.now());
   design.updatedAt = at;
-  if (design.status === "Approved" && action !== "approved") design.modifiedAfterApproval = true;
+  if (design.status === "Approved" && action !== "approved" && !PROGRESS_ACTIONS.has(action)) design.modifiedAfterApproval = true;
   design.history.push({ at, action, summary });
 }

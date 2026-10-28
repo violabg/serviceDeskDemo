@@ -1,6 +1,33 @@
 You are executing the intake of the Fast Implementation workflow. This workflow has no approval gate and no design document — the requirement is the only authority, and you never wait for an approval.
 
-**Requirement freeze (execute first).** Before doing anything else, persist R — the user's requirement, byte-for-byte — as a session artifact by calling `#capability:session-artifact-write` with name `requirement_R_lock`, description `Verbatim functional requirement R`, intended use `immutable source of truth for R`, MIME type `text/markdown`, and R itself as the content. Never summarize, translate, reorder or reformat R. R is read from this artifact instead of relying on conversation recall. R changes only on an explicit user revision, which replaces the artifact.
+## Requirement triage
+
+Classify R — the requirement as stated in the developer's first prompt — before doing the
+step's work. Three possible intents:
+
+- implementation: satisfying R requires creating, modifying or deleting codebase files.
+- execution-only: R is satisfied by running an existing operation on the repository as it is
+  (for example run the unit tests, run the build, or run a read-only analysis) and requires
+  no file change.
+- informational: R is a question to answer; it requires no repository change.
+
+If the intent of R is `execution-only` or `informational`:
+1. Satisfy R now, in this step.
+2. Present the observable result with its evidence: the executed command, its exit code and
+   output, or the answer.
+3. Record the intent and the outcome in the agent memory and the event log, then TERMINAL
+   HALT: do NOT call `#capability:workflow-step-next`; wait for the developer.
+
+If the intent of R is `implementation`: continue the step and the workflow normally.
+
+A requirement that asks to run an operation AND to fix its outcome (for example
+"run the tests and fix the failures") is `implementation`, not `execution-only`.
+
+If the operation you run fails, the requirement is still `execution-only`: report the
+failure as the observable result.
+
+Never explain to the developer the intent you assigned to R.
+Never ask the developer which intent to choose.
 
 Inspect the user request for image and Figma artifacts.
 For every provided image, immediately follow the IMAGE_INTAKE_INSTRUCTION below.
@@ -38,5 +65,3 @@ If you have retrieved a workitem from the work item tracker (or another source),
 Do not assume that, because the prompt carries no image or figma artifact, the retrieved workitem carries none either.
 
 Also, from now on, every time you receive an image path or URL, follow the IMAGE_INTAKE_INSTRUCTION above to process it.
-
-After completing ALL the provided instructions, call the tool `#capability:workflow-step-next` again to receive the next instruction. Do not deviate from these instructions or take any action they do not authorize.

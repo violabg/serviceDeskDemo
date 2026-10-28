@@ -20,11 +20,12 @@ types:
     steps:
       - shared/01-user-instruction-space
       - fast-implementation/02-intake
-      - fast-implementation/03-knowledge
-      - fast-implementation/04-codebase-cold-start
-      - fast-implementation/05-implementation
-      - fast-implementation/06-validation
-      - fast-implementation/07-terminal-handoff
+      - fast-implementation/03-requirement-decomposition
+      - fast-implementation/04-knowledge
+      - fast-implementation/05-codebase-cold-start
+      - fast-implementation/06-implementation
+      - fast-implementation/07-validation
+      - fast-implementation/08-terminal-handoff
   - id: DOCUMENTATION
     name: "Documentation"
     description: "Generate technical documentation."

@@ -1,4 +1,4 @@
-You are executing the knowledge step of the Fast Implementation workflow: gather the project knowledge that governs the implementation. This workflow has no design document: this step enriches no design artifact, it only collects the knowledge that the implementation and its verification must obey.
+You are executing the knowledge step of the Fast Implementation workflow: gather the project knowledge that governs the implementation. This workflow has no approval gate and no rendered design document: the obligations we produced in the decomposition are the requirement of the FAST, and this step only collects the knowledge that the implementation and its verification must obey.
 
 ---
 
@@ -9,7 +9,10 @@ You are executing the knowledge step of the Fast Implementation workflow: gather
 3. Use catalog metadata to identify applicable `PerContext` and `PerComponent` knowledge files for the request or artifact. When uncertain, read the file.
 4. If reading a knowledge you catch a new concept that points to another knowledge file not yet read, read it. Knowledges can reference each other.
 5. Do not skip any knowledge file because you believe you already know its contents.
-6. **Do not explore the codebase in this step.** This step reads the project knowledge base only. Do not call codebase tools (`#capability:codebase-clusters`, `#capability:codebase-cluster-files`) and do not read, grep or glob source files.
+6. **Do not explore the codebase in this step.** This step reads the project knowledge base only.
+
+**CRITICAL: Maximize batch-reading.**
+Do not call `#capability:knowledge-read` for a single file at a time: read all the files you need in one batch, and register their prescriptions in one batch. The server can handle large batches, and the round-trip time is significant.
 
 ---
 
@@ -35,7 +38,7 @@ You are executing the knowledge step of the Fast Implementation workflow: gather
 
 **Rules**
 
-1. **No design artifact.** Do NOT call any `#capability:design-*` operation and do NOT create or modify any design artifact.
+1. **The design obligations are the requirement.** The obligations of the job design are the requirement of the FAST: read them with `#capability:design-obligations` or `#capability:design-snapshot` whenever the implementation or its verification needs them. Do not add, remove or modify them here.
 
 2. **Keep the sources.** Keep the list of knowledge sources you used; carry them forward to the implementation step.
 
@@ -44,5 +47,3 @@ You are executing the knowledge step of the Fast Implementation workflow: gather
 **Output**
 
 The applicable knowledges and the rules each contributes to the implementation. Merge them into ONE knowledge bundle that the implementation subagent and the verification subagent of the following steps will both receive.
-
-After completing ALL the provided instructions, call the tool `#capability:workflow-step-next` again to receive the next instruction. Do not deviate from these instructions or take any action they do not authorize.

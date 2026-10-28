@@ -31,7 +31,8 @@ Write `sessions/<sessionId>/jobs/<jobId>.json`:
 
 - `steps` is the ordered list of the type in `workflow-types.yaml`, frozen into the job.
 - A DESIGN job without `designId` creates a new design whose id is the job id. A job with `designId` reuses that existing design, approval included: follow-up work continues on the same design.
-- FAST_IMPLEMENTATION and DOCUMENTATION jobs have no design (`designId: null`); every `#capability:design-*` operation on them is refused.
+- A FAST_IMPLEMENTATION job without `designId` creates a job design whose id is the job id, as a DESIGN job does: it holds the obligations of step 3 (the requirement of the flow), the open points and the knowledge references. It has no approval gate.
+- DOCUMENTATION jobs have no design (`designId: null`); every `#capability:design-*` operation on them is refused.
 - Activating an existing job resumes it; asking for a different workflow type on an existing job is refused.
 
 Response: `Agent job created;\nJobId: <jobId>\nDesignId: <designId given, or <none>>`, or `Agent job resumed; ...` with the current instruction.
