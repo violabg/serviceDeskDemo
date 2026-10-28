@@ -23,23 +23,23 @@ Use this sequence when introducing an independently protected section such as as
 2. Add sidebar navigation wiring when applicable
 
 - For a user-navigable section, add a new item in SERVICE_DESK_NAVIGATION in lib/service-desk-navigation.ts.
-- Set requiredPermission to { section: "section-id", operation: "read" } and add the section icon mapping in components/app-sidebar.tsx.
+- Make the sidebar item visible when the effective permission keys contain any one exact grant for its section: read, write, or manage. Visibility must not add or imply a permission key. Add the section icon mapping in components/app-sidebar.tsx.
 - Gateway boundaries do not need a sidebar item. When navigation changes, preserve hiding of empty groups through getReadableServiceDeskNavigationGroups.
 
 3. Scaffold protected dashboard routes
 
 - Create route files under app/(dashboard)/... following existing section patterns (for example tickets, customers and admin users). A route folder without a page file serves no URL.
-- In each page, resolve current application access server-side and gate rendering with hasPermission(..., "section-id", "read").
-- Redirect unauthorized access to /dashboard from server components.
-- In server actions, gate mutations with write (and manage where higher-impact actions exist). Customer status changes are the manage-gated example in app/(dashboard)/customers/actions.ts.
+- In each existing section page, resolve current application access server-side and allow rendering when the user has any one exact section-id:read, section-id:write, or section-id:manage grant. Do not require read solely to view an existing page. Gate new-content pages with section-id:write.
+- Redirect users who do not meet the applicable page visibility rule to /dashboard from server components.
+- In server actions, gate mutations with the exact operation key: write for creation and manage for editing existing entities or changing their status. Keep edit and status-change controls behind manage, and new-content links or calls to action behind write.
 - Keep actor identity server-derived using requireCurrentApplicationAccess; do not trust client-submitted actor ids.
 
 4. Update automated tests in the same PR
 
 - Extend lib/access-control.test.ts to assert the new section is in ACCESS_SECTIONS and receives read/write/manage generated permissions.
-- Extend lib/access-control.test.ts to assert that a role holding only section-id:write or section-id:manage does not resolve section-id:read, and that a role holding section-id:write together with section-id:read resolves both.
-- Extend lib/service-desk-navigation.test.ts for section visibility with and without section-id:read.
-- Add or update route/action tests for server-side read and write/manage gates where the section introduces new behavior.
+- Extend lib/access-control.test.ts to assert that a role holding only section-id:write or only section-id:manage does not resolve section-id:read, and that a role holding section-id:write together with section-id:read resolves both. Keep effective permission keys exact; visibility must not synthesize read or any other grant.
+- Extend lib/service-desk-navigation.test.ts to assert that the section is visible with each exact read, write, and manage grant, and hidden when none is held.
+- Add or update route/action tests to assert that existing section pages allow each exact read, write, and manage grant; new-content pages and creation require write; and edits or status changes require manage.
 
 5. Seed the approved database and validate before handoff
 
@@ -53,17 +53,17 @@ Use this sequence when introducing an independently protected section such as as
 6. Verify admin assignment flow still works
 
 - Ensure new base permissions are assignable through role management flows after seed.
-- Confirm the intended administrator can read and use the new section after bootstrap and that another user lacking its key cannot access it.
-- For a navigable section, confirm it appears in sidebar only for users with section-id:read in effective permissions.
-- Confirm route-level access remains blocked when permission is missing even if a user can reach the URL manually.
-- When assigning a write or manage permission to a role through role management, confirm the same role also holds the section's read permission. A role without read does not reach the section's pages even with write or manage.
+- Confirm the intended administrator can read and use the new section after bootstrap and that another user with none of its section grants cannot access it.
+- For a navigable section, confirm it appears in the sidebar for a user holding any one exact section-id:read, section-id:write, or section-id:manage grant, and is hidden when none is held. Confirm visibility does not add a missing permission key.
+- Confirm route-level access remains blocked when the user holds none of the grants accepted by the page visibility rule, even if the user can reach the URL manually.
+- Assign section-id:read only when a role needs the exact read grant or read-only access. Do not require read alongside write or manage for existing-page or navigation visibility.
 
 ## Permission Assignment Flow
 
 - Permission creation source of truth is code constants in access-control.
 - Permission persistence runs through bootstrapAccessControl in server access-control.
 - Role assignment happens through admin role management pages and actions.
-- User effective permissions are resolved server-side as the union of the permissions granted on the user's roles. No key is implied: write and manage grants do not add read, so the read permission is assigned explicitly next to any write or manage permission (see `access-control.md`). The resolved keys then filter navigation and protect routes.
+- User effective permissions are resolved server-side as the union of the permissions granted on the user's roles. No key is implied: write and manage grants do not add read, and visibility does not synthesize grants. Existing section pages and sidebar entries accept any one exact read, write, or manage grant; do not assign read merely to make them visible. Assign read when a read-only role or an explicitly read-gated operation needs it. New-content pages and their links or calls to action, and creation actions, require write. Editing existing entities and changing their status require manage. Keep server-side checks exact for the operation performed.
 
 ## Security and Auth Implications
 
@@ -75,10 +75,10 @@ Use this sequence when introducing an independently protected section such as as
 
 - Adding a new top-level access boundary without adding a section and generated privilege keys.
 - Adding a section route without adding it to ACCESS_SECTIONS.
-- Adding a navigation item without requiredPermission.
+- Adding a navigation item without a permission-aware visibility rule that accepts any one exact section read, write, or manage grant.
 - Adding permission checks only in UI and skipping server enforcement.
 - Forgetting tests when introducing a new navigation group or permission-dependent section.
-- Writing a read check that excludes users who hold only manage or write. Such users still need the read key granted explicitly; the read check is correct and must not be relaxed.
-- Assigning a write or manage permission to a role or user without the section's read permission.
+- Gating existing section page or sidebar visibility on read alone. Accept any one exact read, write, or manage grant, without adding an implied read key.
+- Requiring a role or user to hold read alongside write or manage solely to view existing section pages or navigation.
 - Adding an independently gated database entity but skipping Admin role grants or the configured administrator's Admin assignment.
 - Running seed against an unapproved target or dropping an existing ACCESS_SECTIONS key without accounting for permission deletion.
