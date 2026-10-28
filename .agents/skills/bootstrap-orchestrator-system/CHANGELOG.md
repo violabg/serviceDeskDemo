@@ -2,6 +2,13 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 2.0.1
+
+- The review document is redesigned. Its sections, its data and how the runtime renders it are unchanged; only the page changes.
+  - Light is the default theme, with a dark theme that follows the system; the ink is blue-black and references are cyanotype blue.
+  - A sticky header carries the design title and id, the obligation count, the generator, the plan name and the approval stamp.
+  - Cards, code blocks, the section path, the legend and the file and decision dialogs are restyled, and the page prints every section.
+
 ## 2.0.0
 
 The canonical system follows upstream 3.0.1. Several answers and outputs change, so a target re-installed from this version must re-read its workflows.

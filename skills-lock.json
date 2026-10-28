@@ -5,7 +5,7 @@
       "source": "violabg/agentic-system-kit",
       "sourceType": "github",
       "skillPath": "skills/orchestrator-system/bootstrap-orchestrator-system/SKILL.md",
-      "computedHash": "6b740c765bd8be43a53402bb3a85b3d47b0d6155448a42bb6ee1fcecffe44e3b"
+      "computedHash": "da6bae31d741ac3c732ae3f2c395fa8c98133685752f6af0ea9087bf5b8c3c72"
     },
     "maintain-orchestrator-system": {
       "source": "violabg/agentic-system-kit",
