@@ -2,6 +2,13 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 2.0.2
+
+- `skillSuffix` is restored. 2.0.1 removed it while redesigning the review page, but a repository may need it: GitHub Copilot in VS Code also discovers `.claude/skills/`, so a team that installs both clients needs distinct skill names to tell them apart in a shared discovery folder.
+  - `answers.environments[].skillSuffix` is validated again (empty, or hyphen-led lowercase segments such as `-claude`) and applied to every role skill and skill this client installs, to their frontmatter names, to the backticked skill names inside their text and to the client guide.
+  - It stays per environment, so the other client's copies keep their unsuffixed names.
+  - A target that kept the suffix through 2.0.1 keeps its suffixed files; a target that already applied 2.0.1 is planned back to the suffixed names.
+
 ## 2.0.1
 
 - The review document is redesigned. Its sections, its data and how the runtime renders it are unchanged; only the page changes.

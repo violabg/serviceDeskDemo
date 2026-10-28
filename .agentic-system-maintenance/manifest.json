@@ -2,10 +2,10 @@
   "version": 1,
   "kit": {
     "skill": "bootstrap-orchestrator-system",
-    "version": "2.0.0"
+    "version": "2.0.2"
   },
   "appliedOn": "2026-10-28",
-  "answersSha256": "43aee3eb0ad69e72669c8cf5b2fed42fde80421c012f801825d0c86133d93966",
+  "answersSha256": "a7f6d5658f4c5df2c50e42f5dfd59e6ab9a508a6b1989ea46c70ae5f12097d39",
   "files": {
     ".agentic-system/assets/design-requests.schema.json": {
       "sha256": "96ae0a0eff0745262cca2dcba7e9105f38d8743199bb8ce764431b08d072bbfb",
@@ -15,7 +15,7 @@
       "customizable": false
     },
     ".agentic-system/assets/design-review.html": {
-      "sha256": "d4d4ae527e81b0c500fcfc4638c73a97ccbbd586dc88172316751e98aba32b4d",
+      "sha256": "6ce7e7ae8693999baf03742b16d1f25adf05fb52ad3680a538ce1d98811af967",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
@@ -681,7 +681,7 @@
       "syntax": "html"
     },
     "docs/agentic-system/claude-code.md": {
-      "sha256": "e7ef47e5a454728a95701ae6bdb8de3cb68a3e9a000d90eb85de16a7e31fb349",
+      "sha256": "55f833eb4135ebbc26dc2fbcaf5892656ce8d012294e772f13e96b6826efc919",
       "kind": "guide",
       "mode": "file",
       "envs": [],

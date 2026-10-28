@@ -106,7 +106,7 @@
       "verification": {
         "static install and runtime (verify.mjs)": {
           "status": "verified-native",
-          "note": "no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-27, kit 1.2.2)"
+          "note": "no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-28, kit 2.0.2); the -claude skill names are restored and match the render"
         },
         "work item read (issue_read get/get_labels/get_comments)": {
           "status": "verified-fallback",
@@ -135,6 +135,10 @@
         "terminal surface GitHub MCP": {
           "status": "unverified",
           "note": "GITHUB_TOKEN not exported in the login shell; export it before launching claude in a terminal"
+        },
+        "review document (redesigned page)": {
+          "status": "unverified",
+          "note": "asset design-review.html updated to the 2.0.x design on 2026-10-28; the rendered page is checked in a DESIGN run"
         }
       },
       "skillSuffix": "-claude"
@@ -435,7 +439,7 @@
       "id": "skill-suffix",
       "answer": "claude-code system skills carry the -claude suffix (sd-orchestrator-claude, manage-work-item-claude, …); bootstrap-orchestrator-system, maintain-orchestrator-system and other repo skills untouched",
       "source": "user",
-      "evidence": "Copilot also discovers .claude/skills; user wants to tell the Claude copies apart. Kit 2.0.0 dropped environments[].skillSuffix; on 2026-10-28 the user asked to keep the suffix, so the option was restored as a local patch of the bootstrap kit (scripts/lib/answers.mjs, render.mjs), not upstream; a skills update overwrites it"
+      "evidence": "Copilot also discovers .claude/skills; user wants to tell the Claude copies apart. Kit 2.0.0 dropped environments[].skillSuffix; on 2026-10-28 the user asked to keep the suffix, so the option was restored as a local patch of the bootstrap kit (scripts/lib/answers.mjs, render.mjs), not upstream. 2.0.1 removed it again and the patch was lost; kit 2.0.2 restores it with the reason in its CHANGELOG. A skills update still overwrites the kit folder: after one, re-check that .claude skills still carry -claude"
     },
     {
       "id": "skill-route-role-tools",
