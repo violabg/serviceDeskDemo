@@ -15,7 +15,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "requirementRef": { "type": "string", "examples": ["requirement_R_lock"] },
+            "requirementRef": { "type": "string", "description": "the 3.0.0 reference of the requirement lock, still accepted; 3.0.1 sends no requirement reference" },
             "title": { "type": "string" },
             "generator": { "type": "string" }
           }
@@ -124,7 +124,7 @@
       "properties": {
         "id": { "type": "integer" },
         "operation": { "type": "string" },
-        "kind": { "type": "string", "enum": ["Code", "Generator", "Documentation", "Changelog", "Migration", "Wiring", "Procedure", "Verification"] },
+        "kind": { "type": "string", "enum": ["Code", "Generator", "Documentation", "Changelog", "Migration", "Wiring", "Procedure", "UnitTest", "IntegrationTest", "Verification"] },
         "instructions": { "type": "string", "examples": ["{{O1.1}} Resolve the acting user from the bearer token. {{O1.2}} Check the submit permission before creating the draft."] },
         "dependsOn": { "type": "array", "items": { "type": "integer" }, "description": "cardinal operation numbers this one waits for (they become IM#)" },
         "files": { "type": "array", "items": { "type": "string" } },
@@ -142,6 +142,7 @@
           },
           "description": "the necessary elements this operation carries out, each as { obligation, element } (they become O#.k)"
         },
+        "knowledgeReferences": { "type": "array", "items": { "type": "integer" }, "description": "the kids of the knowledge references this operation needs, registered first with design-knowledge-references" },
         "source": { "type": "string", "enum": ["Design", "Knowledge", "UserStory", "Developer", "JobArtifact"] },
         "sourceRef": { "type": "string" },
         "branches": {
@@ -246,7 +247,37 @@
             "additionalProperties": false,
             "properties": { "path": { "type": "string" }, "why": { "type": "string" }, "purpose": { "type": "string" } }
           }
-        }
+        },
+        "scope": { "$ref": "#/$defs/scope" }
+      }
+    },
+    "scope": { "type": "string", "enum": ["Production", "Test"], "description": "Production governs the production code, Test the tests; a reference added without a scope is Production" },
+    "knowledgeReference": {
+      "type": ["object", "integer"],
+      "description": "a reference row on Add and Update; a kid on Read and Delete",
+      "additionalProperties": false,
+      "properties": {
+        "kid": { "type": "integer", "description": "the reference id you assign: a distinct positive integer" },
+        "fId": { "type": "integer", "description": "the file id of the knowledge document, from the current catalogue" },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["s", "e"],
+          "properties": {
+            "s": { "type": "integer", "description": "the first line, inclusive, as numbered by knowledge-read" },
+            "e": { "type": "integer", "description": "the last line, inclusive" }
+          }
+        },
+        "scope": { "$ref": "#/$defs/scope" }
+      }
+    },
+    "knowledgeReferencesRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation"],
+      "properties": {
+        "operation": { "type": "string", "enum": ["Add", "Read", "Update", "Delete"] },
+        "references": { "type": "array", "items": { "$ref": "#/$defs/knowledgeReference" }, "description": "the reference rows for Add and Update; the kids (integers) for Read and Delete, empty = all" }
       }
     },
     "decision": {
@@ -260,8 +291,8 @@
         "context": { "type": "string" },
         "why": { "type": "string" },
         "how": { "type": "string" },
-        "blocking": { "type": "boolean" },
-        "highlight": { "type": "boolean" },
+        "blocking": { "type": "boolean", "description": "the 3.0.0 name of highlight, still accepted; it reads as highlight" },
+        "highlight": { "type": "boolean", "description": "where the developer's judgment is most needed; a highlighted decision about the situation carries no realizedIn" },
         "realizedIn": { "type": "array", "items": { "type": "string" } },
         "options": {
           "type": "array",

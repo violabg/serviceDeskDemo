@@ -1,5 +1,6 @@
 // Markdown projections of the design (contracts/projections.md). They are regenerated on every write.
-import { placeholders, runChecks } from "./checks.mjs";
+import { isHighlighted, placeholders, runChecks } from "./checks.mjs";
+import { weightOf } from "./plan.mjs";
 import { shortTime } from "./util.mjs";
 
 const lower = (value) => (value ?? "").toString().toLowerCase();
@@ -19,6 +20,52 @@ function failureArms(operation) {
   for (const n of operation.negatives ?? []) parts.push(`negative: ${oneLine(n.cause)} → ${oneLine(n.behavior)} (impact ${n.impact ?? "n/a"})`);
   for (const x of operation.exceptions ?? []) parts.push(`exception: ${oneLine(x.trigger)} → ${oneLine(x.recovery)}`);
   return parts;
+}
+
+function fileReferenceLine(fr) {
+  const details = (fr.files ?? []).map((file) => {
+    const d = (fr.details ?? []).find((x) => x.path === file);
+    return `${file} (why: ${oneLine(d?.why) || "(not recorded)"} | purpose: ${oneLine(d?.purpose) || "(not recorded)"})`;
+  });
+  return `- ${fr.id} | scope: ${lower(fr.scope ?? "Production")} | symbol: ${fr.symbol} | files: ${details.join("; ") || "none"}`;
+}
+
+function fileReferencesSection(design, out) {
+  out.push("", "## File references");
+  for (const fr of design.fileReferences) out.push(fileReferenceLine(fr));
+}
+
+function contractsSection(design, out) {
+  const p = design.path;
+  out.push("", "## Contracts");
+  for (const c of p.contracts) {
+    const premortem = (c.premortem ?? []).map((m) => `${oneLine(m.what)} → ${oneLine(m.mitigation)}`).join("; ");
+    out.push(`- ${c.id} | ${lower(c.type)} | module: ${c.module ?? ""} | file: ${c.file ?? ""} | promises: ${oneLine(c.promises)} | signature: ${oneLine(c.signature)} | premortem: ${premortem || "none"} | confidence: ${c.confidence ?? "n/a"} | evidence: ${c.evidence ?? "n/a"}${c.evidenceNote ? ` (${oneLine(c.evidenceNote)})` : ""}`);
+  }
+  out.push("", "## Public APIs");
+  for (const a of p.apis) {
+    const responses = (a.responses ?? []).map((r) => `${r.status} ${oneLine(r.description)}${r.body ? ` body: ${oneLine(r.body)}` : ""}`).join("; ");
+    out.push(`- ${a.id} | ${a.method} ${a.path} | purpose: ${oneLine(a.purpose)} | auth: ${oneLine(a.auth)} | request: ${oneLine(a.request)} | responses: ${responses || "none"} | confidence: ${a.confidence ?? "n/a"} | evidence: ${a.evidence ?? "n/a"}`);
+  }
+}
+
+function filesystemSection(design, out) {
+  const p = design.path;
+  out.push("", "## Filesystem");
+  if (p.filesystem.intro) out.push(oneLine(p.filesystem.intro));
+  for (const f of p.filesystem.files) {
+    out.push(`- ${f.id} | ${lower(f.status)} | ${f.path} | module: ${f.module ?? ""} | reason: ${oneLine(f.reason)} | change: ${oneLine(f.change)} | impact: ${oneLine(f.impact)}`);
+  }
+}
+
+function decisionsSection(design, out) {
+  out.push("", "## Decisions");
+  for (const d of design.decisions) {
+    const options = d.options.map((o) => `${o.id}${o.chosen ? " (chosen)" : ""}: ${oneLine(o.text)}`).join(" || ");
+    out.push(
+      `- ${d.id} | ${lower(d.source)} | highlight: ${isHighlighted(d)} | topic: ${oneLine(d.topic)} | question: ${oneLine(d.question)} | context: ${oneLine(d.context)} | why: ${oneLine(d.why)} | how: ${oneLine(d.how)} | realizedIn: ${join(d.realizedIn)} | options: ${options}`,
+    );
+  }
 }
 
 export function snapshot(design) {
@@ -42,47 +89,25 @@ export function snapshot(design) {
   }
   out.push("", "## Open points");
   for (const op of design.openPoints) out.push(`- ${op.id} | ${oneLine(op.question)} | why: ${oneLine(op.whyAskingMySelf)}`);
-  out.push("", "## File references");
-  for (const fr of design.fileReferences) {
-    const details = (fr.files ?? []).map((file) => {
-      const d = (fr.details ?? []).find((x) => x.path === file);
-      return `${file} (why: ${oneLine(d?.why) || "(not recorded)"} | purpose: ${oneLine(d?.purpose) || "(not recorded)"})`;
-    });
-    out.push(`- ${fr.id} | symbol: ${fr.symbol} | files: ${details.join("; ") || "none"}`);
+  fileReferencesSection(design, out);
+  out.push("", "## Knowledge references");
+  for (const k of design.knowledgeReferences ?? []) {
+    out.push(`- kid ${k.kid} | fId ${k.fId} | ${k.filePath ?? "(no path)"} | lines ${k.range.s}–${k.range.e} | scope: ${lower(k.scope ?? "Production")}`);
   }
-  out.push("", "## Contracts");
-  for (const c of p.contracts) {
-    const premortem = (c.premortem ?? []).map((m) => `${oneLine(m.what)} → ${oneLine(m.mitigation)}`).join("; ");
-    out.push(`- ${c.id} | ${lower(c.type)} | module: ${c.module ?? ""} | file: ${c.file ?? ""} | promises: ${oneLine(c.promises)} | signature: ${oneLine(c.signature)} | premortem: ${premortem || "none"} | confidence: ${c.confidence ?? "n/a"} | evidence: ${c.evidence ?? "n/a"}${c.evidenceNote ? ` (${oneLine(c.evidenceNote)})` : ""}`);
-  }
-  out.push("", "## Public APIs");
-  for (const a of p.apis) {
-    const responses = (a.responses ?? []).map((r) => `${r.status} ${oneLine(r.description)}${r.body ? ` body: ${oneLine(r.body)}` : ""}`).join("; ");
-    out.push(`- ${a.id} | ${a.method} ${a.path} | purpose: ${oneLine(a.purpose)} | auth: ${oneLine(a.auth)} | request: ${oneLine(a.request)} | responses: ${responses || "none"} | confidence: ${a.confidence ?? "n/a"} | evidence: ${a.evidence ?? "n/a"}`);
-  }
-  out.push("", "## Filesystem");
-  if (p.filesystem.intro) out.push(oneLine(p.filesystem.intro));
-  for (const f of p.filesystem.files) {
-    out.push(`- ${f.id} | ${lower(f.status)} | ${f.path} | module: ${f.module ?? ""} | reason: ${oneLine(f.reason)} | change: ${oneLine(f.change)} | impact: ${oneLine(f.impact)}`);
-  }
+  contractsSection(design, out);
+  filesystemSection(design, out);
   out.push("", "## Operations");
   if (p.operationsIntro) out.push(oneLine(p.operationsIntro));
   for (const op of p.operations) {
     const arms = failureArms(op);
     out.push(
-      `- ${op.id} | ${lower(op.kind)} | ${oneLine(op.operation)} | status: ${op.implementationStatus ?? "not started"} | dependsOn: ${join(op.dependsOn)} | files: ${join(op.files)} | implements: ${join([...(op.refObligations ?? []), ...(op.refElements ?? [])])}` +
+      `- ${op.id} | ${lower(op.kind)} | weight: ${weightOf(op)} | ${oneLine(op.operation)} | status: ${op.implementationStatus ?? "not started"} | dependsOn: ${join(op.dependsOn)} | files: ${join(op.files)} | implements: ${join([...(op.refObligations ?? []), ...(op.refElements ?? [])])} | knowledge: ${join((op.knowledgeReferences ?? []).map((kid) => `kid ${kid}`))}` +
         (op.source ? ` | source: ${op.source}${op.sourceRef ? ` (${oneLine(op.sourceRef)})` : ""}` : "") +
         ` | instructions: ${oneLine(op.instructions)}` +
         (arms.length ? ` | ${arms.join(" | ")}` : ""),
     );
   }
-  out.push("", "## Decisions");
-  for (const d of design.decisions) {
-    const options = d.options.map((o) => `${o.id}${o.chosen ? " (chosen)" : ""}: ${oneLine(o.text)}`).join(" || ");
-    out.push(
-      `- ${d.id} | ${lower(d.source)} | blocking: ${Boolean(d.blocking)} | highlight: ${Boolean(d.highlight)} | topic: ${oneLine(d.topic)} | question: ${oneLine(d.question)} | context: ${oneLine(d.context)} | why: ${oneLine(d.why)} | how: ${oneLine(d.how)} | realizedIn: ${join(d.realizedIn)} | options: ${options}`,
-    );
-  }
+  decisionsSection(design, out);
   out.push("", "## History");
   for (const it of design.iterations) {
     const files = (it.files ?? []).map((f) => `${lower(f.change)} ${f.path}`).join("; ");
@@ -183,4 +208,41 @@ export function verificationView(design, grounding = []) {
   }
   out.push("");
   return `${out.join("\n")}`;
+}
+
+// The implementor's projection (captured shape): the file references split by scope, then the contracts, the
+// public APIs, the filesystem and the decisions, without any operation, obligation or knowledge reference. The
+// operations arrive one at a time from design-implementation-operation, so the future stays masked.
+export function implementationContext(design) {
+  const out = [`# DESIGN SNAPSHOT — ${design.path.title || "(untitled)"}`];
+  for (const [heading, scope] of [["File references for the code", "Production"], ["File references for the tests", "Test"]]) {
+    const rows = design.fileReferences.filter((fr) => (fr.scope ?? "Production") === scope);
+    if (scope === "Test") out.push("");
+    out.push(`## ${heading}`, ...(rows.length ? rows.map(fileReferenceLine) : ["- (none)"]));
+  }
+  contractsSection(design, out);
+  filesystemSection(design, out);
+  decisionsSection(design, out);
+  return `${out.join("\n")}\n`;
+}
+
+// One served operation, with the text of every knowledge reference it declares already expanded.
+export function servedOperation(op, { weight, authorisation, knowledge, note }) {
+  const out = [`# Operation ${op.id} — ${oneLine(op.operation)}`];
+  if (note) out.push(note);
+  out.push(`- kind: ${op.kind} | weight: ${weight} | authorisation: ${authorisation}`);
+  out.push(`- dependsOn: ${join(op.dependsOn)} | files: ${join(op.files)} | implements: ${join([...(op.refObligations ?? []), ...(op.refElements ?? [])])}`);
+  if (op.source) out.push(`- source: ${op.source}${op.sourceRef ? ` (${oneLine(op.sourceRef)})` : ""}`);
+  out.push("", "## Instructions", op.instructions ?? "(none)");
+  const arms = failureArms(op);
+  out.push("", "## Failure arms");
+  out.push(...(arms.length ? arms.map((arm) => `- ${arm}`) : ["- none"]));
+  out.push("", "## Knowledge references");
+  if (!knowledge.length) out.push("- none: this operation declares no knowledge reference");
+  for (const k of knowledge) {
+    out.push("", `### kid ${k.kid}${k.filePath ? ` — ${k.filePath}, lines ${k.range.s}–${k.range.e}` : ""} (${lower(k.scope ?? "Production")})`);
+    out.push(k.text ?? `(not resolved: ${k.resolutionNote})`);
+  }
+  out.push("", "When it is implemented, call design-implementation-operation-close.");
+  return `${out.join("\n")}\n`;
 }

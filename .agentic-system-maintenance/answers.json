@@ -435,7 +435,7 @@
       "id": "skill-suffix",
       "answer": "claude-code system skills carry the -claude suffix (sd-orchestrator-claude, manage-work-item-claude, …); bootstrap-orchestrator-system, maintain-orchestrator-system and other repo skills untouched",
       "source": "user",
-      "evidence": "Copilot also discovers .claude/skills; user wants to tell the Claude copies apart. Implemented as a local installer option environments[].skillSuffix (scripts/lib/answers.mjs, render.mjs), not upstream yet"
+      "evidence": "Copilot also discovers .claude/skills; user wants to tell the Claude copies apart. Kit 2.0.0 dropped environments[].skillSuffix; on 2026-10-28 the user asked to keep the suffix, so the option was restored as a local patch of the bootstrap kit (scripts/lib/answers.mjs, render.mjs), not upstream; a skills update overwrites it"
     },
     {
       "id": "skill-route-role-tools",

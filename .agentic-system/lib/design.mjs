@@ -5,8 +5,9 @@ import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { crowdedPlaceholders, overviewFindings, runChecks } from "./checks.mjs";
 import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
-import { designGrounding } from "./knowledge.mjs";
-import { snapshot, verificationView } from "./projections.mjs";
+import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./knowledge.mjs";
+import { authorisationOf, isDone, servingOrder, unmetDependencies, weightOf } from "./plan.mjs";
+import { implementationContext, servedOperation, snapshot, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
 import { RuntimeError, arg, iso, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
@@ -46,7 +47,7 @@ function requestOf(ctx, args, defName, tool) {
   return request;
 }
 
-// Resolves the design of a job. FAST_IMPLEMENTATION and DOCUMENTATION jobs have none.
+// Resolves the design of a job. DOCUMENTATION jobs have none.
 function jobDesign(ctx, args, tool, options) {
   const job = loadJob(ctx, args, tool);
   if (!job.designId) {
@@ -100,6 +101,7 @@ function applyOptions(decision, options) {
 }
 
 function mergeFileReference(row, incoming) {
+  if (incoming.scope) row.scope = incoming.scope;
   row.files = [...new Set([...(row.files ?? []), ...(incoming.files ?? []), ...(incoming.details ?? []).map((d) => d.path)])];
   const details = new Map((row.details ?? []).map((d) => [d.path, d]));
   for (const detail of incoming.details ?? []) details.set(detail.path, { ...details.get(detail.path), ...detail });
@@ -141,7 +143,6 @@ export function rowTool(ctx, tool, args) {
           applyElements(record, elements ?? [], tool);
         }
         if (tool === "design-decisions") {
-          record.blocking = Boolean(record.blocking);
           record.highlight = Boolean(record.highlight);
           record.realizedIn ??= [];
           applyOptions(record, options ?? []);
@@ -149,6 +150,7 @@ export function rowTool(ctx, tool, args) {
         if (tool === "design-file-references") {
           record.files = [];
           record.details = [];
+          record.scope = "Production";
           mergeFileReference(record, row);
         }
         collection.push(record);
@@ -184,6 +186,103 @@ export function rowTool(ctx, tool, args) {
       return JSON.stringify({ deleted: ids });
     }
   }
+}
+
+// --- knowledge references -----------------------------------------------------------------------------
+
+// A reference names one file of the current catalogue and a range inside it; its path is kept so the text still
+// resolves after a rebuild renumbers the file ids. Answers the reason it cannot be placed, or null.
+function placeReference(ctx, reference) {
+  const file = knowledgeFile(ctx, reference.fId);
+  if (!file) return `has an unresolvable file id: ${reference.fId} is not in the current knowledge index; call knowledge-catalog again`;
+  const { s, e } = reference.range;
+  if (!Number.isInteger(s) || !Number.isInteger(e) || s < 1 || e < s) return `has an unresolvable range: ${s}-${e} is not an inclusive line range`;
+  if (e > file.lines) return `has an unresolvable range: The requested range ${s}-${e} is outside the knowledge file, which has ${file.lines} line(s).`;
+  reference.filePath = file.path;
+  return null;
+}
+
+// `references` carries the rows on Add and Update, the kids on Read and Delete (empty = all). A row that cannot be
+// applied is reported in `errors` and the other rows still apply.
+export function knowledgeReferences(ctx, args) {
+  const tool = "design-knowledge-references";
+  const { design } = jobDesign(ctx, args, tool);
+  const request = requestOf(ctx, args, "knowledgeReferencesRequest", tool);
+  const items = request.references ?? [];
+  const { operation } = request;
+  const result = { added: 0, updated: 0, deleted: 0, unlinkedOperations: [], errors: [] };
+  const fail = (detail) => result.errors.push(`${operation}: ${detail}`);
+  const rows = items.filter((item) => {
+    if (operation === "Read" || operation === "Delete" ? Number.isInteger(item) : item !== null && typeof item === "object") return true;
+    fail(`${JSON.stringify(item)} is not ${operation === "Read" || operation === "Delete" ? "a kid" : "a reference row"}`);
+    return false;
+  });
+  const references = design.knowledgeReferences;
+  const changed = [];
+  switch (operation) {
+    case "Read": {
+      const missing = rows.filter((kid) => !references.some((r) => r.kid === kid));
+      for (const kid of missing) fail(`kid ${kid} does not exist`);
+      const selected = rows.length ? references.filter((r) => rows.includes(r.kid)) : references;
+      return JSON.stringify({ references: selected.map((r) => ({ ...r, ...resolveKnowledgeReference(ctx, r) })), errors: result.errors }, null, 2);
+    }
+    case "Add":
+      for (const row of rows) {
+        if (!Number.isInteger(row.kid) || row.kid < 1) fail(`kid ${row.kid ?? "(none)"} is not a positive integer; assign a distinct one`);
+        else if (references.some((r) => r.kid === row.kid)) fail(`kid ${row.kid} already exists; use Update to change it, or assign a new kid to a distinct range`);
+        else if (row.fId === undefined || !row.range) fail(`kid ${row.kid} needs its fId and its range { s, e }`);
+        else {
+          const reference = { kid: row.kid, fId: row.fId, range: { s: row.range.s, e: row.range.e }, filePath: null, scope: row.scope ?? "Production" };
+          const problem = placeReference(ctx, reference);
+          if (problem) fail(`kid ${row.kid} ${problem}`);
+          else {
+            references.push(reference);
+            changed.push(row.kid);
+            result.added++;
+          }
+        }
+      }
+      break;
+    case "Update":
+      for (const row of rows) {
+        const current = references.find((r) => r.kid === row.kid);
+        if (!current) {
+          fail(`kid ${row.kid ?? "(none)"} does not exist`);
+          continue;
+        }
+        // An existing reference keeps every field the update does not send, its stored scope included.
+        const next = { ...current, fId: row.fId ?? current.fId, range: row.range ?? current.range, scope: row.scope ?? current.scope };
+        const problem = row.fId !== undefined || row.range ? placeReference(ctx, next) : null;
+        if (problem) fail(`kid ${row.kid} ${problem}`);
+        else {
+          Object.assign(current, next);
+          changed.push(row.kid);
+          result.updated++;
+        }
+      }
+      break;
+    case "Delete": {
+      for (const kid of rows) if (!references.some((r) => r.kid === kid)) fail(`kid ${kid} does not exist`);
+      const kids = rows.length ? rows.filter((kid) => references.some((r) => r.kid === kid)) : references.map((r) => r.kid);
+      // An operation that declared a deleted kid loses it and is reported, so its knowledge can be registered again.
+      for (const op of design.path.operations) {
+        const kept = (op.knowledgeReferences ?? []).filter((kid) => !kids.includes(kid));
+        if (kept.length !== (op.knowledgeReferences ?? []).length) {
+          op.knowledgeReferences = kept;
+          result.unlinkedOperations.push(op.id);
+        }
+      }
+      design.knowledgeReferences = references.filter((r) => !kids.includes(r.kid));
+      changed.push(...kids);
+      result.deleted = kids.length;
+      break;
+    }
+  }
+  if (changed.length) {
+    touch(ctx, design, { Add: "added", Update: "updated", Delete: "deleted" }[operation], `${tool}: ${changed.join(", ")}`);
+    saveDesign(ctx, design);
+  }
+  return JSON.stringify(result);
 }
 
 // --- overview ---------------------------------------------------------------------------------------
@@ -282,6 +381,11 @@ export function submit(ctx, args) {
         const id = Number.isInteger(row?.id) ? `${spec.prefix}${row.id}` : null;
         if (errors.length) {
           rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: errors.join("; ") });
+          return;
+        }
+        const unknownKids = (row.knowledgeReferences ?? []).filter((kid) => !design.knowledgeReferences.some((r) => r.kid === kid));
+        if (unknownKids.length) {
+          rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: `knowledgeReferences names kid ${unknownKids.join(", ")}, which no knowledge reference registers; register it with design-knowledge-references first` });
           return;
         }
         const current = spec.get(design);
@@ -414,6 +518,79 @@ export function operationStatus(ctx, args) {
   touch(ctx, design, "status", `${request.ids.join(", ")} -> ${request.status}`);
   saveDesign(ctx, design);
   return JSON.stringify(request.ids);
+}
+
+// --- implementation loop ------------------------------------------------------------------------------
+
+export function implementationContextTool(ctx, args) {
+  const tool = "design-implementation-context";
+  const { design } = jobDesign(ctx, args, tool);
+  // Parts start at a section heading or at an item, so a row is never split.
+  return servePart(implementationContext(design), args, {
+    tool,
+    starts: (line) => /^## /.test(line) || /^- /.test(line),
+    next: (k) => `call ${tool} again with part ${k} (CLI: --part ${k}).`,
+  });
+}
+
+function serveText(ctx, design, operation, note) {
+  const weight = weightOf(operation);
+  const knowledge = (operation.knowledgeReferences ?? []).map((kid) => {
+    const reference = design.knowledgeReferences.find((r) => r.kid === kid);
+    return reference ? { ...reference, ...resolveKnowledgeReference(ctx, reference) } : { kid, text: null, resolutionNote: `kid ${kid} is not registered` };
+  });
+  return servedOperation(operation, { weight, authorisation: authorisationOf(weight), knowledge, note });
+}
+
+export function implementationOperation(ctx, args) {
+  const tool = "design-implementation-operation";
+  const { design } = jobDesign(ctx, args, tool);
+  const operations = design.path.operations;
+  const requested = arg(args, "operationId") ?? arg(args, "id");
+  const served = design.servedOperation ? operations.find((op) => op.id === design.servedOperation) : null;
+  if (served) {
+    if (requested && requested !== served.id) {
+      throw new RuntimeError(`${tool} rejected: ${served.id} is served and not closed yet; close it with design-implementation-operation-close before asking for ${requested}.`);
+    }
+    return serveText(ctx, design, served, `${served.id} was already served and is not closed: implement it, then call design-implementation-operation-close.`);
+  }
+  let operation;
+  if (requested) {
+    operation = operations.find((op) => op.id === requested);
+    if (!operation) throw new RuntimeError(`${tool} rejected: operation ${requested} does not exist.`);
+    if (weightOf(operation) === "verification") throw new RuntimeError(`${tool} rejected: ${requested} is a Verification operation; the implementation verifier covers it and it is never served.`);
+    // The loop asks again with the same id after closing it: the authorised work is done, never reopened.
+    if (isDone(operation)) {
+      return `batch-complete: ${requested} is already ${operation.implementationStatus}, so the operation this delegation authorised is done; a closed operation is never reopened (a correction runs outside the loop). Build the projects this work unit touched and return the control.`;
+    }
+    const unmet = unmetDependencies(operations, operation);
+    if (unmet.length) throw new RuntimeError(`${tool} rejected: ${requested} depends on ${unmet.join(", ")}, which are not implemented yet; a declared dependency prevails over the developer's selection.`);
+  } else {
+    operation = servingOrder(operations).find((op) => weightOf(op) === "authoring" && !isDone(op) && unmetDependencies(operations, op).length === 0);
+    if (!operation) {
+      const remaining = operations.filter((op) => weightOf(op) !== "verification" && !isDone(op));
+      return remaining.length
+        ? "batch-complete: the automatic batch is exhausted. The operations that remain require the developer's explicit authorisation; build the projects this work unit touched and return the control."
+        : "complete: every operation of the plan is implemented. Build the projects this work unit touched and return the control.";
+    }
+  }
+  operation.implementationStatus = "InProgress";
+  design.servedOperation = operation.id;
+  touch(ctx, design, "served", `${operation.id} served${requested ? " on the developer's authorisation" : ""}`);
+  saveDesign(ctx, design);
+  return serveText(ctx, design, operation, null);
+}
+
+export function implementationOperationClose(ctx, args) {
+  const tool = "design-implementation-operation-close";
+  const { design } = jobDesign(ctx, args, tool);
+  const operation = design.servedOperation ? design.path.operations.find((op) => op.id === design.servedOperation) : null;
+  if (!operation) throw new RuntimeError(`${tool} rejected: no operation is served; call design-implementation-operation first.`);
+  operation.implementationStatus = "Implemented";
+  design.servedOperation = null;
+  touch(ctx, design, "operation-closed", `${operation.id} -> Implemented`);
+  saveDesign(ctx, design);
+  return `${operation.id} closed as Implemented. Call design-implementation-operation for the next operation.`;
 }
 
 // --- iterations ---------------------------------------------------------------------------------------

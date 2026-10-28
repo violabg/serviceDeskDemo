@@ -1,14 +1,20 @@
-// Codebase clusters (contracts/codebase-clusters.md). Lab-authored, deterministic algorithm: a file belongs
-// to one cluster per word of its base name; clusters with fewer than MIN_CLUSTER_SIZE files are dissolved
-// and files left without a cluster go to `Uncategorized`.
+// Codebase clusters (contracts/codebase-clusters.md). Lab-authored, deterministic partition: every file of the
+// extension belongs to exactly one cluster. Test infrastructure forms `Tests`; every other file joins the domain of
+// its deepest non-structural directory that holds at least MIN_CLUSTER_SIZE files, named in PascalCase; a file
+// with no such directory forms `General`.
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
-import { RuntimeError, arg, requireString } from "./util.mjs";
+import { arg, RuntimeError, requireString } from "./util.mjs";
 
 export const MIN_CLUSTER_SIZE = 5;
 const WALK_EXCLUDES = new Set([".git", "node_modules", "bin", "obj", "dist", "build", "coverage", ".next", "target"]);
-const SECONDARY_SUFFIXES = /\.(test|spec|stories|story|module|d)$/i;
+// Directories that organise a codebase without naming a domain of it.
+const STRUCTURAL_DIRS = new Set(["src", "source", "sources", "lib", "app", "apps", "packages", "modules", "components", "pages", "features", "common", "shared", "internal", "pkg", "main", "java", "kotlin", "resources"]);
+const TEST_DIRS = new Set(["test", "tests", "__tests__", "__mocks__", "mocks", "__fixtures__", "fixtures", "testing", "test-utils", "testutils", "e2e", "cypress", "playwright"]);
+const TEST_FILES = /^(setup-?tests|test-?utils|(jest|vitest)\.setup)$|\.(mock|fixture)$|Tests$/i;
+export const TESTS_CLUSTER = "Tests";
+export const GENERAL_CLUSTER = "General";
 
 function workspaceOf(ctx, args, tool) {
   const raw = arg(args, "WorkspacePath") ?? ctx.workspaceRoot;
@@ -42,15 +48,18 @@ function listFiles(workspace) {
   }
 }
 
-export function words(fileName, extension) {
-  const base = fileName.slice(0, fileName.length - extension.length).replace(SECONDARY_SUFFIXES, "");
-  const tokens = base
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+export function pascalCase(name) {
+  return name
     .split(/[^A-Za-z0-9]+/)
-    .map((w) => w.toLowerCase())
-    .filter((w) => w.length > 1 && !/^\d+$/.test(w));
-  return [...new Set(tokens)];
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+}
+
+export function isTestInfrastructure(file, extension) {
+  const segments = file.split("/");
+  const base = segments.pop().slice(0, -extension.length);
+  return segments.some((dir) => TEST_DIRS.has(dir.toLowerCase())) || TEST_FILES.test(base);
 }
 
 export function buildClusters(ctx, args, tool) {
@@ -58,16 +67,37 @@ export function buildClusters(ctx, args, tool) {
   const extension = extensionOf(args, tool);
   const files = listFiles(workspace).filter((f) => f.toLowerCase().endsWith(extension));
   const clusters = new Map();
+  const add = (name, file) => {
+    if (!clusters.has(name)) clusters.set(name, []);
+    clusters.get(name).push(file);
+  };
+  const domainFiles = [];
   for (const file of files) {
-    for (const word of words(file.split("/").pop(), extension)) {
-      if (!clusters.has(word)) clusters.set(word, []);
-      clusters.get(word).push(file);
+    if (isTestInfrastructure(file, extension)) add(TESTS_CLUSTER, file);
+    else domainFiles.push(file);
+  }
+  // Files under each directory, counted over the domain files only.
+  const size = new Map();
+  for (const file of domainFiles) {
+    const dirs = file.split("/").slice(0, -1);
+    for (let depth = 1; depth <= dirs.length; depth++) {
+      const dir = dirs.slice(0, depth).join("/");
+      size.set(dir, (size.get(dir) ?? 0) + 1);
     }
   }
-  for (const [word, members] of clusters) if (members.length < MIN_CLUSTER_SIZE) clusters.delete(word);
-  const clustered = new Set([...clusters.values()].flat());
-  const uncategorized = files.filter((f) => !clustered.has(f));
-  if (uncategorized.length) clusters.set("Uncategorized", uncategorized);
+  for (const file of domainFiles) {
+    const dirs = file.split("/").slice(0, -1);
+    let name = GENERAL_CLUSTER;
+    for (let depth = dirs.length; depth >= 1; depth--) {
+      const dir = dirs[depth - 1];
+      if (STRUCTURAL_DIRS.has(dir.toLowerCase()) || !pascalCase(dir)) continue;
+      if (size.get(dirs.slice(0, depth).join("/")) >= MIN_CLUSTER_SIZE) {
+        name = pascalCase(dir);
+        break;
+      }
+    }
+    add(name, file);
+  }
   return { workspace, clusters };
 }
 
@@ -84,7 +114,12 @@ export function clusterFiles(ctx, args) {
   const tool = "codebase-cluster-files";
   const name = requireString(arg(args, "clusterName"), "clusterName", tool);
   const { workspace, clusters } = buildClusters(ctx, args, tool);
-  const members = clusters.get(name) ?? clusters.get(name.toLowerCase());
-  if (!members) throw new RuntimeError(`${tool} failed: cluster '${name}' does not exist; call codebase-clusters for the current list.`);
-  return members.map((f) => join(workspace, f)).sort().join("\n");
+  // Names are matched exactly: a name taken from another map, or another extension, is not found.
+  const members = clusters.get(name);
+  if (!members) return `Cluster name '${name}' not found.`;
+  const key = (path) => path.toUpperCase();
+  return members
+    .map((f) => join(workspace, f))
+    .sort((a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0))
+    .join("\n");
 }

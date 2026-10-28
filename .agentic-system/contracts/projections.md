@@ -1,6 +1,6 @@
 # Design projections
 
-Lab-authored contract, derived from the captured `get_design_snapshot`, `get_design_document` and the design verifier's definition. The runtime implements it in `runtime/lib/projections.mjs` and `runtime/lib/render.mjs`, and rewrites every projection on every design write, so no reader ever sees a stale view.
+Lab-authored contract, derived from the captured `get_design_snapshot`, `get_design_document`, the design verifier's definition and the 3.0.1 implementation step (`get_design_implementation_context`, captured; `design_implementation_operation`, which has no capture). The runtime implements it in `runtime/lib/projections.mjs` and `runtime/lib/render.mjs`, and rewrites every projection on every design write, so no reader ever sees a stale view.
 
 ## snapshot
 
@@ -8,22 +8,47 @@ Lab-authored contract, derived from the captured `get_design_snapshot`, `get_des
 
 ```text
 # Design snapshot — <designId>
-status: Draft | plan: ... | approved: ... | title: ... | requirement: requirement_R_lock
+status: Draft | plan: ... | approved: ... | title: ... | requirement: <3.0.0 requirementRef, when one was sent>
 
 ## Overview            - current codebase: ... / - gaps: ...
 ## Obligations         - O1 | requirement | <behavior> | class: ... | boundaries: ... | source: ... | elements: O1.1 (guard) ...; O1.2 (effect) ...
 ## Open points         - OP1 | <question> | why: ...
-## File references     - FR1 | symbol: Type.Member | files: <path> (why: ... | purpose: ...)
+## File references     - FR1 | scope: production | symbol: Type.Member | files: <path> (why: ... | purpose: ...)
+## Knowledge references - kid 1 | fId 4 | <knowledge path> | lines 3–9 | scope: test
 ## Contracts           - CT1 | interface | module: ... | file: ... | promises: ... | signature: ... | premortem: ... | confidence: ... | evidence: ...
 ## Public APIs         - API1 | POST /path | purpose: ... | auth: ... | request: ... | responses: ...
 ## Filesystem          - FS1 | added | <path> | module: ... | reason: ... | change: ... | impact: ...
-## Operations          - IM1 | code | <operation> | status: ... | dependsOn: ... | files: ... | implements: ... | instructions: ... | branch/negative/exception arms
-## Decisions           - D1 | requirements | blocking: false | highlight: false | topic: ... | question: ... | context: ... | why: ... | how: ... | realizedIn: ... | options: D1.1 (chosen): ... || D1.2: ...
+## Operations          - IM1 | code | weight: authoring | <operation> | status: ... | dependsOn: ... | files: ... | implements: ... | knowledge: kid 1, kid 2 | instructions: ... | branch/negative/exception arms
+## Decisions           - D1 | requirements | highlight: false | topic: ... | question: ... | context: ... | why: ... | how: ... | realizedIn: ... | options: D1.1 (chosen): ... || D1.2: ...
 ## History             - IT1 | closed | request: ... | created: ... | closed: ... | files: added <path>; modified <path> | verifications: ... | blocks: ... | notes: ...
 ## Coverage            - obligations 3/3 | elements 7/7
 ```
 
-On a job without a design (FAST_IMPLEMENTATION, DOCUMENTATION) the snapshot says the job has no design artifact. A long snapshot is served in parts (optional argument `part`, `contracts/workflow-loop.md`, Parts) that start at a section heading or an item, so a row is never split.
+On a FAST_IMPLEMENTATION job the snapshot projects its job design (obligations, open points, knowledge references). On a DOCUMENTATION job, which has no design, the snapshot says the job has no design artifact. A long snapshot is served in parts (optional argument `part`, `contracts/workflow-loop.md`, Parts) that start at a section heading or an item, so a row is never split.
+
+`weight` is the operation's weight class and `status` its implementation flag (contracts/design-model.md, implementation-loop). A decision stored with the 3.0.0 `blocking` flag shows it as `highlight`.
+
+## implementation-context
+
+`#capability:design-implementation-context` — arguments `sessionId`, `jobId`, optional `part`. The implementor's projection of the design, in the captured shape:
+
+```text
+# DESIGN SNAPSHOT — <design title, or (untitled)>
+## File references for the code
+- FR1 | scope: production | symbol: ... | files: ...      (or "- (none)")
+
+## File references for the tests
+- (none)
+
+## Contracts
+## Public APIs
+## Filesystem
+## Decisions
+```
+
+The file references are split by scope (`Production` rows for the code, `Test` rows for the tests); the other sections keep the snapshot's line format and are printed, empty or not, with a blank line before each heading. It deliberately carries no operation, no obligation and no knowledge reference: operations are served one at a time by `#capability:design-implementation-operation`, each with the text of its own knowledge references. A long context is served in parts that start at a section heading or an item.
+
+The heading, the section order and the empty `- (none)` rows follow the 3.0.1 capture (a FAST_IMPLEMENTATION job with an empty design). The capture's note also lists the overview, obligations and open points among the sections, but its response has none of them; the response is followed. Lab-authored: the line format of the rows, which the capture shows only empty.
 
 ## verification-view
 
@@ -60,4 +85,4 @@ Design document (<status>): <absolute path>
 
 `<status>` is `Draft`, `Approved`, or `Approved, modified after approval`. Parse the path out of the line.
 
-`design.html` is one self-contained file: `runtime/assets/design-review.html` with the design and its check results inlined as JSON, rendered client-side. Sections: Overview, Decisions (blocking first), Implementation plan, Filesystem, Contracts (public APIs and internal contracts), Obligations, File references, History, Checks. The sections form a numbered reading path and are shown one at a time; every design ID (`D3`, `D3.1`, `O1.2`, `IM4`, `FS7`, …) is addressable as `design.html#<ID>`, and any mention of a known ID links to it. It supports light and dark themes, prints every section, and opens from the file system without a server.
+`design.html` is one self-contained file: `runtime/assets/design-review.html` with the design and its check results inlined as JSON, rendered client-side. Sections: Overview, Decisions (highlighted first), Implementation plan (each operation with its kind, weight, status and knowledge references), Filesystem, Contracts (public APIs and internal contracts), Obligations, File references (with their scope), Knowledge references (each kid with its scope, file id, range and the text resolved from the knowledge document at render time, or why it cannot be resolved), History, Checks. The sections form a numbered reading path and are shown one at a time; every design ID (`D3`, `D3.1`, `O1.2`, `IM4`, `FS7`, …) is addressable as `design.html#<ID>`, and any mention of a known ID links to it. It supports light and dark themes, prints every section, and opens from the file system without a server.

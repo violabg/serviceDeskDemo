@@ -1,4 +1,4 @@
-This is the **User Instruction Space**: the first step of every workflow. It exists so that the particular requests the developer makes in the first prompt are executed or evaluated and then stay binding for the rest of the workflow. It is served before any intake, before the requirement is frozen and before any documentation target is chosen.
+This is the **User Instruction Space**: the first step of every workflow. It exists so that the particular requests the developer makes in the first prompt are executed or evaluated and then stay binding for the rest of the workflow. It is served before any intake and before any documentation target is chosen.
 
 The developer's first prompt is the user message that opens the work of this job: the message that carries the requirement or the documentation target, together with any additional request inside the same message.
 
@@ -15,9 +15,7 @@ A request is **particular** when it does not change the system behaviour the req
 - **Procedures and gates the developer wants executed before or during the workflow**: a multi-phase procedure, a sequence of gates with halt points, a structured command that must be read as a whole document rather than as a single sentence.
 - **Changes to how the workflow runs**: start from a specific point, add gates, skip steps (saltare i passi), or otherwise alter the default sequence.
 
-A request that adds or changes a behaviour of the system remains part of the requirement and follows the ordinary workflow. This definition is the same in every workflow, so the same prompt is classified in the same way regardless of the workflow type.
-
-The particular requests and their effects stay in the register described below and never enter the requirement lock.
+A request that adds or changes a behaviour of the system remains part of the requirement and follows the ordinary workflow. This definition is the same in every workflow, so the same prompt is classified in the same way regardless of the workflow type. The particular requests and their effects stay in the register described below and never become part of the requirement.
 
 Italian terms used for these effects: **procedura** = procedure, **saltare i passi** = skip steps, **effetti** = effects, **step successivi** = later steps.
 
@@ -62,7 +60,7 @@ Do not defer the space to a later moment. For every request in the register:
 - If the request can be executed here, execute it now and record in `executed_in` the observable outcome and where it is binding.
 - If the request governs the behaviour of later steps, mark it as binding from this step onward and record its effects as conditions.
 - If a new finding changes the evaluation of a request, update its `evaluation` and `effects` and reiterate. Never modify the request text.
-- If a condition never matches any step, mark the effect as `unapplied`, record the reason, and let the terminal hand-off report it.
+- If a condition never matches any step, mark the effect as `unapplied`, record the reason, and let the terminal wrap-up report it.
 
 A procedure, a set of gates or a workflow-execution change must be executed, evaluated and, when needed, reiterated **in the order the developer gave**, completing the phases it provides (information gathering, analysis, selection, saving of its own analysis) **before the workflow intake starts**. When the procedure says to start from a specific point or to skip workflow steps such as the interview, the workflow starts there and the indicated steps are omitted.
 
@@ -92,8 +90,5 @@ A skip or a start point that would remove an artifact or a gate required by the 
 
 Failure arms:
 - If `#capability:session-artifact-write` or the session-memory write fails, retry once; if it still fails, register a blocker and do not proceed to the intake.
-- If `requirement_R_lock` is unreadable or does not exist, proceed using only the first prompt and neither create nor modify the R artifact.
 
 **Halt protocol.** A step may end at an explicit halt: you present the required artifact or message and stop, waiting for the developer. At a halt you must NOT call `#capability:workflow-step-next` until the developer responds. Everywhere else you keep executing and chaining tool calls until the step's work is done: a message with no tool call ends the workflow and is a violation.
-
-After completing ALL the provided instructions, call the tool `#capability:workflow-step-next` again to receive the next instruction. Do not deviate from these instructions or take any action they do not authorize.

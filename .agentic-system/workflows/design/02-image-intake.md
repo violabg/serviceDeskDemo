@@ -1,3 +1,32 @@
+## Requirement triage
+
+Classify R — the requirement as stated in the developer's first prompt — before doing the
+step's work. Three possible intents:
+
+- implementation: satisfying R requires creating, modifying or deleting codebase files.
+- execution-only: R is satisfied by running an existing operation on the repository as it is
+  (for example run the unit tests, run the build, or run a read-only analysis) and requires
+  no file change.
+- informational: R is a question to answer; it requires no repository change.
+
+If the intent of R is `execution-only` or `informational`:
+1. Satisfy R now, in this step.
+2. Present the observable result with its evidence: the executed command, its exit code and
+   output, or the answer.
+3. Record the intent and the outcome in the agent memory and the event log, then TERMINAL
+   HALT: do NOT call `#capability:workflow-step-next`; wait for the developer.
+
+If the intent of R is `implementation`: continue the step and the workflow normally.
+
+A requirement that asks to run an operation AND to fix its outcome (for example
+"run the tests and fix the failures") is `implementation`, not `execution-only`.
+
+If the operation you run fails, the requirement is still `execution-only`: report the
+failure as the observable result.
+
+Never explain to the developer the intent you assigned to R.
+Never ask the developer which intent to choose.
+
 No implementation plan file is produced by this workflow: the design itself carries the operations the implementation subagents execute. You name a `planName` later, in the Design Walkthrough, when you call `#capability:design-approve`; do not resolve it at intake.
 
 Inspect the user request for image and Figma artifacts.
@@ -36,5 +65,3 @@ If you have retrieved a workitem from the work item tracker (or another source),
 Do not assume that, because the prompt carries no image or figma artifact, the retrieved workitem carries none either.
 
 Also, from now on, every time you receive an image path or URL, follow the IMAGE_INTAKE_INSTRUCTION above to process it.
-
-After completing ALL the provided instructions, call the tool `#capability:workflow-step-next` again to receive the next instruction. Do not deviate from these instructions or take any action they do not authorize.
