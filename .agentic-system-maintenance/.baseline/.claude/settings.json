@@ -1,6 +1,0 @@
-{
-  "skillOverrides": {
-    "bootstrap-agentic-system": "user-invocable-only",
-    "maintain-agentic-system": "user-invocable-only"
-  }
-}
