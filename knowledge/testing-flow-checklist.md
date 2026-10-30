@@ -1,3 +1,7 @@
+---
+tier: "PerContext"
+intent: "Before planning, creating, changing, or running tests or validation for repository work."
+---
 # Testing Flow Checklist
 
 ## When to read this
@@ -7,23 +11,6 @@ Read this before planning, creating, changing, or running tests for approved dem
 ## Do not use this for
 
 Do not use this for broad app architecture or UI composition decisions that do not change test scope or validation order.
-
-## Last verified
-
-2026-09-26, dirty worktree. Evidence from repository files:
-
-- Historical Demo agent and test-strategy references from the 2026-07-22 verification no longer exist. Current role bindings: `docs/agents/integration-bindings.md`; agents: `.github/agents/demo-planner.agent.md`, `.github/agents/demo-implementor.agent.md`, `.github/agents/demo-integration-tester.agent.md`.
-- Bootstrap repaired these references on 2026-09-19; this is not a new product-behavior verification.
-- `package.json`
-- `vitest.config.ts`
-- `AGENTS.md` (diagnostics, typecheck, scoped lint, then focused tests)
-
-## Evidence
-
-- Repo uses Vitest through `pnpm test`.
-- Repo uses `tsc --noEmit` through `pnpm typecheck`.
-- Repo does not define a dedicated lint script narrower than the top-level `eslint` entry.
-- Approved test work already targets repo-owned forms, pages, actions, and services rather than `components/ui/**` primitives.
 
 ## Core rules
 
@@ -40,18 +27,20 @@ Do not use this for broad app architecture or UI composition decisions that do n
 - Use `pnpm exec vitest run <affected-test-files>` to constrain the Vitest run to specific files. Confirm the command selects only the intended tests in the active package-manager version.
 - Run only new or directly affected tests first.
 - Broaden to grouped regression or full-suite runs only after focused checks pass.
+- Before handing work back, the repository rule in `AGENTS.md` applies in full: `pnpm lint && pnpm typecheck && pnpm test`. Focused runs come first during development; the full sequence is the handback gate.
 
 ## Planning rules
 
-- The test plan (Integration Tester uses the YAML schema at `docs/agents/test-plan-schema.md`) should name the affected test files or affected test commands first.
-- The test plan (Integration Tester uses the YAML schema at `docs/agents/test-plan-schema.md`) should state deliberate exceptions explicitly, especially when `components/ui/**` is excluded.
+- A test plan should name the affected test files or affected test commands first.
+- A test plan should state deliberate exceptions explicitly, especially when `components/ui/**` is excluded.
 - If a feature touches forms, server actions, or business logic, plan focused unit coverage before any broad regression step.
 
-## Implementor and Tester rules
+## Implementor and verifier rules
 
-- Implementor and tester should both prefer the smallest affected-test command before any wider suite.
+- The implementor and any verifier should both prefer the smallest affected-test command before any wider suite.
 - Full `pnpm test` belongs after focused validation, not before.
-- If a focused failure proves a narrow in-scope implementation defect, Implementor repairs that slice within its authorized scope and reruns the same focused command. Integration Tester reports production defects to Implementor and does not edit production code.
+- If a focused failure proves a narrow in-scope implementation defect, the implementor repairs that slice within its authorized scope and reruns the same focused command.
+- `sd-implementation-verifier` is read-only and judges congruence with the specification; it does not edit production code.
 
 ## Pitfalls to avoid
 
@@ -59,3 +48,4 @@ Do not use this for broad app architecture or UI composition decisions that do n
 - Jumping straight to full-suite validation when only one feature slice changed.
 - Running tests before clearing obvious diagnostics in the touched files.
 - Using broad lint or full regression commands as the first validation step when a narrower check exists.
+- Referring to `docs/agents/test-plan-schema.md` or to an Integration Tester role: neither exists in the current repository.

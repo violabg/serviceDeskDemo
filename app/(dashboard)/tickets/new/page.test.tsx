@@ -7,7 +7,7 @@ import { NewTicketPageContent } from "@/app/(dashboard)/tickets/new/page"
 import { permissionKey } from "@/lib/access-control"
 
 const requireCurrentApplicationAccessMock = vi.hoisted(() => vi.fn())
-const getCustomersMock = vi.hoisted(() => vi.fn())
+const getActiveCustomersMock = vi.hoisted(() => vi.fn())
 const getAssetsMock = vi.hoisted(() => vi.fn())
 const getAvailableTechniciansMock = vi.hoisted(() => vi.fn())
 const redirectMock = vi.hoisted(() => vi.fn())
@@ -16,7 +16,7 @@ vi.mock("@/app/(dashboard)/admin/_lib/current-application-user", () => ({
   requireCurrentApplicationAccess: requireCurrentApplicationAccessMock,
 }))
 vi.mock("@/lib/tickets/service", () => ({
-  getCustomers: getCustomersMock,
+  getActiveCustomers: getActiveCustomersMock,
   getAssets: getAssetsMock,
   getAvailableTechnicians: getAvailableTechniciansMock,
 }))
@@ -86,13 +86,13 @@ describe("NewTicketPageContent", () => {
         permissionKey("tickets", "write"),
       ],
     })
-    getCustomersMock.mockResolvedValue([{ id: "customer-1" }])
+    getActiveCustomersMock.mockResolvedValue([{ id: "customer-1" }])
     getAssetsMock.mockResolvedValue([{ id: "asset-1" }])
     getAvailableTechniciansMock.mockResolvedValue([{ id: "tech-1" }])
 
     render(await NewTicketPageContent())
 
-    expect(getCustomersMock).toHaveBeenCalledTimes(1)
+    expect(getActiveCustomersMock).toHaveBeenCalledTimes(1)
     expect(getAssetsMock).toHaveBeenCalledTimes(1)
     expect(getAvailableTechniciansMock).toHaveBeenCalledTimes(1)
     expect(

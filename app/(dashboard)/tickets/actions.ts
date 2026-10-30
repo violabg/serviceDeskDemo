@@ -21,12 +21,23 @@ import {
   updateTicketStatus,
 } from "@/lib/tickets/service"
 import { updateTag } from "next/cache"
-import { redirect } from "next/navigation"
 
-type TicketActionResult = {
-  success: boolean
-  error?: string
+type TicketActionFailureReason = "forbidden" | "invalid" | "not-found"
+
+type FailureResult = {
+  ok: false
+  reason: TicketActionFailureReason
 }
+
+type TicketActionResult = { ok: true; reason: null } | FailureResult
+
+type CreateTicketResult =
+  | { ok: true; reason: null; ticketId: string }
+  | FailureResult
+
+type DuplicateCheckResult =
+  | { ok: true; reason: null; duplicate: boolean }
+  | (FailureResult & { duplicate: false })
 
 function getFormString(formData: FormData, name: string) {
   const value = formData.get(name)
@@ -40,11 +51,18 @@ function getOptionalFormString(formData: FormData, name: string) {
   return value ? value : null
 }
 
-function forbiddenResult(): TicketActionResult {
-  return {
-    success: false,
-    error: "Forbidden",
-  }
+function failureResult(reason: TicketActionFailureReason): FailureResult {
+  return { ok: false, reason }
+}
+
+function duplicateFailureResult(
+  reason: TicketActionFailureReason
+): DuplicateCheckResult {
+  return { ok: false, reason, duplicate: false }
+}
+
+function successResult(): TicketActionResult {
+  return { ok: true, reason: null }
 }
 
 function isWriteAllowed(effectivePermissions: ReadonlySet<string>) {
@@ -55,12 +73,14 @@ function isManageAllowed(effectivePermissions: ReadonlySet<string>) {
   return hasPermission(effectivePermissions, "tickets", "manage")
 }
 
-export async function createTicketAction(formData: FormData) {
+export async function createTicketAction(
+  formData: FormData
+): Promise<CreateTicketResult> {
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
   if (!isWriteAllowed(effectivePermissions)) {
-    return
+    return failureResult("forbidden")
   }
 
   const title = getFormString(formData, "title")
@@ -82,11 +102,11 @@ export async function createTicketAction(formData: FormData) {
     !isTicketCategory(category) ||
     !isIntakeChannel(intakeChannel)
   ) {
-    return
+    return failureResult("invalid")
   }
 
   const customer = await getActiveCustomerById(customerId)
-  if (!customer) return { success: false, error: "Select a valid active Customer." }
+  if (!customer) return failureResult("not-found")
 
   const ticket = await createTicket(
     {
@@ -104,54 +124,62 @@ export async function createTicketAction(formData: FormData) {
   )
 
   updateTag(ticketListTag())
-  redirect(`/tickets/${ticket.id}`)
+
+  return { ok: true, reason: null, ticketId: ticket.id }
 }
 
-export async function checkDuplicateTicketAction(formData: FormData) {
+export async function checkDuplicateTicketAction(
+  formData: FormData
+): Promise<DuplicateCheckResult> {
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
   if (!isWriteAllowed(effectivePermissions)) {
-    return {
-      ...forbiddenResult(),
-      duplicate: false,
-    }
+    return duplicateFailureResult("forbidden")
   }
 
   const customerId = getFormString(formData, "customerId")
   const title = getFormString(formData, "title")
+
+  if (!customerId || !title) {
+    return duplicateFailureResult("invalid")
+  }
+
+  const customer = await getActiveCustomerById(customerId)
+  if (!customer) return duplicateFailureResult("not-found")
+
   const duplicate = await checkDuplicateTicket(customerId, title)
 
-  return {
-    success: true,
-    duplicate,
-  }
+  return { ok: true, reason: null, duplicate }
 }
 
-export async function updateTicketStatusAction(formData: FormData) {
+export async function updateTicketStatusAction(
+  formData: FormData
+): Promise<TicketActionResult> {
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
+
+  if (!isWriteAllowed(effectivePermissions)) {
+    return failureResult("forbidden")
+  }
+
   const ticketId = getFormString(formData, "ticketId")
   const status = getFormString(formData, "status")
 
   if (!ticketId || !isTicketStatus(status)) {
-    return
+    return failureResult("invalid")
   }
 
   const currentTicket = await getTicketById(ticketId)
 
   if (!currentTicket) {
-    return
+    return failureResult("not-found")
   }
 
   const isReopen = currentTicket.status === "Closed" && status === "Open"
 
-  if (isReopen) {
-    if (!isManageAllowed(effectivePermissions)) {
-      return
-    }
-  } else if (!isWriteAllowed(effectivePermissions)) {
-    return
+  if (isReopen && !isManageAllowed(effectivePermissions)) {
+    return failureResult("forbidden")
   }
 
   await updateTicketStatus(ticketId, status, access.user.id)
@@ -159,69 +187,90 @@ export async function updateTicketStatusAction(formData: FormData) {
   updateTag(ticketDetailTag(ticketId))
   updateTag(ticketListTag())
 
+  return successResult()
 }
 
-export async function updateTicketPriorityAction(formData: FormData) {
+export async function updateTicketPriorityAction(
+  formData: FormData
+): Promise<TicketActionResult> {
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
   if (!isWriteAllowed(effectivePermissions)) {
-    return
+    return failureResult("forbidden")
   }
 
   const ticketId = getFormString(formData, "ticketId")
   const priority = getFormString(formData, "priority")
 
   if (!ticketId || !isTicketPriority(priority)) {
-    return
+    return failureResult("invalid")
   }
+
+  const currentTicket = await getTicketById(ticketId)
+  if (!currentTicket) return failureResult("not-found")
 
   await updateTicketPriority(ticketId, priority, access.user.id)
 
   updateTag(ticketDetailTag(ticketId))
   updateTag(ticketListTag())
 
+  return successResult()
 }
 
-export async function assignTechnicianAction(formData: FormData) {
+export async function assignTechnicianAction(
+  formData: FormData
+): Promise<TicketActionResult> {
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
   if (!isWriteAllowed(effectivePermissions)) {
-    return
+    return failureResult("forbidden")
   }
 
   const ticketId = getFormString(formData, "ticketId")
+  const rawTechnicianId = formData.get("technicianId")
+
+  if (!ticketId || typeof rawTechnicianId !== "string") {
+    return failureResult("invalid")
+  }
+
   const technicianId = getOptionalFormString(formData, "technicianId")
 
-  if (!ticketId) {
-    return
-  }
+  const currentTicket = await getTicketById(ticketId)
+  if (!currentTicket) return failureResult("not-found")
 
   await assignTechnician(ticketId, technicianId, access.user.id)
 
   updateTag(ticketDetailTag(ticketId))
   updateTag(ticketListTag())
 
+  return successResult()
 }
 
-export async function addTicketNoteAction(formData: FormData) {
+export async function addTicketNoteAction(
+  formData: FormData
+): Promise<TicketActionResult> {
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
   if (!isWriteAllowed(effectivePermissions)) {
-    return
+    return failureResult("forbidden")
   }
 
   const ticketId = getFormString(formData, "ticketId")
   const content = getFormString(formData, "content")
 
   if (!ticketId || !content) {
-    return
+    return failureResult("invalid")
   }
+
+  const currentTicket = await getTicketById(ticketId)
+  if (!currentTicket) return failureResult("not-found")
 
   await addTicketNote(ticketId, content, access.user.id)
 
   updateTag(ticketDetailTag(ticketId))
 
+  return successResult()
 }

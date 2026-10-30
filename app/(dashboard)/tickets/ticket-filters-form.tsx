@@ -14,6 +14,7 @@ import {
 import { TICKET_PRIORITIES, TICKET_STATUSES } from "@/lib/tickets/constants"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 
 const ALL_VALUE = "__all__"
@@ -23,6 +24,13 @@ type TicketFilterValues = {
   status: string
   priority: string
   customerId: string
+}
+
+const EMPTY_FILTER_VALUES: TicketFilterValues = {
+  q: "",
+  status: ALL_VALUE,
+  priority: ALL_VALUE,
+  customerId: ALL_VALUE,
 }
 
 export function TicketFiltersForm({
@@ -40,14 +48,27 @@ export function TicketFiltersForm({
   customers: Array<{ id: string; name: string; company: string | null; status: string }>
 }) {
   const router = useRouter()
-  const { register, handleSubmit, control } = useForm<TicketFilterValues>({
+  const initialQ = initialValues.q ?? ""
+  const initialStatus = initialValues.status ?? ALL_VALUE
+  const initialPriority = initialValues.priority ?? ALL_VALUE
+  const initialCustomerId = initialValues.customerId ?? ALL_VALUE
+  const { register, handleSubmit, control, reset } = useForm<TicketFilterValues>({
     defaultValues: {
-      q: initialValues.q ?? "",
-      status: initialValues.status ?? ALL_VALUE,
-      priority: initialValues.priority ?? ALL_VALUE,
-      customerId: initialValues.customerId ?? ALL_VALUE,
+      q: initialQ,
+      status: initialStatus,
+      priority: initialPriority,
+      customerId: initialCustomerId,
     },
   })
+
+  useEffect(() => {
+    reset({
+      q: initialQ,
+      status: initialStatus,
+      priority: initialPriority,
+      customerId: initialCustomerId,
+    })
+  }, [reset, initialQ, initialStatus, initialPriority, initialCustomerId])
 
   const onSubmit = handleSubmit((values) => {
     const query = new URLSearchParams()
@@ -162,6 +183,14 @@ export function TicketFiltersForm({
       <div className="flex justify-end items-center gap-2">
         <Button type="submit" variant="outline">
           Filter
+        </Button>
+        <Button
+          variant="outline"
+          render={<Link href="/tickets" />}
+          nativeButton={false}
+          onClick={() => reset(EMPTY_FILTER_VALUES)}
+        >
+          Reset Filters
         </Button>
         {canCreate ? (
           <Button render={<Link href="/tickets/new" />} nativeButton={false}>

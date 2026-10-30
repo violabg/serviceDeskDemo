@@ -1,26 +1,24 @@
 {
-	"mcpServers": {
-		"github": {
-			"type": "http",
-			"url": "https://api.githubcopilot.com/mcp/",
-			"headers": {
-				"Authorization": "Bearer ${GITHUB_TOKEN}"
-			}
-		},
-		"neon": {
-			"type": "http",
-			"url": "https://mcp.neon.tech/mcp"
-		},
-		"context7": {
-			"type": "http",
-			"url": "https://mcp.context7.com/mcp"
-		},
-		"next-devtools": {
-			"type": "stdio",
-			"command": "npx",
-			"args": [
-				"next-devtools-mcp@0.3.6"
-			]
-		}
-	}
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PAT}"
+      }
+    },
+    "neon": {
+      "type": "http",
+      "url": "https://mcp.neon.tech/mcp"
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "next-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["next-devtools-mcp@0.3.6"]
+    }
+  }
 }

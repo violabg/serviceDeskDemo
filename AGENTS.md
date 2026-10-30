@@ -1,51 +1,51 @@
+<!-- agentic-system:start -->
 # serviceDeskDemo Agentic System
 
 Route the current request through this file, then load only what that request needs. Keep this file under 80 lines: it is a router, not a knowledge base.
 
-## Agents
+## Roles
 
-Each role listed here runs as the main conversation of its session. `docs/agentic-system/README.md` explains, for every installed client, how to start each role and how to hand off from Planner to Implementor in a new conversation with the Planning Session ID.
-Resolve the active environment from the client/session identity first: use `copilot` or `claude-code`, never infer selection from installed folders or another client's tools. If ambiguous, ask for identity before binding-dependent work. Load only `docs/agents/bindings/<environment>.md` and the complete selected role contract below. Copilot selects each role natively in its Agent dropdown. Claude Code has no role agents: Planner starts only through the `plan-bug-from-id` and `plan-user-story-from-id` skills, and every other role through its user-invoked `demo-<role>-claude` role skill. The selected binding names each start step.
+Started by the developer, each as the main conversation of its session:
 
-- `demo-planner`: GitHub-issue planning and clarification. Load `docs/agents/canonical/<environment>/agents/demo-planner.agent.md`.
-- `demo-implementor`: approved-plan implementation. Load `docs/agents/canonical/<environment>/agents/demo-implementor.agent.md`.
-- `demo-direct-implementor`: explicit implementation without a plan document; no test creation. Load `docs/agents/canonical/<environment>/agents/demo-direct-implementor.agent.md`.
-- `demo-integration-tester`: integration-test planning and execution. Load `docs/agents/canonical/<environment>/agents/demo-integration-tester.agent.md`.
-- `demo-knowledge-builder`: evidence-backed repository knowledge. Load `docs/agents/canonical/<environment>/agents/demo-knowledge-builder.agent.md`.
-- `demo-ask`: read-only Q&A. Load `docs/agents/canonical/<environment>/agents/demo-ask.agent.md`.
+- `orchestrator` — drives one workflow the developer chooses explicitly: `DESIGN`, `FAST_IMPLEMENTATION` or `DOCUMENTATION`. It never writes production code.
+- `ask` — answers project and programming questions; never implements.
+- `knowledge-builder` — builds and updates project knowledge.
 
-Shared skills use only the already selected environment binding. Invoke the complete configured skill at `.agents/skills/<skill-name>/SKILL.md`; packaged Bootstrap templates are source mirrors, never configured runtime skills.
+Started only by the orchestrator, each in a fresh context with only its prompt, reporting back in the same conversation:
 
-Full role contracts live in `docs/agents/canonical/<environment>/agents (copilot or claude-code)`. Do not restate them here.
+- `code-implementor`, `design-verifier`, `implementation-verifier`, `documentation-reviewer`.
 
-Once a role contract is loaded, its operations replace the client's built-in equivalents: session memory and the session log are the files under `sessions/<planning-session-id>/`, never the client's own memory feature. A delegated or inline evidence task that returns its result is never a stop point.
+Full role contracts live in `.claude/agents (Claude Code), .github/agents (GitHub Copilot in VS Code)`. Do not restate them here.
+
+## Runtime
+
+Every `#capability:<token>` in a role, skill or workflow instruction is an operation of the agentic system runtime or of an approved integration, bound for this repository. Runtime operations run as `node .agentic-system/bin/agentic-system.mjs <token>`; pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `.agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. Read the contract before an operation's first call, or run the operation with `--help` to print its arguments. A long answer arrives in parts: when it ends with `[part N of M. The answer continues: …]`, make the call it names and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`.
+
+- Session memory, the event log and artifacts are the session files under `.agentic-system-sessions/<sessionId>/`, never the client's own memory feature.
+- Workflow instructions are served one at a time by the runtime. Never open `.agentic-system/workflows/` directly.
+- Never edit runtime-owned files by hand: designs, jobs and integrity seals change only through runtime operations.
+- A delegate that returns its report is never a stop point: continue the active instruction.
 
 ## Skills
 
-- When the user explicitly invokes `manage-work-item` by name, load and run that skill directly. This standalone workflow creates a bug or user story, or updates an existing work item after reading it, and bypasses normal agent role routing and the Planner flow. Every create or update needs explicit approval of the complete proposal and runs only through the tracker bindings approved for that skill; without them, stop without changing anything.
-- When the user explicitly invokes the installed Bootstrap or Maintainer skill, run it in a default session outside agent role routing: no generated role, role tool limits, or role gates apply to it. If this conversation already runs under a generated role, stop and tell the user to open a new default session.
-Repository skills live in `.agents/skills`. Read a skill's `SKILL.md` before running its workflow.
-
-## Instructions
-
-Modular rules live in `docs/agents/instructions; skip a shared rule already loaded by the active environment's native adapter`. Each file declares the paths it applies to; load one only when the current request touches those paths.
+Repository skills live in `.claude/skills (Claude Code), .github/skills (GitHub Copilot in VS Code)`. Read a skill's `SKILL.md` before running its workflow.
 
 ## Knowledge
 
-- Select knowledge through `knowledge/knowledge-index.md`. Match the request against the `When to read` triggers and load only the entries that match.
-- Resolve repository vocabulary in `docs/agents/context-glossary.md`.
-- Never bulk-load knowledge files.
-
-## Planning Sessions
-
-- Planning work happens in `sessions/<planning-session-id>/`.
-- Implementation plans follow `docs/agents/plan-schema.md`, artifacts and gates follow `docs/agents/artifact-gates.md`. Blocking clarifications follow the per-question format defined by the planner agent.
+- Read the knowledge catalogue with `#capability:knowledge-catalog`. Every `MustHave` document is read in full; `PerContext` and `PerComponent` documents are read when the work touches them.
+- Knowledge documents live in `knowledge`. Resolve repository vocabulary in `CONTEXT.md`.
 
 ## Validation
 
-Validate every change with `diagnostics, then pnpm typecheck and scoped lint, then focused pnpm test -- <affected-files>; run pnpm lint, pnpm test and pnpm build only when the approved change requires broader validation; changes to agent-system files are reported for explicit agent-system maintenance, which runs its own verifier` before handing work back.
+Validate every change with `pnpm lint && pnpm typecheck && pnpm test` before handing work back.
+<!-- agentic-system:end -->
 
-## Provenance
+<!-- BEGIN:nextjs-agent-rules -->
 
-During initial Bootstrap or explicitly requested agent-system maintenance only, access `.agentic-system-maintenance/` and the complete Bootstrap/Maintainer skills at `.agents/skills/bootstrap-agentic-system/` and `.agents/skills/maintain-agentic-system/`. For ordinary work, exclude these paths and their aliases before search, indexing, knowledge retrieval, or delegation; do not load their contents. If ordinary work changes an agent-system file, report that maintenance evidence needs refreshing; do not open or update the evidence ledger.
-`.agentic-system-maintenance/agentic-system-manifest.md` records what was generated, which slots were filled, and which decisions were approved. Update it whenever this system changes.
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

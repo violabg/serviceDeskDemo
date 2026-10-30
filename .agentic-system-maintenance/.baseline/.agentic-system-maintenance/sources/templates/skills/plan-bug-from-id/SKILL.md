@@ -1,55 +1,26 @@
 ---
-name: plan-bug-from-id
-description: "Use when: generating an implementation plan based on a bug work item ID provided by the user."
+name: "plan-bug-from-id"
+description: "This prompt is used to generate an implementation plan based on a bug work item ID provided by the user."
 disable-model-invocation: true
 ---
+## Role activation
 
-# Plan Bug From Id
+This skill runs under the `sd-orchestrator` agent. If this conversation is not running it, stop and tell the user to select `sd-orchestrator` in the Chat view's agent picker, then invoke this skill again.
 
-<!-- CANONICAL-TEMPLATE-SLOT: ROLE_ACTIVATION START replaces=none -->
-## Required Role
-This skill runs only under the Planner role, as the main conversation. {{ROLE_ACTIVATION}}
-<!-- CANONICAL-TEMPLATE-SLOT: ROLE_ACTIVATION END -->
-<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
-## Repository Context Boundary
-- Exclude `{{MAINTENANCE_ROOT}}` and installed Bootstrap/Maintainer bodies, resources, and aliases before ordinary search, discovery, knowledge loading, or delegation. They are accessible only during initial Bootstrap or explicitly requested agent-system maintenance.
-- Keep generated project knowledge under top-level `knowledge/`; report provenance maintenance needed after runtime system edits instead of accessing the maintenance area.
-<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT START replaces=sha256:ef7335b04fea8a6a lines=70 -->
-## Work-Item Planning Contract
-
-Require one External Issue ID matching `{{WORK_ITEM_ID_FORMAT}}`. External Issue ID identifies tracker ticket; it is never Planning Session ID.
-Use `{{TRACKER_ADAPTER}}` with only exact retrieval tools approved in `{{WORK_ITEM_RETRIEVAL}}`. When no approved external adapter exists, use local Markdown contract `{{LOCAL_MARKDOWN_TRACKER_CONTRACT}}`.
-
-Settle the Planning Session ID before retrieval, in this order:
-
-1. Propose Planning Session ID `bug-<external-issue-id>`; this skill plans bugs. User may approve a different prefix. Normalize approved custom prefix to lowercase filesystem-safe characters `[a-z0-9_-]` and require a trailing `-`.
-2. Wait for the user to confirm the ID. Check only that exact `{{SESSION_ROOT}}/<Planning Session ID>` path; when it already exists, ask whether to resume it or choose another ID, and wait.
-3. Create or resume only `{{SESSION_ROOT}}/<Planning Session ID>`, and record prefix plus resulting Planning Session ID in current session identity artifact.
-4. Run the evidence task below with that ID. When retrieval shows the issue is not a bug, tell the user and ask whether to continue here or use the matching planning skill, and wait.
-5. Continue through the steps below and into the Planner gates without stopping, except for the cause-selection question when it is required; Gate 1 reuses the active session.
-
-Store evidence, dependency evidence, decisions, gate evidence, and final plan only in current Planning Session ID folder. Resume directly from the known Planning Session ID; never scan or enumerate session folders.
-
-Identify probable root cause and contributing factors. Ask a cause-selection question only when multiple materially different causes remain viable and choosing one changes the plan; otherwise record the evidenced cause and continue.
-Run normal Planner gates after evidence is stored. Ask all evidence-backed blocking clarifications together in one message only when required evidence leaves a material planning decision unresolved. When no blocking clarification remains, complete all mandatory gates, artifacts, and implementation plan uninterrupted, then ask only for plan review or approval. Never present incomplete artifacts as approval-ready plan.
 
 You need to plan a bug resolution based on the bug work item ID provided by the user.
-If the user doesn't provide an bug work item ID, ask for it.
+If the user doesn't provide a bug work item ID, ask for it.
 
 Before starting the plan creation worfklow, follow the following Gates to make sure you have all the necessary information to create a comprehensive and effective plan.
 
 # Bug Information Gathering
+Use the available tools to invoke subagent.
+Use the following prompt template for the subagent:
 
-{{WORK_ITEM_GATHERING}}
-Use the following evidence task:
-
-```text
+```
 Activate agent session with id `<sessionId>`.
-For the bug <WORK_ITEM_BUG_ID>, gather the information from the current issue only through the approved work item integration tools in `{{WORK_ITEM_RETRIEVAL}}`, which already return Markdown: call `#capability:work-item-retrieval` with the bug id for the title, the description, the URLs of the images and the acceptance criteria, then call `#capability:work-item-comment-retrieval` with the bug id for the comments.
-Do not include related work items in the bug intake artifact.
-
-Read every issue the current issue explicitly references or links to through the approved tracker adapter, and record each issue plus its retrieval reason as separate dependency evidence. Do not decide whether a referenced issue is relevant before retrieving it. Do not recursively follow references, list, search, preload, or retrieve unrelated issues. Fail closed for missing, duplicate, unreadable, or invalid IDs.
+For the bug <WORK_ITEM_BUG_ID>, gather the information with the approved work item integration tools, which already return Markdown: call `#capability:work-item-retrieval` with the bug id for the title, the description, the URLs of the images and the acceptance criteria, then call `#capability:work-item-comment-retrieval` with the bug id for the comments.
+Do not include related work items.
 
 Attach to the session a new artifact with the Markdown returned by the tools, in this order:
 - title
@@ -60,18 +31,13 @@ Attach to the session a new artifact with the Markdown returned by the tools, in
 then tell me the name of the artifact you created, so I can read it and create the plan.
 ```
 
-The evidence task is a delegate prompt. Its closing request addresses the Planner, not the user. When delegated, read the returned artifact; when run inline, write the artifact, read it, and continue in the same turn. Its hand-back is never a stop point.
-
 # Pulling related knowledge
-
 Based on the information you have gathered about the bug, pull all the related knowledge from the knowledge catalog. This includes both MustHave as well PerContext and PerComponent knowledge. Make sure to pull all the relevant information that can help you understand the bug and its context better.
 
 # Narrow to wide cause identification
-
 Analyze the bug information you have gathered.
 Procede to a focused codebase recognition to identify the most likely root cause of the bug.
 Then, expand the investigation scope to identify all the possible causes and contributing factors to the bug, including but not limited to:
-
 - Code issues
 - Configuration issues
 - Data issues
@@ -82,20 +48,18 @@ If the bug involves both internal issues and external dependencies, clearly repo
 Expose the most 2/3 probable causes and contributing factors, and gather as much information as possible about them to prepare for the plan creation.
 
 # Expose causes to user
+Report the most probable causes and contributing factors to the user. Make sure to deeply explain each cause with supporting evidence and context. Then ask the user which cause they want to address in the plan and wait is selection.
+Use this format to report the causes:
 
-Report the most probable causes and contributing factors to the user. Make sure to deeply explain each cause with supporting evidence and context.
-Ask the user to choose a cause only when multiple materially different causes remain viable and choosing one changes the plan. Otherwise record the evidenced cause and continue to the planning workflow.
-Use this format to report the causes when a cause-selection question is required:
-
-```text
+```
 ## Cause 1:
-### Explanation:
+### Explanation: 
 [detailed explanation of the cause, how it contributes to the bug, and any supporting evidence or context]
 ### Solutions:
 [list of potential solutions or approaches to address this cause, if applicable]
-#### Files/Components involved:
+#### Files/Components involved: 
 [list of files, components, or modules that are involved in this cause]
-#### External dependencies involved:
+#### External dependencies involved: 
 [list of any external APIs, services, or dependencies that are involved in this cause, if applicable]
 
 [Repeat for Cause 2 and Cause 3 if applicable]
@@ -104,16 +68,19 @@ Please select which cause you want to address in the plan.
 ```
 
 # Save the analysis
+After the user selects the cause they want to address in the plan, save the analysis of that cause in a session artifact named `bug_<WORK_ITEM_BUG_ID>_cause_analysis`. This artifact should contain all the detailed information about the selected cause, including the explanation, files/components involved, and any external dependencies. This will be used in the next step for the plan creation.
 
-After the user selects the cause they want to address in the plan, or after you record the evidenced cause directly, save the analysis of that cause in a session artifact named `bug_<WORK_ITEM_BUG_ID>_cause_analysis`. This artifact should contain all the detailed information about the selected or evidenced cause, including the explanation, files/components involved, and any external dependencies. This will be used in the next step for the plan creation.
-
-## Rules For Bug Fix Planning
-
+**RULES FOR BUG FIX PLANNING**
 - Produce a single step plan. Event if the fix is complex, try to abstract it into a single step that can be executed and tested independently.
 - The plan should be focused on the root cause, not on the symptoms. Avoid including implementations that are not directly related to the root cause. The goal is to have a clear and concise plan that addresses the core issue.
 - Prefer the modification of existing code over the addition of new code, unless the new code is essential for the fix. This helps to minimize the risk of introducing new bugs and keeps the codebase cleaner.
 - If the fix requires changes to external dependencies, clearly describe the reason.
 
-After you follow the above rules, start from `Gate 0` of the planning workflow.
-When the evidenced cause resolves material planning uncertainty, you can safely skip interview.
-<!-- CANONICAL-TEMPLATE-SLOT: WORK_ITEM_PLANNING_CONTRACT END -->
+After you follow the above rules, continue with the active workflow.
+The identified cause is enough to create a comprehensive and effective plan, so you can safely skip interview.
+## Bindings
+
+Installed for GitHub Copilot in VS Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
+
+- `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
+- `#capability:work-item-retrieval`: Read the issue on violabg/serviceDeskDemo with the GitHub MCP server's `issue_read` (method `get`); it returns the title and Markdown body.

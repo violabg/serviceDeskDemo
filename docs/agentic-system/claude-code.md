@@ -1,60 +1,35 @@
-# Using the Agent Roles in Claude Code
+# Using the agentic system in Claude Code
 
-Applies to Claude Code 2.1.300 (CLI and VS Code extension). Status of every start method: documented, not exercised in this repository.
+Roles start as role skills you invoke by name. Each role is the main conversation of its own session; start a new conversation for each one.
 
 ## Start a role
 
-Every role starts through a skill that you type in a new conversation: a new `claude` session in the terminal, or a new conversation in the VS Code extension chat. The same skills work on both. There are no Claude Code agents for these roles, so `claude --agent` is no longer used.
+| To | Do this |
+| --- | --- |
+| Run a workflow | invoke the `sd-orchestrator-claude` skill in a new conversation, then name the workflow: `DESIGN`, `FAST_IMPLEMENTATION` or `DOCUMENTATION` |
+| Plan from a work item | invoke `plan-bug-from-id-claude` or `plan-user-story-from-id-claude` in a new conversation; each loads the orchestrator itself |
+| Ask about the project | invoke the `sd-ask-claude` skill in a new conversation |
+| Build or update project knowledge | invoke the `sd-knowledge-builder-claude` skill in a new conversation |
 
-| Role | Start it with | Use it for |
-| --- | --- | --- |
-| Planner | `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>` | Plan from a GitHub issue; clarification and implementation plan |
-| Implementor | `/demo-implementor-claude` | Execute an approved plan |
-| Direct Implementor | `/demo-direct-implementor-claude` | Implement validated requirements without a plan; never writes tests |
-| Integration Tester | `/demo-integration-tester-claude` | Plan and run integration tests |
-| Knowledge Builder | `/demo-knowledge-builder-claude` | Add or refresh repository knowledge |
-| Ask | `/demo-ask-claude` | Read-only questions about the code |
+The orchestrator always asks which workflow you want when you have not said it, and asks before it creates or resumes a session.
 
-You can add the first message after the skill name. Planner always starts from an issue ID: planning without a GitHub issue is not offered in Claude Code. Use one role per conversation: a role skill does not start in a conversation that already runs a role. To keep working with that role, send your request without the command; to change role, open a new conversation. Do not set `agent` in `.claude/settings.json`; that would run every session under one role.
+## While a workflow runs
 
-**Tool limits are instructions only.** Each role's limits come from its row in the binding's tool table and from the role contract, but Claude Code does not block the tools: Ask is told not to edit or run commands, and Planner and Knowledge Builder are told not to run shell commands. Limits inside a granted tool, such as Planner writing only session artifacts, are instructions too. Claude cannot start these roles on its own: every role and planning skill sets `disable-model-invocation: true`.
+- The orchestrator stops at every halt point and waits for you: an interview question, a decision, or the design review.
+- In `DESIGN`, the review document is written into the session's design folder under `.agentic-system-sessions/`. Open it in a browser, then approve or ask for changes in the chat.
+- Delegates run as native subagents, each with its own context. You see their verdicts in the conversation.
+- Runtime commands run as `node .agentic-system/bin/agentic-system.mjs <command>`. Allow them when the client asks.
 
-**Tool access.** Every role runs in a normal Claude Code session. Observed on Claude Code 2.1.300 in the VS Code extension: the session has `Read`, `Edit`, `Write`, `Bash`, `Agent` (subagents) and `AskUserQuestion`, and loads `WebFetch` and the project MCP tools (`github`, `neon`, `next-devtools`) on demand. It has no `Glob` or `Grep` search tools, so roles search the repository with read-only `grep` and `find` commands instead; for Planner, Knowledge Builder and Ask that is the only shell use allowed. A terminal session has not been observed yet.
+## Verification
 
-## Common flows
+What Bootstrap verified for this client:
 
-- **Plan a user story or bug.** Open a new conversation and run `/plan-user-story-from-id 12` or `/plan-bug-from-id 12`. The skill loads the Planner role, then plans. Planner asks all blocking questions together and collects the answers with the question tool, at most four per prompt.
-- **Hand off to implementation.** When you approve the plan, Planner prints the next step. Start Implementor with fresh context in a new conversation:
-
-  ```text
-  /demo-implementor-claude Resume implementation for Planning Session <planning-session-id>
-  ```
-
-- **Implement without a plan.** Run `/demo-direct-implementor-claude` and describe the change.
-- **Ask a question.** Run `/demo-ask-claude`; it never edits files.
-- **Build knowledge.** Run `/demo-knowledge-builder-claude`; it writes only under `knowledge/` and its index.
-- **Create or update an issue.** In a normal session with no role running, run `/manage-work-item`. It writes only after you approve the exact proposal.
-- **Maintain the agent system.** Run `/maintain-agentic-system` only in a normal session with no role running.
-
-## Images
-
-Planner and Direct Implementor pass each local image to a general-purpose subagent on the `haiku` model, which you approved for image inspection. If that is not possible, they read the image themselves. Each image becomes `sessions/<id>/artifacts/<image-name>_visual_evidence.md`. For private GitHub issue images, save the image locally and give its path.
-
-## Sessions and artifacts
-
-Session files live in `sessions/<planning-session-id>/`: `session-memory.md`, `session-log.md`, the implementation plan, `execution-report.md` and `artifacts/`. Resume a session by giving its ID; agents never browse other sessions.
-
-## Setup and recovery
-
-- GitHub issue access uses the `github` server in `.mcp.json`, authenticated from the `GITHUB_TOKEN` environment variable. Neon uses its own login. Approve the project MCP servers when Claude Code asks.
-- If a role reports that a tool is missing, check `/mcp` and restart the session. Roles stop the dependent step rather than switching tools.
-- The diagnostics step in Implementor and Integration Tester is blocked by an inherited template gap; they use the typecheck and lint commands instead.
-
-## Verify once
-
-1. In the VS Code extension chat, open a new conversation, type `/` and confirm the five `demo-<role>-claude` skills and the two planning skills are listed.
-2. Run `/plan-user-story-from-id <id>` and confirm it loads the binding and the Planner contract, asks you to confirm the session ID before it retrieves the issue, then runs from evidence intake into the Planner gates without stopping, can ask you a question with the question tool, and that its Gate 5 repository search runs with read-only `grep` and `find`. Confirm memory and log entries land in `sessions/<id>/session-memory.md` and `session-log.md`, not in Claude Code's own memory.
-3. In that same conversation, run `/demo-ask-claude` and confirm it loads nothing and tells you a role is already running.
-4. Run the Implementor handoff with a test session ID in a new conversation and confirm it resumes from that session.
-5. Give Planner a local screenshot and confirm a `_visual_evidence.md` artifact appears, naming the haiku subagent as inspector.
-6. In a terminal, start `claude`, run `/demo-ask-claude` with a question, and confirm the session has the tools listed above (no `Glob` or `Grep`) and that Ask does not edit files.
+- static install and runtime (verify.mjs): verified-native (no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-28, kit 2.0.2); the -claude skill names are restored and match the render)
+- work item read (issue_read get/get_labels/get_comments): verified-fallback (exercised in the VS Code extension from the Bootstrap session on #6, not yet from inside sd-orchestrator-claude)
+- orchestrator starts via /sd-orchestrator-claude and asks for the workflow type: unverified (needs a new session (IDE and terminal))
+- session created through the runtime from the role: unverified (needs a new session)
+- delegate runs in its own context (sd-design-verifier): unverified (needs a new session)
+- role skill refuses inside a running role: unverified (needs a new session)
+- visual evidence: unverified (needs a new session)
+- terminal surface GitHub MCP: unverified (GITHUB_TOKEN not exported in the login shell; export it before launching claude in a terminal)
+- review document (redesigned page): unverified (asset design-review.html updated to the 2.0.x design on 2026-10-28; the rendered page is checked in a DESIGN run)

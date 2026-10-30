@@ -1,20 +1,30 @@
-# Agentic System User Guides
+# serviceDeskDemo agentic system
 
-These guides explain how to use the serviceDeskDemo agent roles from each installed client. They are written for people. Agents do not load them as instructions; the role contracts in `docs/agents/canonical/` and the bindings in `docs/agents/bindings/` stay authoritative.
+This repository runs an orchestrator-based agentic system. You choose one of three workflows, and a local runtime serves it one instruction at a time:
 
-| Client | Guide | Start Planner | Hand off to Implementor |
-| --- | --- | --- | --- |
-| Claude Code | [claude-code.md](claude-code.md) | New conversation: `/plan-user-story-from-id <issue-id>` or `/plan-bug-from-id <issue-id>` (tool limits are instructions only) | New conversation: `/demo-implementor-claude Resume implementation for Planning Session <id>` |
-| GitHub Copilot in VS Code | [copilot.md](copilot.md) | New chat, choose `demo-planner` in the Agent dropdown | New chat, choose `demo-implementor`, send `Resume implementation for Planning Session <id>` |
+- `DESIGN`: a structured design you review and approve in a review document, then implementation and verification.
+- `FAST_IMPLEMENTATION`: a quick path for simple or mechanical changes.
+- `DOCUMENTATION`: a guide written from a template, then reviewed.
 
-## Rules that apply in every client
+The orchestrator never writes production code. It hands the code and the verifications to delegates, each working in its own context, and acts on their verdicts.
 
-- Each role runs as the main conversation of its own session. Start a new session or chat to change role; do not ask one role to delegate to another.
-- After you approve a plan, start Implementor in a new conversation with the Planning Session ID. Do not continue implementation in the planning conversation.
-- Planning sessions live in `sessions/<planning-session-id>/` (local and gitignored). Planning from GitHub issue `#12` proposes the session ID `us-12` (`/plan-user-story-from-id`) or `bug-12` (`/plan-bug-from-id`) and waits for your confirmation before it retrieves the issue.
-- Images are inspected by Planner and Direct Implementor themselves; each image gets a Markdown artifact `sessions/<id>/artifacts/<image-name>_visual_evidence.md`. Give a local file path for private issue images.
-- `manage-work-item` creates or updates a GitHub issue only when you invoke it by name in the default agent, and only after you approve the exact proposal.
+## Where things live
 
-## Status labels
+| What | Where |
+| --- | --- |
+| Runtime, workflows, contracts | `.agentic-system/` |
+| Sessions (memory, log, artifacts, designs) | `.agentic-system-sessions/` |
+| Project knowledge | `knowledge/` |
+| Vocabulary | `CONTEXT.md` |
+| Personal documentation templates | `~/.agentic-system/documentation/templates/` |
 
-Every start method here is **documented** in the client's official documentation but **not yet exercised** in this repository. Treat these entries as unverified until you have checked each one once, as described at the end of each guide.
+The runtime needs Node.js. Never edit files under the sessions folder by hand: designs and jobs change only through the runtime.
+
+## Guides per client
+
+- [Claude Code](claude-code.md)
+- [GitHub Copilot in VS Code](github-copilot-vscode.md)
+
+## Keeping it current
+
+The installation is recorded in the maintenance folder. To change a decision or move to a newer kit, run the `maintain-orchestrator-system` skill in a plain session, not inside one of the roles.

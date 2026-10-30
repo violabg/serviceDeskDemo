@@ -1,0 +1,367 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "design-submit",
+  "description": "The design-submit payload. Ids are plain cardinal numbers (1, 2, 3); the runtime adds the prefix by path (contracts CT#, apis API#, files FS#, operations IM#). Cross references are cardinal too: dependsOn -> IM#, refObligations -> O#, refElements -> O#.k. The $defs describe the payloads of the other design write operations.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sessionId": { "type": "string", "description": "valid agent session id" },
+    "jobId": { "type": "string", "description": "agent job id" },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "requirementRef": { "type": "string", "description": "the 3.0.0 reference of the requirement lock, still accepted; 3.0.1 sends no requirement reference" },
+            "title": { "type": "string" },
+            "generator": { "type": "string" }
+          }
+        },
+        "intros": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "filesystem": { "type": "string" },
+            "operations": { "type": "string" }
+          }
+        },
+        "add": { "$ref": "#/$defs/submitRows" },
+        "patch": { "$ref": "#/$defs/submitRows" },
+        "delete": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "contracts": { "type": "array", "items": { "type": "integer" } },
+            "apis": { "type": "array", "items": { "type": "integer" } },
+            "files": { "type": "array", "items": { "type": "integer" } },
+            "operations": { "type": "array", "items": { "type": "integer" } }
+          }
+        }
+      }
+    }
+  },
+  "required": ["sessionId", "jobId", "request"],
+  "$defs": {
+    "submitRows": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contracts": { "type": "array", "items": { "$ref": "#/$defs/contract" } },
+        "apis": { "type": "array", "items": { "$ref": "#/$defs/api" } },
+        "files": { "type": "array", "items": { "$ref": "#/$defs/file" } },
+        "operations": { "type": "array", "items": { "$ref": "#/$defs/operation" } }
+      }
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "integer" },
+        "type": { "type": "string", "enum": ["Interface", "Abstract", "Record"] },
+        "module": { "type": "string" },
+        "file": { "type": "string", "examples": ["src/Application/Facades/Approvals/IApprovalFlowService.cs"] },
+        "promises": { "type": "string" },
+        "signature": { "type": "string", "examples": ["Task<Foo> Bar(int id, CancellationToken cancellationToken = default);"] },
+        "premortem": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "what": { "type": "string" }, "mitigation": { "type": "string" } }
+          }
+        },
+        "confidence": { "type": "string", "enum": ["High", "Medium", "Low"] },
+        "evidence": { "type": "string", "enum": ["Docs", "DocsPartial", "Codebase", "DesignPast", "General", "Story", "TeamKnowledge", "None"] },
+        "evidenceNote": { "type": "string" }
+      }
+    },
+    "api": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "integer" },
+        "method": { "type": "string", "examples": ["POST"] },
+        "path": { "type": "string", "examples": ["/api/approval-requests"] },
+        "purpose": { "type": "string" },
+        "auth": { "type": "string" },
+        "request": { "type": "string" },
+        "responses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "status": { "type": "string" }, "description": { "type": "string" }, "body": { "type": "string" } }
+          }
+        },
+        "confidence": { "type": "string", "enum": ["High", "Medium", "Low"] },
+        "evidence": { "type": "string", "enum": ["Docs", "DocsPartial", "Codebase", "DesignPast", "General", "Story", "TeamKnowledge", "None"] },
+        "evidenceNote": { "type": "string" }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "integer" },
+        "path": { "type": "string", "examples": ["src/Application/Facades/Approvals/ApprovalFlowService.cs"] },
+        "status": { "type": "string", "enum": ["Modified", "Added"] },
+        "module": { "type": "string" },
+        "reason": { "type": "string" },
+        "change": { "type": "string", "description": "what exactly changes in the file: the members added or modified, the wiring, the schema" },
+        "impact": { "type": "string" }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "integer" },
+        "operation": { "type": "string" },
+        "kind": { "type": "string", "enum": ["Code", "Generator", "Documentation", "Changelog", "Migration", "Wiring", "Procedure", "UnitTest", "IntegrationTest", "Verification"] },
+        "instructions": { "type": "string", "examples": ["{{O1.1}} Resolve the acting user from the bearer token. {{O1.2}} Check the submit permission before creating the draft."] },
+        "dependsOn": { "type": "array", "items": { "type": "integer" }, "description": "cardinal operation numbers this one waits for (they become IM#)" },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "refObligations": { "type": "array", "items": { "type": "integer" }, "description": "cardinal obligation numbers this operation implements" },
+        "refElements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["obligation", "element"],
+            "properties": {
+              "obligation": { "type": "integer", "description": "the cardinal obligation number" },
+              "element": { "type": "integer", "description": "the cardinal element index within that obligation (1-based, in written order)" }
+            }
+          },
+          "description": "the necessary elements this operation carries out, each as { obligation, element } (they become O#.k)"
+        },
+        "knowledgeReferences": { "type": "array", "items": { "type": "integer" }, "description": "the kids of the knowledge references this operation needs, registered first with design-knowledge-references" },
+        "source": { "type": "string", "enum": ["Design", "Knowledge", "UserStory", "Developer", "JobArtifact"] },
+        "sourceRef": { "type": "string" },
+        "branches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "question": { "type": "string" },
+              "yes": { "$ref": "#/$defs/branchArm" },
+              "no": { "$ref": "#/$defs/branchArm" },
+              "why": { "type": "string" }
+            }
+          }
+        },
+        "negatives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "cause": { "type": "string", "description": "the business cause that produces an outcome other than the happy path" },
+              "behavior": { "type": "string", "description": "what the system does for that cause" },
+              "impact": { "type": "string", "enum": ["High", "Medium", "Low"], "description": "what is at stake" }
+            }
+          }
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "trigger": { "type": "string", "description": "the technical fault (timeout, unavailable dependency, malformed input); use negatives for a business cause" },
+              "recovery": { "type": "string", "description": "how the operation recovers from the fault" }
+            }
+          }
+        }
+      }
+    },
+    "branchArm": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "label": { "type": "string" }, "note": { "type": "string" } }
+    },
+    "rowRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation"],
+      "properties": {
+        "operation": { "type": "string", "enum": ["Add", "Read", "Update", "Delete"] },
+        "rows": { "type": "array" },
+        "ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "obligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "description": "O# — on Update only" },
+        "origin": { "type": "string", "enum": ["Requirement", "Developer"] },
+        "behavior": { "type": "string" },
+        "class": { "type": "string" },
+        "boundaries": { "type": "string" },
+        "sourceRef": { "type": "string" },
+        "elements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "integer", "description": "on Update: patches the element in place; omitted: appends" },
+              "kind": { "type": "string", "enum": ["Direction", "Conjunct", "Quantifier", "Guard", "Effect", "StateSemantics", "Exception"] },
+              "text": { "type": "string" },
+              "sourceSpan": { "type": "string" },
+              "removed": { "type": "boolean", "description": "on Update: deletes the element; its id is never reused" }
+            }
+          }
+        }
+      }
+    },
+    "openPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "question": { "type": "string" },
+        "whyAskingMySelf": { "type": "string" }
+      }
+    },
+    "fileReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "symbol": { "type": "string" },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "path": { "type": "string" }, "why": { "type": "string" }, "purpose": { "type": "string" } }
+          }
+        },
+        "scope": { "$ref": "#/$defs/scope" }
+      }
+    },
+    "scope": { "type": "string", "enum": ["Production", "Test"], "description": "Production governs the production code, Test the tests; a reference added without a scope is Production" },
+    "knowledgeReference": {
+      "type": ["object", "integer"],
+      "description": "a reference row on Add and Update; a kid on Read and Delete",
+      "additionalProperties": false,
+      "properties": {
+        "kid": { "type": "integer", "description": "the reference id you assign: a distinct positive integer" },
+        "fId": { "type": "integer", "description": "the file id of the knowledge document, from the current catalogue" },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["s", "e"],
+          "properties": {
+            "s": { "type": "integer", "description": "the first line, inclusive, as numbered by knowledge-read" },
+            "e": { "type": "integer", "description": "the last line, inclusive" }
+          }
+        },
+        "scope": { "$ref": "#/$defs/scope" }
+      }
+    },
+    "knowledgeReferencesRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation"],
+      "properties": {
+        "operation": { "type": "string", "enum": ["Add", "Read", "Update", "Delete"] },
+        "references": { "type": "array", "items": { "$ref": "#/$defs/knowledgeReference" }, "description": "the reference rows for Add and Update; the kids (integers) for Read and Delete, empty = all" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "topic": { "type": "string" },
+        "question": { "type": "string" },
+        "source": { "type": "string", "enum": ["InternalReasoning", "Codebase", "Requirements"] },
+        "context": { "type": "string" },
+        "why": { "type": "string" },
+        "how": { "type": "string" },
+        "blocking": { "type": "boolean", "description": "the 3.0.0 name of highlight, still accepted; it reads as highlight" },
+        "highlight": { "type": "boolean", "description": "where the developer's judgment is most needed; a highlighted decision about the situation carries no realizedIn" },
+        "realizedIn": { "type": "array", "items": { "type": "string" } },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "description": "D#.n — on Update only" },
+              "text": { "type": "string" },
+              "chosen": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "overview": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operation": { "type": "string", "enum": ["Add", "Update", "Read"] },
+        "currentState": { "type": "string" },
+        "gaps": { "type": "string" }
+      }
+    },
+    "operationStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ids", "status"],
+      "properties": {
+        "ids": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["InProgress", "Completed"] }
+      }
+    },
+    "iterationOpen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request"],
+      "properties": {
+        "workspacePath": { "type": "string" },
+        "WorkspacePath": { "type": "string" },
+        "request": { "type": "string" }
+      }
+    },
+    "iterationClose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["iterationId"],
+      "properties": {
+        "iterationId": { "type": "string" },
+        "verifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": { "kind": { "type": "string" }, "name": { "type": "string" }, "outcome": { "type": "string" } }
+          }
+        },
+        "blocks": { "type": "array" },
+        "notes": { "type": "string" }
+      }
+    },
+    "approve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planName"],
+      "properties": {
+        "planName": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

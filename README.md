@@ -1,35 +1,38 @@
-# Enterprise Agentic Development Demo Pack
+# Enterprise Service Desk Demo
 
-This folder contains a standalone agentic development demo pack for an enterprise Service Desk IT application. It is inspired by the MoltiAgent workflow, but it is adapted for a teaching demo and does not replace or modify the existing company tooling.
+A Next.js demo of an enterprise IT Service Desk application, developed with an agentic system. The application code and the agentic system live side by side in this repository.
 
-## Purpose
+## Agentic system
 
-The demo shows the difference between a traditional prompt and an enterprise agentic workflow:
+The repository is driven by an orchestration system bootstrapped into `.agentic-system/`. [AGENTS.md](AGENTS.md) is the router: it lists the roles, the runtime, the skills, and the validation rules.
 
-1. Intake a GitHub issue from `violabg/serviceDeskDemo`.
-2. Create or reuse a named planning session under `sessions/<session-id>/`.
-3. Analyze gaps, ambiguity, risks, and missing acceptance criteria.
-4. Ask focused grooming questions.
-5. Produce a specification and task breakdown.
-6. Produce an implementation plan with file-level intent, proposed diffs, and test coverage scenarios.
-7. Hand the approved plan to an implementor.
-8. Create or update tests.
-9. Review the result and produce PR-ready artifacts.
+- **Roles** are started by the developer as the main conversation of a session: `orchestrator` (runs the `DESIGN`, `FAST_IMPLEMENTATION` or `DOCUMENTATION` workflow), `ask` (answers project questions) and `knowledge-builder` (builds project knowledge). Role definitions live in `.claude/agents` and `.github/agents`.
+- **Skills** for planning bugs and user stories from work-item IDs live in `.claude/skills` and `.github/skills`.
+- **Knowledge** lives in `knowledge/`, indexed by `knowledge/knowledge-index.md`. Vocabulary is resolved in `CONTEXT.md`.
+- **Session state** (memory, event log, artifacts) is written to `.agentic-system-sessions/`, which is gitignored along with `sessions/`.
 
-## Layout
+Runtime-owned files (`.agentic-system/`, designs, jobs and integrity seals) are changed only through `node .agentic-system/bin/agentic-system.mjs <operation>`, never by hand.
 
-Generated workflow artifacts live in local, gitignored `sessions/<planning-session-id>/` packages. Planning starts from a GitHub issue such as `#12`. Before retrieving the issue, the planning skill proposes the session ID from its own type, `bug-12` or `us-12`, and waits for your confirmation; the issue ID and session ID are distinct. Resume only an explicitly supplied or active session, including previously approved custom IDs. The Planner writes the artifacts required by [the artifact contract](docs/agents/artifact-gates.md) and [plan schema](docs/agents/plan-schema.md). Integration Tester uses [the YAML test-plan schema](docs/agents/test-plan-schema.md).
-
-## Demo Stack
+## Demo stack
 
 - Next.js App Router
 - React + TypeScript
 - Prisma
 - Neon DB
 - Neon Auth
-- GitHub Issues and Projects
 - Vitest
 - React Testing Library
+
+## Development
+
+```bash
+pnpm dev        # start the Next.js dev server
+pnpm lint
+pnpm typecheck
+pnpm test
+```
+
+Every change is validated with `pnpm lint && pnpm typecheck && pnpm test`.
 
 ## Prisma and Neon
 
@@ -45,26 +48,3 @@ pnpm db:migrate
 pnpm db:push
 pnpm db:studio
 ```
-
-## Agent Flow
-
-Use `demo-planner` for GitHub-issue planning, then `demo-implementor` for approved-plan execution. Select `demo-direct-implementor` explicitly for direct implementation from validated requirements without a plan document; it never creates tests.
-
-| Agent | Purpose |
-| --- | --- |
-| demo-planner | Issue intake, clarification, knowledge selection and implementation planning |
-| demo-implementor | Approved-plan execution and authorized unit-test work |
-| demo-direct-implementor | Direct implementation with knowledge/session/validation gates; no test creation |
-| demo-integration-tester | Integration-test planning and execution |
-| demo-knowledge-builder | Evidence-backed knowledge and index maintenance |
-| demo-ask | Read-only codebase and programming Q&A |
-
-Planner and Direct Implementor inspect images themselves (in Claude Code through an approved haiku subagent) and record one Markdown visual-evidence artifact per image; there is no separate Vision agent.
-
-How to start each role, plan from an issue and hand off to Implementor in a new conversation, per client: [agentic system user guides](docs/agentic-system/README.md).
-
-Registrations per client: Copilot agents in `.github/agents/`; Claude Code has no role agents and starts roles through skills in a new conversation (`/plan-user-story-from-id 12` or `/plan-bug-from-id 12` for Planner, `/demo-<role>-claude` skills in `.claude/skills/` for the other roles), in the CLI and the VS Code extension alike. Role instructions are identical across clients; the full contracts live in `docs/agents/canonical/<environment>/agents/` and exact tools in `docs/agents/bindings/{copilot,claude-code}.md`.
-
-Generated skills are single shared copies under `.agents/skills/<name>/SKILL.md` (Claude Code reaches them through `.claude/skills/` links): `author-repo-skill`, `plan-bug-from-id`, `plan-user-story-from-id`, `user-story-analysis`, `integration-test-knowledge-checklist`, and `manage-work-item`. The two issue-planning skills run within `demo-planner`. Invoke `manage-work-item` explicitly to create a bug or user story, or to update an existing issue after reading it; every write needs your approval of the exact proposal. The gap-detector skill is deferred.
-
-Read [integration bindings](docs/agents/integration-bindings.md) for role-specific GitHub, Neon and Next.js access. GitHub MCP access in Claude Code reads its token from the `GITHUB_TOKEN` environment variable. Reload each client after changes and confirm role and skill discovery before relying on an unverified operation.

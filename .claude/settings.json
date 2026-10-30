@@ -1,6 +1,7 @@
 {
-  "skillOverrides": {
-    "bootstrap-agentic-system": "user-invocable-only",
-    "maintain-agentic-system": "user-invocable-only"
+  "permissions": {
+    "allow": [
+      "Bash(node .agentic-system/bin/agentic-system.mjs *)"
+    ]
   }
 }

@@ -1,33 +1,10 @@
+---
+tier: "PerComponent"
+intent: "Before creating or editing shared UI primitives, or navigation and action controls built on Base UI wrappers (buttons rendered as links, sidebar, breadcrumbs, select, textarea)."
+---
 # When to read this
 
 Use this checklist before creating or editing shared UI primitives and navigation/actions built on Base UI wrappers.
-
-## Last verified
-
-2026-09-26, dirty worktree. Evidence from repository files:
-
-- components/ui/button.tsx
-- components/ui/sidebar.tsx
-- components/ui/select.tsx
-- components/ui/textarea.tsx
-- app/page.tsx
-- app/(dashboard)/(admin)/roles/page.tsx
-- app/(dashboard)/(admin)/users/[userId]/page.tsx
-- components/nav-main.tsx
-- components/dashboard-breadcrumbs.tsx
-- components/app-sidebar.tsx
-- components/auth/logout-button.tsx
-- components.json
-
-## Base UI Composition Checklist
-
-## Evidence
-
-- Repo button primitive is Base UI button wrapper, and consumers compose via render and nativeButton props instead of asChild: components/ui/button.tsx.
-- Link-like buttons in pages use render with Link and set nativeButton={false}: app/page.tsx, app/(dashboard)/(admin)/roles/page.tsx.
-- Sidebar and breadcrumb primitives compose children through render props: components/nav-main.tsx, components/dashboard-breadcrumbs.tsx, components/app-sidebar.tsx.
-- Form actions still use native button behavior for submit and remove flows: app/(dashboard)/(admin)/users/[userId]/page.tsx.
-- Repo is configured for shadcn Base UI style and aliases through components.json: components.json.
 
 ## Core rules
 

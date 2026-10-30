@@ -1,34 +1,12 @@
+---
+tier: "PerContext"
+intent: "Before adding or changing Next.js app router pages, layouts, server actions, form submit wiring, or session and permission checks in the dashboard."
+---
 # When to read this
 
 Use this checklist before adding or changing pages, layouts, and mutations in the Next.js app router, especially in dashboard and admin areas.
 
-## Last verified
-
-2026-09-26, dirty worktree. Evidence from repository files:
-
-- AGENTS.md
-- app/(dashboard)/(admin)/actions.ts
-- app/(dashboard)/layout.tsx
-- app/(dashboard)/(admin)/roles/page.tsx
-- app/(dashboard)/(admin)/roles/[roleId]/page.tsx
-- app/(dashboard)/(admin)/users/[userId]/page.tsx
-- app/(dashboard)/tickets/actions.ts
-- app/(dashboard)/admin/_lib/current-application-user.ts
-- app/(dashboard)/tickets/new/new-ticket-form.tsx
-- app/(dashboard)/tickets/[id]/ticket-detail-forms.tsx
-- components/app-sidebar.tsx
-- lib/auth/server.ts
-- lib/auth/client.ts
-
 ## Next.js Server Execution Checklist
-
-## Evidence
-
-- Admin server actions are centralized in one module with "use server": app/(dashboard)/(admin)/actions.ts.
-- Admin pages invoke server actions via form action handlers: app/(dashboard)/(admin)/roles/page.tsx, app/(dashboard)/(admin)/roles/[roleId]/page.tsx, app/(dashboard)/(admin)/users/[userId]/page.tsx.
-- Ticket forms invoke server actions from client submit handlers when react-hook-form state and `useTransition` orchestration are needed: app/(dashboard)/tickets/new/new-ticket-form.tsx, app/(dashboard)/tickets/[id]/ticket-detail-forms.tsx, app/(dashboard)/tickets/actions.ts.
-- Dashboard layout is server-first and performs session plus permission gating before render: app/(dashboard)/layout.tsx.
-- Client-only auth helper is isolated behind "use client": lib/auth/client.ts, while server auth is separate in lib/auth/server.ts.
 
 ## Core rules
 
@@ -53,7 +31,8 @@ Use this checklist before adding or changing pages, layouts, and mutations in th
 ## Practical repo patterns
 
 - Server action module pattern:
-  - Use one domain action file under the route domain (example: admin actions).
+  - Use one domain action file under the route domain (examples: admin actions, customer actions).
+  - In the customer actions, each action starts with `requireCurrentApplicationAccess()` and a `hasPermission` check for the operation's level (`write` or `manage`); on denial it returns `{ ok: false, reason: "forbidden" }`. Apply the same gate in any new action module.
   - Parse FormData on server, call domain service methods, then expire only affected cache tags.
 - Server form pattern:
   - Use direct `<form action={serverAction}>` wiring when the form can stay server-first.
