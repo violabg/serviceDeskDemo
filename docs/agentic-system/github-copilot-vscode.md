@@ -18,21 +18,21 @@ The orchestrator always asks which workflow you want when you have not said it, 
 - The orchestrator stops at every halt point and waits for you: an interview question, a decision, or the design review.
 - In `DESIGN`, the review document is written into the session's design folder under `agentic-system-sessions/`. Open it in a browser, then approve or ask for changes in the chat.
 - Delegates run as native subagents, each with its own context. You see their verdicts in the conversation.
-- Runtime commands run as `node .agentic-system/bin/agentic-system.mjs <command>`. Allow them when the client asks.
+- Runtime commands run as `node agentic-system/bin/agentic-system.mjs <command>`. Allow them when the client asks.
 
 ## Verification
 
 What Bootstrap verified for this client:
 
+- Workflow skills: `.claude/skills`, reached natively (CLI: copilot skill list shows each skill once (2026-10-31, kit 3.0.1). VS Code: documented for Local sessions; the Copilot harness lists only .github/skills and is unverified).
 - orchestrator starts from the agent picker and asks for the workflow type: unverified (needs a Copilot Chat session)
 - session created through the runtime from the role: unverified (needs a Copilot Chat session)
 - delegate runs in its own context and resolves to .github/agents (not .claude/agents duplicate): unverified (needs a Copilot Chat session)
-- skills resolve to .github/skills copies: unverified (needs a Copilot Chat session)
 - work item read (github/issue_read): unverified (Copilot GitHub sign-in not checked)
 - visual evidence: unverified (needs a Copilot Chat session)
 - CLI: orchestrator starts with copilot --agent and asks for the workflow type: verified-native (2026-10-31, kit 3.0.1)
 - CLI: delegate runs in its own context: verified-native (sd-design-verifier returned DELEGATE-OK (2026-10-31, kit 3.0.1))
 - CLI: tool list enforcement (docs describe strict-tools-list; the installer does not set it): verified-native (sd-ask had no create or edit tool; no file written (2026-10-31, kit 3.0.1))
-- CLI: runtime command approval: unverified (no documented repository-level allow rule found; each developer approves it on first use)
+- CLI: runtime command approval: blocked (copilot -p started sd-orchestrator, but the runtime command was denied with no approver despite --allow-tool (2026-10-31, kit 4.0.0); untested interactively, each developer approves it on first use)
 - VS Code reads the shared .claude/skills in its Copilot harness: unverified (docs name only .github/skills for that harness; if it fails, add .github/skills symlinks)
-- CLI: skills resolve to the one .claude/skills copy: verified-native (copilot skill list shows each once (2026-10-31, kit 3.0.1))
+- CLI: skills resolve to the one .claude/skills copy: verified-native (copilot skill list shows each once (2026-10-31, kit 4.0.0); since the suffix was dropped it also lists the Claude Code role skills sd-orchestrator, sd-ask and sd-knowledge-builder)

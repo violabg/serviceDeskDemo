@@ -20,13 +20,13 @@
     },
     "next-devtools": {
       "type": "local",
-      "command": ["npx", "next-devtools-mcp@0.3.6"]
+      "command": [
+        "npx",
+        "next-devtools-mcp@0.3.6"
+      ]
     }
   },
   "permission": {
-    "bash": {
-      "node .agentic-system/bin/agentic-system.mjs *": "allow"
-    },
     "neon_*": "deny",
     "neon_describe_table_schema": "allow",
     "neon_get_database_tables": "allow",
@@ -37,6 +37,9 @@
       "plan-bug-from-id": "deny",
       "plan-user-story-from-id": "deny",
       "user-story-analysis": "deny"
+    },
+    "bash": {
+      "node agentic-system/bin/agentic-system.mjs *": "allow"
     }
   }
 }

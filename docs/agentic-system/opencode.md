@@ -18,12 +18,13 @@ The orchestrator always asks which workflow you want when you have not said it, 
 - The orchestrator stops at every halt point and waits for you: an interview question, a decision, or the design review.
 - In `DESIGN`, the review document is written into the session's design folder under `agentic-system-sessions/`. Open it in a browser, then approve or ask for changes in the chat.
 - Delegates run as native subagents, each with its own context. You see their verdicts in the conversation.
-- Runtime commands run as `node .agentic-system/bin/agentic-system.mjs <command>`. Allow them when the client asks.
+- Runtime commands run as `node agentic-system/bin/agentic-system.mjs <command>`. Allow them when the client asks.
 
 ## Verification
 
 What Bootstrap verified for this client:
 
+- Workflow skills: `.claude/skills`, reached natively (documented in the kit profile; .opencode/commands read the shared skill (2026-10-31, kit 3.0.1)).
 - agents discovered, delegates hidden: verified-native (2026-10-31, kit 3.0.1)
 - orchestrator starts with --agent sd-orchestrator and asks for the workflow type: verified-native (opencode run (2026-10-31, kit 3.0.1); TUI Tab selection not exercised)
 - delegate runs in its own child session: verified-native (sd-design-verifier returned DELEGATE-OK (2026-10-31, kit 3.0.1))
@@ -32,3 +33,4 @@ What Bootstrap verified for this client:
 - skills hidden from the offered list: verified-native (absent from the list; the skill tool still loads one when asked by id, so automatic use is prevented but this is no security boundary (2026-10-31, kit 3.0.1))
 - GitHub MCP: unverified (fails with HTTP 400 while GITHUB_PAT is unset; export it)
 - Neon MCP and write denial: unverified (needs opencode mcp auth neon; deny rules confirmed as configuration only)
+- roles and runtime on kit 4.0.0: unverified (the opencode run was declined on 2026-10-31; earlier results in this list are from kit 3.0.1)

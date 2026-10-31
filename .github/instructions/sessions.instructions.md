@@ -1,5 +1,5 @@
 ---
-applyTo: ".agentic-system/**"
+applyTo: "agentic-system/**"
 ---
 
 # Session Store Rules

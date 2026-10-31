@@ -19,16 +19,16 @@ Full role contracts live in `.claude/agents (Claude Code), .github/agents (GitHu
 
 ## Runtime
 
-Every `#capability:<token>` in a role, skill or workflow instruction is an operation of the agentic system runtime or of an approved integration, bound for this repository. Runtime operations run as `node .agentic-system/bin/agentic-system.mjs <token>`; pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `.agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. Read the contract before an operation's first call, or run the operation with `--help` to print its arguments. A long answer arrives in parts: when it ends with `[part N of M. The answer continues: …]`, make the call it names and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`.
+Every `#capability:<token>` in a role, skill or workflow instruction is an operation of the agentic system runtime or of an approved integration, bound for this repository. Runtime operations run as `node agentic-system/bin/agentic-system.mjs <token>`; pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. Read the contract before an operation's first call, or run the operation with `--help` to print its arguments. A long answer arrives in parts: when it ends with `[part N of M. The answer continues: …]`, make the call it names and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`.
 
 - Session memory, the event log and artifacts are the session files under `agentic-system-sessions/<sessionId>/`, never the client's own memory feature.
-- Workflow instructions are served one at a time by the runtime. Never open `.agentic-system/workflows/` directly.
+- Workflow instructions are served one at a time by the runtime. Never open `agentic-system/workflows/` directly.
 - Never edit runtime-owned files by hand: designs, jobs and integrity seals change only through runtime operations.
 - A delegate that returns its report is never a stop point: continue the active instruction.
 
 ## Skills
 
-Repository skills live in `.claude/skills`. Read a skill's `SKILL.md` before running its workflow.
+Repository skills live in `.claude/skills (workflow skills), .claude/skills (Claude Code role skills)`. Read a skill's `SKILL.md` before running its workflow.
 
 ## Knowledge
 

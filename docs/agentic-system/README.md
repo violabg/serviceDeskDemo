@@ -12,7 +12,7 @@ The orchestrator never writes production code. It hands the code and the verific
 
 | What | Where |
 | --- | --- |
-| Runtime, workflows, contracts | `.agentic-system/` |
+| Runtime, workflows, contracts | `agentic-system/` |
 | Sessions (memory, log, artifacts, designs) | `agentic-system-sessions/` |
 | Project knowledge | `knowledge/` |
 | Vocabulary | `CONTEXT.md` |

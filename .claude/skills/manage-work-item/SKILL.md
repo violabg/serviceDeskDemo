@@ -53,7 +53,7 @@ Do not design or implement anything. The returned ID is what the user passes to 
 
 ## Bindings
 
-Installed for Claude Code, GitHub Copilot (VS Code and CLI), OpenCode. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
+This is how each `#capability:<token>` and `#operation:<op>` in this file runs in your client.
 
 - `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
 - `#capability:work-item-create`: Create the issue on violabg/serviceDeskDemo with `issue_write` (method `create`), Markdown body; add the `bug` label for a Bug and a `## Type` heading of `User story` for a user story.

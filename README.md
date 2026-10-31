@@ -4,14 +4,14 @@ A Next.js demo of an enterprise IT Service Desk application, developed with an a
 
 ## Agentic system
 
-The repository is driven by an orchestration system bootstrapped into `.agentic-system/`. [AGENTS.md](AGENTS.md) is the router: it lists the roles, the runtime, the skills, and the validation rules.
+The repository is driven by an orchestration system bootstrapped into `agentic-system/`. [AGENTS.md](AGENTS.md) is the router: it lists the roles, the runtime, the skills, and the validation rules.
 
 - **Roles** are started by the developer as the main conversation of a session: `orchestrator` (runs the `DESIGN`, `FAST_IMPLEMENTATION` or `DOCUMENTATION` workflow), `ask` (answers project questions) and `knowledge-builder` (builds project knowledge). Role definitions live in `.claude/agents` and `.github/agents`.
-- **Skills** for planning bugs and user stories from work-item IDs live in `.claude/skills` and `.github/skills`.
+- **Skills** for planning bugs and user stories from work-item IDs live in `.claude/skills`.
 - **Knowledge** lives in `knowledge/`, indexed by `knowledge/knowledge-index.md`. Vocabulary is resolved in `CONTEXT.md`.
 - **Session state** (memory, event log, artifacts) is written to `agentic-system-sessions/`, which is gitignored along with `sessions/`.
 
-Runtime-owned files (`.agentic-system/`, designs, jobs and integrity seals) are changed only through `node .agentic-system/bin/agentic-system.mjs <operation>`, never by hand.
+Runtime-owned files (`agentic-system/`, designs, jobs and integrity seals) are changed only through `node agentic-system/bin/agentic-system.mjs <operation>`, never by hand.
 
 ## Demo stack
 
