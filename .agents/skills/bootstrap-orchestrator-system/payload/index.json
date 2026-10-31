@@ -121,13 +121,8 @@
     },
     "design-submit": {
       "kind": "runtime",
-      "summary": "Add, patch or delete contracts (CT#), APIs (API#), files (FS#) and operations (IM#) in one call.",
+      "summary": "Add, patch or delete contracts (CT#), APIs (API#), files (FS#) and operations (IM#), in one call or in partial calls with disjoint id ranges.",
       "fallback": "contracts/design-model.md#design-submit"
-    },
-    "design-schema": {
-      "kind": "runtime",
-      "summary": "Return the JSON schema of the design-submit payload.",
-      "fallback": "runtime/assets/design-requests.schema.json"
     },
     "design-checks": {
       "kind": "runtime",
@@ -458,7 +453,6 @@
         "design-open-points",
         "design-operation-status",
         "design-overview",
-        "design-schema",
         "design-snapshot",
         "design-submit",
         "documentation-check",
