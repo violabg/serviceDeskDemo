@@ -9,7 +9,7 @@ import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./kno
 import { authorisationOf, isAutomatic, isDone, unmetDependencies, weightOf } from "./plan.mjs";
 import { implementationContext, servedOperation, snapshot, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
-import { RuntimeError, arg, iso, readJson, servePart, sha256, writeJson } from "./util.mjs";
+import { RuntimeError, arg, iso, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
 
 let cachedSchema = null;
@@ -32,7 +32,7 @@ function check(ctx, defName, value, tool, path = "") {
 
 // Every design operation takes { sessionId, jobId, request }. A request field sent beside sessionId and jobId
 // is named as misplaced instead of validating an empty request, whose errors would point the caller the wrong way.
-function requestOf(ctx, args, defName, tool) {
+function requestOf(ctx, args, defName, tool, extras = []) {
   const fields = Object.keys(schema(ctx).$defs[defName].properties ?? {}).map((k) => k.toLowerCase());
   const misplaced = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request"].includes(k.toLowerCase()) && fields.includes(k.toLowerCase()));
   if (misplaced.length) {
@@ -42,14 +42,14 @@ function requestOf(ctx, args, defName, tool) {
       applied: "nothing was applied",
     });
   }
-  refuseUnknown(args, tool);
+  refuseUnknown(args, tool, extras);
   const request = arg(args, "request") ?? {};
   check(ctx, defName, request, tool, "/request");
   return request;
 }
 
-function refuseUnknown(args, tool) {
-  const unknown = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request"].includes(k.toLowerCase()));
+function refuseUnknown(args, tool, extras = []) {
+  const unknown = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request", ...extras.map((e) => e.toLowerCase())].includes(k.toLowerCase()));
   if (unknown.length) throw new RuntimeError(`${tool} failed: unknown argument ${unknown.map((k) => `'${k}'`).join(", ")}. Nothing was applied. Arguments: sessionId, jobId, request.`);
 }
 
@@ -114,10 +114,20 @@ function mergeFileReference(row, incoming) {
   row.details = [...details.values()];
 }
 
+// Lab-authored: `outline` answers the ids a later anchor needs, one obligation per line, so an agent does not read
+// and script over every row to get them. Agents did this by hand in both issue 11 sessions.
+function obligationOutline(obligations, ids) {
+  const selected = ids.length ? obligations.filter((o) => ids.includes(o.id)) : obligations;
+  return selected.map((o) => `${o.id}: ${o.elements?.length ? o.elements.map((e) => `${o.id}.${e.id} ${e.kind}`).join(", ") : "(no elements)"}`).join("\n");
+}
+
 export function rowTool(ctx, tool, args) {
   const table = ROW_TABLES[tool];
   const { design } = jobDesign(ctx, args, tool);
-  const request = requestOf(ctx, args, "rowRequest", tool);
+  const canOutline = tool === "design-obligations";
+  const outline = canOutline && String(arg(args, "outline") ?? "false") === "true";
+  const request = requestOf(ctx, args, "rowRequest", tool, canOutline ? ["outline"] : []);
+  if (outline && request.operation !== "Read") throw new RuntimeError(`${tool} rejected: outline applies to the operation Read only. Nothing was applied.`);
   const rows = request.rows ?? [];
   const ids = request.ids ?? [];
   const collection = design[table.collection];
@@ -125,8 +135,9 @@ export function rowTool(ctx, tool, args) {
 
   switch (request.operation) {
     case "Read": {
+      if (outline) return obligationOutline(collection, ids);
       const selected = ids.length ? collection.filter((r) => ids.includes(r.id)) : collection;
-      return JSON.stringify({ rows: selected }, null, 2);
+      return linedJson(selected);
     }
     case "Add": {
       const added = [];
@@ -229,7 +240,7 @@ export function knowledgeReferences(ctx, args) {
       const missing = rows.filter((kid) => !references.some((r) => r.kid === kid));
       for (const kid of missing) fail(`kid ${kid} does not exist`);
       const selected = rows.length ? references.filter((r) => rows.includes(r.kid)) : references;
-      return JSON.stringify({ references: selected.map((r) => ({ ...r, ...resolveKnowledgeReference(ctx, r) })), errors: result.errors }, null, 2);
+      return linedJson({ references: selected.map((r) => ({ ...r, ...resolveKnowledgeReference(ctx, r) })), errors: result.errors });
     }
     case "Add":
       for (const row of rows) {
@@ -296,13 +307,13 @@ export function overview(ctx, args) {
   const tool = "design-overview";
   const { design } = jobDesign(ctx, args, tool);
   const request = requestOf(ctx, args, "overview", tool);
-  if (request.operation === "Read") return JSON.stringify(design.overview, null, 2);
+  if (request.operation === "Read") return linedJson(design.overview);
   const gaps = request.gaps ?? design.overview.gaps;
   const errors = request.gaps !== undefined ? overviewFindings(design, gaps) : [];
   if (request.gaps !== undefined && design.obligations.length === 0) {
     for (const ref of crowdedPlaceholders(gaps)) errors.push({ rule: "overview-gap-placeholders-crowded", element: "gaps", detail: `{{${ref}}} is too close to the next placeholder` });
   }
-  if (errors.length) return { output: JSON.stringify({ status: "Rejected", errors }, null, 2), exitCode: 1 };
+  if (errors.length) return { output: linedJson({ status: "Rejected", errors }), exitCode: 1 };
   if (request.currentState !== undefined) design.overview.currentState = request.currentState;
   if (request.gaps !== undefined) design.overview.gaps = request.gaps;
   touch(ctx, design, "updated", "design-overview");
@@ -436,11 +447,7 @@ export function submit(ctx, args) {
     saveDesign(ctx, design);
   }
   const findings = runChecks(design);
-  return JSON.stringify(
-    { status: design.status, applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage },
-    null,
-    2,
-  );
+  return linedJson({ status: design.status, applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage });
 }
 
 // --- reads --------------------------------------------------------------------------------------------
@@ -454,7 +461,7 @@ export function checksTool(ctx, args) {
     touch(ctx, design, "resealed", "external edit accepted after review");
     saveDesign(ctx, design);
   }
-  return JSON.stringify(runChecks(design), null, 2);
+  return linedJson(runChecks(design));
 }
 
 function validateDesignShape(design) {
@@ -519,7 +526,7 @@ export function approve(ctx, args) {
   const findings = runChecks(design);
   if (findings.errors.length) {
     return {
-      output: JSON.stringify({ status: "Rejected", reason: "the design still has integrity errors; fix them and approve again", errors: findings.errors }, null, 2),
+      output: linedJson({ status: "Rejected", reason: "the design still has integrity errors; fix them and approve again", errors: findings.errors }),
       exitCode: 1,
     };
   }

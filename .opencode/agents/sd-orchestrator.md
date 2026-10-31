@@ -146,7 +146,46 @@ After the clusters, use `bash`, `grep` and `glob` as often as the exploration ne
 
 Installed for OpenCode. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
-- Runtime operations: run `node agentic-system/bin/agentic-system.mjs <token> --role orchestrator` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); always pass `--role orchestrator`, and the runtime refuses a command outside this role; pass a large payload on stdin in the same command (`--json -` with a quoted heredoc, in a POSIX shell), or else with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level, and `node agentic-system/bin/agentic-system.mjs <token> --help` prints them. A long answer arrives in parts: when it ends with `[part N of M. The answer continues: …]`, make the call it names and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `agentic-system/contracts/` gives and record that the gate ran instruction-only.
+- Runtime operations: run `node agentic-system/bin/agentic-system.mjs <token> --role orchestrator` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); always pass `--role orchestrator`, and the runtime refuses a command outside this role; pass arguments as flags (`--sessionId s1`) or as one JSON object: inline when it is short (`--json '{"sessionId":"s1"}'`), on stdin in the same command when it is large (`--json -` with a quoted heredoc, in a POSIX shell), or else with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run `node agentic-system/bin/agentic-system.mjs <token> --help` only when a call is refused or you need a field's definition. A long answer arrives in parts: when it ends with `[part N of M. The answer continues …]`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `agentic-system/contracts/` gives and record that the gate ran instruction-only.
+- Runtime command arguments:
+  - `codebase-cluster-files`: WorkspacePath, fileExtension, clusterName
+  - `codebase-clusters`: WorkspacePath, fileExtension
+  - `design-approve`: sessionId, jobId, request { planName, description }
+  - `design-checks`: sessionId, jobId, acceptExternalEdit
+  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }
+  - `design-document`: sessionId, jobId
+  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }
+  - `design-implementation-context`: sessionId, jobId, part, revision
+  - `design-implementation-operation`: sessionId, jobId, operationId, id, part
+  - `design-implementation-operation-close`: sessionId, jobId
+  - `design-iteration-close`: sessionId, jobId, request { iterationId, verifications, blocks, notes }
+  - `design-iteration-open`: sessionId, jobId, request { workspacePath, WorkspacePath, request }
+  - `design-knowledge-references`: sessionId, jobId, request { operation, references }
+  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline
+  - `design-open-points`: sessionId, jobId, request { operation, rows, ids }
+  - `design-operation-status`: sessionId, jobId, request { ids, status }
+  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }
+  - `design-snapshot`: sessionId, jobId, part, revision
+  - `design-submit`: sessionId, jobId, request { header, add, patch, delete }
+  - `documentation-check`: templateNameOrPath, outputFile, outputContent, mode
+  - `documentation-template-read`: templateNameOrPath
+  - `documentation-templates-list`: templatesDirectory
+  - `knowledge-catalog`: no arguments
+  - `knowledge-index-rebuild`: no arguments
+  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `session-activate`: sessionId
+  - `session-artifact-list`: sessionId
+  - `session-artifact-read`: sessionId, artifact, artifactId, artifactName, name
+  - `session-artifact-write`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, content, contentFile
+  - `session-event-log`: sessionId, and the text under any field name
+  - `session-image-attach`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, blobUrl
+  - `session-list`: no arguments
+  - `session-memory-append`: sessionId, and the text under any field name
+  - `session-memory-read`: sessionId
+  - `workflow-job-activate`: sessionId, jobId, agentName, designId, workflowType
+  - `workflow-step-next`: sessionId, jobId
+  - `workflow-step-pending`: sessionId, jobId, part
+  - `workflow-types-list`: no arguments
 - `#capability:delegate`: Start a delegate with the `task` tool, naming the subagent with the role's native name below and passing the prompt the step gives. The subagent runs in its own child session and returns its result. Role names here: `code-implementor` → `sd-code-implementor`; `design-verifier` → `sd-design-verifier`; `documentation-reviewer` → `sd-documentation-reviewer`; `implementation-verifier` → `sd-implementation-verifier`; `general-purpose` → the built-in `general` agent. A delegate sees only its own file, not this section: when the prompt you pass names a `#capability:<token>` its file does not bind (always the case for `general-purpose`), append that token's line from this section to the prompt.
 - `#capability:visual-evidence`: Read a local image with the Read tool. For an image attached to an issue (github.com/user-attachments URL), the GitHub MCP server does not return its bytes: ask the user to save it into the session folder and read it from there.
 - `#capability:wiki-catalog-read`: not available in this repository (no wiki). Skip any step that needs it and say so.

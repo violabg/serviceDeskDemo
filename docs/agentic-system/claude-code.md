@@ -25,14 +25,14 @@ The orchestrator always asks which workflow you want when you have not said it, 
 What Bootstrap verified for this client:
 
 - Workflow skills: `.claude/skills`, reached natively (the documented project folder; verified by name in headless claude -p (2026-10-31, kit 3.0.1)).
-- static install and runtime (verify.mjs): verified-native (no drift, runtime serves the three workflows, sessions folder reachable (2026-10-31, kit 3.0.1))
+- static install and runtime (verify.mjs): verified-native (no drift, runtime serves the three workflows, sessions folder reachable (2026-10-31, kit 4.1.0))
 - work item read (issue_read get/get_labels/get_comments): verified-fallback (exercised in the VS Code extension from the Bootstrap session on #6, not yet from inside sd-orchestrator)
-- session created through the runtime from the role: unverified (needs a new session)
-- delegate runs in its own context (sd-design-verifier): verified-native (headless claude -p returned DELEGATE-OK (2026-10-31, kit 4.0.0))
-- role skill refuses inside a running role: unverified (needs a new session)
+- session created through the runtime from the role: verified-native (headless claude -p: /sd-orchestrator created a disposable session, removed afterwards; IDE surface not exercised (2026-10-31, kit 4.1.0))
+- delegate runs in its own context (sd-design-verifier): verified-native (headless claude -p: the delegate ran and returned its own report (2026-10-31, kit 4.1.0))
+- role skill refuses inside a running role: verified-native (headless: /sd-ask refused in a resumed /sd-orchestrator conversation (2026-10-31, kit 4.1.0))
 - visual evidence: unverified (needs a new session)
 - terminal surface GitHub MCP: unverified (GITHUB_PAT not exported in the login shell; export it before launching claude in a terminal)
 - review document (redesigned page): unverified (asset design-review.html updated to the 2.0.x design on 2026-10-28; the rendered page is checked in a DESIGN run)
 - shared skill /plan-bug-from-id: verified-native (invoked by name in headless claude -p (2026-10-31, kit 3.0.1); hidden from the model by disable-model-invocation, as intended)
-- orchestrator starts via /sd-orchestrator and asks for the workflow type: verified-native (headless claude -p (2026-10-31, kit 4.0.0); IDE surface not exercised)
-- runtime-only delegate is refused outside its role: verified-fallback (the runtime refuses design-approve for design-verifier, and role-guard.mjs blocks it when run directly (2026-10-31, kit 4.0.0); the hook firing inside a live subagent was not exercised)
+- orchestrator starts via /sd-orchestrator and asks for the workflow type: verified-native (headless claude -p; IDE surface not exercised (2026-10-31, kit 4.1.0))
+- runtime-only delegate is refused outside its role: verified-fallback (in claude -p the delegate declined design-approve by its instructions, so the hook did not fire; role-guard.mjs run directly blocks another role command, chaining, pipes and a command after a heredoc, and allows its own command and a heredoc. A 6-part knowledge-read reached the shell part by part, run directly rather than through a delegate (2026-10-31, kit 4.1.0))

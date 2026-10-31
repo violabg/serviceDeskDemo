@@ -121,6 +121,15 @@ export function arg(source, name) {
   return key === undefined ? undefined : source[key];
 }
 
+// JSON with one array element per line: as valid and as complete as the indented form, smaller, and split at a
+// row boundary when the answer is served in parts.
+export function linedJson(value) {
+  const rows = (list) => (list.length ? `[\n${list.map((row) => JSON.stringify(row)).join(",\n")}\n]` : "[]");
+  if (Array.isArray(value)) return rows(value);
+  const fields = Object.entries(value).map(([key, field]) => `${JSON.stringify(key)}:${Array.isArray(field) ? rows(field) : JSON.stringify(field)}`);
+  return `{${fields.join(",\n")}}`;
+}
+
 // Lab-authored: the default size of a part, in UTF-8 bytes, including its markers. Shell hosts cap the output
 // they show of one command and spill the rest to a file the agent may not be able to read: about 30,000
 // characters in Claude Code, about 8 KB in Copilot CLI. `partLimit` in the runtime config overrides it, and
@@ -128,22 +137,29 @@ export function arg(source, name) {
 export const PART_LIMIT = 24000;
 
 // The header and footer of a part, kept out of the room its text may use.
-const PART_MARGIN = 500;
+const PART_MARGIN = 600;
 const bytes = (text) => Buffer.byteLength(text, "utf8");
 
 // A heading repeated at the top of a later piece of a split unit, so the piece names what it continues.
 const continuation = (first) => (/^#{1,6} /.test(first) && first.length <= 200 ? `${first} (continued)` : null);
 
-// Cuts one line longer than the limit at character boundaries. Rare: only prose stored on a single line.
+// Cuts one line longer than the limit, after a space when one is near and else at a character boundary, so a
+// word or a {{O1.2}} anchor stays whole. Rare: only prose stored on a single line.
 function cutLine(line, limit) {
   const pieces = [];
   let piece = "";
+  let size = 0;
   for (const char of line) {
-    if (bytes(piece) + bytes(char) > limit) {
-      pieces.push(piece);
-      piece = "";
+    const width = bytes(char);
+    if (size + width > limit) {
+      const space = piece.lastIndexOf(" ");
+      const at = space >= piece.length / 2 ? space + 1 : piece.length;
+      pieces.push(piece.slice(0, at));
+      piece = piece.slice(at);
+      size = bytes(piece);
     }
     piece += char;
+    size += width;
   }
   pieces.push(piece);
   return pieces;
@@ -196,8 +212,9 @@ export function splitParts(text, starts, limit = PART_LIMIT) {
 // Serves part `args.part` (default 1) of a long answer, with a header and a footer that say where the text
 // continues. `next(k)` says how to request part k. An answer that fits is returned unchanged. `onServed(n, parts)`
 // runs only for a valid part, so a refused request records nothing.
-// Lab-authored: the footer asks for the next call as a command of its own, because an agent that loops over
-// parts or pipes them through `head`, `cut` or `dd` exceeds the host cap again and loses text.
+// Lab-authored: the footer asks for each call as a command of its own, because an agent that loops over parts or
+// pipes them through `head`, `cut` or `dd` exceeds the host cap again and loses text. Part 1 asks for every other
+// part at once: a client that runs tool calls in parallel then spends one turn on them instead of one per part.
 export function servePart(text, args, { tool, starts, next, limit = PART_LIMIT, onServed }) {
   const requested = arg(args, "part");
   const parts = splitParts(text, starts, limit - PART_MARGIN);
@@ -209,9 +226,11 @@ export function servePart(text, args, { tool, starts, next, limit = PART_LIMIT, 
   if (parts.length === 1) return text;
   const header = n > 1 ? `[part ${n} of ${parts.length}]\n` : "";
   const body = parts[n - 1].replace(/\n+$/, "");
-  const footer =
-    n < parts.length
-      ? `[part ${n} of ${parts.length}. The answer continues: ${next(n + 1)} Run it as a shell command of its own, with nothing chained before or after it and no pipe. Read every part before acting on any of it.]`
-      : `[part ${n} of ${parts.length}: end of the answer.]`;
+  const total = parts.length;
+  const alone = "as a shell command of its own, with nothing chained and no pipe";
+  let footer = `[part ${n} of ${total}: end of the answer.]`;
+  if (n === 1 && total === 2) footer = `[part 1 of 2. The answer continues in part 2: ${next(2)} Run it ${alone}. Read every part before acting on any of it.]`;
+  else if (n === 1) footer = `[part 1 of ${total}. The answer continues in parts 2 to ${total}: ${next(2)} Request each remaining part the same way, ${alone}: all in this turn as parallel tool calls if your client allows it, or else one by one. Read every part before acting on any of it.]`;
+  else if (n < total) footer = `[part ${n} of ${total}. Parts ${n + 1} to ${total} follow, if you have not requested them yet: ${next(n + 1)} Run each ${alone}.]`;
   return `${header}${body}\n\n${footer}\n`;
 }

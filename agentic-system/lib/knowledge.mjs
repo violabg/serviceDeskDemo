@@ -112,7 +112,11 @@ function documentLines(ctx, path) {
   return readFileSync(join(ctx.knowledgeRoot, path), "utf8").replace(/\r\n/g, "\n").replace(/\s+$/, "").split("\n");
 }
 
-export function read(ctx, args) {
+// Lab-authored: only the role that writes the design grounds it. A verifier's or implementor's own read is not a
+// design read. A call that names no role (an operator's) still counts.
+const groundsTheDesign = (role) => role === undefined || role === "orchestrator";
+
+export function read(ctx, args, { role } = {}) {
   const entries = buildCatalog(ctx);
   const ids = idsOf(args);
   const parts = [];
@@ -129,7 +133,8 @@ export function read(ctx, args) {
     parts.push(`# file_id ${id} — ${entry.title}\n${numbered}`);
   }
   const sessionId = arg(args, "sessionId");
-  const session = sessionId ? ` --sessionId ${sessionId}` : "";
+  // The role travels with the continuation, so a document finished by a later part is attributed to the same reader.
+  const session = `${sessionId ? ` --sessionId ${sessionId}` : ""}${role ? ` --role ${role}` : ""}`;
   // A part starts at a `# file_id` heading. A document longer than one part continues under the same heading.
   return servePart(`${parts.join("\n\n---\n\n")}\n`, args, {
     tool: "knowledge-read",
@@ -142,7 +147,7 @@ export function read(ctx, args) {
       const later = new Set(pages.slice(n).flatMap((page) => [...idsIn(page)]));
       const finished = [...idsIn(pages[n - 1])].filter((id) => !later.has(id));
       const paths = finished.map((id) => served.get(id)).filter(Boolean);
-      if (paths.length) recordKnowledgeReads(ctx, sessionId, paths);
+      if (paths.length && groundsTheDesign(role)) recordKnowledgeReads(ctx, sessionId, paths);
     },
   });
 }
@@ -166,7 +171,7 @@ export function resolveKnowledgeReference(ctx, reference) {
 }
 
 // The knowledge a design grounds in, for the design verifier: every MustHave document, every document
-// served by knowledge-read in the design's session, and every document the design names by file name.
+// the design's author read through knowledge-read in its session, and every document the design names by file name.
 export function designGrounding(ctx, design) {
   if (!existsSync(ctx.knowledgeRoot)) return [];
   const read = new Set(knowledgeReads(ctx, design.sessionId));

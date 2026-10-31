@@ -12,7 +12,7 @@ The checks are facts about the artifact: anchors, elements, placeholders, an exe
   "coverage": { "obligationsTotal": 0, "obligationsRealized": 0, "elementsTotal": 0, "elementsRealized": 0 } }
 ```
 
-The design can be presented for approval only when `errors` is empty. Warnings never block approval.
+The design can be presented for approval only when `errors` is empty. Warnings never block approval. The answer is lined JSON, and a long one is served from a stored copy (`contracts/workflow-loop.md`, Stored responses).
 
 ## Placeholders
 

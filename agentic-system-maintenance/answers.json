@@ -106,23 +106,23 @@
       "verification": {
         "static install and runtime (verify.mjs)": {
           "status": "verified-native",
-          "note": "no drift, runtime serves the three workflows, sessions folder reachable (2026-10-31, kit 3.0.1)"
+          "note": "no drift, runtime serves the three workflows, sessions folder reachable (2026-10-31, kit 4.1.0)"
         },
         "work item read (issue_read get/get_labels/get_comments)": {
           "status": "verified-fallback",
           "note": "exercised in the VS Code extension from the Bootstrap session on #6, not yet from inside sd-orchestrator"
         },
         "session created through the runtime from the role": {
-          "status": "unverified",
-          "note": "needs a new session"
+          "status": "verified-native",
+          "note": "headless claude -p: /sd-orchestrator created a disposable session, removed afterwards; IDE surface not exercised (2026-10-31, kit 4.1.0)"
         },
         "delegate runs in its own context (sd-design-verifier)": {
           "status": "verified-native",
-          "note": "headless claude -p returned DELEGATE-OK (2026-10-31, kit 4.0.0)"
+          "note": "headless claude -p: the delegate ran and returned its own report (2026-10-31, kit 4.1.0)"
         },
         "role skill refuses inside a running role": {
-          "status": "unverified",
-          "note": "needs a new session"
+          "status": "verified-native",
+          "note": "headless: /sd-ask refused in a resumed /sd-orchestrator conversation (2026-10-31, kit 4.1.0)"
         },
         "visual evidence": {
           "status": "unverified",
@@ -142,11 +142,11 @@
         },
         "orchestrator starts via /sd-orchestrator and asks for the workflow type": {
           "status": "verified-native",
-          "note": "headless claude -p (2026-10-31, kit 4.0.0); IDE surface not exercised"
+          "note": "headless claude -p; IDE surface not exercised (2026-10-31, kit 4.1.0)"
         },
         "runtime-only delegate is refused outside its role": {
           "status": "verified-fallback",
-          "note": "the runtime refuses design-approve for design-verifier, and role-guard.mjs blocks it when run directly (2026-10-31, kit 4.0.0); the hook firing inside a live subagent was not exercised"
+          "note": "in claude -p the delegate declined design-approve by its instructions, so the hook did not fire; role-guard.mjs run directly blocks another role command, chaining, pipes and a command after a heredoc, and allows its own command and a heredoc. A 6-part knowledge-read reached the shell part by part, run directly rather than through a delegate (2026-10-31, kit 4.1.0)"
         }
       }
     },
@@ -274,19 +274,19 @@
         },
         "CLI: orchestrator starts with copilot --agent and asks for the workflow type": {
           "status": "verified-native",
-          "note": "2026-10-31, kit 3.0.1"
+          "note": "copilot -p --agent sd-orchestrator (2026-10-31, kit 4.1.0)"
         },
         "CLI: delegate runs in its own context": {
           "status": "verified-native",
-          "note": "sd-design-verifier returned DELEGATE-OK (2026-10-31, kit 3.0.1)"
+          "note": "sd-design-verifier returned DELEGATE-OK (2026-10-31, kit 4.1.0)"
         },
         "CLI: tool list enforcement (docs describe strict-tools-list; the installer does not set it)": {
           "status": "verified-native",
           "note": "sd-ask had no create or edit tool; no file written (2026-10-31, kit 3.0.1)"
         },
         "CLI: runtime command approval": {
-          "status": "blocked",
-          "note": "copilot -p started sd-orchestrator, but the runtime command was denied with no approver despite --allow-tool (2026-10-31, kit 4.0.0); untested interactively, each developer approves it on first use"
+          "status": "verified-fallback",
+          "note": "workflow-types-list ran under copilot -p with --allow-tool shell(node:*), which is a wider grant than the runtime alone; interactive approval not exercised (2026-10-31, kit 4.1.0)"
         },
         "VS Code reads the shared .claude/skills in its Copilot harness": {
           "status": "unverified",
@@ -294,7 +294,7 @@
         },
         "CLI: skills resolve to the one .claude/skills copy": {
           "status": "verified-native",
-          "note": "copilot skill list shows each once (2026-10-31, kit 4.0.0); since the suffix was dropped it also lists the Claude Code role skills sd-orchestrator, sd-ask and sd-knowledge-builder"
+          "note": "copilot skill list shows each workflow and role skill once (2026-10-31, kit 4.1.0)"
         }
       }
     },
@@ -399,6 +399,10 @@
         "roles and runtime on kit 4.0.0": {
           "status": "unverified",
           "note": "the opencode run was declined on 2026-10-31; earlier results in this list are from kit 3.0.1"
+        },
+        "roles and runtime on kit 4.1.0": {
+          "status": "unverified",
+          "note": "not run: re-verification was limited to Claude Code and Copilot CLI; the other OpenCode results are from older kits (2026-10-31, kit 4.1.0)"
         }
       }
     }
