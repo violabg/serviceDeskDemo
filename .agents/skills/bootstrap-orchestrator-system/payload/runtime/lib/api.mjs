@@ -1,14 +1,15 @@
 // THE runtime contract: one handler per runtime capability token (system/canonical/capabilities.yaml).
-// A handler receives the context and the upstream argument object, and returns the response text, or
-// { output, exitCode } for a structured refusal. Adapters (the CLI today, an MCP server if ever needed)
+// A handler receives the context, the upstream argument object and the caller ({ role }), and returns the
+// response text, or { output, exitCode } for a structured refusal. Adapters (the CLI today, an MCP server if ever needed)
 // only translate transport around this table and hold no logic of their own.
 import { join } from "node:path";
 import * as codebase from "./codebase.mjs";
 import * as design from "./design.mjs";
 import * as documentation from "./documentation.mjs";
 import * as knowledge from "./knowledge.mjs";
+import { bounded, storedPart } from "./responses.mjs";
 import * as session from "./session.mjs";
-import { withLock } from "./util.mjs";
+import { arg, linedJson, withLock } from "./util.mjs";
 import * as workflow from "./workflow.mjs";
 
 export const handlers = {
@@ -48,7 +49,7 @@ export const handlers = {
   "design-iteration-close": (ctx, args) => design.iterationClose(ctx, args),
 
   "knowledge-catalog": (ctx) => knowledge.catalog(ctx),
-  "knowledge-read": (ctx, args) => knowledge.read(ctx, args),
+  "knowledge-read": (ctx, args, caller) => knowledge.read(ctx, args, caller),
   "knowledge-create": (ctx, args) => knowledge.create(ctx, args),
   "knowledge-update": (ctx, args) => knowledge.update(ctx, args),
   "knowledge-index-rebuild": (ctx) => knowledge.rebuild(ctx),
@@ -91,7 +92,7 @@ function unwrapRequest(token, args) {
 const SESSION = ["sessionId"];
 const JOB = ["sessionId", "jobId"];
 const FRONT_MATTER = ["artifactFrontMatter", "name", "artifactName", "description", "intendedUse", "intended_use", "use", "mimeType", "mime_type", "origin"];
-const ARGUMENTS = {
+export const ARGUMENTS = {
   "session-list": [],
   "session-activate": SESSION,
   "session-memory-read": SESSION,
@@ -159,23 +160,26 @@ function unknownCommand(token) {
     const how = token === "question" ? "ask the user with your client's own question tool" : `use your client's own tool for \`#operation:${token}\``;
     return `'${token}' is not a runtime command: it is a host operation, so ${how} (the Bindings section of your role file names it). The runtime is installed and working; this is not a runtime outage. ${commands}`;
   }
-  return `unknown command '${token}'. The runtime is installed and working; this is not a runtime outage. ${commands}`;
+  return `unknown command '${token}'. The runtime is installed and working; this is not a runtime outage. ${commands}. \`--help\` alone lists the arguments of every command.`;
 }
 
-// Runs one token and normalizes the result to { output, exitCode }.
-export async function call(ctx, token, args = {}) {
+// Runs one token and normalizes the result to { output, exitCode }, never longer than the part limit: `caller.role`
+// is the role named by the adapter, and `responseId` serves a part of an earlier long response without running
+// the operation again (contracts/workflow-loop.md, Parts).
+export async function call(ctx, token, args = {}, caller = {}) {
   const handler = handlers[token];
   if (!handler) return { output: unknownCommand(token), exitCode: 2 };
+  if (arg(args, "responseId") !== undefined) return storedPart(ctx, token, args);
   const refused = unknownArguments(token, args);
   if (refused) return { output: refused, exitCode: 1 };
   try {
     // A design call reads, changes and seals design.json: parallel design-submit calls run one after the other.
-    const run = () => handler(ctx, unwrapRequest(token, args));
+    const run = () => handler(ctx, unwrapRequest(token, args), caller);
     const result = await (token.startsWith("design-") ? withLock(join(ctx.runtimeRoot, ".design-lock"), run) : run());
-    return typeof result === "string" ? { output: result, exitCode: 0 } : result;
+    return bounded(ctx, token, typeof result === "string" ? { output: result, exitCode: 0 } : result);
   } catch (error) {
     if (error && "payload" in error) {
-      return { output: error.payload ? JSON.stringify(error.payload, null, 2) : error.message, exitCode: 1 };
+      return bounded(ctx, token, { output: error.payload ? linedJson(error.payload) : error.message, exitCode: 1 });
     }
     throw error;
   }

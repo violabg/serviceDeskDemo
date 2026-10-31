@@ -51,7 +51,7 @@ Before moving skills in an existing repository, look for copies, local edits and
 
 Recommend a folder outside the repository, `~/.agentic-system/sessions/<repo-name>`. Sessions belong to one developer, change constantly and must not pollute the repository or its search results. The alternative is the visible repository folder `agentic-system-sessions/`; the installer then adds it to `.gitignore` inside a managed block.
 
-The runtime keeps its cache in `<sessions root>/.cache`, so the tracked runtime folder never receives generated files.
+The runtime keeps its cache in `<sessions root>/.cache`, so the tracked runtime folder never receives generated files. The cache holds the catalogue index and, under `responses/`, a copy of each long answer for a day, so its parts can be read; these copies hold design and session text, as the sessions do.
 
 ## Locations outside the repository
 
@@ -68,4 +68,4 @@ Some clients may not expand `~` in their own settings. When phase B finds that, 
 
 Every role that uses the runtime runs `node <runtime root>/bin/agentic-system.mjs <command> --role <role>` from the repository root. `config.json` lists each role's commands, and the runtime refuses any other command for that role. The installer allows exactly that command in the client settings where the profile has a permission file (`Bash(node agentic-system/bin/agentic-system.mjs *)` for Claude Code, a terminal auto-approve entry for VS Code, a `bash` permission for OpenCode). Never allow a broader shell pattern for it. A role whose only terminal use is the runtime is limited further where the client can do it: a `PreToolUse` hook on the Claude Code subagent, per-command `bash` permissions on OpenCode. Copilot, Codex and Cursor have no such limit in their profiles, so there the role's limit is the runtime refusal and an instruction. Claude Code runs a project subagent's hook only after the folder is trusted.
 
-`config.json` also sets `partLimit`, the largest runtime answer in bytes, to the smallest `runtime.partLimit` of the selected clients. A delegate without a file tool cannot read output the client saved to a file, so a limit that is too high loses its input. Settings files are merged: existing entries stay, and a value already set differently is a conflict for the user to resolve.
+`config.json` also sets `partLimit`, the largest runtime answer of any command in bytes, to the smallest `runtime.partLimit` of the selected clients. A delegate without a file tool cannot read output the client saved to a file, so a limit that is too high loses its input. Settings files are merged: existing entries stay, and a value already set differently is a conflict for the user to resolve.

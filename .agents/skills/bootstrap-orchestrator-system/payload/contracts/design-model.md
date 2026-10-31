@@ -68,9 +68,11 @@ Element `kind` is exactly one of `Direction | Conjunct | Quantifier | Guard | Ef
 | Operation | Effect | Response |
 | --- | --- | --- |
 | `Add` | rows carry no id; the runtime assigns the next id | `{"added": ["O1", "O2"]}` |
-| `Read` | `ids` selects rows; empty `ids` reads all | `{"rows": [ ... ]}` |
+| `Read` | `ids` selects rows; empty `ids` reads all | a JSON array of the rows, each with its `id` (the 3.0.2 capture), one row per line |
 | `Update` | each row names its `id`; only the fields sent change | `{"updated": ["O1"]}` |
 | `Delete` | removes the rows named by `ids` | `{"deleted": ["O1"]}` |
+
+`#capability:design-obligations` with `Read` also takes a top-level `outline: true` beside `request` (Lab-authored): the answer is one line per obligation, `O1: O1.1 Effect, O1.2 Guard`, or `O2: (no elements)`, which gives the anchors of the overview and the operations without reading every row. It holds no text, so a step that needs the obligations themselves still reads them. It is refused on any other operation and on any other table.
 
 Table rules:
 
@@ -151,7 +153,7 @@ An operation row:
 
 Lab-authored, because the instruction states the parallel calls and leaves their mechanics open: design calls take a lock shared between runtime processes (`<runtime root>/.design-lock`, broken after 120 seconds when a process died holding it), so parallel calls run one after the other and none loses rows. The rows of one call keep the order they were sent in and go before the first stored row with a higher id, so disjoint ranges build the same plan whichever call arrives first. Stored rows are never reordered.
 
-Response: `{"status": "Draft", "applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}}`. `errors`, `warnings` and `coverage` are the full mechanical checks.
+Response: `{"status": "Draft", "applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}}`. `errors`, `warnings` and `coverage` are the full mechanical checks. The fields are the captured ones, written as lined JSON; a result longer than the part limit is served from a stored copy, so the write runs once and no finding is dropped (`contracts/workflow-loop.md`, Stored responses).
 
 No design write returns the document path: the rendered document is located only with `#capability:design-document` (see contracts/projections.md).
 

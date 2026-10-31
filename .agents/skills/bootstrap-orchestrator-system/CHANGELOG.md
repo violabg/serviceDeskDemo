@@ -2,6 +2,16 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 4.1.0
+
+Runtime and role-file fixes from a parallel test of the system on two clients. A target re-installed from this version keeps its answers and sessions.
+
+- **No answer is too long.** Every runtime response now stays within `partLimit`. Long row reads, `design-submit` results, refusals and artifact reads arrive in parts, and asking for a later part with `--responseId` never runs the operation again. A copy stays in `<sessions root>/.cache/responses/` for a day.
+- **Smaller answers.** Structured answers have one row per line, and `design-obligations` `Read` takes `outline: true` for the element ids alone. A row `Read` now answers a JSON array instead of `{ "rows": [...] }`.
+- **Fewer turns.** Part 1 and the role bindings ask for the remaining parts in one parallel turn where the client allows it. The role bindings list each command's arguments, so agents need not probe with `--help`; `--help` alone also lists them all.
+- **Payloads.** `--json` also takes one inline JSON object, and a wrong form gets a usage error. The role guard allows one quoted heredoc payload, the form the bindings recommend; chaining, pipes and redirects stay blocked.
+- **Grounding.** A verifier's or implementor's own knowledge read no longer counts as read during the design, and parallel reads lose no record.
+
 ## 4.0.0
 
 Hidden system folders become visible, workflow skills move to one shared folder, and a role can only run its own runtime commands. An existing installation must migrate, and with more than one client it must settle a new question.
