@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 // A refusal the caller can repair. The CLI prints `payload` (or `message`) and exits with code 1.
@@ -33,6 +33,31 @@ export function requireString(value, field, tool) {
 export function readJson(path, fallback) {
   if (!existsSync(path)) return fallback;
   return JSON.parse(readFileSync(path, "utf8"));
+}
+
+// Lab-authored: a stale lock is one left by a process that died; no design call holds it this long.
+const STALE_LOCK_MS = 120_000;
+const LOCK_WAIT = new Int32Array(new SharedArrayBuffer(4));
+
+// Runs a synchronous function holding a directory lock shared between runtime processes.
+export function withLock(path, run) {
+  mkdirSync(dirname(path), { recursive: true });
+  for (;;) {
+    try {
+      mkdirSync(path);
+      break;
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      const stat = statSync(path, { throwIfNoEntry: false });
+      if (stat && Date.now() - stat.mtimeMs > STALE_LOCK_MS) rmSync(path, { recursive: true, force: true });
+      else Atomics.wait(LOCK_WAIT, 0, 0, 20);
+    }
+  }
+  try {
+    return run();
+  } finally {
+    rmSync(path, { recursive: true, force: true });
+  }
 }
 
 export function writeText(path, text) {

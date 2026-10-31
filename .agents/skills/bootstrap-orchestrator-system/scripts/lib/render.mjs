@@ -23,10 +23,6 @@ export function render(kit, answers) {
     const { profile } = env;
     const slots = { ...base, AGENT_ROOT: profile.agents.dir, SKILL_ROOT: profile.skills.dir };
     const nativeName = (role) => `${answers.prefix}${role}`;
-    // A skill's installed name: env.skillSuffix tells this client's system skills apart from another client's in a shared discovery folder.
-    const skillName = (name) => `${name}${env.skillSuffix}`;
-    const skillNames = [...index.skills.map((s) => s.name), ...(env.route === "skill" ? index.roles.filter((r) => r.invocation === "user").map((r) => nativeName(r.name)) : [])];
-    const suffixMentions = (text) => (env.skillSuffix ? skillNames.reduce((out, name) => out.replaceAll(`\`${name}\``, `\`${skillName(name)}\``), text) : text);
     const delegates = index.roles.filter((r) => r.invocation === "delegate");
 
     const delegationText = () => {
@@ -120,21 +116,21 @@ export function render(kit, answers) {
         });
         add({ ...file, kind: isDelegate ? "delegate" : "role", envs: [env.id] });
       } else {
-        const dir = `${profile.skills.dir}/${skillName(nativeName(role.name))}`;
+        const dir = `${profile.skills.dir}/${nativeName(role.name)}`;
         const rule = manualOnly(dir);
-        const intro = `# ${skillName(nativeName(role.name))}\n\nThis skill starts the \`${role.name}\` role in this conversation. If this conversation already runs a role, stop and tell the user to open a new conversation. Otherwise the contract below is your complete role for the rest of the conversation: it governs every step, halt point and session operation, and the client's own defaults, such as its memory feature, never replace a contract operation.\n\n`;
+        const intro = `# ${nativeName(role.name)}\n\nThis skill starts the \`${role.name}\` role in this conversation. If this conversation already runs a role, stop and tell the user to open a new conversation. Otherwise the contract below is your complete role for the rest of the conversation: it governs every step, halt point and session operation, and the client's own defaults, such as its memory feature, never replace a contract operation.\n\n`;
         add({
           path: `${dir}/SKILL.md`,
           kind: "role-skill",
           envs: [env.id],
-          content: yamlFrontmatter({ name: skillName(nativeName(role.name)), description: `Start the ${role.name} role. ${role.description}`, ...rule.frontmatter }) + intro + body,
+          content: yamlFrontmatter({ name: nativeName(role.name), description: `Start the ${role.name} role. ${role.description}`, ...rule.frontmatter }) + intro + body,
         });
         for (const extra of rule.extra) add({ ...extra, kind: "role-skill", envs: [env.id] });
       }
     }
 
     for (const skill of index.skills.filter(enabled)) {
-      const dir = `${profile.skills.dir}/${skillName(skill.name)}`;
+      const dir = `${profile.skills.dir}/${skill.name}`;
       const rule = manualOnly(dir);
       for (const file of skill.files) {
         const target = `${dir}/${file.slice(skill.dir.length + 1)}`;
@@ -146,10 +142,10 @@ export function render(kit, answers) {
             const name = nativeName(skill.role);
             activation =
               env.route === "skill"
-                ? `## Role activation\n\nThis skill runs under the \`${skill.role}\` role. If this conversation runs a different role, stop and tell the user to open a new conversation. If the \`${skillName(name)}\` skill is not loaded in this conversation yet, read \`${profile.skills.dir}/${skillName(name)}/SKILL.md\` and follow it as your complete role contract before you continue. The role contract governs step order, halt points and session persistence; this skill supplies only its intake.\n\n`
+                ? `## Role activation\n\nThis skill runs under the \`${skill.role}\` role. If this conversation runs a different role, stop and tell the user to open a new conversation. If the \`${name}\` skill is not loaded in this conversation yet, read \`${profile.skills.dir}/${name}/SKILL.md\` and follow it as your complete role contract before you continue. The role contract governs step order, halt points and session persistence; this skill supplies only its intake.\n\n`
                 : `## Role activation\n\nThis skill runs under the \`${name}\` agent. If this conversation is not running it, stop and tell the user to ${profile.routes.nativeStart.replaceAll("{name}", name)}, then invoke this skill again.\n\n`;
           }
-          content = yamlFrontmatter({ name: skillName(skill.name), description: skill.description, ...rule.frontmatter }) + activation + suffixMentions(body) + bindingsSection(skill.tokens, null, body);
+          content = yamlFrontmatter({ name: skill.name, description: skill.description, ...rule.frontmatter }) + activation + body + bindingsSection(skill.tokens, null, body);
         }
         add({ path: target, kind: "skill", envs: [env.id], customizable: true, content });
       }
@@ -222,7 +218,7 @@ function guides(kit, answers, base, runtimeCommand) {
     const name = `${answers.prefix}${role}`;
     return env.route === "native"
       ? `${env.profile.routes.nativeStart.replaceAll("{name}", name)}`
-      : `invoke the \`${name}${env.skillSuffix}\` skill in a new conversation`;
+      : `invoke the \`${name}\` skill in a new conversation`;
   };
   const statusLines = (env) => {
     const entries = Object.entries(env.verification);
@@ -240,7 +236,7 @@ function guides(kit, answers, base, runtimeCommand) {
       START_ORCHESTRATOR: start(env, "orchestrator"),
       START_ASK: start(env, "ask"),
       START_KNOWLEDGE_BUILDER: start(env, "knowledge-builder"),
-      PLAN_SKILLS: env.route === "native" ? `select \`${answers.prefix}orchestrator\` first, then invoke \`plan-bug-from-id${env.skillSuffix}\` or \`plan-user-story-from-id${env.skillSuffix}\`` : `invoke \`plan-bug-from-id${env.skillSuffix}\` or \`plan-user-story-from-id${env.skillSuffix}\` in a new conversation; each loads the orchestrator itself`,
+      PLAN_SKILLS: env.route === "native" ? `select \`${answers.prefix}orchestrator\` first, then invoke \`plan-bug-from-id\` or \`plan-user-story-from-id\`` : "invoke `plan-bug-from-id` or `plan-user-story-from-id` in a new conversation; each loads the orchestrator itself",
       DELEGATION: env.delegation === "subprocess" ? `separate \`${env.profile.delegation.subprocess}\` processes` : "native subagents, each with its own context",
       RUNTIME_COMMAND: runtimeCommand,
       VERIFICATION: statusLines(env),

@@ -20,14 +20,6 @@
             "generator": { "type": "string" }
           }
         },
-        "intros": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "filesystem": { "type": "string" },
-            "operations": { "type": "string" }
-          }
-        },
         "add": { "$ref": "#/$defs/submitRows" },
         "patch": { "$ref": "#/$defs/submitRows" },
         "delete": {
@@ -124,7 +116,9 @@
       "properties": {
         "id": { "type": "integer" },
         "operation": { "type": "string" },
-        "kind": { "type": "string", "enum": ["Code", "Generator", "Documentation", "Changelog", "Migration", "Wiring", "Procedure", "UnitTest", "IntegrationTest", "Verification"] },
+        "kind": { "type": "string", "enum": ["Code", "NotCode", "Commands", "Testing", "Build"], "description": "Code writes production source (wiring included); NotCode acts on non-source files or writes no output; Commands starts long-running commands; Testing writes and runs testing code; Build runs the build, the error checks and the lint" },
+        "testType": { "type": "string", "enum": ["Unit", "Integration", "E2E", "Harness"], "description": "required on a Testing operation, refused on any other; at most one Testing operation per type" },
+        "realizes": { "type": "array", "items": { "type": "string" }, "description": "the D# ids of the decisions this operation realizes; each decision must already exist" },
         "instructions": { "type": "string", "examples": ["{{O1.1}} Resolve the acting user from the bearer token. {{O1.2}} Check the submit permission before creating the draft."] },
         "dependsOn": { "type": "array", "items": { "type": "integer" }, "description": "cardinal operation numbers this one waits for (they become IM#)" },
         "files": { "type": "array", "items": { "type": "string" } },
@@ -292,8 +286,7 @@
         "why": { "type": "string" },
         "how": { "type": "string" },
         "blocking": { "type": "boolean", "description": "the 3.0.0 name of highlight, still accepted; it reads as highlight" },
-        "highlight": { "type": "boolean", "description": "where the developer's judgment is most needed; a highlighted decision about the situation carries no realizedIn" },
-        "realizedIn": { "type": "array", "items": { "type": "string" } },
+        "highlight": { "type": "boolean", "description": "where the developer's judgment is most needed; a highlighted decision about the situation is cited by no operation" },
         "options": {
           "type": "array",
           "items": {
