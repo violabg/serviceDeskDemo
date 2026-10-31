@@ -5,13 +5,13 @@
       "source": "violabg/agentic-system-kit",
       "sourceType": "github",
       "skillPath": "skills/orchestrator-system/bootstrap-orchestrator-system/SKILL.md",
-      "computedHash": "7a8340e600de864654972b9994011faa135bb582dad7fdef3a1565617ec1677b"
+      "computedHash": "9a952c5d162024eb16d18231f6c7151684b4f6c9c82dc816798ce58785f29ad9"
     },
     "maintain-orchestrator-system": {
       "source": "violabg/agentic-system-kit",
       "sourceType": "github",
       "skillPath": "skills/orchestrator-system/maintain-orchestrator-system/SKILL.md",
-      "computedHash": "391ece034567d961a39c96747fd2eb5c1ce80b98b83e7d070c1a19372c603831"
+      "computedHash": "d03976cf74c11722d1cc6d0c87973236b90d0719ef03d9c4152e4a6bb450ac26"
     },
     "migrate-radix-to-base": {
       "source": "shadcn/ui",

@@ -48,6 +48,20 @@ Apply refuses while an entry is unresolved. It refreshes the manifest and the ba
 
 When sessions move (evolve), move the existing session folders to the new location after the apply, with the user's approval, without reading their contents. Remove the old `.gitignore` block or client permissions only through the installer: they disappear from the plan when they are no longer rendered.
 
+## Move hidden folders
+
+An installation made before visible folders uses `.agentic-system/`, `.agentic-system-maintenance/` and possibly `.agentic-system-sessions/` or the singular `.agentic-system-session/`. They become `agentic-system/`, `agentic-system-maintenance/` and `agentic-system-sessions/`. Never delete a system folder as a shortcut, and never create a second session store. Sessions outside the repository, such as `~/.agentic-system/sessions/...`, do not move.
+
+Work on a clean git tree, and get the user's approval for the plan first. Run the steps in this order, in one sitting and with no session running:
+
+1. `install.mjs migrate plan --repo <target>` lists each move with its file count and stops on a collision: a destination that exists with content, or two old folders that map to one name. The user resolves those.
+2. `install.mjs migrate apply --repo <target>` copies each folder, verifies every copied file by hash, then rewrites the answers, the manifest and the baselines at the new location, and removes the installer's own entries for the old paths from client settings. The old folders stay as the backup.
+3. `install.mjs plan`, then `install.mjs apply`, re-render every reference: runtime commands, role files, skills, routers, contracts, guides, `.gitignore` and permission rules.
+4. Settle `tooling-exclusions` for the new folder names, then run `verify.mjs` and the native checks. Until step 5, `verify.mjs` reports the old folders as hidden, and it must report nothing else.
+5. `install.mjs migrate retire --repo <target>` deletes the old folders. It refuses if an old folder changed after the copy, or if a file that is not rendered by the installer is missing at the new location. Run it before committing: the old sessions folder is no longer ignored by git once step 3 has updated `.gitignore`.
+
+Afterwards a repeated `plan` must report nothing to do and no hidden folder. Search the repository's own scripts and documents for the old names and report them, since the installer does not own those.
+
 ## After
 
 Run `verify.mjs`, then the native checks for every client the change touched, record the results in `answers.json` and apply once more so the guides show them. Report what changed, what was kept, what was deferred, and the new kit version in the manifest.

@@ -112,28 +112,43 @@ function documentLines(ctx, path) {
   return readFileSync(join(ctx.knowledgeRoot, path), "utf8").replace(/\r\n/g, "\n").replace(/\s+$/, "").split("\n");
 }
 
-export function read(ctx, args) {
+// Lab-authored: only the role that writes the design grounds it. A verifier's or implementor's own read is not a
+// design read. A call that names no role (an operator's) still counts.
+const groundsTheDesign = (role) => role === undefined || role === "orchestrator";
+
+export function read(ctx, args, { role } = {}) {
   const entries = buildCatalog(ctx);
   const ids = idsOf(args);
   const parts = [];
-  const served = [];
+  const served = new Map();
   for (const id of ids) {
     const entry = entries.find((e) => e.file_id === id);
     if (!entry) {
       parts.push(`# file_id ${id}\n(not found in the current index: call knowledge-catalog again, file ids change on rebuild)`);
       continue;
     }
-    served.push(entry.path);
+    served.set(id, entry.path);
     // Lab-authored: every line carries its number, so a knowledge reference can name its range (s to e).
     const numbered = documentLines(ctx, entry.path).map((line, index) => `${index + 1}| ${line}`).join("\n");
     parts.push(`# file_id ${id} — ${entry.title}\n${numbered}`);
   }
-  recordKnowledgeReads(ctx, arg(args, "sessionId"), served);
-  // A part never splits a document: it starts only at a `# file_id` heading.
+  const sessionId = arg(args, "sessionId");
+  // The role travels with the continuation, so a document finished by a later part is attributed to the same reader.
+  const session = `${sessionId ? ` --sessionId ${sessionId}` : ""}${role ? ` --role ${role}` : ""}`;
+  // A part starts at a `# file_id` heading. A document longer than one part continues under the same heading.
   return servePart(`${parts.join("\n\n---\n\n")}\n`, args, {
     tool: "knowledge-read",
+    limit: ctx.partLimit,
     starts: (line) => /^# file_id \d+/.test(line),
-    next: (k) => `call knowledge-read again with the same file ids and part ${k} (CLI: --fileIds ${ids.join(",")} --part ${k}).`,
+    next: (k) => `call knowledge-read again with the same file ids and part ${k} (CLI: --fileIds ${ids.join(",")}${session} --part ${k}).`,
+    // A document counts as read when the part holding its last line is served, not when it was requested.
+    onServed: (n, pages) => {
+      const idsIn = (page) => new Set([...page.matchAll(/^# file_id (\d+)/gm)].map((m) => Number(m[1])));
+      const later = new Set(pages.slice(n).flatMap((page) => [...idsIn(page)]));
+      const finished = [...idsIn(pages[n - 1])].filter((id) => !later.has(id));
+      const paths = finished.map((id) => served.get(id)).filter(Boolean);
+      if (paths.length && groundsTheDesign(role)) recordKnowledgeReads(ctx, sessionId, paths);
+    },
   });
 }
 
@@ -156,7 +171,7 @@ export function resolveKnowledgeReference(ctx, reference) {
 }
 
 // The knowledge a design grounds in, for the design verifier: every MustHave document, every document
-// served by knowledge-read in the design's session, and every document the design names by file name.
+// the design's author read through knowledge-read in its session, and every document the design names by file name.
 export function designGrounding(ctx, design) {
   if (!existsSync(ctx.knowledgeRoot)) return [];
   const read = new Set(knowledgeReads(ctx, design.sessionId));

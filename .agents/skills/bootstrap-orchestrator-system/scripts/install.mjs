@@ -5,13 +5,16 @@
 //   node install.mjs apply [--repo <dir>] [--answers <file>] [--take <path>]... [--keep <path>]...
 //   node install.mjs check [--repo <dir>] [--answers <file>] [--json]
 //   node install.mjs show  <path> [--repo <dir>] [--answers <file>]     print the new render of one output
+//   node install.mjs skills-folder [--repo <dir>] [--answers <file>]    rank the shared skills folders of the clients
+//   node install.mjs migrate <plan|apply|retire> [--repo <dir>] [--answers <file>]   hidden folders to visible ones
 //
 // --repo defaults to the current directory; --answers to <maintenance root>/answers.json under the repo
-// (default maintenance root .agentic-system-maintenance). plan and check never write.
+// (default maintenance root agentic-system-maintenance). plan, check and migrate plan never write.
 import { existsSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { normalizeAnswers } from "./lib/answers.mjs";
+import { resolve } from "node:path";
+import { normalizeAnswers, rankSkillFolders, selectedClients } from "./lib/answers.mjs";
 import { loadKit } from "./lib/kit.mjs";
+import { findAnswers, migrateApply, migratePlan, migrateRetire } from "./lib/migrate.mjs";
 import { apply, check, plan } from "./lib/plan.mjs";
 import { render } from "./lib/render.mjs";
 import { InstallError, readJson } from "./lib/util.mjs";
@@ -55,13 +58,43 @@ function print(result, { json, problems }) {
   console.log(`\n${summary(result.entries) || "nothing to do"}`);
 }
 
+function migrate(step, repo, explicit) {
+  switch (step) {
+    case "plan": {
+      const { moves, problems } = migratePlan(repo, explicit);
+      for (const move of moves) console.log(`move      ${move.from}/ -> ${move.to}/  (${move.files} files)`);
+      for (const problem of problems) console.log(`problem   ${problem}`);
+      return problems.length ? 1 : 0;
+    }
+    case "apply": {
+      const { moves, answersPath } = migrateApply(repo, explicit);
+      for (const move of moves) console.log(`copied    ${move.from}/ -> ${move.to}/  (every file verified; the old folder is still there)`);
+      console.log(`\nNext: node install.mjs apply --repo ${repo} re-renders every reference from ${answersPath}, then verify.mjs, then node install.mjs migrate retire --repo ${repo}.`);
+      return 0;
+    }
+    case "retire": {
+      const { retired } = migrateRetire(repo);
+      for (const root of retired) console.log(`retired   ${root}/`);
+      return 0;
+    }
+    default:
+      throw new InstallError("usage: node install.mjs migrate <plan|apply|retire> [--repo <dir>] [--answers <file>]");
+  }
+}
+
 function main() {
   const options = parse(process.argv.slice(2));
   const repo = resolve(options.repo ?? process.cwd());
+  if (options.command === "migrate") return migrate(options.positional[0], repo, options.answers && resolve(options.answers));
   const kit = loadKit();
-  const answersFile = resolve(options.answers ?? join(repo, ".agentic-system-maintenance", "answers.json"));
+  const answersFile = resolve(findAnswers(repo, options.answers));
   if (!existsSync(answersFile)) throw new InstallError(`answers file not found: ${answersFile}`);
-  const answers = normalizeAnswers(readJson(answersFile), kit.profiles);
+  const raw = readJson(answersFile);
+  if (options.command === "skills-folder") {
+    for (const { folder, clients } of rankSkillFolders(selectedClients(raw, kit.profiles))) console.log(`${String(clients.length).padEnd(3)}${folder}  [${clients.join(", ")}]`);
+    return 0;
+  }
+  const answers = normalizeAnswers(raw, kit.profiles);
 
   switch (options.command) {
     case "plan": {
@@ -83,11 +116,11 @@ function main() {
       const path = options.positional[0];
       const output = render(kit, answers).outputs.find((o) => o.path === path);
       if (!output) throw new InstallError(`${path} is not rendered by this answers file`);
-      process.stdout.write(output.content ?? `${JSON.stringify(output.add, null, 2)}\n`);
+      process.stdout.write(output.content ?? (output.target ? `symlink to ${output.target}\n` : `${JSON.stringify(output.add, null, 2)}\n`));
       return 0;
     }
     default:
-      throw new InstallError("usage: node install.mjs <plan|apply|check|show> [--repo <dir>] [--answers <file>]");
+      throw new InstallError("usage: node install.mjs <plan|apply|check|show|skills-folder|migrate> [--repo <dir>] [--answers <file>]");
   }
 }
 

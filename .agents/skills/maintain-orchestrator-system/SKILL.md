@@ -25,7 +25,7 @@ Load `contracts/modes.md` to detect the installation and settle the mode, and `c
 
 ## Rules
 
-- Never read, list or change session contents. The sessions folder is a configured path, not evidence.
+- Never read or change session contents. The sessions folder is a configured path, not evidence. The one exception is moving a hidden sessions folder (`contracts/upgrade.md`, Move hidden folders): the installer copies and hashes its files without interpreting them.
 - Never hand-edit an installed role, workflow, contract or runtime file to "fix" it: change the answers or upgrade the kit, then re-render.
 - A customizable file the repository edited (the router block, a skill) is merged, never overwritten silently. A non-customizable file the repository edited is a conflict the user decides.
 - Re-run the verification of `bootstrap-orchestrator-system` (`contracts/install-and-verify.md`, phase F) for every client a change touches, and keep each result honest.

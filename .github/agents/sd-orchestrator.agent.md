@@ -1,7 +1,7 @@
 ---
 name: "sd-orchestrator"
 description: "Workflow orchestrator agent for the application development workflows"
-tools: ["read", "search", "edit", "execute", "vscode/askQuestions", "agent", "github/issue_read", "context7/resolve-library-id", "context7/query-docs"]
+tools: ["read", "search", "edit", "execute", "vscode/askQuestions", "ask_user", "agent", "github/issue_read", "context7/resolve-library-id", "context7/query-docs"]
 ---
 # Role and Responsabilities
 Your name is **orchestrator**.
@@ -124,13 +124,54 @@ The scope and the boundary of the design are determined ONLY by the requirement 
 - "the rest is analogous", "similar to above", "and so on", "…" and placeholders are NEVER a design: they are omissions in disguise.
 
 # research and exploration
-All research and exploration runs through the `bash` tool, and every `bash` command must combine localization and content dumping in the same command (never a locate-only command). For content searches prefer `rg` (ripgrep); PowerShell `Get-ChildItem` and `Select-String` are allowed only as part of such a combined locate-and-dump command.
+Start every exploration with `#capability:codebase-clusters`, then `#capability:codebase-cluster-files` for the shortlisted clusters: this is the first action of the exploration, not the last resort. The obligation holds now that there is no numeric exploration budget.
+
+After the clusters, use `bash`, `grep` and `glob` as often as the exploration needs: there is no limit on the number of invocations, and a search need not combine localization and content dumping in one command. For content searches prefer `rg` (ripgrep); PowerShell `Get-ChildItem` and `Select-String` are allowed. A search must be scoped to a subtree a cluster has already named; whole-workspace enumeration (`rg --files`, `git ls-files`, `Get-ChildItem -Recurse`) is forbidden, and a search is never a substitute for a failed cluster tool.
 
 ## Bindings
 
-Installed for GitHub Copilot in VS Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
+Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
-- Runtime operations: run `node .agentic-system/bin/agentic-system.mjs <token>` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `.agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level, and `node .agentic-system/bin/agentic-system.mjs <token> --help` prints them. A long answer arrives in parts: when it ends with `[part N of M. The answer continues: …]`, make the call it names and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `.agentic-system/contracts/` gives and record that the gate ran instruction-only.
+- Runtime operations: run `node agentic-system/bin/agentic-system.mjs <token> --role orchestrator` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); always pass `--role orchestrator`, and the runtime refuses a command outside this role; pass arguments as flags (`--sessionId s1`) or as one JSON object: inline when it is short (`--json '{"sessionId":"s1"}'`), on stdin in the same command when it is large (`--json -` with a quoted heredoc, in a POSIX shell), or else with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run `node agentic-system/bin/agentic-system.mjs <token> --help` only when a call is refused or you need a field's definition. A long answer arrives in parts: when it ends with `[part N of M. The answer continues …]`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `agentic-system/contracts/` gives and record that the gate ran instruction-only.
+- Runtime command arguments:
+  - `codebase-cluster-files`: WorkspacePath, fileExtension, clusterName
+  - `codebase-clusters`: WorkspacePath, fileExtension
+  - `design-approve`: sessionId, jobId, request { planName, description }
+  - `design-checks`: sessionId, jobId, acceptExternalEdit
+  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }
+  - `design-document`: sessionId, jobId
+  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }
+  - `design-implementation-context`: sessionId, jobId, part, revision
+  - `design-implementation-operation`: sessionId, jobId, operationId, id, part
+  - `design-implementation-operation-close`: sessionId, jobId
+  - `design-iteration-close`: sessionId, jobId, request { iterationId, verifications, blocks, notes }
+  - `design-iteration-open`: sessionId, jobId, request { workspacePath, WorkspacePath, request }
+  - `design-knowledge-references`: sessionId, jobId, request { operation, references }
+  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline
+  - `design-open-points`: sessionId, jobId, request { operation, rows, ids }
+  - `design-operation-status`: sessionId, jobId, request { ids, status }
+  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }
+  - `design-snapshot`: sessionId, jobId, part, revision
+  - `design-submit`: sessionId, jobId, request { header, add, patch, delete }
+  - `documentation-check`: templateNameOrPath, outputFile, outputContent, mode
+  - `documentation-template-read`: templateNameOrPath
+  - `documentation-templates-list`: templatesDirectory
+  - `knowledge-catalog`: no arguments
+  - `knowledge-index-rebuild`: no arguments
+  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `session-activate`: sessionId
+  - `session-artifact-list`: sessionId
+  - `session-artifact-read`: sessionId, artifact, artifactId, artifactName, name
+  - `session-artifact-write`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, content, contentFile
+  - `session-event-log`: sessionId, and the text under any field name
+  - `session-image-attach`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, blobUrl
+  - `session-list`: no arguments
+  - `session-memory-append`: sessionId, and the text under any field name
+  - `session-memory-read`: sessionId
+  - `workflow-job-activate`: sessionId, jobId, agentName, designId, workflowType
+  - `workflow-step-next`: sessionId, jobId
+  - `workflow-step-pending`: sessionId, jobId, part
+  - `workflow-types-list`: no arguments
 - `#capability:delegate`: Run the custom agent with the role's native name below as a subagent through the `agent` tool, with the prompt the step gives. The subagent runs in its own context and returns only its result. It cannot be resumed: re-invoke the same role with the complete correction prompt, as the step's arm for a host without resume says. Role names here: `code-implementor` → `sd-code-implementor`; `design-verifier` → `sd-design-verifier`; `documentation-reviewer` → `sd-documentation-reviewer`; `implementation-verifier` → `sd-implementation-verifier`; `general-purpose` → the client's default subagent (name no agent). A delegate sees only its own file, not this section: when the prompt you pass names a `#capability:<token>` its file does not bind (always the case for `general-purpose`), append that token's line from this section to the prompt.
 - `#capability:visual-evidence`: Read a local image with the read tool. For an image attached to an issue (github.com/user-attachments URL), the GitHub MCP server does not return its bytes: ask the user to attach it to the chat or save it into the session folder.
 - `#capability:wiki-catalog-read`: not available in this repository (no wiki). Skip any step that needs it and say so.
@@ -140,5 +181,5 @@ Installed for GitHub Copilot in VS Code. This is how each `#capability:<token>` 
 - `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
 - `#capability:work-item-retrieval`: Read the issue on violabg/serviceDeskDemo with the GitHub MCP server's `issue_read` (method `get`); it returns the title and Markdown body.
 - `#capability:work-item-type-retrieval`: Read the issue's labels with `issue_read` (method `get_labels`): the `bug` label means Bug; otherwise use the body's `## Type` heading (User story); if neither is present, ask the user.
-- `#operation:question` (your question tool): ask the user: call `vscode/askQuestions`. It is a host tool, not a runtime operation: never run `node .agentic-system/bin/agentic-system.mjs question`.
+- `#operation:question` (your question tool): ask the user: call `vscode/askQuestions` or `ask_user`. It is a host tool, not a runtime operation: never run `node agentic-system/bin/agentic-system.mjs question`.
 - Tool limits: this role may read files, search files, write files, run terminal commands, ask the user, run the runtime command, and start its delegates. The client enforces the tool list in this file.

@@ -9,7 +9,7 @@ import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./kno
 import { authorisationOf, isAutomatic, isDone, unmetDependencies, weightOf } from "./plan.mjs";
 import { implementationContext, servedOperation, snapshot, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
-import { RuntimeError, arg, iso, readJson, servePart, sha256, writeJson } from "./util.mjs";
+import { RuntimeError, arg, iso, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
 
 let cachedSchema = null;
@@ -32,7 +32,7 @@ function check(ctx, defName, value, tool, path = "") {
 
 // Every design operation takes { sessionId, jobId, request }. A request field sent beside sessionId and jobId
 // is named as misplaced instead of validating an empty request, whose errors would point the caller the wrong way.
-function requestOf(ctx, args, defName, tool) {
+function requestOf(ctx, args, defName, tool, extras = []) {
   const fields = Object.keys(schema(ctx).$defs[defName].properties ?? {}).map((k) => k.toLowerCase());
   const misplaced = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request"].includes(k.toLowerCase()) && fields.includes(k.toLowerCase()));
   if (misplaced.length) {
@@ -42,9 +42,15 @@ function requestOf(ctx, args, defName, tool) {
       applied: "nothing was applied",
     });
   }
+  refuseUnknown(args, tool, extras);
   const request = arg(args, "request") ?? {};
   check(ctx, defName, request, tool, "/request");
   return request;
+}
+
+function refuseUnknown(args, tool, extras = []) {
+  const unknown = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request", ...extras.map((e) => e.toLowerCase())].includes(k.toLowerCase()));
+  if (unknown.length) throw new RuntimeError(`${tool} failed: unknown argument ${unknown.map((k) => `'${k}'`).join(", ")}. Nothing was applied. Arguments: sessionId, jobId, request.`);
 }
 
 // Resolves the design of a job. DOCUMENTATION jobs have none.
@@ -108,10 +114,20 @@ function mergeFileReference(row, incoming) {
   row.details = [...details.values()];
 }
 
+// Lab-authored: `outline` answers the ids a later anchor needs, one obligation per line, so an agent does not read
+// and script over every row to get them. Agents did this by hand in both issue 11 sessions.
+function obligationOutline(obligations, ids) {
+  const selected = ids.length ? obligations.filter((o) => ids.includes(o.id)) : obligations;
+  return selected.map((o) => `${o.id}: ${o.elements?.length ? o.elements.map((e) => `${o.id}.${e.id} ${e.kind}`).join(", ") : "(no elements)"}`).join("\n");
+}
+
 export function rowTool(ctx, tool, args) {
   const table = ROW_TABLES[tool];
   const { design } = jobDesign(ctx, args, tool);
-  const request = requestOf(ctx, args, "rowRequest", tool);
+  const canOutline = tool === "design-obligations";
+  const outline = canOutline && String(arg(args, "outline") ?? "false") === "true";
+  const request = requestOf(ctx, args, "rowRequest", tool, canOutline ? ["outline"] : []);
+  if (outline && request.operation !== "Read") throw new RuntimeError(`${tool} rejected: outline applies to the operation Read only. Nothing was applied.`);
   const rows = request.rows ?? [];
   const ids = request.ids ?? [];
   const collection = design[table.collection];
@@ -119,8 +135,9 @@ export function rowTool(ctx, tool, args) {
 
   switch (request.operation) {
     case "Read": {
+      if (outline) return obligationOutline(collection, ids);
       const selected = ids.length ? collection.filter((r) => ids.includes(r.id)) : collection;
-      return JSON.stringify({ rows: selected }, null, 2);
+      return linedJson(selected);
     }
     case "Add": {
       const added = [];
@@ -223,7 +240,7 @@ export function knowledgeReferences(ctx, args) {
       const missing = rows.filter((kid) => !references.some((r) => r.kid === kid));
       for (const kid of missing) fail(`kid ${kid} does not exist`);
       const selected = rows.length ? references.filter((r) => rows.includes(r.kid)) : references;
-      return JSON.stringify({ references: selected.map((r) => ({ ...r, ...resolveKnowledgeReference(ctx, r) })), errors: result.errors }, null, 2);
+      return linedJson({ references: selected.map((r) => ({ ...r, ...resolveKnowledgeReference(ctx, r) })), errors: result.errors });
     }
     case "Add":
       for (const row of rows) {
@@ -290,13 +307,13 @@ export function overview(ctx, args) {
   const tool = "design-overview";
   const { design } = jobDesign(ctx, args, tool);
   const request = requestOf(ctx, args, "overview", tool);
-  if (request.operation === "Read") return JSON.stringify(design.overview, null, 2);
+  if (request.operation === "Read") return linedJson(design.overview);
   const gaps = request.gaps ?? design.overview.gaps;
   const errors = request.gaps !== undefined ? overviewFindings(design, gaps) : [];
   if (request.gaps !== undefined && design.obligations.length === 0) {
     for (const ref of crowdedPlaceholders(gaps)) errors.push({ rule: "overview-gap-placeholders-crowded", element: "gaps", detail: `{{${ref}}} is too close to the next placeholder` });
   }
-  if (errors.length) return { output: JSON.stringify({ status: "Rejected", errors }, null, 2), exitCode: 1 };
+  if (errors.length) return { output: linedJson({ status: "Rejected", errors }), exitCode: 1 };
   if (request.currentState !== undefined) design.overview.currentState = request.currentState;
   if (request.gaps !== undefined) design.overview.gaps = request.gaps;
   touch(ctx, design, "updated", "design-overview");
@@ -327,6 +344,7 @@ function persistRow(table, row) {
 
 export function submit(ctx, args) {
   const tool = "design-submit";
+  refuseUnknown(args, tool);
   const request = arg(args, "request");
   if (!request || typeof request !== "object" || Object.keys(request).length === 0) {
     throw new RuntimeError(`${tool} rejected: an empty request is never acceptable; send sessionId, jobId and request.`);
@@ -429,11 +447,7 @@ export function submit(ctx, args) {
     saveDesign(ctx, design);
   }
   const findings = runChecks(design);
-  return JSON.stringify(
-    { status: design.status, applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage },
-    null,
-    2,
-  );
+  return linedJson({ status: design.status, applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage });
 }
 
 // --- reads --------------------------------------------------------------------------------------------
@@ -447,7 +461,7 @@ export function checksTool(ctx, args) {
     touch(ctx, design, "resealed", "external edit accepted after review");
     saveDesign(ctx, design);
   }
-  return JSON.stringify(runChecks(design), null, 2);
+  return linedJson(runChecks(design));
 }
 
 function validateDesignShape(design) {
@@ -459,16 +473,27 @@ function validateDesignShape(design) {
   return errors;
 }
 
+// The parts of a projection belong to one revision of the design: a later part of an older revision is refused,
+// so text from two revisions is never read as one answer.
+function revisionGuard(design, args, tool) {
+  const revision = arg(args, "revision");
+  if (revision !== undefined && revision !== design.updatedAt) {
+    throw new RuntimeError(`${tool} failed: the design changed after the earlier parts were served (revision '${revision}', now '${design.updatedAt}'). Start again from part 1.`);
+  }
+  return { tool, next: (k) => `call ${tool} again with part ${k} and revision ${design.updatedAt} (CLI: --part ${k} --revision ${design.updatedAt}).` };
+}
+
 export function snapshotTool(ctx, args) {
   const job = loadJob(ctx, args, "design-snapshot");
   if (!job.designId) {
     return `# Design snapshot\nThis job runs ${job.workflowType}, which has no design artifact. There is nothing to project.\n`;
   }
   // Parts start at a section heading or at an item, so a row is never split.
-  return servePart(snapshot(loadDesign(ctx, job.sessionId, job.designId)), args, {
-    tool: "design-snapshot",
+  const design = loadDesign(ctx, job.sessionId, job.designId);
+  return servePart(snapshot(design), args, {
+    ...revisionGuard(design, args, "design-snapshot"),
+    limit: ctx.partLimit,
     starts: (line) => /^## /.test(line) || /^- /.test(line),
-    next: (k) => `call design-snapshot again with part ${k} (CLI: --part ${k}).`,
   });
 }
 
@@ -476,9 +501,9 @@ export function verificationViewTool(ctx, args) {
   const { design } = jobDesign(ctx, args, "design-verification-view");
   // Parts start at an obligation, an operation or a section heading, so none of them is ever split.
   return servePart(verificationView(design, designGrounding(ctx, design)), args, {
-    tool: "design-verification-view",
+    ...revisionGuard(design, args, "design-verification-view"),
+    limit: ctx.partLimit,
     starts: (line) => /^#{1,2} /.test(line),
-    next: (k) => `call design-verification-view again with part ${k} (CLI: --part ${k}).`,
   });
 }
 
@@ -501,7 +526,7 @@ export function approve(ctx, args) {
   const findings = runChecks(design);
   if (findings.errors.length) {
     return {
-      output: JSON.stringify({ status: "Rejected", reason: "the design still has integrity errors; fix them and approve again", errors: findings.errors }, null, 2),
+      output: linedJson({ status: "Rejected", reason: "the design still has integrity errors; fix them and approve again", errors: findings.errors }),
       exitCode: 1,
     };
   }
@@ -535,19 +560,36 @@ export function implementationContextTool(ctx, args) {
   const { design } = jobDesign(ctx, args, tool);
   // Parts start at a section heading or at an item, so a row is never split.
   return servePart(implementationContext(design), args, {
-    tool,
+    ...revisionGuard(design, args, tool),
+    limit: ctx.partLimit,
     starts: (line) => /^## /.test(line) || /^- /.test(line),
-    next: (k) => `call ${tool} again with part ${k} (CLI: --part ${k}).`,
   });
 }
 
-function serveText(ctx, design, operation, note) {
+// The operation text is computed without the re-serve note, so a part means the same text on every call.
+function serveText(ctx, design, operation, note, args) {
+  const tool = "design-implementation-operation";
   const weight = weightOf(operation);
   const knowledge = (operation.knowledgeReferences ?? []).map((kid) => {
     const reference = design.knowledgeReferences.find((r) => r.kid === kid);
     return reference ? { ...reference, ...resolveKnowledgeReference(ctx, reference) } : { kid, text: null, resolutionNote: `kid ${kid} is not registered` };
   });
-  return servedOperation(operation, { weight, authorisation: authorisationOf(weight), knowledge, note });
+  const answer = servePart(servedOperation(operation, { weight, authorisation: authorisationOf(weight), knowledge }), args, {
+    tool,
+    limit: ctx.partLimit,
+    starts: (line) => /^#{1,3} /.test(line),
+    next: (k) => `call ${tool} again with part ${k} (CLI: --part ${k}); it serves the rest of ${operation.id} and does not advance the plan.`,
+    onServed: (n, parts) => recordOperationPart(ctx, design, operation, n, parts.length),
+  });
+  return note ? answer.replace("\n", `\n${note}\n`) : answer;
+}
+
+// A long operation may only be closed once all of its parts were served.
+function recordOperationPart(ctx, design, operation, n, total) {
+  if (total === 1) return;
+  const known = design.servedParts?.operation === operation.id ? design.servedParts.seen : [];
+  design.servedParts = { operation: operation.id, total, seen: [...new Set([...known, n])].sort((a, b) => a - b) };
+  saveDesign(ctx, design);
 }
 
 export function implementationOperation(ctx, args) {
@@ -560,7 +602,8 @@ export function implementationOperation(ctx, args) {
     if (requested && requested !== served.id) {
       throw new RuntimeError(`${tool} rejected: ${served.id} is served and not closed yet; close it with design-implementation-operation-close before asking for ${requested}.`);
     }
-    return serveText(ctx, design, served, `${served.id} was already served and is not closed: implement it, then call design-implementation-operation-close.`);
+    const note = arg(args, "part") === undefined ? `${served.id} was already served and is not closed: implement it, then call design-implementation-operation-close.` : null;
+    return serveText(ctx, design, served, note, args);
   }
   let operation;
   if (requested) {
@@ -584,7 +627,7 @@ export function implementationOperation(ctx, args) {
   design.servedOperation = operation.id;
   touch(ctx, design, "served", `${operation.id} served${requested ? " on the developer's authorisation" : ""}`);
   saveDesign(ctx, design);
-  return serveText(ctx, design, operation, null);
+  return serveText(ctx, design, operation, null, args);
 }
 
 export function implementationOperationClose(ctx, args) {
@@ -592,8 +635,12 @@ export function implementationOperationClose(ctx, args) {
   const { design } = jobDesign(ctx, args, tool);
   const operation = design.servedOperation ? design.path.operations.find((op) => op.id === design.servedOperation) : null;
   if (!operation) throw new RuntimeError(`${tool} rejected: no operation is served; call design-implementation-operation first.`);
+  const parts = design.servedParts?.operation === operation.id ? design.servedParts : null;
+  const unread = parts ? Array.from({ length: parts.total }, (_, i) => i + 1).filter((n) => !parts.seen.includes(n)) : [];
+  if (unread.length) throw new RuntimeError(`${tool} rejected: ${operation.id} has parts that were never served (${unread.join(", ")}). Read them with design-implementation-operation before closing it.`);
   operation.implementationStatus = "Implemented";
   design.servedOperation = null;
+  delete design.servedParts;
   touch(ctx, design, "operation-closed", `${operation.id} -> Implemented`);
   saveDesign(ctx, design);
   return `${operation.id} closed as Implemented. Call design-implementation-operation for the next operation.`;

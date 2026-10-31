@@ -2,6 +2,29 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 4.1.0
+
+Runtime and role-file fixes from a parallel test of the system on two clients. A target re-installed from this version keeps its answers and sessions.
+
+- **No answer is too long.** Every runtime response now stays within `partLimit`. Long row reads, `design-submit` results, refusals and artifact reads arrive in parts, and asking for a later part with `--responseId` never runs the operation again. A copy stays in `<sessions root>/.cache/responses/` for a day.
+- **Smaller answers.** Structured answers have one row per line, and `design-obligations` `Read` takes `outline: true` for the element ids alone. A row `Read` now answers a JSON array instead of `{ "rows": [...] }`.
+- **Fewer turns.** Part 1 and the role bindings ask for the remaining parts in one parallel turn where the client allows it. The role bindings list each command's arguments, so agents need not probe with `--help`; `--help` alone also lists them all.
+- **Payloads.** `--json` also takes one inline JSON object, and a wrong form gets a usage error. The role guard allows one quoted heredoc payload, the form the bindings recommend; chaining, pipes and redirects stay blocked.
+- **Grounding.** A verifier's or implementor's own knowledge read no longer counts as read during the design, and parallel reads lose no record.
+
+## 4.0.0
+
+Hidden system folders become visible, workflow skills move to one shared folder, and a role can only run its own runtime commands. An existing installation must migrate, and with more than one client it must settle a new question.
+
+- **Visible folders.** The defaults are `agentic-system/` and `agentic-system-maintenance/`, and the repository sessions folder is `agentic-system-sessions/`. The installer refuses a hidden one. `install.mjs migrate` moves an existing installation in three checked steps; see the Maintainer's `contracts/upgrade.md`.
+- **Shared skills folder.** Each workflow skill has one body, in the folder recorded in the new `skillSharing` answer. Other clients reach it through a symlink or an approved copy. `install.mjs skills-folder` ranks the candidates. Client differences are written out per client inside the body.
+- **Installer safety.** It never writes through a symlink, and it reports a skill copy outside the shared folder. `check` and `verify.mjs` fail on such a copy or on a hidden system folder.
+- **Tooling exclusions.** Bootstrap may now add the exact exclusions the user approved to application tooling, for the visible folders only.
+- **Role limits.** Roles pass `--role`, and the runtime refuses a command outside the role. Claude Code subagents add a hook, and OpenCode denies other commands per command.
+- **Long answers.** The runtime config sets the part size from the selected clients, 7,000 bytes with Copilot. Copilot CLI replaces output of about 8 KB with a file path, which a verifier cannot read, and that blocked design verification. A long implementation operation now arrives in parts too, and cannot be closed until all of them were served.
+- **Runtime fixes.** Knowledge counts as read only when its last part was served. The verification view shows every operation, contract, file, API and decision attribute, so it is larger. Unknown arguments are refused. `part: all` is gone. A later part of an older design revision is refused.
+- **Payloads on stdin.** The role bindings prefer `--json -` with a heredoc, which saves a separate file write.
+
 ## 3.0.1
 
 The review document is easier to read. Its data, sections and links are unchanged, so a target needs no other change.

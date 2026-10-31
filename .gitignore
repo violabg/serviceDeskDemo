@@ -41,8 +41,8 @@ next-env.d.ts
 tmp/
 sessions/
 opencode/
-.opencode/
+.opencode/node_modules/
 
 # agentic-system:start
-.agentic-system-sessions/
+agentic-system-sessions/
 # agentic-system:end

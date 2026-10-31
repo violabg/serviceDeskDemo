@@ -23,7 +23,9 @@ Read-only. Use subagents for independent lanes when the client has them; otherwi
 - **Wiki.** Look for a wiki only from evidence: links in README and docs, a configured MCP server.
 - **Knowledge and vocabulary.** Existing `knowledge/`, docs, ADRs, `CONTEXT.md` or another glossary.
 - **Validation.** The commands CI runs, in order.
-- **Paths.** Collisions with the default folders, and files the installer would replace: existing role files, skills with the same names, `AGENTS.md`, `CLAUDE.md`, client settings.
+- **Paths.** Collisions with the default folders, and files the installer would replace: existing role files, skills with the same names, `AGENTS.md`, `CLAUDE.md`, client settings. An installation with hidden system folders is migrated, not reinstalled (`maintain-orchestrator-system`).
+- **Skill folders.** Every existing skill folder, copy and symlink, and which folders each selected client discovers on each surface (`contracts/locations-and-permissions.md`, Shared skills folder).
+- **Tooling globs.** Compiler, lint, test and bundler configuration whose broad globs would include the visible system folders.
 
 ## Phase C: Decisions
 
@@ -34,7 +36,7 @@ Work through `registry/questions.json`:
 - `on-evidence`: ask only when discovery found the thing; otherwise record the documented default (for example `{ "none": "no wiki" }`).
 - `derived`: fill from discovery and present all of them together as one grouped approval.
 
-Then write the answers file at `<maintenance root>/answers.json` (default `.agentic-system-maintenance/answers.json`). Its shape:
+Then write the answers file at `<maintenance root>/answers.json` (default `agentic-system-maintenance/answers.json`). Its shape:
 
 ```json
 {
@@ -44,11 +46,11 @@ Then write the answers file at `<maintenance root>/answers.json` (default `.agen
   "executionHost": "claude-code",
   "nodeVersion": "v24.1.0",
   "locations": {
-    "runtimeRoot": ".agentic-system",
+    "runtimeRoot": "agentic-system",
     "sessionsRoot": "~/.agentic-system/sessions/shop-web",
     "userRuntimeRoot": "~/.agentic-system",
     "knowledgeRoot": "knowledge",
-    "maintenanceRoot": ".agentic-system-maintenance",
+    "maintenanceRoot": "agentic-system-maintenance",
     "guideRoot": "docs/agentic-system",
     "documentationTemplates": "user"
   },
@@ -56,6 +58,10 @@ Then write the answers file at `<maintenance root>/answers.json` (default `.agen
   "validationCommands": "npm run lint && npm test",
   "tracker": { "adapter": "GitHub Issues" },
   "skills": { "manage-work-item": "generate" },
+  "skillSharing": {
+    "folder": ".claude/skills",
+    "clients": { "claude-code": { "via": "native", "evidence": "the documented project folder" } }
+  },
   "environments": [
     {
       "id": "claude-code",
@@ -79,6 +85,7 @@ Then write the answers file at `<maintenance root>/answers.json` (default `.agen
 ```
 
 - `locations` may omit anything at its default, except `sessionsRoot`: the user always chooses it.
+- `skillSharing` is required with more than one client (`contracts/locations-and-permissions.md`, Shared skills folder). With one client it may be left out.
 - `tracker.adapter` is the tracker's name, or `local-markdown` for the local Markdown tracker (its contract is installed at `tracker.localContract`, default `<runtime root>/work-items/README.md`).
 - `bindings` binds each host capability token the installed roles and skills use. A key ending in `-*` binds a whole family. A value is a sentence (the procedure), `{ "text", "tools" }` when the procedure needs exact tools (they are added to the tool lists of the roles that use the token), or `{ "none": "<reason>" }` for an operation the repository does not have. `delegate` is bound from the profile; leave it out unless an override is needed.
 - `decisions` keeps one line per settled question: the answer, how it was settled (`user`, `recommend-accepted`, `discovery`, `fallback`) and the evidence. Maintenance reads it instead of asking again.

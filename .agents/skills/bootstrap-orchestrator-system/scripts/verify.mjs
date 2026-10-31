@@ -9,6 +9,7 @@ import { existsSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { normalizeAnswers } from "./lib/answers.mjs";
 import { loadKit } from "./lib/kit.mjs";
+import { findAnswers } from "./lib/migrate.mjs";
 import { check } from "./lib/plan.mjs";
 import { InstallError, absolutePath, readJson } from "./lib/util.mjs";
 
@@ -23,7 +24,7 @@ const record = (name, ok, detail) => results.push({ name, ok, detail });
 try {
   const repo = resolve(arg("--repo") ?? process.cwd());
   const kit = loadKit();
-  const answersFile = resolve(arg("--answers") ?? join(repo, ".agentic-system-maintenance", "answers.json"));
+  const answersFile = resolve(findAnswers(repo, arg("--answers")));
   const answers = normalizeAnswers(readJson(answersFile), kit.profiles);
 
   const { problems } = check(kit, answers, repo);

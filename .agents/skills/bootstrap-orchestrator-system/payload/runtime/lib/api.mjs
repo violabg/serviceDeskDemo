@@ -1,14 +1,15 @@
 // THE runtime contract: one handler per runtime capability token (system/canonical/capabilities.yaml).
-// A handler receives the context and the upstream argument object, and returns the response text, or
-// { output, exitCode } for a structured refusal. Adapters (the CLI today, an MCP server if ever needed)
+// A handler receives the context, the upstream argument object and the caller ({ role }), and returns the
+// response text, or { output, exitCode } for a structured refusal. Adapters (the CLI today, an MCP server if ever needed)
 // only translate transport around this table and hold no logic of their own.
 import { join } from "node:path";
 import * as codebase from "./codebase.mjs";
 import * as design from "./design.mjs";
 import * as documentation from "./documentation.mjs";
 import * as knowledge from "./knowledge.mjs";
+import { bounded, storedPart } from "./responses.mjs";
 import * as session from "./session.mjs";
-import { withLock } from "./util.mjs";
+import { arg, linedJson, withLock } from "./util.mjs";
 import * as workflow from "./workflow.mjs";
 
 export const handlers = {
@@ -48,7 +49,7 @@ export const handlers = {
   "design-iteration-close": (ctx, args) => design.iterationClose(ctx, args),
 
   "knowledge-catalog": (ctx) => knowledge.catalog(ctx),
-  "knowledge-read": (ctx, args) => knowledge.read(ctx, args),
+  "knowledge-read": (ctx, args, caller) => knowledge.read(ctx, args, caller),
   "knowledge-create": (ctx, args) => knowledge.create(ctx, args),
   "knowledge-update": (ctx, args) => knowledge.update(ctx, args),
   "knowledge-index-rebuild": (ctx) => knowledge.rebuild(ctx),
@@ -86,6 +87,67 @@ function unwrapRequest(token, args) {
   return { ...request, ...rest };
 }
 
+// The arguments each token accepts (the upstream contract: an unknown property applies nothing and is an
+// error). Names compare case-insensitively, as `arg` reads them. null: the handler takes free-form text.
+const SESSION = ["sessionId"];
+const JOB = ["sessionId", "jobId"];
+const FRONT_MATTER = ["artifactFrontMatter", "name", "artifactName", "description", "intendedUse", "intended_use", "use", "mimeType", "mime_type", "origin"];
+export const ARGUMENTS = {
+  "session-list": [],
+  "session-activate": SESSION,
+  "session-memory-read": SESSION,
+  "session-memory-append": null,
+  "session-event-log": null,
+  "session-artifact-write": [...SESSION, ...FRONT_MATTER, "content", "contentFile"],
+  "session-artifact-read": [...SESSION, "artifact", "artifactId", "artifactName", "name"],
+  "session-artifact-list": SESSION,
+  "session-image-attach": [...SESSION, ...FRONT_MATTER, "blobUrl"],
+  "session-execution-report-read": SESSION,
+  "workflow-types-list": [],
+  "workflow-job-activate": [...JOB, "agentName", "designId", "workflowType"],
+  "workflow-step-pending": [...JOB, "part"],
+  "workflow-step-next": JOB,
+  "design-checks": [...JOB, "acceptExternalEdit"],
+  "design-snapshot": [...JOB, "part", "revision"],
+  "design-verification-view": [...JOB, "part", "revision"],
+  "design-implementation-context": [...JOB, "part", "revision"],
+  "design-implementation-operation": [...JOB, "operationId", "id", "part"],
+  "design-implementation-operation-close": JOB,
+  "design-document": JOB,
+  "knowledge-catalog": [],
+  "knowledge-read": [...SESSION, "fileIds", "fileId", "ids", "id", "part"],
+  "knowledge-create": ["title", "content", "tier", "folder", "keywords", "intent"],
+  "knowledge-update": ["fileId", "fileIds", "id", "ids", "content", "intent"],
+  "knowledge-index-rebuild": [],
+  "codebase-clusters": ["WorkspacePath", "fileExtension"],
+  "codebase-cluster-files": ["WorkspacePath", "fileExtension", "clusterName"],
+  "documentation-templates-list": ["templatesDirectory"],
+  "documentation-template-read": ["templateNameOrPath"],
+  "documentation-check": ["templateNameOrPath", "outputFile", "outputContent", "mode"],
+};
+// Agents learn the design envelope and send it to every token, so its fields are never unknown: `sessionId`
+// and `jobId` are ignored where they mean nothing, and `request` is unwrapped. A design operation checks its own
+// arguments, because it also says which field belongs inside `request`.
+function unknownArguments(token, args) {
+  const allowed = ARGUMENTS[token];
+  if (allowed === null || allowed === undefined) return null;
+  const known = new Set([...allowed, ...JOB, "request"].map((name) => name.toLowerCase()));
+  const unknown = Object.keys(args ?? {}).filter((name) => !known.has(name.toLowerCase()));
+  if (!unknown.length) return null;
+  return `${token} failed: unknown argument ${unknown.map((name) => `'${name}'`).join(", ")}. Nothing was applied. Arguments: ${allowed.join(", ") || "none"}.`;
+}
+
+// A role runs only the tokens its contract names (`roles` in the runtime config, rendered by Bootstrap). The
+// roles are named by the agents themselves, so this stops a wrong call, not a hostile one; the client's own tool
+// limits are the stronger layer where it has them. Without a table, nothing is restricted.
+export function roleRefusal(ctx, role, token) {
+  if (role === undefined || !ctx.roles || !handlers[token]) return null;
+  const tokens = ctx.roles[role];
+  if (!tokens) return `unknown role '${role}'. Roles: ${Object.keys(ctx.roles).join(", ")}.`;
+  if (tokens.includes(token)) return null;
+  return `'${token}' is not available to the ${role} role, and nothing was applied. Its runtime commands: ${tokens.join(", ") || "none"}.`;
+}
+
 // The neutral operations a role runs with its client's own tools (conversion.yaml `valid_operations` minus
 // `runtime`). Agents send them here when they read `#operation:<op>` as a runtime token.
 export const HOST_OPERATIONS = new Set(["read", "search", "write", "terminal", "question", "delegate"]);
@@ -98,21 +160,26 @@ function unknownCommand(token) {
     const how = token === "question" ? "ask the user with your client's own question tool" : `use your client's own tool for \`#operation:${token}\``;
     return `'${token}' is not a runtime command: it is a host operation, so ${how} (the Bindings section of your role file names it). The runtime is installed and working; this is not a runtime outage. ${commands}`;
   }
-  return `unknown command '${token}'. The runtime is installed and working; this is not a runtime outage. ${commands}`;
+  return `unknown command '${token}'. The runtime is installed and working; this is not a runtime outage. ${commands}. \`--help\` alone lists the arguments of every command.`;
 }
 
-// Runs one token and normalizes the result to { output, exitCode }.
-export async function call(ctx, token, args = {}) {
+// Runs one token and normalizes the result to { output, exitCode }, never longer than the part limit: `caller.role`
+// is the role named by the adapter, and `responseId` serves a part of an earlier long response without running
+// the operation again (contracts/workflow-loop.md, Parts).
+export async function call(ctx, token, args = {}, caller = {}) {
   const handler = handlers[token];
   if (!handler) return { output: unknownCommand(token), exitCode: 2 };
+  if (arg(args, "responseId") !== undefined) return storedPart(ctx, token, args);
+  const refused = unknownArguments(token, args);
+  if (refused) return { output: refused, exitCode: 1 };
   try {
     // A design call reads, changes and seals design.json: parallel design-submit calls run one after the other.
-    const run = () => handler(ctx, unwrapRequest(token, args));
+    const run = () => handler(ctx, unwrapRequest(token, args), caller);
     const result = await (token.startsWith("design-") ? withLock(join(ctx.runtimeRoot, ".design-lock"), run) : run());
-    return typeof result === "string" ? { output: result, exitCode: 0 } : result;
+    return bounded(ctx, token, typeof result === "string" ? { output: result, exitCode: 0 } : result);
   } catch (error) {
     if (error && "payload" in error) {
-      return { output: error.payload ? JSON.stringify(error.payload, null, 2) : error.message, exitCode: 1 };
+      return bounded(ctx, token, { output: error.payload ? linedJson(error.payload) : error.message, exitCode: 1 });
     }
     throw error;
   }

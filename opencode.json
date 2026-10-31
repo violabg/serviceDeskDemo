@@ -1,0 +1,45 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "github": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_PAT}"
+      }
+    },
+    "neon": {
+      "type": "remote",
+      "url": "https://mcp.neon.tech/mcp"
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "next-devtools": {
+      "type": "local",
+      "command": [
+        "npx",
+        "next-devtools-mcp@0.3.6"
+      ]
+    }
+  },
+  "permission": {
+    "neon_*": "deny",
+    "neon_describe_table_schema": "allow",
+    "neon_get_database_tables": "allow",
+    "skill": {
+      "*-claude": "deny",
+      "author-repo-skill": "deny",
+      "manage-work-item": "deny",
+      "plan-bug-from-id": "deny",
+      "plan-user-story-from-id": "deny",
+      "user-story-analysis": "deny"
+    },
+    "bash": {
+      "node agentic-system/bin/agentic-system.mjs *": "allow"
+    }
+  }
+}

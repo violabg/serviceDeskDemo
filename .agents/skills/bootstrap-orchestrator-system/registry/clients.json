@@ -1,5 +1,5 @@
 {
-  "about": "Client profiles for scripts/install.mjs. Each profile records how one client discovers role files, skills, routers and permissions, written against the official documentation listed in `docs` on `checkedOn`. Bootstrap re-checks the profile against the current documentation of every selected client and records any difference as an `overrides` entry in the answers file; the installer applies the overrides on top of the profile. A client without a profile is rendered by the agent under contracts/client-bindings.md.",
+  "about": "Client profiles for scripts/install.mjs. Each profile records how one client discovers role files, skills, routers and permissions, written against the official documentation listed in `docs` on `checkedOn`. Bootstrap re-checks the profile against the current documentation of every selected client and records any difference as an `overrides` entry in the answers file; the installer applies the overrides on top of the profile. A client without a profile is rendered by the agent under contracts/client-bindings.md. `skills.discovers` lists the other project folders a client documents reading skills from, with any limit on that; `runtime.partLimit` is the largest runtime answer, in bytes, the client shows whole.",
   "profiles": {
     "claude-code": {
       "label": "Claude Code",
@@ -9,20 +9,52 @@
         "https://code.claude.com/docs/en/settings",
         "https://code.claude.com/docs/en/memory"
       ],
-      "checkedOn": "2026-10-24",
-      "router": { "file": "CLAUDE.md", "import": "@AGENTS.md" },
+      "checkedOn": "2026-10-31",
+      "router": {
+        "file": "CLAUDE.md",
+        "import": "@AGENTS.md"
+      },
       "scopedInstructions": null,
-      "agents": { "dir": ".claude/agents", "format": "claude" },
-      "skills": { "dir": ".claude/skills", "manualOnly": { "frontmatter": { "disable-model-invocation": true } } },
+      "agents": {
+        "dir": ".claude/agents",
+        "format": "claude"
+      },
+      "skills": {
+        "dir": ".claude/skills",
+        "manualOnly": {
+          "frontmatter": {
+            "disable-model-invocation": true
+          }
+        },
+        "discovers": [],
+        "symlinks": "documented: a skill entry in the project folder can be a symlink to a directory elsewhere on disk"
+      },
       "alsoDiscovers": [],
       "tools": {
-        "read": ["Read"],
-        "search": ["Grep", "Glob"],
-        "write": ["Edit", "Write"],
-        "terminal": ["Bash"],
-        "question": ["AskUserQuestion"],
-        "runtime": ["Bash"],
-        "delegate": ["Agent", "SendMessage"]
+        "read": [
+          "Read"
+        ],
+        "search": [
+          "Grep",
+          "Glob"
+        ],
+        "write": [
+          "Edit",
+          "Write"
+        ],
+        "terminal": [
+          "Bash"
+        ],
+        "question": [
+          "AskUserQuestion"
+        ],
+        "runtime": [
+          "Bash"
+        ],
+        "delegate": [
+          "Agent",
+          "SendMessage"
+        ]
       },
       "routes": {
         "default": "skill",
@@ -34,7 +66,14 @@
         "resume": true,
         "subprocess": "claude -p"
       },
-      "permissions": { "format": "claude-settings", "file": ".claude/settings.json" }
+      "permissions": {
+        "format": "claude-settings",
+        "file": ".claude/settings.json"
+      },
+      "runtime": {
+        "partLimit": 24000,
+        "evidence": "a command result above about 30,000 characters is saved to a file (reported, not in the settings reference)"
+      }
     },
     "codex": {
       "label": "Codex",
@@ -45,10 +84,26 @@
         "https://developers.openai.com/codex/guides/agents-md"
       ],
       "checkedOn": "2026-10-24",
-      "router": { "file": "AGENTS.md", "import": null },
+      "router": {
+        "file": "AGENTS.md",
+        "import": null
+      },
       "scopedInstructions": null,
-      "agents": { "dir": ".codex/agents", "format": "codex" },
-      "skills": { "dir": ".agents/skills", "manualOnly": { "file": { "path": "agents/openai.yaml", "content": "policy:\n  allow_implicit_invocation: false\n" } } },
+      "agents": {
+        "dir": ".codex/agents",
+        "format": "codex"
+      },
+      "skills": {
+        "dir": ".agents/skills",
+        "manualOnly": {
+          "file": {
+            "path": "agents/openai.yaml",
+            "content": "policy:\n  allow_implicit_invocation: false\n"
+          }
+        },
+        "discovers": [],
+        "symlinks": "reported, unconfirmed: a Codex-hosted guide says symlinked folders are followed, and a forum post reports a regression; verify on each surface"
+      },
       "alsoDiscovers": [],
       "tools": {
         "read": [],
@@ -69,7 +124,10 @@
         "resume": false,
         "subprocess": "codex exec"
       },
-      "permissions": { "format": "codex-toml", "file": ".codex/config.toml" }
+      "permissions": {
+        "format": "codex-toml",
+        "file": ".codex/config.toml"
+      }
     },
     "github-copilot-vscode": {
       "label": "GitHub Copilot in VS Code",
@@ -79,20 +137,64 @@
         "https://code.visualstudio.com/docs/copilot/customization/agent-skills",
         "https://code.visualstudio.com/docs/copilot/customization/custom-instructions"
       ],
-      "checkedOn": "2026-10-24",
-      "router": { "file": "AGENTS.md", "import": null },
-      "scopedInstructions": { "dir": ".github/instructions" },
-      "agents": { "dir": ".github/agents", "format": "copilot" },
-      "skills": { "dir": ".github/skills", "manualOnly": { "frontmatter": { "disable-model-invocation": true } } },
-      "alsoDiscovers": [".claude/agents", ".claude/skills"],
+      "checkedOn": "2026-10-31",
+      "router": {
+        "file": "AGENTS.md",
+        "import": null
+      },
+      "scopedInstructions": {
+        "dir": ".github/instructions"
+      },
+      "agents": {
+        "dir": ".github/agents",
+        "format": "copilot"
+      },
+      "skills": {
+        "dir": ".github/skills",
+        "manualOnly": {
+          "frontmatter": {
+            "disable-model-invocation": true
+          }
+        },
+        "discovers": [
+          {
+            "dir": ".claude/skills",
+            "note": "documented for Local sessions; the Copilot harness lists only .github/skills"
+          },
+          {
+            "dir": ".agents/skills",
+            "note": "documented for Local sessions; the Copilot harness lists only .github/skills"
+          }
+        ],
+        "symlinks": "not documented"
+      },
+      "alsoDiscovers": [
+        ".claude/agents",
+        ".claude/skills",
+        ".agents/skills"
+      ],
       "tools": {
-        "read": ["read"],
-        "search": ["search"],
-        "write": ["edit"],
-        "terminal": ["execute"],
-        "question": ["vscode/askQuestions"],
-        "runtime": ["execute"],
-        "delegate": ["agent"]
+        "read": [
+          "read"
+        ],
+        "search": [
+          "search"
+        ],
+        "write": [
+          "edit"
+        ],
+        "terminal": [
+          "execute"
+        ],
+        "question": [
+          "vscode/askQuestions"
+        ],
+        "runtime": [
+          "execute"
+        ],
+        "delegate": [
+          "agent"
+        ]
       },
       "routes": {
         "default": "native",
@@ -104,7 +206,14 @@
         "resume": false,
         "subprocess": null
       },
-      "permissions": { "format": "vscode-settings", "file": ".vscode/settings.json" }
+      "permissions": {
+        "format": "vscode-settings",
+        "file": ".vscode/settings.json"
+      },
+      "runtime": {
+        "partLimit": 7000,
+        "evidence": "measured on Copilot CLI 1.0.103: a tool result of about 8 KB or more is replaced by a file path and a 500-character preview. The VS Code terminal limit is not documented, so the same limit is used"
+      }
     },
     "opencode": {
       "label": "OpenCode",
@@ -114,20 +223,57 @@
         "https://opencode.ai/docs/permissions/",
         "https://opencode.ai/docs/rules/"
       ],
-      "checkedOn": "2026-10-24",
-      "router": { "file": "AGENTS.md", "import": null },
+      "checkedOn": "2026-10-31",
+      "router": {
+        "file": "AGENTS.md",
+        "import": null
+      },
       "scopedInstructions": null,
-      "agents": { "dir": ".opencode/agents", "format": "opencode" },
-      "skills": { "dir": ".opencode/skills", "manualOnly": null },
-      "alsoDiscovers": [".claude/skills", ".agents/skills"],
+      "agents": {
+        "dir": ".opencode/agents",
+        "format": "opencode"
+      },
+      "skills": {
+        "dir": ".opencode/skills",
+        "manualOnly": null,
+        "discovers": [
+          {
+            "dir": ".claude/skills"
+          },
+          {
+            "dir": ".agents/skills"
+          }
+        ],
+        "symlinks": "not documented"
+      },
+      "alsoDiscovers": [
+        ".claude/skills",
+        ".agents/skills"
+      ],
       "tools": {
-        "read": ["read"],
-        "search": ["grep", "glob", "list"],
-        "write": ["edit"],
-        "terminal": ["bash"],
-        "question": ["question"],
-        "runtime": ["bash"],
-        "delegate": ["task"]
+        "read": [
+          "read"
+        ],
+        "search": [
+          "grep",
+          "glob",
+          "list"
+        ],
+        "write": [
+          "edit"
+        ],
+        "terminal": [
+          "bash"
+        ],
+        "question": [
+          "question"
+        ],
+        "runtime": [
+          "bash"
+        ],
+        "delegate": [
+          "task"
+        ]
       },
       "routes": {
         "default": "native",
@@ -139,7 +285,10 @@
         "resume": false,
         "subprocess": "opencode run"
       },
-      "permissions": { "format": "opencode-json", "file": "opencode.json" }
+      "permissions": {
+        "format": "opencode-json",
+        "file": "opencode.json"
+      }
     },
     "cursor": {
       "label": "Cursor",
@@ -148,12 +297,43 @@
         "https://cursor.com/docs/context/skills",
         "https://cursor.com/docs/context/rules"
       ],
-      "checkedOn": "2026-10-24",
-      "router": { "file": "AGENTS.md", "import": null },
+      "checkedOn": "2026-10-31",
+      "router": {
+        "file": "AGENTS.md",
+        "import": null
+      },
       "scopedInstructions": null,
-      "agents": { "dir": ".cursor/agents", "format": "cursor" },
-      "skills": { "dir": ".cursor/skills", "manualOnly": { "frontmatter": { "disable-model-invocation": true } } },
-      "alsoDiscovers": [".claude/agents", ".codex/agents", ".claude/skills"],
+      "agents": {
+        "dir": ".cursor/agents",
+        "format": "cursor"
+      },
+      "skills": {
+        "dir": ".cursor/skills",
+        "manualOnly": {
+          "frontmatter": {
+            "disable-model-invocation": true
+          }
+        },
+        "discovers": [
+          {
+            "dir": ".agents/skills"
+          },
+          {
+            "dir": ".claude/skills"
+          },
+          {
+            "dir": ".codex/skills"
+          }
+        ],
+        "symlinks": "not documented"
+      },
+      "alsoDiscovers": [
+        ".claude/agents",
+        ".codex/agents",
+        ".claude/skills",
+        ".agents/skills",
+        ".codex/skills"
+      ],
       "tools": {
         "read": [],
         "search": [],
@@ -173,7 +353,10 @@
         "resume": true,
         "subprocess": "cursor-agent -p"
       },
-      "permissions": { "format": null, "file": null }
+      "permissions": {
+        "format": null,
+        "file": null
+      }
     }
   }
 }

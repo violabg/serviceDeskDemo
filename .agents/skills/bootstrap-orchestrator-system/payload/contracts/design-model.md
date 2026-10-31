@@ -68,9 +68,11 @@ Element `kind` is exactly one of `Direction | Conjunct | Quantifier | Guard | Ef
 | Operation | Effect | Response |
 | --- | --- | --- |
 | `Add` | rows carry no id; the runtime assigns the next id | `{"added": ["O1", "O2"]}` |
-| `Read` | `ids` selects rows; empty `ids` reads all | `{"rows": [ ... ]}` |
+| `Read` | `ids` selects rows; empty `ids` reads all | a JSON array of the rows, each with its `id` (the 3.0.2 capture), one row per line |
 | `Update` | each row names its `id`; only the fields sent change | `{"updated": ["O1"]}` |
 | `Delete` | removes the rows named by `ids` | `{"deleted": ["O1"]}` |
+
+`#capability:design-obligations` with `Read` also takes a top-level `outline: true` beside `request` (Lab-authored): the answer is one line per obligation, `O1: O1.1 Effect, O1.2 Guard`, or `O2: (no elements)`, which gives the anchors of the overview and the operations without reading every row. It holds no text, so a step that needs the obligations themselves still reads them. It is refused on any other operation and on any other table.
 
 Table rules:
 
@@ -151,7 +153,7 @@ An operation row:
 
 Lab-authored, because the instruction states the parallel calls and leaves their mechanics open: design calls take a lock shared between runtime processes (`<runtime root>/.design-lock`, broken after 120 seconds when a process died holding it), so parallel calls run one after the other and none loses rows. The rows of one call keep the order they were sent in and go before the first stored row with a higher id, so disjoint ranges build the same plan whichever call arrives first. Stored rows are never reordered.
 
-Response: `{"status": "Draft", "applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}}`. `errors`, `warnings` and `coverage` are the full mechanical checks.
+Response: `{"status": "Draft", "applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}}`. `errors`, `warnings` and `coverage` are the full mechanical checks. The fields are the captured ones, written as lined JSON; a result longer than the part limit is served from a stored copy, so the write runs once and no finding is dropped (`contracts/workflow-loop.md`, Stored responses).
 
 No design write returns the document path: the rendered document is located only with `#capability:design-document` (see contracts/projections.md).
 
@@ -187,14 +189,14 @@ The DESIGN Implementation step realizes the approved plan one operation at a tim
 
 **Weight classes.** Every operation has a weight class, computed from its `kind`: `Code` and `NotCode` are `authoring`; `Commands` is `commands`; `Testing` is `testing`; `Build` is `build`. The weight is metadata only: the plan is served in the order the agent declared it, the runtime never reorders it, and `dependsOn` is the only precedence constraint: an operation is servable only when every operation it `dependsOn` is `Implemented` or `Completed`. `authoring` and `build` operations form the automatic batch; `commands` and `testing` operations need the developer's explicit authorisation. The kinds, the batch and the four classes come from the 3.0.1 run-3 instructions and review document. Lab-authored: an unknown kind, such as one stored in a design written before these kinds, is treated as `commands`.
 
-`#capability:design-implementation-operation` — arguments `sessionId`, `jobId`, optional `operationId` (`IM#`). Answers one of:
+`#capability:design-implementation-operation` — arguments `sessionId`, `jobId`, optional `operationId` (`IM#`) and `part`. Answers one of:
 
-- **The operation to implement now**, in markdown: `# Operation IM# — <title>`, its kind (with its `testType`), weight class and authorisation, `dependsOn`, files, the elements it implements and the decisions it realizes, its instructions with the `{{O#.k}}` placeholders, its failure arms, and under `## Knowledge references` the resolved text of every kid it declares (with the document path, the range and the scope). Serving sets the flag to `InProgress` and records the operation as the served one.
+- **The operation to implement now**, in markdown: `# Operation IM# — <title>`, its kind (with its `testType`), weight class and authorisation, `dependsOn`, files, the elements it implements and the decisions it realizes, its instructions with the `{{O#.k}}` placeholders, its failure arms, and under `## Knowledge references` the resolved text of every kid it declares (with the document path, the range and the scope). Serving sets the flag to `InProgress` and records the operation as the served one. A long operation arrives in parts (`contracts/workflow-loop.md`, Parts) that start at a heading; reading a later part never advances the plan.
 - **`batch-complete: ...`** — without `operationId`, no automatic operation is servable but operations remain open; with `operationId`, the authorised operation is already `Implemented` or `Completed`, so the delegation's work is done. A closed operation is never reopened.
 - **`complete: ...`** — every operation is `Implemented` or `Completed`.
 
 Without `operationId` the runtime serves the first servable automatic operation in plan order. With `operationId` it serves that operation on the developer's authorisation, whatever its class, and refuses it when it does not exist or depends on an operation that is not done. While an operation is served and not closed, every call answers that same operation again (and refuses a different `operationId`): one operation at a time. The answer never lists, counts or names the operations that follow.
 
-`#capability:design-implementation-operation-close` — arguments `sessionId`, `jobId`. Closes the served operation: its flag becomes `Implemented` and the next operation becomes reachable. Refused when no operation is served. Response: `IM# closed as Implemented. ...`.
+`#capability:design-implementation-operation-close` — arguments `sessionId`, `jobId`. Closes the served operation: its flag becomes `Implemented` and the next operation becomes reachable. Refused when no operation is served, and when a part of the served operation was never served, since the operation's whole text is its specification. Response: `IM# closed as Implemented. ...`.
 
 Lab-authored: upstream has no capture of either tool. The answer formats, the terminator texts, the served-operation record, the re-serve of an unclosed operation and the refusals are chosen here; the batch membership, the terminators `batch-complete` and `complete`, the expansion of the knowledge references and the masked future come from the 3.0.1 Implementation instruction.

@@ -2,15 +2,17 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { extname, isAbsolute, join, resolve } from "node:path";
 import {
-  ARTIFACT_PATTERN,
-  RuntimeError,
   arg,
+  ARTIFACT_PATTERN,
   frontmatter,
   iso,
+  linedJson,
   parseFrontmatter,
   readJson,
   requireId,
   requireString,
+  RuntimeError,
+  withLock,
   writeJson,
   writeText,
 } from "./util.mjs";
@@ -47,8 +49,8 @@ export function recordKnowledgeReads(ctx, sessionId, paths) {
   const id = sessionId && existsSync(join(sessionDir(ctx, sessionId), "session.json")) ? sessionId : sessionsByRecency(ctx)[0]?.name;
   if (!id) return;
   const file = join(sessionDir(ctx, id), KNOWLEDGE_READS_FILE);
-  const known = readJson(file, []);
-  writeJson(file, [...new Set([...known, ...paths])].sort());
+  // Parts are requested in parallel, so two processes may record at once: neither may lose the other's read.
+  withLock(`${file}.lock`, () => writeJson(file, [...new Set([...readJson(file, []), ...paths])].sort()));
 }
 
 export function knowledgeReads(ctx, sessionId) {
@@ -201,7 +203,7 @@ export function readArtifactBody(ctx, sessionId, name) {
 
 export function artifactList(ctx, args) {
   const dir = requireSession(ctx, arg(args, "sessionId"), "session-artifact-list");
-  return JSON.stringify(listArtifacts(dir), null, 2);
+  return linedJson(listArtifacts(dir));
 }
 
 const IMAGE_TYPES = {
@@ -267,5 +269,5 @@ export async function imageAttach(ctx, args) {
 
 export function executionReport(ctx, args) {
   const dir = requireSession(ctx, arg(args, "sessionId"), "session-execution-report-read");
-  return JSON.stringify(readJson(join(dir, "execution-report.json"), []), null, 2);
+  return linedJson(readJson(join(dir, "execution-report.json"), []));
 }

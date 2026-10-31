@@ -1,7 +1,0 @@
-{
-  "workspaceRoot": "..",
-  "knowledgeRoot": "../knowledge",
-  "sessionsRoot": "../.agentic-system-sessions",
-  "userRoot": "~/.agentic-system",
-  "workflowsRoot": "workflows"
-}
