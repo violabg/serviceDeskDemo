@@ -46,7 +46,7 @@ PerComponent:
   ...
 ```
 
-The catalogue is rebuilt on every call, so a `file_id` is valid only for the current index: adding, renaming or excluding a document renumbers the ids. Re-read the catalogue before using an id from an earlier session. The last index is cached in `.agentic-system-sessions/.cache/knowledge-catalog.yaml` for humans; a read never writes into the knowledge folder.
+The catalogue is rebuilt on every call, so a `file_id` is valid only for the current index: adding, renaming or excluding a document renumbers the ids. Re-read the catalogue before using an id from an earlier session. The last index is cached in `agentic-system-sessions/.cache/knowledge-catalog.yaml` for humans; a read never writes into the knowledge folder.
 
 ## read
 

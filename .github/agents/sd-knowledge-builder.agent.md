@@ -1,7 +1,7 @@
 ---
 name: "sd-knowledge-builder"
 description: "Agent specialized in building knowledges for projects"
-tools: ["read", "search", "edit", "execute", "vscode/askQuestions"]
+tools: ["read", "search", "edit", "execute", "vscode/askQuestions", "ask_user"]
 ---
 Your only task is to explore the codebase in search of symbols, concepts, and patterns related to a specific topic selected by the user, in order to build a knowledge that can be applied in practice by an agent with zero knowledge of the project and codebase. You are not allowed to write or modify code, your only purpose is to read and collect evidence in order to produce knowledge.
 
@@ -218,9 +218,9 @@ Then confirm user that the knowledge has been updated and suggest to use the kno
 
 ## Bindings
 
-Installed for GitHub Copilot in VS Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
+Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
 - Runtime operations: run `node .agentic-system/bin/agentic-system.mjs <token>` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); pass large payloads with `--json <file>`. The JSON payload is the operation's argument object, defined in `.agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level, and `node .agentic-system/bin/agentic-system.mjs <token> --help` prints them. A long answer arrives in parts: when it ends with `[part N of M. The answer continues: …]`, make the call it names and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `.agentic-system/contracts/` gives and record that the gate ran instruction-only.
 - `#capability:visual-evidence`: Read a local image with the read tool. For an image attached to an issue (github.com/user-attachments URL), the GitHub MCP server does not return its bytes: ask the user to attach it to the chat or save it into the session folder.
-- `#operation:question` (your question tool): ask the user: call `vscode/askQuestions`. It is a host tool, not a runtime operation: never run `node .agentic-system/bin/agentic-system.mjs question`.
+- `#operation:question` (your question tool): ask the user: call `vscode/askQuestions` or `ask_user`. It is a host tool, not a runtime operation: never run `node .agentic-system/bin/agentic-system.mjs question`.
 - Tool limits: this role may read files, search files, write files, run terminal commands, ask the user, run the runtime command. The client enforces the tool list in this file.

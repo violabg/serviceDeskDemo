@@ -2,20 +2,20 @@
   "version": 1,
   "kit": {
     "skill": "bootstrap-orchestrator-system",
-    "version": "2.0.2"
+    "version": "3.0.1"
   },
-  "appliedOn": "2026-10-28",
-  "answersSha256": "a7f6d5658f4c5df2c50e42f5dfd59e6ab9a508a6b1989ea46c70ae5f12097d39",
+  "appliedOn": "2026-10-31",
+  "answersSha256": "d87bc2854637547e0f01e962beb9bed56b010a9bece2c57166b2dffc2c01c8c0",
   "files": {
     ".agentic-system/assets/design-requests.schema.json": {
-      "sha256": "96ae0a0eff0745262cca2dcba7e9105f38d8743199bb8ce764431b08d072bbfb",
+      "sha256": "bb5ecf027af0e05341da660d3e87f2ff5182e8aae96963feaffe33141853fee4",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/assets/design-review.html": {
-      "sha256": "6ce7e7ae8693999baf03742b16d1f25adf05fb52ad3680a538ce1d98811af967",
+      "sha256": "fca6dad7ec33997c39e12a06b6dfc74381e6a2a2663218f734b28ad8441945c0",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
@@ -29,7 +29,7 @@
       "customizable": false
     },
     ".agentic-system/config.json": {
-      "sha256": "5ae6698d1ed89080c1450967edbeedc7248fe1be12b40deca1f495148c03e02e",
+      "sha256": "07bb59928008dcbb8b605053592d17cc2d99b29c8d525d8b0e756802d49fdf62",
       "kind": "config",
       "mode": "file",
       "envs": [],
@@ -43,14 +43,14 @@
       "customizable": false
     },
     ".agentic-system/contracts/design-checks.md": {
-      "sha256": "cf9f457992dc002ec02e5ee14cfd413381374abf4c0fdfa514944a6709141de5",
+      "sha256": "bcae8e0b92c0170ccfecaa53075375e093f232713c79b47b40cff3cb9344d09b",
       "kind": "contract",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/contracts/design-model.md": {
-      "sha256": "15a8bbeab85c6099eef73db0611d578960a769b942bf186a39a7dd43e6e5a6b1",
+      "sha256": "b190593711dd9c34829b6dcdd782daece340f2c5ab92384c6067546ccd5e8a1c",
       "kind": "contract",
       "mode": "file",
       "envs": [],
@@ -64,21 +64,21 @@
       "customizable": false
     },
     ".agentic-system/contracts/knowledge-catalog.md": {
-      "sha256": "0a1abac2e85ace69b919e28596556c71ec67d4bf09742d9d24dcd3dd234be07c",
+      "sha256": "5cd3e87d4f087b98a897950f0f8c2a60bcf224fe9638abcd134b8fcb41c92231",
       "kind": "contract",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/contracts/projections.md": {
-      "sha256": "51ec37e42aa72356f57b687407a7d8d1187a76a1328d314010937afe55552545",
+      "sha256": "fff58872c2ef3f378404ed661e42fe1b4c7626d7bc3699d464be7abbd5da60f5",
       "kind": "contract",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/contracts/session-store.md": {
-      "sha256": "49484baee2dadf4c3f6d5e321d9d06509b450a4eecfae8839da34be6780a09a1",
+      "sha256": "b5a753e8f5937c77f489a3679c00c0919a9cc1e9987e40236ce05f3dd9de67b1",
       "kind": "contract",
       "mode": "file",
       "envs": [],
@@ -113,21 +113,21 @@
       "customizable": false
     },
     ".agentic-system/instructions/sessions.instructions.md": {
-      "sha256": "c85c48d3ca39cd48a75eaa7bd3554b9cd16f1cc65aee999fc63f27aee33d657b",
+      "sha256": "bb65170f8eb2b05b3011e9245e1dc1d76bb4358a1d2230a13594176bf3b91e09",
       "kind": "instruction",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/lib/api.mjs": {
-      "sha256": "614743e4511f607da70f15e1dccd9cc0b7c7fce4f1a715f1656f20a040606586",
+      "sha256": "cfaff326ae5ea3d0ec51796818a6c02e48513aebe44d3abdab263c19bcadef9a",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/lib/checks.mjs": {
-      "sha256": "95bd68351940d4ce688b22001639810147a66888e7ac3f6d41ccc0ab4294700e",
+      "sha256": "80059134126202024cfe3c01ba9463d7055998e6a839ee95c9ea2351c1a5c680",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
@@ -148,14 +148,14 @@
       "customizable": false
     },
     ".agentic-system/lib/design-store.mjs": {
-      "sha256": "a90f19368e6dd50bbbc1b2fa0c5c0cf2e958bd5c5b5e12f02b14beae9e8f2e1b",
+      "sha256": "3f76ff39d5eea3c67def0e40e608686c5faed7f96645eca420dc34a65676055c",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/lib/design.mjs": {
-      "sha256": "f5cd7697166785e16e86d4d351d032ac049aff447627c52f3436bae177015152",
+      "sha256": "0ada6cc503a390df9f8d9985ffed1f21423572a0354fb6eb9443fd59be6359fc",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
@@ -183,14 +183,14 @@
       "customizable": false
     },
     ".agentic-system/lib/plan.mjs": {
-      "sha256": "898fd5e18d710a544256e693708df858d0e31556a6a1f8dd0cedcef4b5ae0694",
+      "sha256": "1edd26e9e9b8a7cc86325a356bdb4188a87721fbc929b95e71ab8a3217fcb88c",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/lib/projections.mjs": {
-      "sha256": "71e8ff4536a71395bafd597d2a63d88a4cbed0dc15dfe3a6acfdba18cef76614",
+      "sha256": "83d8549d5539464d012c57cbca9d094f180a186b6da44dfab48ee42be8f78abd",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
@@ -218,7 +218,7 @@
       "customizable": false
     },
     ".agentic-system/lib/util.mjs": {
-      "sha256": "c2975e595e3c7a7cb7b01735081ab83044e6a085ce59aaf9d74823ee6ddf0ad4",
+      "sha256": "a0b93310a9beaa2f7b57b85dff637d250b814c1fac0d0fcd08db3567db1851e4",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
@@ -253,35 +253,35 @@
       "customizable": false
     },
     ".agentic-system/workflows/design/05-codebase-cold-start.md": {
-      "sha256": "bd8625b8af0a2ceb92838032252309b01e8795699e11856b8b11a22b5b941a24",
+      "sha256": "d0a37041a3e3234589ccf4446a901f9463e74ec2e0ac9f786bc68168babb318a",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/workflows/design/06-decision-consolidation.md": {
-      "sha256": "0c8365b11860a3837419687fd72581e88a57ca1c7c7a5822def71583e1d274cd",
+      "sha256": "56a716ec30f52a5557bf94891bca506a7ba367eeb2e7daf3bf4526a32753bd92",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/workflows/design/07-design-walkthrough.md": {
-      "sha256": "e691f2a8aa5654ab1bea0650885d0195cd288db972ad4d12cb74520f9b0a7e8d",
+      "sha256": "62744e37851a6d3a3ca7bc113ac6eda69640b0e724d6618db9cf42ad08643188",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/workflows/design/08-implementation.md": {
-      "sha256": "950b356de975e2c142f23a6e10cadeed8d7c15209a47328c5d9c0d30a35d4ebd",
+      "sha256": "540242a2b73fbce2ed67b1ea4ba8f3de0bcda10c61d4fea230e1b814f6af4816",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     ".agentic-system/workflows/design/09-terminal-handoff.md": {
-      "sha256": "286228e4f1810254654cc582f48174920374f2d93871425963473a900c45f2e1",
+      "sha256": "4f9a0c15d8182497f30829426c93ac223153308e9d067d25c817f4dc9f46f1bd",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
@@ -302,7 +302,7 @@
       "customizable": false
     },
     ".agentic-system/workflows/documentation/04-codebase-exploration.md": {
-      "sha256": "bf9aa6693ce0c62611c0111f2b902f6082e62c298fd3c7c08dc7fb9f3f1f3d4d",
+      "sha256": "c6f6827e5f3000af9ad1a625992f1709dd2e6c934e4cfc7ca3aef3fefb02a6d7",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
@@ -358,7 +358,7 @@
       "customizable": false
     },
     ".agentic-system/workflows/fast-implementation/05-codebase-cold-start.md": {
-      "sha256": "ecb2c4ec6fce21257a9ff8d1a7123ef3b94f7e4ec216765ac1d525bc20b67e46",
+      "sha256": "1f91d2df28a9d5602ec78be07f36cdf8097f604b8a6e37e744727d2f97998481",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
@@ -400,7 +400,7 @@
       "customizable": false
     },
     ".claude/agents/sd-code-implementor.md": {
-      "sha256": "0f364daf214dee2c4466a9bb31fc8c74da90226c5cb9083fe7deea62d4f7759e",
+      "sha256": "c4aa632111b1bbbfdc0c82a8113800f73f5ac033761dd950d28f06fda4e12734",
       "kind": "delegate",
       "mode": "file",
       "envs": [
@@ -451,39 +451,47 @@
         }
       }
     },
-    ".claude/skills/author-repo-skill-claude/SKILL.md": {
-      "sha256": "2b09345916a2e0682079a1df32c720a074e381ad9b0f7ff3ef91f75459924c39",
+    ".claude/skills/author-repo-skill/SKILL.md": {
+      "sha256": "0eeec2da4a2287cf4ef55d50d03fd08801bf8228c4b56fe74c061f10a2f4b66e",
       "kind": "skill",
       "mode": "file",
       "envs": [
-        "claude-code"
+        "claude-code",
+        "github-copilot-vscode",
+        "opencode"
       ],
       "customizable": true
     },
-    ".claude/skills/manage-work-item-claude/SKILL.md": {
-      "sha256": "717ffdf86bfa5eeaf4a5bbe84e56e91b95924e87addc530de120c627c12ea025",
+    ".claude/skills/manage-work-item/SKILL.md": {
+      "sha256": "fdc1ad9fbdfbc1c1c7773a8ec7e5ca601fc2eeb411f5f7ccd847c76aa4149b93",
       "kind": "skill",
       "mode": "file",
       "envs": [
-        "claude-code"
+        "claude-code",
+        "github-copilot-vscode",
+        "opencode"
       ],
       "customizable": true
     },
-    ".claude/skills/plan-bug-from-id-claude/SKILL.md": {
-      "sha256": "5750a130cf7b914076228dcdef99bf87b987958ff2e5694996f2bf8f704a8ee3",
+    ".claude/skills/plan-bug-from-id/SKILL.md": {
+      "sha256": "e68653ee18b8ad7020732823fe3d5e29ac5d27e7756fce1ad4855142cb6186c0",
       "kind": "skill",
       "mode": "file",
       "envs": [
-        "claude-code"
+        "claude-code",
+        "github-copilot-vscode",
+        "opencode"
       ],
       "customizable": true
     },
-    ".claude/skills/plan-user-story-from-id-claude/SKILL.md": {
-      "sha256": "ca08337dd2e38a12b9a51da2446f214ddb0a1750d376174a4d9e15ba42b8ec96",
+    ".claude/skills/plan-user-story-from-id/SKILL.md": {
+      "sha256": "c8388d894b7c6e890ddcc3752d8c642531de9b89363a8831cff08f2be4713b87",
       "kind": "skill",
       "mode": "file",
       "envs": [
-        "claude-code"
+        "claude-code",
+        "github-copilot-vscode",
+        "opencode"
       ],
       "customizable": true
     },
@@ -506,7 +514,7 @@
       "customizable": false
     },
     ".claude/skills/sd-orchestrator-claude/SKILL.md": {
-      "sha256": "6574ec97430961cebf2a631c1dffb9a6d6a6740ed0c501edaa2c66967a9a317a",
+      "sha256": "f18d4af68407caf6b1abb2758e054b72c4ed5bd7199d36512efefabb5dec9b52",
       "kind": "role-skill",
       "mode": "file",
       "envs": [
@@ -514,17 +522,19 @@
       ],
       "customizable": false
     },
-    ".claude/skills/user-story-analysis-claude/SKILL.md": {
-      "sha256": "d94eca9d9dc408c1183201d042d1be531cb753b45ff560f26ffc7dfa0eda3b71",
+    ".claude/skills/user-story-analysis/SKILL.md": {
+      "sha256": "259ab49430ba96eed30b1142f342d0bad606f80a61b041f50249cbe9df0ab102",
       "kind": "skill",
       "mode": "file",
       "envs": [
-        "claude-code"
+        "claude-code",
+        "github-copilot-vscode",
+        "opencode"
       ],
       "customizable": true
     },
     ".github/agents/sd-ask.agent.md": {
-      "sha256": "868b507435ff07811920b02ba81fe2f787705cb507a0671f2d964873f9812ae6",
+      "sha256": "55b9c81b9c857d1b490415355c67632e0eaaef3dfc5ae918d8871cce59fc3d10",
       "kind": "role",
       "mode": "file",
       "envs": [
@@ -533,7 +543,7 @@
       "customizable": false
     },
     ".github/agents/sd-code-implementor.agent.md": {
-      "sha256": "e9e94899bc227f68268ea1ce904c797626ce36e13268110a337fa8707497062e",
+      "sha256": "d97fe9df849f604d903b3a596a92bcdc37938aa2e7005b0289ccabedae205dd7",
       "kind": "delegate",
       "mode": "file",
       "envs": [
@@ -542,7 +552,7 @@
       "customizable": false
     },
     ".github/agents/sd-design-verifier.agent.md": {
-      "sha256": "af1e7a2cb06e6d85027bd89069dba2115190421eb75aca5faedc0425dac30794",
+      "sha256": "78aac2f2811617762b9685f5f66bd790ff60a199a34be6165813d4e73b1262e8",
       "kind": "delegate",
       "mode": "file",
       "envs": [
@@ -551,7 +561,7 @@
       "customizable": false
     },
     ".github/agents/sd-documentation-reviewer.agent.md": {
-      "sha256": "83b01e44e95cd411c4dac2e4de072c11d9c26b85d1cff53d4518a1e83bc0b022",
+      "sha256": "4ad2d35d1eab20f48393004e48d72244ad9c779e4ba6a7a2d9681bf877fb4766",
       "kind": "delegate",
       "mode": "file",
       "envs": [
@@ -560,7 +570,7 @@
       "customizable": false
     },
     ".github/agents/sd-implementation-verifier.agent.md": {
-      "sha256": "2f63c4492fdd67764729586ef630eb1f443f7f8fef92f81fe205a321df76a016",
+      "sha256": "141f8fcc8acdcac318c953e5dbc4e806d024d499495115842a680fc0185d668e",
       "kind": "delegate",
       "mode": "file",
       "envs": [
@@ -569,7 +579,7 @@
       "customizable": false
     },
     ".github/agents/sd-knowledge-builder.agent.md": {
-      "sha256": "a354c4a087e341e0587964d6c52df80ea08ca32e7841ef434c8307cc47ae2311",
+      "sha256": "c96a1d506e9ec62210af154f69b0cea87cf921ead2d196ebeb99645e9911e69b",
       "kind": "role",
       "mode": "file",
       "envs": [
@@ -578,7 +588,7 @@
       "customizable": false
     },
     ".github/agents/sd-orchestrator.agent.md": {
-      "sha256": "f66a83efd5a1e7d6ffca82b30c85296cde8ba3622c59c83eab7f07023f1c3162",
+      "sha256": "fa5220c3b2166faf4195f2f8731fd6a568238aeec4e995b1a7b52fab6a4127b2",
       "kind": "role",
       "mode": "file",
       "envs": [
@@ -587,7 +597,7 @@
       "customizable": false
     },
     ".github/instructions/sessions.instructions.md": {
-      "sha256": "c85c48d3ca39cd48a75eaa7bd3554b9cd16f1cc65aee999fc63f27aee33d657b",
+      "sha256": "bb65170f8eb2b05b3011e9245e1dc1d76bb4358a1d2230a13594176bf3b91e09",
       "kind": "instruction",
       "mode": "file",
       "envs": [
@@ -595,58 +605,76 @@
       ],
       "customizable": false
     },
-    ".github/skills/author-repo-skill/SKILL.md": {
-      "sha256": "0eeec2da4a2287cf4ef55d50d03fd08801bf8228c4b56fe74c061f10a2f4b66e",
-      "kind": "skill",
-      "mode": "file",
-      "envs": [
-        "github-copilot-vscode"
-      ],
-      "customizable": true
-    },
-    ".github/skills/manage-work-item/SKILL.md": {
-      "sha256": "bba35ba55e881dc267e7ce3099786518a9cb79b7344e1ad8d53c1a52f0d1f4bd",
-      "kind": "skill",
-      "mode": "file",
-      "envs": [
-        "github-copilot-vscode"
-      ],
-      "customizable": true
-    },
-    ".github/skills/plan-bug-from-id/SKILL.md": {
-      "sha256": "7cd9c2d0992646691625c181e5b8a6adb2e692a44cbc9015a41b0d48bdba7904",
-      "kind": "skill",
-      "mode": "file",
-      "envs": [
-        "github-copilot-vscode"
-      ],
-      "customizable": true
-    },
-    ".github/skills/plan-user-story-from-id/SKILL.md": {
-      "sha256": "8e61d06b340fd4367c8c4cdf7667df6dd66bf7c84447eed1c811fac3aee534f5",
-      "kind": "skill",
-      "mode": "file",
-      "envs": [
-        "github-copilot-vscode"
-      ],
-      "customizable": true
-    },
-    ".github/skills/user-story-analysis/SKILL.md": {
-      "sha256": "259ab49430ba96eed30b1142f342d0bad606f80a61b041f50249cbe9df0ab102",
-      "kind": "skill",
-      "mode": "file",
-      "envs": [
-        "github-copilot-vscode"
-      ],
-      "customizable": true
-    },
     ".gitignore": {
-      "sha256": "d5a83f8240043c6c02adeaab23f3d0d9f2076092c3fdc2185355a15a95e125be",
+      "sha256": "c99d87d5ee789f6083ace2e44d459ff97b148b29c221ca56b60e2b6d3cec919b",
       "kind": "gitignore",
       "mode": "block",
       "envs": [],
       "customizable": false,
       "syntax": "hash"
+    },
+    ".opencode/agents/sd-ask.md": {
+      "sha256": "f2726c7fb19a809f7f97721b46669cf185a268879097a349d4906476a27ecb7f",
+      "kind": "role",
+      "mode": "file",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false
+    },
+    ".opencode/agents/sd-code-implementor.md": {
+      "sha256": "47e17c4bd45515ff136290d77130b7eb53f795d377c5a7bafbbac848c182e46f",
+      "kind": "delegate",
+      "mode": "file",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false
+    },
+    ".opencode/agents/sd-design-verifier.md": {
+      "sha256": "cccf21190ede7c90201bf6c38badadbb2a4f6c199852e79ecbf1d6c6d4a4d860",
+      "kind": "delegate",
+      "mode": "file",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false
+    },
+    ".opencode/agents/sd-documentation-reviewer.md": {
+      "sha256": "c7a94ec968e6a59285d4ab53f1468bb8beff7895fc23e2a765022afca5fd459c",
+      "kind": "delegate",
+      "mode": "file",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false
+    },
+    ".opencode/agents/sd-implementation-verifier.md": {
+      "sha256": "c30000653f4ec30734fefea235ba807e1917d484c8f1f727b9e0df81c87cecf4",
+      "kind": "delegate",
+      "mode": "file",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false
+    },
+    ".opencode/agents/sd-knowledge-builder.md": {
+      "sha256": "6ec0b9f88a176aed3472de4f0a2816c927468d42848f015e29d7bcd55aeac9da",
+      "kind": "role",
+      "mode": "file",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false
+    },
+    ".opencode/agents/sd-orchestrator.md": {
+      "sha256": "488d35b05671c094a96c0c7423101f293d17c4b1262a6fb295371fd0aea5df3e",
+      "kind": "role",
+      "mode": "file",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false
     },
     ".vscode/settings.json": {
       "sha256": "739ea915117a5629331aac3a94918e4a06a08287d898cbca98b1e56fb1c25af4",
@@ -663,7 +691,7 @@
       }
     },
     "AGENTS.md": {
-      "sha256": "cfb28a0dffc4b52575f638c4a0669e4f5bc13c9b8e8848dc3eba6f7ceeb0b1c7",
+      "sha256": "cdf797570d4c3c0778df482eb6a6b3f8359d2ff8cd3141e65ed1a723609ec055",
       "kind": "router",
       "mode": "block",
       "envs": [],
@@ -681,25 +709,48 @@
       "syntax": "html"
     },
     "docs/agentic-system/claude-code.md": {
-      "sha256": "55f833eb4135ebbc26dc2fbcaf5892656ce8d012294e772f13e96b6826efc919",
+      "sha256": "c51ab43dc8ad7e1c33361574d2a8b579970154329e0d8eec8d4c28a158add158",
       "kind": "guide",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     "docs/agentic-system/github-copilot-vscode.md": {
-      "sha256": "8e88e411d0f18247d6746758918e3fe5c1ee3ea3efee8c4df6f52554a262fd49",
+      "sha256": "8662f2a0f48f76af43fdb6db5c45ac4cd82f60de292e7af804fe89674090fce8",
+      "kind": "guide",
+      "mode": "file",
+      "envs": [],
+      "customizable": false
+    },
+    "docs/agentic-system/opencode.md": {
+      "sha256": "6c7eb18faaef1df474eb6ddeb296d841f7f23d66d8a6a75cc164961903c26c05",
       "kind": "guide",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     "docs/agentic-system/README.md": {
-      "sha256": "0eb81a40e42108f2cca8b97ff62e66772b22d938ad1c2c729ebd7f958207f872",
+      "sha256": "8d5fe25828378bdbc7088d730155d199b1e39c93c2f17ebd600a92eddb5d42c4",
       "kind": "guide",
       "mode": "file",
       "envs": [],
       "customizable": false
+    },
+    "opencode.json": {
+      "sha256": "69e547d5ea2b997bfad042d1138a175437fae8ce81b70e0d7f467da0db028046",
+      "kind": "permissions",
+      "mode": "json-merge",
+      "envs": [
+        "opencode"
+      ],
+      "customizable": false,
+      "add": {
+        "permission": {
+          "bash": {
+            "node .agentic-system/bin/agentic-system.mjs *": "allow"
+          }
+        }
+      }
     }
   }
 }

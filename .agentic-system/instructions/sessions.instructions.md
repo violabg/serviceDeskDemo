@@ -4,7 +4,7 @@ applyTo: ".agentic-system/**"
 
 # Session Store Rules
 
-The session store is owned by the agentic system runtime (`.agentic-system-sessions/`). Its layout and operations are defined by the session-store, workflow-loop and design-model contracts.
+The session store is owned by the agentic system runtime (`agentic-system-sessions/`). Its layout and operations are defined by the session-store, workflow-loop and design-model contracts.
 
 - Session ids and job ids match `^[A-Za-z0-9_]{1,100}$`. A session is created or resumed only on the developer's explicit request; never activate one because its name matches the request.
 - Work only inside the active session. Listing sessions is for the developer to choose from; never read another session's memory, log, artifacts, jobs or designs.

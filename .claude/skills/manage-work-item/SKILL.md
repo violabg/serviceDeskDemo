@@ -1,12 +1,12 @@
 ---
-name: "manage-work-item-claude"
+name: "manage-work-item"
 description: "Use when: the user explicitly invokes this workflow to create a bug or user story, or to update an existing work item, in this repository's tracker."
 disable-model-invocation: true
 ---
 
 # Manage Work Item
 
-Use this skill only when the user explicitly invokes `manage-work-item-claude` by name. It is a standalone workflow that runs outside the orchestrator: do not activate a session, start a job, begin a workflow, or start any design or implementation.
+Use this skill only when the user explicitly invokes `manage-work-item` by name. It is a standalone workflow that runs outside the orchestrator: do not activate a session, start a job, begin a workflow, or start any design or implementation.
 
 ## Modes
 
@@ -49,11 +49,11 @@ Return exactly:
 - Changed fields, for an update
 - Any unresolved fields
 
-Do not design or implement anything. The returned ID is what the user passes to `plan-bug-from-id-claude` or `plan-user-story-from-id-claude` to start the orchestrator.
+Do not design or implement anything. The returned ID is what the user passes to `plan-bug-from-id` or `plan-user-story-from-id` to start the orchestrator.
 
 ## Bindings
 
-Installed for Claude Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
+Installed for Claude Code, GitHub Copilot (VS Code and CLI), OpenCode. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
 - `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
 - `#capability:work-item-create`: Create the issue on violabg/serviceDeskDemo with `issue_write` (method `create`), Markdown body; add the `bug` label for a Bug and a `## Type` heading of `User story` for a user story.

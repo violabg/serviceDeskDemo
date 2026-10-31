@@ -6,9 +6,9 @@
 export const MIN_WORDS_AFTER_PLACEHOLDER = 4;
 
 const PLACEHOLDER = /\{\{O(\d+)(?:\.(\d+))?\}\}/g;
-const ACCESSORY_KINDS = new Set(["Changelog", "Documentation"]);
+const ACCESSORY_KINDS = new Set(["NotCode"]);
 const FAILURE_ELEMENT_KINDS = new Set(["Guard", "Effect", "StateSemantics"]);
-const CODE_KINDS = new Set(["Code", "Wiring"]);
+const CODE_KINDS = new Set(["Code"]);
 
 // A decision stored before `highlight` replaced `blocking` reads its old flag as the highlight.
 export const isHighlighted = (decision) => Boolean(decision.highlight || decision.blocking);
@@ -83,6 +83,40 @@ function declaredRefs(operation, obligationById) {
   return refs;
 }
 
+// Exactly one Build operation, after every Code and NotCode operation and before every Commands and Testing one.
+function buildFindings(operations) {
+  if (operations.length === 0) return [];
+  const builds = operations.filter((o) => o.kind === "Build");
+  if (builds.length === 0) return [{ rule: "build-operation-missing", element: "operations", detail: "the plan declares no Build operation; it declares exactly one, which runs the build, the compiler-error checks, the linter and the static verifications" }];
+  if (builds.length > 1) return [{ rule: "build-operation-multiple", element: builds[1].id, detail: `${builds.map((o) => o.id).join(", ")} are Build operations; the plan declares exactly one` }];
+  const position = operations.indexOf(builds[0]);
+  const findings = [];
+  operations.forEach((operation, index) => {
+    const authoring = operation.kind === "Code" || operation.kind === "NotCode";
+    const gated = operation.kind === "Commands" || operation.kind === "Testing";
+    if ((authoring && index > position) || (gated && index < position)) {
+      findings.push({ rule: "build-operation-order", element: operation.id, detail: `${operation.id} (${operation.kind}) is scheduled ${authoring ? "after" : "before"} the Build operation ${builds[0].id}; Code and NotCode come before it, Commands and Testing after it` });
+    }
+  });
+  return findings;
+}
+
+// At most one Testing operation per test type; testType belongs to Testing operations and to no other kind.
+function testingFindings(operations) {
+  const findings = [];
+  const seen = new Map();
+  for (const operation of operations) {
+    if (operation.kind === "Testing") {
+      if (!operation.testType) findings.push({ rule: "testing-operation-without-type", element: operation.id, detail: `${operation.id} is a Testing operation and declares no testType` });
+      else if (seen.has(operation.testType)) findings.push({ rule: "testing-operations", element: operation.id, detail: `${seen.get(operation.testType)} and ${operation.id} are both ${operation.testType} Testing operations; the plan declares at most one per test type` });
+      else seen.set(operation.testType, operation.id);
+    } else if (operation.testType) {
+      findings.push({ rule: "operation-test-type-misplaced", element: operation.id, detail: `${operation.id} is a ${operation.kind} operation and declares a testType; only a Testing operation does` });
+    }
+  }
+  return findings;
+}
+
 export function runChecks(design) {
   const errors = [];
   const warnings = [];
@@ -144,10 +178,7 @@ export function runChecks(design) {
     }
   });
 
-  const unitTests = operations.filter((o) => o.kind === "UnitTest");
-  if (unitTests.length > 1) {
-    errors.push({ rule: "unit-test-operations", element: unitTests[1].id, detail: `${unitTests.map((o) => o.id).join(", ")} are UnitTest operations; the plan declares at most one, which implements and runs every unit test` });
-  }
+  errors.push(...buildFindings(operations), ...testingFindings(operations));
 
   let elementsTotal = 0;
   let elementsRealized = 0;
@@ -169,15 +200,19 @@ export function runChecks(design) {
     else if (operations.length) errors.push({ rule: "obligation-not-realized", element: obligation.id, detail: `no operation carries out ${obligation.id}` });
   }
 
-  const known = new Set([...operationIds, ...design.path.filesystem.files.map((f) => f.id), ...design.path.contracts.map((c) => c.id)]);
+  const decisionIds = new Set(design.decisions.map((d) => d.id));
+  const cited = new Set();
+  for (const operation of operations) {
+    for (const ref of operation.realizes ?? []) {
+      cited.add(ref);
+      if (!decisionIds.has(ref)) errors.push({ rule: "decision-realized-unknown", element: operation.id, detail: `${operation.id} realizes ${ref}, which does not exist` });
+    }
+  }
   for (const decision of design.decisions) {
     const chosen = decision.options.filter((o) => o.chosen).length;
     if (chosen !== 1) errors.push({ rule: "decision-chosen-count", element: decision.id, detail: `${decision.id} has ${chosen} chosen options; exactly one must be chosen` });
-    for (const ref of decision.realizedIn ?? []) {
-      if (!known.has(ref)) errors.push({ rule: "decision-realized-unknown", element: decision.id, detail: `${decision.id} is realized in ${ref}, which does not exist` });
-    }
-    if (operations.length && !isHighlighted(decision) && !(decision.realizedIn ?? []).some((ref) => ref.startsWith("IM"))) {
-      errors.push({ rule: "decision-not-realized", element: decision.id, detail: `${decision.id} is not realized by any operation (realizedIn needs at least one IM#)` });
+    if (operations.length && !isHighlighted(decision) && !cited.has(decision.id)) {
+      errors.push({ rule: "decision-not-realized", element: decision.id, detail: `${decision.id} is not realized by any operation (at least one operation must cite it in realizes)` });
     }
   }
 

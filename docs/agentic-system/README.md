@@ -13,7 +13,7 @@ The orchestrator never writes production code. It hands the code and the verific
 | What | Where |
 | --- | --- |
 | Runtime, workflows, contracts | `.agentic-system/` |
-| Sessions (memory, log, artifacts, designs) | `.agentic-system-sessions/` |
+| Sessions (memory, log, artifacts, designs) | `agentic-system-sessions/` |
 | Project knowledge | `knowledge/` |
 | Vocabulary | `CONTEXT.md` |
 | Personal documentation templates | `~/.agentic-system/documentation/templates/` |
@@ -23,7 +23,8 @@ The runtime needs Node.js. Never edit files under the sessions folder by hand: d
 ## Guides per client
 
 - [Claude Code](claude-code.md)
-- [GitHub Copilot in VS Code](github-copilot-vscode.md)
+- [GitHub Copilot (VS Code and CLI)](github-copilot-vscode.md)
+- [OpenCode](opencode.md)
 
 ## Keeping it current
 

@@ -1,12 +1,12 @@
-// Design operations (contracts/design-model.md): row writes with server-assigned immutable ids, the single
-// design submission, approval, operation status and implementation iterations.
+// Design operations (contracts/design-model.md): row writes with server-assigned immutable ids, the design
+// submission, approval, operation status and implementation iterations.
 import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { crowdedPlaceholders, overviewFindings, runChecks } from "./checks.mjs";
 import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
 import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./knowledge.mjs";
-import { authorisationOf, isDone, servingOrder, unmetDependencies, weightOf } from "./plan.mjs";
+import { authorisationOf, isAutomatic, isDone, unmetDependencies, weightOf } from "./plan.mjs";
 import { implementationContext, servedOperation, snapshot, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
 import { RuntimeError, arg, iso, readJson, servePart, sha256, writeJson } from "./util.mjs";
@@ -144,7 +144,6 @@ export function rowTool(ctx, tool, args) {
         }
         if (tool === "design-decisions") {
           record.highlight = Boolean(record.highlight);
-          record.realizedIn ??= [];
           applyOptions(record, options ?? []);
         }
         if (tool === "design-file-references") {
@@ -335,10 +334,10 @@ export function submit(ctx, args) {
   const { design } = jobDesign(ctx, args, tool);
   // Validate the envelope; row-level problems are reported per row as `rejected`, not as a failed call.
   const root = schema(ctx);
-  const envelope = { header: request.header, intros: request.intros, delete: request.delete };
+  const envelope = { header: request.header, delete: request.delete };
   check(ctx, null, { sessionId: arg(args, "sessionId"), jobId: arg(args, "jobId"), request: Object.fromEntries(Object.entries(envelope).filter(([, v]) => v !== undefined)) }, tool);
   for (const key of Object.keys(request)) {
-    if (!["header", "intros", "add", "patch", "delete"].includes(key)) {
+    if (!["header", "add", "patch", "delete"].includes(key)) {
       throw new RuntimeError(`${tool} rejected`, { status: "Rejected", errors: [{ rule: "invalid-request", element: tool, detail: `/request/${key}: the JSON property '${key}' could not be mapped` }] });
     }
   }
@@ -348,8 +347,6 @@ export function submit(ctx, args) {
   if (request.header) {
     for (const [key, value] of Object.entries(request.header)) if (value) design.path[key] = value;
   }
-  if (request.intros?.filesystem) design.path.filesystem.intro = request.intros.filesystem;
-  if (request.intros?.operations) design.path.operationsIntro = request.intros.operations;
 
   for (const [table, rows] of Object.entries(request.delete ?? {})) {
     const spec = SUBMIT_TABLES[table];
@@ -376,6 +373,7 @@ export function submit(ctx, args) {
         rejected.push({ path: `${mode}.${table}`, id: null, reason: `the JSON property '${table}' could not be mapped` });
         continue;
       }
+      const accepted = [];
       (rows ?? []).forEach((row, index) => {
         const errors = validate(root.$defs.submitRows.properties[table].items, row, root, `${mode}.${table}[${index}]`);
         const id = Number.isInteger(row?.id) ? `${spec.prefix}${row.id}` : null;
@@ -388,16 +386,21 @@ export function submit(ctx, args) {
           rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: `knowledgeReferences names kid ${unknownKids.join(", ")}, which no knowledge reference registers; register it with design-knowledge-references first` });
           return;
         }
+        const unknownDecisions = (row.realizes ?? []).filter((ref) => !design.decisions.some((d) => d.id === ref));
+        if (unknownDecisions.length) {
+          rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: `realizes names ${unknownDecisions.join(", ")}, which no decision declares; write the decision with design-decisions first` });
+          return;
+        }
         const current = spec.get(design);
         const existing = current.find((r) => r.id === id);
         if (mode === "add") {
-          if (existing) {
+          if (existing || accepted.some((r) => r.id === id)) {
             rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: "already exists" });
             return;
           }
           const record = { id, ...persistRow(table, row) };
           if (table === "operations") record.implementationStatus ??= null;
-          current.push(record);
+          accepted.push(record);
           design.counters[spec.counter] = Math.max(design.counters[spec.counter], row.id);
           applied.added.push(id);
         } else {
@@ -409,9 +412,18 @@ export function submit(ctx, args) {
           applied.patched.push(id);
         }
       });
+      // A call's rows keep their order and go before the first stored row with a higher id, so parallel calls
+      // with disjoint ranges build the same plan whichever arrives first. Stored rows are never reordered.
+      if (accepted.length) {
+        const cardinal = (record) => Number(record.id.slice(spec.prefix.length));
+        const lowest = Math.min(...accepted.map(cardinal));
+        const current = spec.get(design);
+        const at = current.findIndex((record) => cardinal(record) > lowest);
+        current.splice(at === -1 ? current.length : at, 0, ...accepted);
+      }
     }
   }
-  const changed = applied.added.length + applied.patched.length + applied.deleted.length > 0 || request.header || request.intros;
+  const changed = applied.added.length + applied.patched.length + applied.deleted.length > 0 || request.header;
   if (changed) {
     touch(ctx, design, "submitted", `design-submit: +${applied.added.join(",") || "-"} ~${applied.patched.join(",") || "-"} x${applied.deleted.join(",") || "-"}`);
     saveDesign(ctx, design);
@@ -425,10 +437,6 @@ export function submit(ctx, args) {
 }
 
 // --- reads --------------------------------------------------------------------------------------------
-
-export function schemaTool(ctx) {
-  return JSON.stringify(schema(ctx), null, 2);
-}
 
 export function checksTool(ctx, args) {
   const accept = String(arg(args, "acceptExternalEdit") ?? "false") === "true";
@@ -558,20 +566,18 @@ export function implementationOperation(ctx, args) {
   if (requested) {
     operation = operations.find((op) => op.id === requested);
     if (!operation) throw new RuntimeError(`${tool} rejected: operation ${requested} does not exist.`);
-    if (weightOf(operation) === "verification") throw new RuntimeError(`${tool} rejected: ${requested} is a Verification operation; the implementation verifier covers it and it is never served.`);
     // The loop asks again with the same id after closing it: the authorised work is done, never reopened.
     if (isDone(operation)) {
-      return `batch-complete: ${requested} is already ${operation.implementationStatus}, so the operation this delegation authorised is done; a closed operation is never reopened (a correction runs outside the loop). Build the projects this work unit touched and return the control.`;
+      return `batch-complete: ${requested} is already ${operation.implementationStatus}, so the operation this delegation authorised is done; a closed operation is never reopened (a correction runs outside the loop). Return the control.`;
     }
     const unmet = unmetDependencies(operations, operation);
     if (unmet.length) throw new RuntimeError(`${tool} rejected: ${requested} depends on ${unmet.join(", ")}, which are not implemented yet; a declared dependency prevails over the developer's selection.`);
   } else {
-    operation = servingOrder(operations).find((op) => weightOf(op) === "authoring" && !isDone(op) && unmetDependencies(operations, op).length === 0);
+    operation = operations.find((op) => isAutomatic(op) && !isDone(op) && unmetDependencies(operations, op).length === 0);
     if (!operation) {
-      const remaining = operations.filter((op) => weightOf(op) !== "verification" && !isDone(op));
-      return remaining.length
-        ? "batch-complete: the automatic batch is exhausted. The operations that remain require the developer's explicit authorisation; build the projects this work unit touched and return the control."
-        : "complete: every operation of the plan is implemented. Build the projects this work unit touched and return the control.";
+      return operations.some((op) => !isDone(op))
+        ? "batch-complete: the automatic batch is exhausted. The operations that remain require the developer's explicit authorisation; return the control."
+        : "complete: every operation of the plan is implemented. Return the control.";
     }
   }
   operation.implementationStatus = "InProgress";

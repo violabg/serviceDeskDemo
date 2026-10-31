@@ -5,7 +5,11 @@ disable-model-invocation: true
 ---
 ## Role activation
 
-This skill runs under the `sd-orchestrator` agent. If this conversation is not running it, stop and tell the user to select `sd-orchestrator` in the Chat view's agent picker, then invoke this skill again.
+This skill runs under the `orchestrator` role. If this conversation runs a different role, stop and tell the user to open a new conversation. The role contract governs step order, halt points and session persistence; this skill supplies only its intake. Follow the line for the client you are running in:
+
+- Claude Code: if the `sd-orchestrator-claude` skill is not loaded in this conversation yet, read `.claude/skills/sd-orchestrator-claude/SKILL.md` and follow it as your complete role contract before you continue.
+- GitHub Copilot (VS Code and CLI): if this conversation is not running the `sd-orchestrator` agent, stop and tell the user to select `sd-orchestrator` in the Chat view's agent picker (VS Code), or run `copilot --agent sd-orchestrator` (CLI), then invoke this skill again.
+- OpenCode: if this conversation is not running the `sd-orchestrator` agent, stop and tell the user to press Tab until `sd-orchestrator` is the active agent, then invoke this skill again.
 
 
 You need to plan a bug resolution based on the bug work item ID provided by the user.
@@ -80,7 +84,7 @@ After you follow the above rules, continue with the active workflow.
 The identified cause is enough to create a comprehensive and effective plan, so you can safely skip interview.
 ## Bindings
 
-Installed for GitHub Copilot in VS Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
+Installed for Claude Code, GitHub Copilot (VS Code and CLI), OpenCode. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
 - `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
 - `#capability:work-item-retrieval`: Read the issue on violabg/serviceDeskDemo with the GitHub MCP server's `issue_read` (method `get`); it returns the title and Markdown body.

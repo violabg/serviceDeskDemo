@@ -2,7 +2,7 @@
 
 Lab-authored contract, derived from the captured session tools. The runtime implements it in `runtime/lib/session.mjs`; when the runtime is unavailable, follow the procedures below by hand with file tools.
 
-A session is the durable working record of one piece of work. It survives between turns, between delegates and between conversations. All session state lives under `.agentic-system-sessions/<sessionId>/` (written `sessions/<sessionId>/` below):
+A session is the durable working record of one piece of work. It survives between turns, between delegates and between conversations. All session state lives under `agentic-system-sessions/<sessionId>/` (written `sessions/<sessionId>/` below):
 
 ```text
 sessions/<sessionId>/

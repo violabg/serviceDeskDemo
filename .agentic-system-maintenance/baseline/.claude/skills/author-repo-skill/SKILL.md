@@ -1,5 +1,5 @@
 ---
-name: "author-repo-skill-claude"
+name: "author-repo-skill"
 description: "Use when: adding a new repository-local skill, or reworking an existing one, so a repeatable procedure lives in a skill instead of being retyped into prompts or grafted onto a role contract."
 disable-model-invocation: true
 ---

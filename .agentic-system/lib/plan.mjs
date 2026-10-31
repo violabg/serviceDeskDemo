@@ -1,44 +1,35 @@
 // The implementation plan as the runtime serves it (contracts/design-model.md#implementation-loop): the weight
-// class of every operation, the order the classes are served in and which class needs the developer's
-// authorisation. The class follows the operation kind: the captured review document renders `UnitTest` as
-// `unit-test` and has an `integration-test` kind; the other assignments are Lab-authored.
+// class of every operation and which classes need the developer's authorisation. The weight is metadata: the plan
+// is served in the order it was declared, and `dependsOn` is the only precedence constraint.
 
-export const WEIGHTS = ["authoring", "external-execution", "unit-test", "integration-test", "verification"];
+export const WEIGHTS = ["authoring", "commands", "testing", "build"];
 
 const WEIGHT_OF_KIND = {
   Code: "authoring",
-  Wiring: "authoring",
-  Documentation: "authoring",
-  Changelog: "authoring",
-  Generator: "external-execution",
-  Migration: "external-execution",
-  Procedure: "external-execution",
-  UnitTest: "unit-test",
-  IntegrationTest: "integration-test",
-  Verification: "verification",
+  NotCode: "authoring",
+  Commands: "commands",
+  Testing: "testing",
+  Build: "build",
 };
 
-// An operation whose kind is unknown is kept out of the automatic batch.
+const AUTOMATIC_WEIGHTS = new Set(["authoring", "build"]);
+
+// An operation whose kind is unknown (a design stored before the current kinds) is kept out of the automatic batch.
 export function weightOf(operation) {
-  return WEIGHT_OF_KIND[operation.kind] ?? "external-execution";
+  return WEIGHT_OF_KIND[operation.kind] ?? "commands";
 }
 
+export const isAutomatic = (operation) => AUTOMATIC_WEIGHTS.has(weightOf(operation));
+
 export function authorisationOf(weight) {
-  if (weight === "authoring") return "automatic batch: served without the developer's authorisation";
-  if (weight === "verification") return "never served: the implementation verifier covers it";
+  if (AUTOMATIC_WEIGHTS.has(weight)) return "automatic batch: served without the developer's authorisation";
   return "requires the developer's explicit authorisation: served only when the delegation prompt names its operation id";
 }
 
 // An operation is done for the loop once it is closed (Implemented) or verified (Completed).
 export const isDone = (operation) => operation.implementationStatus === "Implemented" || operation.implementationStatus === "Completed";
 
-// The plan in weight order; inside a class the list order is kept. A declared dependency always prevails:
-// an operation is servable only when every operation it depends on is done.
-export function servingOrder(operations) {
-  const rank = (op) => WEIGHTS.indexOf(weightOf(op));
-  return operations.map((op, index) => ({ op, index })).sort((a, b) => rank(a.op) - rank(b.op) || a.index - b.index).map((x) => x.op);
-}
-
+// An operation is servable only when every operation it depends on is done.
 export function unmetDependencies(operations, operation) {
   const byId = new Map(operations.map((op) => [op.id, op]));
   return (operation.dependsOn ?? []).filter((id) => !byId.get(id) || !isDone(byId.get(id)));

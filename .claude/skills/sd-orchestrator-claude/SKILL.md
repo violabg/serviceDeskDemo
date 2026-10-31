@@ -128,7 +128,9 @@ The scope and the boundary of the design are determined ONLY by the requirement 
 - "the rest is analogous", "similar to above", "and so on", "…" and placeholders are NEVER a design: they are omissions in disguise.
 
 # research and exploration
-All research and exploration runs through the `bash` tool, and every `bash` command must combine localization and content dumping in the same command (never a locate-only command). For content searches prefer `rg` (ripgrep); PowerShell `Get-ChildItem` and `Select-String` are allowed only as part of such a combined locate-and-dump command.
+Start every exploration with `#capability:codebase-clusters`, then `#capability:codebase-cluster-files` for the shortlisted clusters: this is the first action of the exploration, not the last resort. The obligation holds now that there is no numeric exploration budget.
+
+After the clusters, use `bash`, `grep` and `glob` as often as the exploration needs: there is no limit on the number of invocations, and a search need not combine localization and content dumping in one command. For content searches prefer `rg` (ripgrep); PowerShell `Get-ChildItem` and `Select-String` are allowed. A search must be scoped to a subtree a cluster has already named; whole-workspace enumeration (`rg --files`, `git ls-files`, `Get-ChildItem -Recurse`) is forbidden, and a search is never a substitute for a failed cluster tool.
 
 ## Bindings
 

@@ -1,5 +1,5 @@
 ---
-name: "user-story-analysis-claude"
+name: "user-story-analysis"
 description: "Use when: critically analyzing a user story for functional gaps, ambiguities, inconsistencies, missing requirements, edge cases, risks and implicit assumptions."
 disable-model-invocation: true
 ---

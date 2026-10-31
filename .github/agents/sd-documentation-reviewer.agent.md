@@ -41,6 +41,6 @@ A short report, in this exact shape and nothing else:
 
 ## Bindings
 
-Installed for GitHub Copilot in VS Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
+Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
 - Tool limits: this role may read files, search files, write files. The client enforces the tool list in this file.

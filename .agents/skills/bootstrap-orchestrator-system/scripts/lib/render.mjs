@@ -23,6 +23,8 @@ export function render(kit, answers) {
     const { profile } = env;
     const slots = { ...base, AGENT_ROOT: profile.agents.dir, SKILL_ROOT: profile.skills.dir };
     const nativeName = (role) => `${answers.prefix}${role}`;
+    // A role skill's installed name: skillSuffix tells this client's role skills apart from another client's agents of the same name.
+    const roleSkillName = (role) => `${nativeName(role)}${env.skillSuffix}`;
     const delegates = index.roles.filter((r) => r.invocation === "delegate");
 
     const delegationText = () => {
@@ -45,8 +47,8 @@ export function render(kit, answers) {
       return `- \`#operation:${op}\`${name}: ${operationNames[op]}: ${how}. It is a host tool, not a runtime operation: never run \`${runtimeCommand} ${op}\`.`;
     };
 
-    const bindingsSection = (tokens, role, body) => {
-      const lines = ["", "## Bindings", "", `Installed for ${profile.label}. This is how each \`#capability:<token>\` and \`#operation:<op>\` in this file runs here.`, ""];
+    const bindingsSection = (tokens, role, body, label = profile.label) => {
+      const lines = ["", "## Bindings", "", `Installed for ${label}. This is how each \`#capability:<token>\` and \`#operation:<op>\` in this file runs here.`, ""];
       const runtimeTokens = tokens.filter((t) => index.tokens[t]?.kind === "runtime");
       if (runtimeTokens.length || role?.operations.includes("runtime")) {
         lines.push(`- Runtime operations: run \`${runtimeCommand} <token>\` from the repository root, where \`<token>\` is the name of a runtime \`#capability:<token>\` (an \`#operation:<op>\` is never a runtime command); pass large payloads with \`--json <file>\`. The JSON payload is the operation's argument object, defined in \`${rt}/contracts/\`: design operations take \`{ "sessionId", "jobId", "request": { ... } }\`, and fields such as \`operation\`, \`rows\` and \`ids\` go inside \`request\`; every other operation takes its arguments at the top level, and \`${runtimeCommand} <token> --help\` prints them. A long answer arrives in parts: when it ends with \`[part N of M. The answer continues: …]\`, make the call it names and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with \`;\`, \`&&\` or a loop, and never pipe an answer through \`head\`, \`tail\`, \`cut\`, \`sed\` or \`dd\`. The runtime is required; when it cannot run, follow the procedure its contract under \`${rt}/contracts/\` gives and record that the gate ran instruction-only.`);
@@ -116,14 +118,14 @@ export function render(kit, answers) {
         });
         add({ ...file, kind: isDelegate ? "delegate" : "role", envs: [env.id] });
       } else {
-        const dir = `${profile.skills.dir}/${nativeName(role.name)}`;
+        const dir = `${profile.skills.dir}/${roleSkillName(role.name)}`;
         const rule = manualOnly(dir);
-        const intro = `# ${nativeName(role.name)}\n\nThis skill starts the \`${role.name}\` role in this conversation. If this conversation already runs a role, stop and tell the user to open a new conversation. Otherwise the contract below is your complete role for the rest of the conversation: it governs every step, halt point and session operation, and the client's own defaults, such as its memory feature, never replace a contract operation.\n\n`;
+        const intro = `# ${roleSkillName(role.name)}\n\nThis skill starts the \`${role.name}\` role in this conversation. If this conversation already runs a role, stop and tell the user to open a new conversation. Otherwise the contract below is your complete role for the rest of the conversation: it governs every step, halt point and session operation, and the client's own defaults, such as its memory feature, never replace a contract operation.\n\n`;
         add({
           path: `${dir}/SKILL.md`,
           kind: "role-skill",
           envs: [env.id],
-          content: yamlFrontmatter({ name: nativeName(role.name), description: `Start the ${role.name} role. ${role.description}`, ...rule.frontmatter }) + intro + body,
+          content: yamlFrontmatter({ name: roleSkillName(role.name), description: `Start the ${role.name} role. ${role.description}`, ...rule.frontmatter }) + intro + body,
         });
         for (const extra of rule.extra) add({ ...extra, kind: "role-skill", envs: [env.id] });
       }
@@ -140,12 +142,20 @@ export function render(kit, answers) {
           let activation = "";
           if (skill.role) {
             const name = nativeName(skill.role);
-            activation =
-              env.route === "skill"
+            activation = answers.sharedSkills
+              ? `## Role activation\n\nThis skill runs under the \`${skill.role}\` role. If this conversation runs a different role, stop and tell the user to open a new conversation. The role contract governs step order, halt points and session persistence; this skill supplies only its intake. Follow the line for the client you are running in:\n\n${answers.environments
+                  .map((other) =>
+                    other.route === "skill"
+                      ? `- ${other.profile.label}: if the \`${name}${other.skillSuffix}\` skill is not loaded in this conversation yet, read \`${other.profile.skills.dir}/${name}${other.skillSuffix}/SKILL.md\` and follow it as your complete role contract before you continue.`
+                      : `- ${other.profile.label}: if this conversation is not running the \`${name}\` agent, stop and tell the user to ${other.profile.routes.nativeStart.replaceAll("{name}", name)}, then invoke this skill again.`,
+                  )
+                  .join("\n")}\n\n`
+              : env.route === "skill"
                 ? `## Role activation\n\nThis skill runs under the \`${skill.role}\` role. If this conversation runs a different role, stop and tell the user to open a new conversation. If the \`${name}\` skill is not loaded in this conversation yet, read \`${profile.skills.dir}/${name}/SKILL.md\` and follow it as your complete role contract before you continue. The role contract governs step order, halt points and session persistence; this skill supplies only its intake.\n\n`
                 : `## Role activation\n\nThis skill runs under the \`${name}\` agent. If this conversation is not running it, stop and tell the user to ${profile.routes.nativeStart.replaceAll("{name}", name)}, then invoke this skill again.\n\n`;
           }
-          content = yamlFrontmatter({ name: skill.name, description: skill.description, ...rule.frontmatter }) + activation + body + bindingsSection(skill.tokens, null, body);
+          const label = answers.sharedSkills ? answers.environments.map((other) => other.profile.label).join(", ") : profile.label;
+          content = yamlFrontmatter({ name: skill.name, description: skill.description, ...rule.frontmatter }) + activation + body + bindingsSection(skill.tokens, null, body, label);
         }
         add({ path: target, kind: "skill", envs: [env.id], customizable: true, content });
       }
@@ -163,7 +173,7 @@ export function render(kit, answers) {
 
   // Shared files. Root slots that differ per client list every selected client.
   const perClient = (key) =>
-    answers.environments.length === 1
+    new Set(answers.environments.map((env) => env.profile[key].dir)).size === 1
       ? answers.environments[0].profile[key].dir
       : answers.environments.map((env) => `${env.profile[key].dir} (${env.profile.label})`).join(", ");
   const routerSlots = { ...base, AGENT_ROOT: perClient("agents"), SKILL_ROOT: perClient("skills") };
@@ -218,7 +228,7 @@ function guides(kit, answers, base, runtimeCommand) {
     const name = `${answers.prefix}${role}`;
     return env.route === "native"
       ? `${env.profile.routes.nativeStart.replaceAll("{name}", name)}`
-      : `invoke the \`${name}\` skill in a new conversation`;
+      : `invoke the \`${name}${env.skillSuffix}\` skill in a new conversation`;
   };
   const statusLines = (env) => {
     const entries = Object.entries(env.verification);

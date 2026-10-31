@@ -8,7 +8,7 @@
   "nodeVersion": "v26.11.1",
   "locations": {
     "runtimeRoot": ".agentic-system",
-    "sessionsRoot": ".agentic-system-sessions",
+    "sessionsRoot": "agentic-system-sessions",
     "userRuntimeRoot": "~/.agentic-system",
     "knowledgeRoot": "knowledge",
     "maintenanceRoot": ".agentic-system-maintenance",
@@ -106,23 +106,23 @@
       "verification": {
         "static install and runtime (verify.mjs)": {
           "status": "verified-native",
-          "note": "no drift, runtime serves DESIGN/FAST_IMPLEMENTATION/DOCUMENTATION, sessions folder reachable, <token> --help prints top-level arguments (2026-10-28, kit 2.0.2); the -claude skill names are restored and match the render"
+          "note": "no drift, runtime serves the three workflows, sessions folder reachable (2026-10-31, kit 3.0.1)"
         },
         "work item read (issue_read get/get_labels/get_comments)": {
           "status": "verified-fallback",
           "note": "exercised in the VS Code extension from the Bootstrap session on #6, not yet from inside sd-orchestrator-claude"
         },
         "orchestrator starts via /sd-orchestrator-claude and asks for the workflow type": {
-          "status": "unverified",
-          "note": "needs a new session (IDE and terminal)"
+          "status": "verified-native",
+          "note": "headless claude -p (2026-10-31, kit 3.0.1); IDE surface not exercised"
         },
         "session created through the runtime from the role": {
           "status": "unverified",
           "note": "needs a new session"
         },
         "delegate runs in its own context (sd-design-verifier)": {
-          "status": "unverified",
-          "note": "needs a new session"
+          "status": "verified-native",
+          "note": "headless claude -p returned DELEGATE-OK (2026-10-31, kit 3.0.1)"
         },
         "role skill refuses inside a running role": {
           "status": "unverified",
@@ -134,11 +134,15 @@
         },
         "terminal surface GitHub MCP": {
           "status": "unverified",
-          "note": "GITHUB_TOKEN not exported in the login shell; export it before launching claude in a terminal"
+          "note": "GITHUB_PAT not exported in the login shell; export it before launching claude in a terminal"
         },
         "review document (redesigned page)": {
           "status": "unverified",
           "note": "asset design-review.html updated to the 2.0.x design on 2026-10-28; the rendered page is checked in a DESIGN run"
+        },
+        "shared skill /plan-bug-from-id": {
+          "status": "verified-native",
+          "note": "invoked by name in headless claude -p (2026-10-31, kit 3.0.1); hidden from the model by disable-model-invocation, as intended"
         }
       },
       "skillSuffix": "-claude"
@@ -149,9 +153,24 @@
       "route": "native",
       "delegation": "native",
       "surfaces": [
-        "ide-extension"
+        "ide-extension",
+        "terminal"
       ],
-      "overrides": {},
+      "overrides": {
+        "label": "GitHub Copilot (VS Code and CLI)",
+        "skills": {
+          "dir": ".claude/skills"
+        },
+        "tools": {
+          "question": [
+            "vscode/askQuestions",
+            "ask_user"
+          ]
+        },
+        "routes": {
+          "nativeStart": "select `{name}` in the Chat view's agent picker (VS Code), or run `copilot --agent {name}` (CLI)"
+        }
+      },
       "bindings": {
         "work-item-retrieval": {
           "text": "Read the issue on violabg/serviceDeskDemo with the GitHub MCP server's `issue_read` (method `get`); it returns the title and Markdown body.",
@@ -210,7 +229,11 @@
           "io.github.vercel/next-devtools-mcp/nextjs_docs",
           "io.github.vercel/next-devtools-mcp/nextjs_index",
           "neondatabase/mcp-server-neon/describe_table_schema",
-          "neondatabase/mcp-server-neon/get_database_tables"
+          "neondatabase/mcp-server-neon/get_database_tables",
+          "next-devtools/nextjs_docs",
+          "next-devtools/nextjs_index",
+          "neon/describe_table_schema",
+          "neon/get_database_tables"
         ],
         "implementation-verifier": [
           "context7/resolve-library-id",
@@ -218,7 +241,11 @@
           "io.github.vercel/next-devtools-mcp/nextjs_docs",
           "io.github.vercel/next-devtools-mcp/nextjs_index",
           "neondatabase/mcp-server-neon/describe_table_schema",
-          "neondatabase/mcp-server-neon/get_database_tables"
+          "neondatabase/mcp-server-neon/get_database_tables",
+          "next-devtools/nextjs_docs",
+          "next-devtools/nextjs_index",
+          "neon/describe_table_schema",
+          "neon/get_database_tables"
         ]
       },
       "verification": {
@@ -245,6 +272,130 @@
         "visual evidence": {
           "status": "unverified",
           "note": "needs a Copilot Chat session"
+        },
+        "CLI: orchestrator starts with copilot --agent and asks for the workflow type": {
+          "status": "verified-native",
+          "note": "2026-10-31, kit 3.0.1"
+        },
+        "CLI: delegate runs in its own context": {
+          "status": "verified-native",
+          "note": "sd-design-verifier returned DELEGATE-OK (2026-10-31, kit 3.0.1)"
+        },
+        "CLI: tool list enforcement (docs describe strict-tools-list; the installer does not set it)": {
+          "status": "verified-native",
+          "note": "sd-ask had no create or edit tool; no file written (2026-10-31, kit 3.0.1)"
+        },
+        "CLI: runtime command approval": {
+          "status": "unverified",
+          "note": "no documented repository-level allow rule found; each developer approves it on first use"
+        },
+        "VS Code reads the shared .claude/skills in its Copilot harness": {
+          "status": "unverified",
+          "note": "docs name only .github/skills for that harness; if it fails, add .github/skills symlinks"
+        },
+        "CLI: skills resolve to the one .claude/skills copy": {
+          "status": "verified-native",
+          "note": "copilot skill list shows each once (2026-10-31, kit 3.0.1)"
+        }
+      }
+    },
+    {
+      "id": "opencode",
+      "profile": "opencode",
+      "route": "native",
+      "delegation": "native",
+      "surfaces": [
+        "terminal"
+      ],
+      "overrides": {
+        "skills": {
+          "dir": ".claude/skills",
+          "manualOnly": {
+            "frontmatter": {
+              "disable-model-invocation": true
+            }
+          }
+        }
+      },
+      "bindings": {
+        "work-item-retrieval": {
+          "text": "Read the issue on violabg/serviceDeskDemo with the GitHub MCP server's `issue_read` (method `get`); it returns the title and Markdown body."
+        },
+        "work-item-type-retrieval": {
+          "text": "Read the issue's labels with `issue_read` (method `get_labels`): the `bug` label means Bug; otherwise use the body's `## Type` heading (User story); if neither is present, ask the user."
+        },
+        "work-item-batch-retrieval": {
+          "text": "Read each linked issue on violabg/serviceDeskDemo with `issue_read` (method `get`), one call per issue number; sub-issues with method `get_sub_issues`."
+        },
+        "work-item-comment-retrieval": {
+          "text": "Read the issue's comments with `issue_read` (method `get_comments`)."
+        },
+        "work-item-create": {
+          "text": "Create the issue on violabg/serviceDeskDemo with `issue_write` (method `create`), Markdown body; add the `bug` label for a Bug and a `## Type` heading of `User story` for a user story."
+        },
+        "work-item-update": {
+          "text": "Update the issue with `issue_write` (method `update`) for title, body, labels or state; add a progress note with `add_issue_comment`."
+        },
+        "wiki-*": {
+          "none": "no wiki"
+        },
+        "visual-evidence": "Read a local image with the Read tool. For an image attached to an issue (github.com/user-attachments URL), the GitHub MCP server does not return its bytes: ask the user to save it into the session folder and read it from there."
+      },
+      "roleTools": {},
+      "handRendered": [
+        {
+          "path": ".opencode/commands/author-repo-skill.md",
+          "purpose": "user-only entry point that tells the agent to read .claude/skills/author-repo-skill/SKILL.md"
+        },
+        {
+          "path": ".opencode/commands/manage-work-item.md",
+          "purpose": "user-only entry point that tells the agent to read .claude/skills/manage-work-item/SKILL.md"
+        },
+        {
+          "path": ".opencode/commands/plan-bug-from-id.md",
+          "purpose": "user-only entry point that tells the agent to read .claude/skills/plan-bug-from-id/SKILL.md"
+        },
+        {
+          "path": ".opencode/commands/plan-user-story-from-id.md",
+          "purpose": "user-only entry point that tells the agent to read .claude/skills/plan-user-story-from-id/SKILL.md"
+        },
+        {
+          "path": ".opencode/commands/user-story-analysis.md",
+          "purpose": "user-only entry point that tells the agent to read .claude/skills/user-story-analysis/SKILL.md"
+        }
+      ],
+      "verification": {
+        "agents discovered, delegates hidden": {
+          "status": "verified-native",
+          "note": "2026-10-31, kit 3.0.1"
+        },
+        "orchestrator starts with --agent sd-orchestrator and asks for the workflow type": {
+          "status": "verified-native",
+          "note": "opencode run (2026-10-31, kit 3.0.1); TUI Tab selection not exercised"
+        },
+        "delegate runs in its own child session": {
+          "status": "verified-native",
+          "note": "sd-design-verifier returned DELEGATE-OK (2026-10-31, kit 3.0.1)"
+        },
+        "runtime command runs without an approval prompt": {
+          "status": "verified-native",
+          "note": "2026-10-31, kit 3.0.1"
+        },
+        "commands read the shared skill; plan-* switch to sd-orchestrator": {
+          "status": "verified-fallback",
+          "note": "through the session command API with a real read call (2026-10-31, kit 3.0.1); typing them in the TUI not exercised"
+        },
+        "skills hidden from the offered list": {
+          "status": "verified-native",
+          "note": "absent from the list; the skill tool still loads one when asked by id, so automatic use is prevented but this is no security boundary (2026-10-31, kit 3.0.1)"
+        },
+        "GitHub MCP": {
+          "status": "unverified",
+          "note": "fails with HTTP 400 while GITHUB_PAT is unset; export it"
+        },
+        "Neon MCP and write denial": {
+          "status": "unverified",
+          "note": "needs opencode mcp auth neon; deny rules confirmed as configuration only"
         }
       }
     }
@@ -256,17 +407,20 @@
       "server": "https://api.githubcopilot.com/mcp/",
       "registeredIn": {
         "claude-code": ".mcp.json (project, enabled in .claude/settings.local.json)",
-        "github-copilot-vscode": ".vscode/mcp.json (workspace)"
+        "github-copilot-vscode": ".vscode/mcp.json (VS Code), .mcp.json (Copilot CLI)",
+        "opencode": "opencode.json"
       },
       "auth": {
-        "claude-code": "bearer token from env var GITHUB_TOKEN (non-secret reference)",
-        "github-copilot-vscode": "VS Code GitHub sign-in (OAuth)"
+        "claude-code": "bearer token from env var GITHUB_PAT (non-secret reference)",
+        "github-copilot-vscode": "VS Code GitHub sign-in (OAuth); the CLI uses .mcp.json with GITHUB_PAT",
+        "opencode": "bearer token from env var GITHUB_PAT (non-secret reference)"
       },
       "scopes": "issues read/write on violabg/serviceDeskDemo",
       "configuration_status": "configured",
       "authentication_status": {
         "claude-code": "verified",
-        "github-copilot-vscode": "unverified"
+        "github-copilot-vscode": "unverified",
+        "opencode": "unverified"
       }
     },
     {
@@ -293,9 +447,9 @@
   "decisions": [
     {
       "id": "environments",
-      "answer": "claude-code, github-copilot-vscode; surfaces IDE extension + terminal (Copilot: IDE only)",
+      "answer": "claude-code, github-copilot-vscode (VS Code and CLI), opencode",
       "source": "user",
-      "evidence": "user selection"
+      "evidence": "user request 2026-10-31"
     },
     {
       "id": "execution-host",
@@ -329,15 +483,15 @@
     },
     {
       "id": "route",
-      "answer": "claude-code: skill; github-copilot-vscode: native",
+      "answer": "claude-code: skill; github-copilot-vscode: native (agent picker, copilot --agent); opencode: native (Tab)",
       "source": "recommend-accepted",
-      "evidence": "profile defaults; Copilot used only in the IDE where the agent picker works"
+      "evidence": "profile defaults; both Copilot surfaces read .github/agents"
     },
     {
       "id": "delegation",
-      "answer": "native in both",
+      "answer": "native in all",
       "source": "recommend-accepted",
-      "evidence": "profiles: Claude Code Agent+SendMessage (resumable), Copilot agent tool (not resumable)"
+      "evidence": "Claude Code Agent+SendMessage (resumable); Copilot agent tool and OpenCode task tool (not resumable)"
     },
     {
       "id": "profile-overrides",
@@ -389,9 +543,9 @@
     },
     {
       "id": "sessions-root",
-      "answer": ".agentic-system-sessions (in repository, gitignored)",
+      "answer": "agentic-system-sessions (in repository, gitignored, visible)",
       "source": "user",
-      "evidence": "user preference over the outside-repository recommendation"
+      "evidence": "user request 2026-10-31; tsconfig excludes it because TypeScript only skips dot-folders implicitly"
     },
     {
       "id": "user-runtime-root",
@@ -437,9 +591,9 @@
     },
     {
       "id": "skill-suffix",
-      "answer": "claude-code system skills carry the -claude suffix (sd-orchestrator-claude, manage-work-item-claude, …); bootstrap-orchestrator-system, maintain-orchestrator-system and other repo skills untouched",
+      "answer": "-claude on Claude Code role skills only (sd-orchestrator-claude, sd-ask-claude, sd-knowledge-builder-claude); shared skills carry no suffix",
       "source": "user",
-      "evidence": "Copilot also discovers .claude/skills; user wants to tell the Claude copies apart. Kit 2.0.0 dropped environments[].skillSuffix; on 2026-10-28 the user asked to keep the suffix, so the option was restored as a local patch of the bootstrap kit (scripts/lib/answers.mjs, render.mjs), not upstream. 2.0.1 removed it again and the patch was lost; kit 2.0.2 restores it with the reason in its CHANGELOG. A skills update still overwrites the kit folder: after one, re-check that .claude skills still carry -claude"
+      "evidence": "no copies remain to tell apart, the role skills still share a name with other clients' agents. Local kit patch: a skills update overwrites it until upstreamed to violabg/agentic-system-kit; after one, re-check sharedSkills and the suffix before applying"
     },
     {
       "id": "skill-route-role-tools",
@@ -449,9 +603,34 @@
     },
     {
       "id": "copilot-duplicate-discovery",
-      "answer": "accepted; Copilot guide says to start roles from the agent picker; delegate and skill resolution checked in phase F",
+      "answer": "accepted; shared skills have one copy, roles are started from the agent picker or copilot --agent; delegate resolution checked in phase F",
       "source": "user",
-      "evidence": "VS Code docs (2026-10-24) document no setting that excludes .claude/agents or .claude/skills"
+      "evidence": "VS Code docs document no setting that excludes .claude/agents or .claude/skills"
+    },
+    {
+      "id": "copilot-cli-environment",
+      "answer": "Copilot CLI extends the github-copilot-vscode environment through overrides instead of adding one",
+      "source": "recommend-accepted",
+      "evidence": "both surfaces read .github/agents; the installer rejects two clients rendering one path differently; unrecognized tool names are ignored"
+    },
+    {
+      "id": "shared-skills",
+      "answer": "one copy of each skill in .claude/skills for all clients (answers.sharedSkills, local kit patch); the .github/skills copies and -claude skill copies removed",
+      "source": "user",
+      "evidence": "rendered skills differed only by name, manual-only flag, label and activation; .claude/skills is the only folder all selected clients read"
+    },
+    {
+      "id": "opencode-commands",
+      "answer": ".opencode/commands/<skill>.md tell the agent to read the shared skill and follow it; permission.skill hides the skills from the offered list",
+      "source": "user",
+      "evidence": "OpenCode ignores disable-model-invocation. Tested 2026-10-31: @file stays unexpanded when a command runs through the API, so commands use a plain read instruction; a denied skill is absent from the offered list but the skill tool still loads it when asked by id, so this prevents automatic use and is not a security boundary"
+    },
+    {
+      "id": "opencode-mcp-permissions",
+      "answer": "neon_* denied except describe_table_schema and get_database_tables",
+      "source": "discovery",
+      "evidence": "opencode agent files cannot carry tool lists; keeps the extra-tools decision of no Neon write tools"
     }
-  ]
+  ],
+  "sharedSkills": true
 }

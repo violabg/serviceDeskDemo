@@ -6,6 +6,11 @@ Versions follow semantic versioning. The installer reads the first version headi
 
 The review document is easier to read. Its data, sections and links are unchanged, so a target needs no other change.
 
+Local patch on top of upstream 3.0.1, lost on any skills update until it is upstreamed to `violabg/agentic-system-kit`:
+
+- `answers.sharedSkills: true` installs one copy of each skill for every client. Every environment must use the same `skills.dir` (set it with `overrides`), the activation paragraph lists each client, and the Bindings line names them all.
+- `environments[].skillSuffix` is restored for role skills only, so a Claude Code role skill does not share a name with another client's agent.
+
 - **Header.** It is 58px tall from 1081px wide up, and two rows below that. The metadata stays on one line and truncates, with the full text in a tooltip. `Design` moves from the title into that line.
 - **Reading column.** The column stops at 54rem and running text at about 80 characters per line.
 - **IDs.** They are set in the sans font, so `O1.1` no longer reads as `01.1`.
