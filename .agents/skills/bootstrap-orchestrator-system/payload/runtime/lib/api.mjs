@@ -2,13 +2,11 @@
 // A handler receives the context and the upstream argument object, and returns the response text, or
 // { output, exitCode } for a structured refusal. Adapters (the CLI today, an MCP server if ever needed)
 // only translate transport around this table and hold no logic of their own.
-import { join } from "node:path";
 import * as codebase from "./codebase.mjs";
 import * as design from "./design.mjs";
 import * as documentation from "./documentation.mjs";
 import * as knowledge from "./knowledge.mjs";
 import * as session from "./session.mjs";
-import { withLock } from "./util.mjs";
 import * as workflow from "./workflow.mjs";
 
 export const handlers = {
@@ -35,6 +33,7 @@ export const handlers = {
   "design-knowledge-references": (ctx, args) => design.knowledgeReferences(ctx, args),
   "design-overview": (ctx, args) => design.overview(ctx, args),
   "design-submit": (ctx, args) => design.submit(ctx, args),
+  "design-schema": (ctx) => design.schemaTool(ctx),
   "design-checks": (ctx, args) => design.checksTool(ctx, args),
   "design-snapshot": (ctx, args) => design.snapshotTool(ctx, args),
   "design-verification-view": (ctx, args) => design.verificationViewTool(ctx, args),
@@ -106,9 +105,7 @@ export async function call(ctx, token, args = {}) {
   const handler = handlers[token];
   if (!handler) return { output: unknownCommand(token), exitCode: 2 };
   try {
-    // A design call reads, changes and seals design.json: parallel design-submit calls run one after the other.
-    const run = () => handler(ctx, unwrapRequest(token, args));
-    const result = await (token.startsWith("design-") ? withLock(join(ctx.runtimeRoot, ".design-lock"), run) : run());
+    const result = await handler(ctx, unwrapRequest(token, args));
     return typeof result === "string" ? { output: result, exitCode: 0 } : result;
   } catch (error) {
     if (error && "payload" in error) {

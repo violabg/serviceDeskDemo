@@ -50,7 +50,7 @@ export function emptyDesign(sessionId, designId, jobId, now) {
     knowledgeReferences: [],
     overview: { currentState: "", gaps: "" },
     decisions: [],
-    path: { title: null, generator: null, requirementRef: null, contracts: [], apis: [], filesystem: { files: [] }, operations: [] },
+    path: { title: null, generator: null, requirementRef: null, operationsIntro: null, contracts: [], apis: [], filesystem: { intro: null, files: [] }, operations: [] },
     iterations: [],
     servedOperation: null,
     history: [],

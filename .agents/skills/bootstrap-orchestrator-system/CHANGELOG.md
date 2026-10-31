@@ -2,43 +2,12 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
-## 3.0.1
+## 2.0.2
 
-The review document is easier to read. Its data, sections and links are unchanged, so a target needs no other change.
-
-- **Header.** It is 58px tall from 1081px wide up, and two rows below that. The metadata stays on one line and truncates, with the full text in a tooltip. `Design` moves from the title into that line.
-- **Reading column.** The column stops at 54rem and running text at about 80 characters per line.
-- **IDs.** They are set in the sans font, so `O1.1` no longer reads as `01.1`.
-- **Contrast and size.** The faintest text now meets AA contrast, and small labels and counts are larger.
-- **Quieter details.** Inline code has no border, the current step of the reading path is filled, and the approval stamp is straight.
-
-## 3.0.0
-
-The canonical system follows a newer upstream 3.0.1 build. Operation kinds and design requests change, so a target re-installed from this version must re-read its workflows.
-
-- **Operation kinds.** The kinds are now `Code`, `NotCode`, `Commands`, `Testing` and `Build`. `Wiring`, `Documentation`, `Changelog`, `Generator`, `Migration`, `Procedure`, `UnitTest`, `IntegrationTest` and `Verification` are gone.
-- **Weights are metadata.**
-  - The classes are `authoring`, `commands`, `testing` and `build`.
-  - The plan is served in the order it was declared, and `dependsOn` is the only precedence constraint.
-  - The automatic batch is `Code`, `NotCode` and `Build`; `Commands` and `Testing` need the developer's authorisation.
-- **One Build operation.**
-  - A plan declares exactly one, after every `Code` and `NotCode` operation and before every `Commands` and `Testing` operation.
-  - The implementor no longer builds at the end of a work unit, and its compiler recovery policy is removed.
-- **Testing operations.** A plan declares at most one per `testType` (`Unit`, `Integration`, `E2E`, `Harness`). New checks replace `unit-test-operations`.
-- **Decisions are linked from the operations.**
-  - An operation cites the decisions it realizes in `realizes`, and a row naming an unknown decision is rejected.
-  - `realizedIn` is refused.
-- **`design-submit`.**
-  - `intros` is removed.
-  - A submission may be split across partial calls with disjoint id ranges, including parallel ones. Design calls now run one at a time across runtime processes.
-- **`design-schema` is removed.** Read the shape from `design-submit --help` and the walkthrough instruction.
-- **No exploration budget.** `bash`, `grep` and `glob` have no numeric cap. An exploration still starts with the clusters, and searches stay scoped to a subtree a cluster named.
-- **`design-implementation-context`.** File references list `why` and `purpose` per file, contracts omit the premortem and evidence, and decisions stop at their topic.
-- **Review document.** The layout is unchanged. Operations show their test type, decisions read their realization from `realizes`, and the legend describes the new kinds.
-- **Designs already stored in a target are not migrated.**
-  - A draft must cite its decisions in `realizes` and add a `Build` operation before it can be approved.
-  - Operations with an old kind leave the automatic batch and need the developer's authorisation.
-  - An approved design is not re-checked.
+- `skillSuffix` is restored. 2.0.1 removed it while redesigning the review page, but a repository may need it: GitHub Copilot in VS Code also discovers `.claude/skills/`, so a team that installs both clients needs distinct skill names to tell them apart in a shared discovery folder.
+  - `answers.environments[].skillSuffix` is validated again (empty, or hyphen-led lowercase segments such as `-claude`) and applied to every role skill and skill this client installs, to their frontmatter names, to the backticked skill names inside their text and to the client guide.
+  - It stays per environment, so the other client's copies keep their unsuffixed names.
+  - A target that kept the suffix through 2.0.1 keeps its suffixed files; a target that already applied 2.0.1 is planned back to the suffixed names.
 
 ## 2.0.1
 

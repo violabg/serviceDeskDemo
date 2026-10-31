@@ -1,6 +1,6 @@
 # Design model
 
-Lab-authored contract, derived from the captured design tools, the reference design artifact and the 3.0.1 design artifact and instructions (the implementation loop's serve and close have no tool capture). The runtime implements it in `runtime/lib/design.mjs` and `runtime/lib/design-store.mjs`. The runtime validates requests against `runtime/assets/design-requests.schema.json`; no command serves it, because upstream removed that tool. The argument descriptions of an operation are its section here, which `<token> --help` prints.
+Lab-authored contract, derived from the captured design tools, the design submit schema, the reference design artifact and the 3.0.1 design artifact and instructions (the implementation loop's serve and close have no tool capture). The runtime implements it in `runtime/lib/design.mjs` and `runtime/lib/design-store.mjs`. The request schema is `runtime/assets/design-requests.schema.json` (served by `#capability:design-schema`).
 
 A DESIGN job produces one design; a FAST_IMPLEMENTATION job keeps its obligations, open points and knowledge references in a job design of its own, with no approval gate. A design lives in `sessions/<sessionId>/designs/<designId>/`:
 
@@ -31,16 +31,13 @@ A DESIGN job produces one design; a FAST_IMPLEMENTATION job keeps its obligation
                              "scope": "Production | Test" } ],
   "overview": { "currentState": "...", "gaps": "... {{O1.1}} ..." },
   "decisions": [ { "id": "D1", "topic": "...", "question": "...", "source": "Requirements", "context": "...",
-                   "why": "...", "how": "...", "highlight": false,
+                   "why": "...", "how": "...", "highlight": false, "realizedIn": ["IM1"],
                    "options": [ { "id": "D1.1", "text": "...", "chosen": true } ] } ],
   "path": { "title": "...", "generator": "orchestrator", "requirementRef": null,
-            "contracts": [ { "id": "CT1", "...": "..." } ], "apis": [ { "id": "API1" } ],
-            "filesystem": { "files": [ { "id": "FS1", "path": "...", "status": "Added" } ] },
-            "operations": [ { "id": "IM1", "kind": "Code | NotCode | Commands | Testing | Build",
-                              "testType": "Unit | Integration | E2E | Harness (Testing only)",
-                              "instructions": "{{O1.1}} ...", "dependsOn": ["IM0"],
+            "operationsIntro": "...", "contracts": [ { "id": "CT1", "...": "..." } ], "apis": [ { "id": "API1" } ],
+            "filesystem": { "intro": "...", "files": [ { "id": "FS1", "path": "...", "status": "Added" } ] },
+            "operations": [ { "id": "IM1", "kind": "Code", "instructions": "{{O1.1}} ...", "dependsOn": ["IM0"],
                               "files": [], "refObligations": ["O1"], "refElements": ["O1.1"], "knowledgeReferences": [1],
-                              "realizes": ["D1"],
                               "branches": [], "negatives": [], "exceptions": [],
                               "implementationStatus": "null | InProgress | Implemented | Completed" } ] },
   "servedOperation": null,
@@ -75,7 +72,7 @@ Element `kind` is exactly one of `Direction | Conjunct | Quantifier | Guard | Ef
 Table rules:
 
 - **Obligations.** `origin` defaults to `Requirement`. On `Update`, an element with `id` is patched in place, an element without `id` is appended with the next element number, and an element with `removed: true` is deleted; a removed element number is never reused.
-- **Decisions.** Options get `D#.1`, `D#.2`, ... in the order sent. Exactly one option is chosen: on `Update`, the option sent with `chosen: true` becomes the only chosen one, every option keeps its id, and a new option without id is appended. `highlight` is honoured on `Add`. A decision carries no link to its operations: an operation cites it in `realizes`, and `realizedIn` is refused as an unknown property. `blocking`, its 3.0.0 name, is still accepted (the captured `design_decisions` sends it) and reads as `highlight` everywhere: the checks, the projections and the document.
+- **Decisions.** Options get `D#.1`, `D#.2`, ... in the order sent. Exactly one option is chosen: on `Update`, the option sent with `chosen: true` becomes the only chosen one, every option keeps its id, and a new option without id is appended. `highlight` is honoured on `Add`. `blocking`, its 3.0.0 name, is still accepted (the captured `design_decisions` sends it) and reads as `highlight` everywhere: the checks, the projections and the document.
 - **File references.** One row per symbol. Adding an existing symbol merges into that row; a `details` path missing from `files` is added to `files`. `scope` is `Production` (what governs the production code, the default for a row added without one) or `Test` (the test infrastructure: the test class to imitate, the base, helpers, builders, fakes); an update that sends no scope keeps the stored one.
 
 ## knowledge-references
@@ -116,40 +113,28 @@ When the design carries obligations, the write is refused unless `gaps` anchors 
 
 Response: `{"status": "Draft", "currentState": true, "gaps": true}`, or `{"status": "Rejected", "errors": [ { "rule", "element", "detail" } ]}`.
 
+## design-schema
+
+`#capability:design-schema` — no arguments. Return the JSON schema of the design requests, generated from the model (`runtime/assets/`): the argument shape of every design operation, every field, the allowed enum values, and the failure arms `negatives` and `exceptions` kept distinct. Call it once before the first `#capability:design-submit`.
+
 ## design-submit
 
 `#capability:design-submit` — arguments `sessionId`, `jobId`, `request`:
 
 ```json
 { "header": { "title": "...", "generator": "orchestrator" },
+  "intros": { "filesystem": "...", "operations": "..." },
   "add":    { "contracts": [], "apis": [], "files": [], "operations": [] },
   "patch":  { "contracts": [], "apis": [], "files": [], "operations": [] },
   "delete": { "contracts": [1], "apis": [], "files": [], "operations": [] } }
 ```
 
-An operation row:
-
-```json
-{ "id": 1, "operation": "...", "kind": "Code", "testType": "Unit", "instructions": "{{O1.1}} ...", "dependsOn": [1],
-  "files": ["src/..."], "refObligations": [1], "refElements": [ { "obligation": 1, "element": 1 } ],
-  "knowledgeReferences": [1], "realizes": ["D1"], "source": "Knowledge", "sourceRef": "...",
-  "branches": [ { "question": "...", "yes": { "label": "...", "note": "..." }, "no": { "label": "...", "note": "..." }, "why": "..." } ],
-  "negatives": [ { "cause": "...", "behavior": "...", "impact": "High" } ],
-  "exceptions": [ { "trigger": "...", "recovery": "..." } ] }
-```
-
-- `kind`: `Code` writes production source (wiring included); `NotCode` acts on non-source files or writes no output; `Commands` starts long-running commands (generators, migrations); `Testing` writes and runs testing code; `Build` runs the build, the compiler-error checks, the linter and the static verifications.
-- `testType` (`Unit`, `Integration`, `E2E`, `Harness`) is declared by a `Testing` operation and by no other.
-- Ids are cardinal (`1, 2, 3`); the runtime prefixes them by table (`CT#`, `API#`, `FS#`, `IM#`). Cross references are cardinal: `dependsOn` → `IM#`, `refObligations` → `O#`, `refElements` `{obligation, element}` → `O#.k`. `realizes` carries the `D#` ids of the decisions the operation realizes.
-- `add` appends rows whose ids are new; `patch` updates existing rows field by field; `delete` removes rows. One call may combine all three, and non-empty `header` fields are applied.
-- **Partial calls.** A call may carry only a subset of the rows, and several calls may run in parallel, each with a disjoint interval of cardinal ids. A partial call is accepted: the rows apply, and the response reports what the design still lacks. The completeness gate is the approval (`#capability:design-approve`).
+- Ids are cardinal (`1, 2, 3`); the runtime prefixes them by table (`CT#`, `API#`, `FS#`, `IM#`). Cross references are cardinal: `dependsOn` → `IM#`, `refObligations` → `O#`, `refElements` `{obligation, element}` → `O#.k`.
+- `add` appends rows whose ids are new; `patch` updates existing rows field by field; `delete` removes rows. One call may combine all three, and non-empty `header`/`intros` fields are applied.
 - An invalid row is not applied and is listed in `rejected` with its path and reason; valid rows in the same call are applied. Re-send only the rejected rows: re-sending applied rows answers `already exists`.
 - An operation's `knowledgeReferences` lists the kids it needs (cardinal integers, stored as sent). A row naming a kid that no knowledge reference registers is rejected with the unknown kids; register the reference first.
-- A row whose `realizes` names a decision that does not exist is rejected in the same way. A decision added after the plan is linked by `patch`ing the operation that realizes it.
 - An empty request is refused.
 - `header.requirementRef`, the 3.0.0 reference of the requirement lock, is still accepted and stored; 3.0.1 sends none, because the obligations are the requirement.
-
-Lab-authored, because the instruction states the parallel calls and leaves their mechanics open: design calls take a lock shared between runtime processes (`<runtime root>/.design-lock`, broken after 120 seconds when a process died holding it), so parallel calls run one after the other and none loses rows. The rows of one call keep the order they were sent in and go before the first stored row with a higher id, so disjoint ranges build the same plan whichever call arrives first. Stored rows are never reordered.
 
 Response: `{"status": "Draft", "applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}}`. `errors`, `warnings` and `coverage` are the full mechanical checks.
 
@@ -185,15 +170,15 @@ Snapshot the workspace: every file `git ls-files -co --exclude-standard` lists (
 
 The DESIGN Implementation step realizes the approved plan one operation at a time. A FAST_IMPLEMENTATION job design has no operation, so the loop answers `complete` there. The orchestrator never receives the operations: the implementor asks the runtime for them.
 
-**Weight classes.** Every operation has a weight class, computed from its `kind`: `Code` and `NotCode` are `authoring`; `Commands` is `commands`; `Testing` is `testing`; `Build` is `build`. The weight is metadata only: the plan is served in the order the agent declared it, the runtime never reorders it, and `dependsOn` is the only precedence constraint: an operation is servable only when every operation it `dependsOn` is `Implemented` or `Completed`. `authoring` and `build` operations form the automatic batch; `commands` and `testing` operations need the developer's explicit authorisation. The kinds, the batch and the four classes come from the 3.0.1 run-3 instructions and review document. Lab-authored: an unknown kind, such as one stored in a design written before these kinds, is treated as `commands`.
+**Weight classes.** Every operation has a weight class, computed from its `kind`: `Code`, `Wiring`, `Documentation` and `Changelog` are `authoring`; `Generator`, `Migration` and `Procedure` are `external-execution`; `UnitTest` is `unit-test`; `IntegrationTest` is `integration-test`; `Verification` is `verification`. The classes are served in the order `authoring`, `external-execution`, `unit-test`, `integration-test`, `verification`; inside a class the list order is kept, and a declared dependency always prevails: an operation is servable only when every operation it `dependsOn` is `Implemented` or `Completed`. Only `authoring` operations form the automatic batch; every other class needs the developer's explicit authorisation; `verification` is never served. The 3.0.1 review document names the five classes and their order and renders a `UnitTest` operation as `unit-test`; it also has an `integration-test` kind, read here as `IntegrationTest`. Lab-authored: the other assignments, and an unknown kind treated as `external-execution`. The plan declares at most one `UnitTest` operation (contracts/design-checks.md).
 
 `#capability:design-implementation-operation` — arguments `sessionId`, `jobId`, optional `operationId` (`IM#`). Answers one of:
 
-- **The operation to implement now**, in markdown: `# Operation IM# — <title>`, its kind (with its `testType`), weight class and authorisation, `dependsOn`, files, the elements it implements and the decisions it realizes, its instructions with the `{{O#.k}}` placeholders, its failure arms, and under `## Knowledge references` the resolved text of every kid it declares (with the document path, the range and the scope). Serving sets the flag to `InProgress` and records the operation as the served one.
-- **`batch-complete: ...`** — without `operationId`, no automatic operation is servable but operations remain open; with `operationId`, the authorised operation is already `Implemented` or `Completed`, so the delegation's work is done. A closed operation is never reopened.
-- **`complete: ...`** — every operation is `Implemented` or `Completed`.
+- **The operation to implement now**, in markdown: `# Operation IM# — <title>`, its kind, weight class and authorisation, `dependsOn`, files and the elements it implements, its instructions with the `{{O#.k}}` placeholders, its failure arms, and under `## Knowledge references` the resolved text of every kid it declares (with the document path, the range and the scope). Serving sets the flag to `InProgress` and records the operation as the served one.
+- **`batch-complete: ...`** — without `operationId`, no `authoring` operation is servable but operations that are not `Verification` remain open; with `operationId`, the authorised operation is already `Implemented` or `Completed`, so the delegation's work is done. A closed operation is never reopened.
+- **`complete: ...`** — every operation that is not `Verification` is `Implemented` or `Completed`.
 
-Without `operationId` the runtime serves the first servable automatic operation in plan order. With `operationId` it serves that operation on the developer's authorisation, whatever its class, and refuses it when it does not exist or depends on an operation that is not done. While an operation is served and not closed, every call answers that same operation again (and refuses a different `operationId`): one operation at a time. The answer never lists, counts or names the operations that follow.
+Without `operationId` the runtime serves the first servable `authoring` operation in weight order. With `operationId` it serves that operation on the developer's authorisation, whatever its class, and refuses it when it does not exist, is a `Verification` operation, or depends on an operation that is not done. While an operation is served and not closed, every call answers that same operation again (and refuses a different `operationId`): one operation at a time. The answer never lists, counts or names the operations that follow.
 
 `#capability:design-implementation-operation-close` — arguments `sessionId`, `jobId`. Closes the served operation: its flag becomes `Implemented` and the next operation becomes reachable. Refused when no operation is served. Response: `IM# closed as Implemented. ...`.
 

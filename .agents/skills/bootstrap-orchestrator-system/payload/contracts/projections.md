@@ -18,8 +18,8 @@ status: Draft | plan: ... | approved: ... | title: ... | requirement: <3.0.0 req
 ## Contracts           - CT1 | interface | module: ... | file: ... | promises: ... | signature: ... | premortem: ... | confidence: ... | evidence: ...
 ## Public APIs         - API1 | POST /path | purpose: ... | auth: ... | request: ... | responses: ...
 ## Filesystem          - FS1 | added | <path> | module: ... | reason: ... | change: ... | impact: ...
-## Operations          - IM1 | code | weight: authoring | <operation> | status: ... | dependsOn: ... | files: ... | implements: ... | knowledge: kid 1, kid 2 | realizes: D1 | instructions: ... | branch/negative/exception arms  (a Testing operation adds "| test type: Unit" after its kind)
-## Decisions           - D1 | requirements | highlight: false | topic: ... | question: ... | context: ... | why: ... | how: ... | realized by: IM1 | options: D1.1 (chosen): ... || D1.2: ...
+## Operations          - IM1 | code | weight: authoring | <operation> | status: ... | dependsOn: ... | files: ... | implements: ... | knowledge: kid 1, kid 2 | instructions: ... | branch/negative/exception arms
+## Decisions           - D1 | requirements | highlight: false | topic: ... | question: ... | context: ... | why: ... | how: ... | realizedIn: ... | options: D1.1 (chosen): ... || D1.2: ...
 ## History             - IT1 | closed | request: ... | created: ... | closed: ... | files: added <path>; modified <path> | verifications: ... | blocks: ... | notes: ...
 ## Coverage            - obligations 3/3 | elements 7/7
 ```
@@ -35,28 +35,20 @@ On a FAST_IMPLEMENTATION job the snapshot projects its job design (obligations, 
 ```text
 # DESIGN SNAPSHOT — <design title, or (untitled)>
 ## File references for the code
-- FR1 | symbol: ... | files: <path>, <path>                (or "- (none)")
-  - file: <path> | why: ... | purpose: ...
+- FR1 | scope: production | symbol: ... | files: ...      (or "- (none)")
 
 ## File references for the tests
 - (none)
 
 ## Contracts
-- CT1 | interface | module: ... | file: ... | promises: ... | signature: ...
-
 ## Public APIs
-- API1 | POST /path | purpose: ... | auth: ... | request: ... | responses: ...
-
 ## Filesystem
-- FS1 | modified | <path> | module: ... | reason: ... | change: ... | impact: ...
-
 ## Decisions
-- D1 | codebase | highlight: true | topic: ...
 ```
 
-The file references are split by scope (`Production` rows for the code, `Test` rows for the tests); every section is printed, empty or not, with a blank line before each heading. A decision is projected with its id, source, highlight and topic only: the implementor needs to know which decision a piece of code realizes, not to re-read its options. It deliberately carries no operation, no obligation and no knowledge reference: operations are served one at a time by `#capability:design-implementation-operation`, each with the text of its own knowledge references. A long context is served in parts that start at a section heading or an item.
+The file references are split by scope (`Production` rows for the code, `Test` rows for the tests); the other sections keep the snapshot's line format and are printed, empty or not, with a blank line before each heading. It deliberately carries no operation, no obligation and no knowledge reference: operations are served one at a time by `#capability:design-implementation-operation`, each with the text of its own knowledge references. A long context is served in parts that start at a section heading or an item.
 
-The heading, the section order and the rows follow the 3.0.1 run-3 capture, taken against a populated design. Its contract also lists the overview, obligations and open points among the sections, but its response has none of them; the response is followed. Its note says the heading is `(untitled)` whatever the design title is, but the captured design has no title, so the note is unverified and the runtime keeps printing the title. Lab-authored: the `## Public APIs` row, which the capture shows only empty.
+The heading, the section order and the empty `- (none)` rows follow the 3.0.1 capture (a FAST_IMPLEMENTATION job with an empty design). The capture's note also lists the overview, obligations and open points among the sections, but its response has none of them; the response is followed. Lab-authored: the line format of the rows, which the capture shows only empty.
 
 ## verification-view
 
@@ -93,4 +85,4 @@ Design document (<status>): <absolute path>
 
 `<status>` is `Draft`, `Approved`, or `Approved, modified after approval`. Parse the path out of the line.
 
-`design.html` is one self-contained file: `runtime/assets/design-review.html` with the design and its check results inlined as JSON, rendered client-side. Sections: Overview, Decisions (highlighted first), Implementation plan (each operation with its kind, test type, weight, status, knowledge references and the decisions it realizes), Filesystem, Contracts (public APIs and internal contracts), Obligations, File references (with their scope), Knowledge references (each kid with its scope, file id, range and the text resolved from the knowledge document at render time, or why it cannot be resolved), History, Checks. The sections form a numbered reading path and are shown one at a time; every design ID (`D3`, `D3.1`, `O1.2`, `IM4`, `FS7`, …) is addressable as `design.html#<ID>`, and any mention of a known ID links to it. It supports light and dark themes, prints every section, and opens from the file system without a server.
+`design.html` is one self-contained file: `runtime/assets/design-review.html` with the design and its check results inlined as JSON, rendered client-side. Sections: Overview, Decisions (highlighted first), Implementation plan (each operation with its kind, weight, status and knowledge references), Filesystem, Contracts (public APIs and internal contracts), Obligations, File references (with their scope), Knowledge references (each kid with its scope, file id, range and the text resolved from the knowledge document at render time, or why it cannot be resolved), History, Checks. The sections form a numbered reading path and are shown one at a time; every design ID (`D3`, `D3.1`, `O1.2`, `IM4`, `FS7`, …) is addressable as `design.html#<ID>`, and any mention of a known ID links to it. It supports light and dark themes, prints every section, and opens from the file system without a server.

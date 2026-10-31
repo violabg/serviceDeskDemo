@@ -8,20 +8,19 @@
 /* Tokens. Dark follows the system unless the reader picked a theme; the ink is blue-black, the references cyanotype. */
 :root {
   --ground: #f3f5f8; --panel: #ffffff; --raised: #ffffff; --sunk: #f1f3f7; --line: #d8dde6; --line-soft: #e6e9ef;
-  --ink: #18202b; --muted: #515b6d; --faint: #646e7f;
+  --ink: #18202b; --muted: #576173; --faint: #8b94a3;
   --ref: #2457b0; --ok: #137a4e; --warn: #985a00; --risk: #c2352b; --violet: #6644d6;
-  --overlay: rgba(16, 22, 32, .42); --shadow: none;
+  --overlay: rgba(16, 22, 32, .42); --shadow: 0 1px 2px rgba(16, 22, 32, .06);
   --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, "Iowan Old Style", Georgia, serif;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
-  --bar-h: 58px;
-  --measure: 68ch;
+  --bar-h: 68px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --ground: #0f141b; --panel: #151b24; --raised: #1b222d; --sunk: #0c1016; --line: #273041; --line-soft: #1f2733;
-    --ink: #e6e9ef; --muted: #a5afbf; --faint: #8b95a7;
+    --ink: #e6e9ef; --muted: #9aa5b6; --faint: #6b7587;
     --ref: #8db8ff; --ok: #4cd4a0; --warn: #f2b54e; --risk: #ff7d6e; --violet: #b9a3ff;
     --overlay: rgba(4, 6, 10, .7); --shadow: none;
     color-scheme: dark;
@@ -29,7 +28,7 @@
 }
 :root[data-theme="dark"] {
   --ground: #0f141b; --panel: #151b24; --raised: #1b222d; --sunk: #0c1016; --line: #273041; --line-soft: #1f2733;
-  --ink: #e6e9ef; --muted: #a5afbf; --faint: #8b95a7;
+  --ink: #e6e9ef; --muted: #9aa5b6; --faint: #6b7587;
   --ref: #8db8ff; --ok: #4cd4a0; --warn: #f2b54e; --risk: #ff7d6e; --violet: #b9a3ff;
   --overlay: rgba(4, 6, 10, .7); --shadow: none;
   color-scheme: dark;
@@ -42,36 +41,32 @@ body { margin: 0; background: var(--ground); color: var(--ink); font: 15px/1.55 
 p { margin: 0 0 .75em; }
 p:last-child { margin-bottom: 0; }
 code, pre, .mono { font-family: var(--mono); }
-code { font-size: .84em; background: color-mix(in srgb, var(--ref) 8%, transparent); padding: .1em .32em; border-radius: 3px; overflow-wrap: anywhere; }
+code { font-size: .86em; background: var(--sunk); border: 1px solid var(--line-soft); padding: .02em .35em; border-radius: 4px; overflow-wrap: anywhere; }
 pre { margin: 0; font-size: 13px; line-height: 1.65; background: var(--sunk); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; overflow-x: auto; white-space: pre; }
 button { font: inherit; color: inherit; }
 
 /* ---------- Header: identity, tools, approval. It stays in view. ---------- */
-.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px 20px; min-height: 58px; padding: 7px 20px 7px 24px; background: var(--panel); border-bottom: 1px solid var(--line); }
-.ident { flex: 1 1 0; min-width: 0; }
-.ident h1 { margin: 0; font: 600 18px/1.3 var(--serif); letter-spacing: -.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* One line that truncates: the full text is the element's tooltip. */
-.ident .sub { margin: 1px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ident .sub > span + span { margin-left: 14px; }
-.ident .sub .mono { font-size: 12px; }
-.tools { flex: none; display: flex; align-items: center; gap: 4px; }
-.tools .gap { flex: none; width: 1px; height: 20px; background: var(--line); margin: 0 6px; }
-.tool { display: inline-flex; flex: none; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid transparent; background: transparent; color: var(--muted); font-size: 13px; cursor: pointer; text-decoration: none; white-space: nowrap; }
-.tool:hover { color: var(--ink); background: var(--sunk); }
-.dialog-head .tool { border-color: var(--line); }
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; min-height: var(--bar-h); padding: 10px 24px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.ident { flex: 1 1 18rem; min-width: 0; }
+.ident h1 { margin: 0; font: 600 19px/1.25 var(--serif); letter-spacing: -.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ident h1 .kind { color: var(--muted); font-weight: 400; }
+.ident .sub { margin: 3px 0 0; display: flex; flex-wrap: wrap; gap: 2px 14px; color: var(--muted); font-size: 12.5px; }
+.ident .sub span + span { position: relative; }
+.ident .sub span + span::before { content: ""; position: absolute; left: -8px; top: 50%; width: 3px; height: 3px; margin-top: -1px; border-radius: 50%; background: var(--faint); }
+.tools { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.tools .gap { width: 1px; height: 20px; background: var(--line); margin: 0 6px; }
+.tool { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 12.5px; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.tool:hover { color: var(--ink); border-color: var(--muted); }
 .tool[aria-current="true"] { color: var(--ink); border-color: var(--ref); background: color-mix(in srgb, var(--ref) 10%, transparent); }
-.tool .n { font: 600 12px var(--sans); font-variant-numeric: tabular-nums; color: var(--faint); }
-.lbl-short { display: none; }
-@media (min-width: 1081px) and (max-width: 1320px) { .lbl-long { display: none; } .lbl-short { display: inline; } }
+.tool .n { font: 600 11px var(--mono); color: var(--faint); }
 .tool.err .n { color: var(--risk); }
 .tool.warn .n { color: var(--warn); }
 .tool.ok .n { color: var(--ok); }
 
 /* The approval stamp: the one loud mark on the page. */
-#status { flex: none; display: flex; padding: 3px; }
-.stamp { display: inline-flex; flex-direction: column; align-items: center; padding: 2px 11px 3px; border: 1.5px solid currentColor; border-radius: 5px; outline: 1px solid currentColor; outline-offset: 2px; color: var(--muted); line-height: 1.2; white-space: nowrap; }
-.stamp b { font: 700 13px var(--sans); font-variant-caps: all-small-caps; letter-spacing: .1em; }
-.stamp small { font: 500 11.5px var(--sans); font-variant-numeric: tabular-nums; }
+.stamp { display: inline-flex; flex-direction: column; align-items: center; padding: 3px 12px 4px; border: 1.5px solid currentColor; border-radius: 7px; outline: 1px solid currentColor; outline-offset: 2px; color: var(--muted); line-height: 1.15; white-space: nowrap; transform: rotate(-1.5deg); }
+.stamp b { font: 700 13px var(--sans); font-variant-caps: all-small-caps; letter-spacing: .12em; }
+.stamp small { font: 11px var(--mono); opacity: .85; }
 .stamp.approved { color: var(--ok); background: color-mix(in srgb, var(--ok) 8%, transparent); }
 .stamp.draft { color: var(--warn); background: color-mix(in srgb, var(--warn) 8%, transparent); }
 .stamp.changed { color: var(--warn); }
@@ -79,31 +74,29 @@ button { font: inherit; color: inherit; }
 /* ---------- Shell: the path on the left, one stage at a time on the right. ---------- */
 .shell { display: grid; grid-template-columns: 268px minmax(0, 1fr); min-height: calc(100vh - var(--bar-h)); }
 .path { position: sticky; top: var(--bar-h); align-self: start; height: calc(100vh - var(--bar-h)); overflow-y: auto; padding: 18px 14px 28px; background: var(--panel); border-right: 1px solid var(--line); }
-.path-title { margin: 0 0 10px 10px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.path-title { margin: 0 0 10px 10px; font-size: 12px; font-weight: 600; color: var(--faint); }
 .path ol { list-style: none; margin: 0; padding: 0; }
 .path li + li { margin-top: 3px; }
 .step { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 0 11px; align-items: start; padding: 10px 10px 11px; border: 1px solid transparent; border-radius: 9px; color: var(--ink); text-decoration: none; }
-.step:hover { background: var(--sunk); }
-.step[aria-current="true"] { background: color-mix(in srgb, var(--ref) 9%, transparent); }
-.step .num { width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 7px; font: 600 13px var(--sans); font-variant-numeric: tabular-nums; color: var(--muted); }
-.step[aria-current="true"] .num { border-color: var(--ref); background: var(--ref); color: var(--panel); }
-.step[aria-current="true"] .step-label { font-weight: 600; }
-.step[aria-current="true"] .hint { font-weight: 400; }
+.step:hover { background: var(--raised); }
+.step[aria-current="true"] { background: var(--raised); border-color: color-mix(in srgb, var(--ref) 70%, transparent); }
+.step .num { width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 7px; font: 600 12px var(--mono); color: var(--muted); }
+.step[aria-current="true"] .num { border-color: var(--ref); color: var(--ref); }
 .step-label { font-size: 14.5px; line-height: 1.3; padding-top: 3px; }
-.step .hint { display: block; margin-top: 2px; font-size: 13px; line-height: 1.4; color: var(--muted); }
-.step .cnt { margin-top: 4px; font: 600 12px var(--sans); font-variant-numeric: tabular-nums; color: var(--faint); }
+.step .hint { display: block; margin-top: 2px; font-size: 12.5px; line-height: 1.4; color: var(--muted); }
+.step .cnt { margin-top: 4px; font: 600 11px var(--mono); color: var(--faint); }
 .step .cnt.warn { color: var(--warn); }
 
 main { min-width: 0; padding: 34px 44px 90px; }
-.stage { max-width: 54rem; }
+.stage { max-width: none; }
 .stage[hidden] { display: none; }
 .stage-head { margin-bottom: 26px; }
 .stage-head h2 { margin: 0 0 10px; font: 600 32px/1.15 var(--serif); letter-spacing: -.01em; }
-.stage-head .lead { max-width: var(--measure); font: 17px/1.6 var(--serif); color: var(--muted); }
+.stage-head .lead { font: 17px/1.6 var(--serif); color: var(--muted); }
 .group-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin: 38px 0 14px; }
 .group-head:first-child { margin-top: 0; }
 .group-head h3 { margin: 0; font: 600 17px/1.3 var(--sans); }
-.group-head .n { font: 13px var(--sans); font-variant-numeric: tabular-nums; color: var(--muted); }
+.group-head .n { font: 12px var(--mono); color: var(--muted); }
 .group-head p { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 13.5px; }
 
 /* ---------- Badges: every fact about an item is a badge on its first line. ---------- */
@@ -125,25 +118,23 @@ main { min-width: 0; padding: 34px 44px 90px; }
 .badge.kv > .v { color: var(--ink); font-weight: 600; }
 
 /* ID references link to their item; element references carry their condition as a tooltip. */
-.id-text { font: 600 13px var(--sans); font-variant-numeric: tabular-nums; }
-.idref { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border: 1px solid color-mix(in srgb, var(--ref) 45%, transparent); border-radius: 999px; font: 600 12px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ref); text-decoration: none; white-space: nowrap; background: transparent; cursor: pointer; vertical-align: 1px; }
+.idref { display: inline-flex; align-items: center; height: 21px; padding: 0 8px; border: 1px solid color-mix(in srgb, var(--ref) 45%, transparent); border-radius: 999px; font: 500 11.5px/1 var(--mono); color: var(--ref); text-decoration: none; white-space: nowrap; background: transparent; cursor: pointer; vertical-align: 1px; }
 .idref:hover { background: color-mix(in srgb, var(--ref) 12%, transparent); }
-.idref.file { max-width: 100%; overflow: hidden; text-overflow: ellipsis; border-style: dashed; color: var(--muted); border-color: var(--line); font: 500 12px/1 var(--mono); }
+.idref.file { max-width: 100%; overflow: hidden; text-overflow: ellipsis; border-style: dashed; color: var(--muted); border-color: var(--line); }
 .idref.file:hover { color: var(--ink); border-color: var(--muted); }
-.sym { font: .84em var(--mono); border-bottom: 1px dotted var(--faint); cursor: help; }
+.sym { font: .86em var(--mono); border-bottom: 1px dotted var(--muted); cursor: help; }
 .refs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .none { color: var(--faint); font-style: italic; }
 
 /* ---------- Cards: one argument each. ---------- */
-.card { position: relative; background: var(--raised); border: 1px solid var(--line); border-radius: 8px; padding: 18px 24px 20px; margin-bottom: 16px; box-shadow: var(--shadow); scroll-margin-top: calc(var(--bar-h) + 16px); }
-.card.highlight { border-color: color-mix(in srgb, var(--risk) 60%, var(--line)); }
+.card { position: relative; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 16px 22px 18px; margin-bottom: 16px; box-shadow: var(--shadow); scroll-margin-top: calc(var(--bar-h) + 16px); }
+.card.highlight { border-color: color-mix(in srgb, var(--risk) 55%, var(--line)); box-shadow: inset 3px 0 0 var(--risk), var(--shadow); }
 .card-head { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
-.card-id { margin-right: 4px; font: 700 15px var(--sans); font-variant-numeric: tabular-nums; color: var(--ref); text-decoration: none; }
+.card-id { margin-right: 4px; font: 700 14px var(--mono); color: var(--ref); text-decoration: none; }
 .card-id:hover { text-decoration: underline; }
 .card h4 { margin: 0 0 12px; font: 600 19px/1.35 var(--serif); }
-.statement { max-width: var(--measure); margin: 0 0 14px; font: 18px/1.6 var(--serif); }
-.prose { font: 16.5px/1.7 var(--serif); overflow-wrap: anywhere; }
-.prose > p, .prose > ul, .prose > ol, .anchored > p { max-width: var(--measure); }
+.statement { margin: 0 0 14px; font: 18px/1.6 var(--serif); }
+.prose { font: 16.5px/1.68 var(--serif); overflow-wrap: anywhere; }
 .prose ul, .prose ol { margin: 0 0 .75em; padding-left: 1.3em; }
 .prose li { margin-bottom: .25em; }
 /* Text anchored to elements: the anchor sits in a gutter, one row per element. */
@@ -156,10 +147,10 @@ main { min-width: 0; padding: 34px 44px 90px; }
 /* Labelled facts: a label column and its value. */
 .spec { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 9px 16px; margin: 16px 0 0; padding-top: 14px; border-top: 1px dashed var(--line); }
 .spec.flush { border-top: 0; padding-top: 0; margin-top: 0; }
-.spec dt { padding-top: 2px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.spec dt { padding-top: 2px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
 .spec dd { margin: 0; min-width: 0; }
 .spec dd.prose { font-size: 15.5px; line-height: 1.6; }
-.label { margin: 18px 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.label { margin: 18px 0 8px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
 
 /* Decisions: the question, then the chosen answer as the thing to confirm. */
 .question { margin: 0 0 14px; padding: 10px 14px; border-left: 2px solid var(--ref); background: color-mix(in srgb, var(--ref) 7%, transparent); border-radius: 0 8px 8px 0; font: 17px/1.6 var(--serif); }
@@ -170,7 +161,7 @@ main { min-width: 0; padding: 34px 44px 90px; }
 .answer.open .label { color: var(--warn); }
 .option { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 10px; font: 16px/1.6 var(--serif); }
 .option + .option { margin-top: 8px; }
-.option > .mono { padding-top: 3px; font: 600 13px var(--sans); font-variant-numeric: tabular-nums; color: var(--muted); }
+.option > .mono { padding-top: 4px; font-size: 12px; color: var(--muted); }
 .answer .option > .mono { color: var(--ok); font-weight: 700; }
 .others { padding: 0 16px; }
 
@@ -196,7 +187,7 @@ details.edges > summary:hover { color: var(--ink); }
 /* Tables for dense records. */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
-th { text-align: left; white-space: nowrap; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--muted); }
+th { text-align: left; white-space: nowrap; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--line); font-size: 12.5px; font-weight: 600; color: var(--muted); }
 td { text-align: left; vertical-align: top; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line-soft); }
 tr:last-child td { border-bottom: 0; }
 .rule { font: 12.5px var(--mono); white-space: nowrap; }
@@ -235,12 +226,12 @@ dialog[open] { animation: rise .16s ease-out; }
 .dialog-body { padding: 18px 22px 22px; }
 .legend { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 0 18px; margin: 0; }
 .legend dt, .legend dd { margin: 0; padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
-.legend dt { font: 600 13px var(--sans); font-variant-numeric: tabular-nums; color: var(--ref); }
+.legend dt { font: 600 13px var(--mono); color: var(--ref); }
 .legend dd { font-size: 14px; color: var(--muted); }
 
 /* Stage footer: where to go next on the path. */
 .stage-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--line); }
-.stage-nav a { display: flex; flex-direction: column; gap: 2px; text-decoration: none; font-size: 13px; color: var(--muted); }
+.stage-nav a { display: flex; flex-direction: column; gap: 2px; text-decoration: none; font-size: 12.5px; color: var(--muted); }
 .stage-nav a b { font: 600 17px var(--serif); color: var(--ref); }
 .stage-nav a.next { margin-left: auto; text-align: right; }
 
@@ -251,16 +242,9 @@ dialog[open] { animation: rise .16s ease-out; }
 .template-note h1 { margin: 0 0 12px; font: 600 30px var(--serif); }
 .template-note p { font: 17px/1.6 var(--serif); color: var(--muted); }
 
-@media (max-width: 1080px) {
-  .topbar { flex-wrap: wrap; padding: 6px 16px; }
-  .ident { flex-basis: 0; }
-  .tools { order: 3; flex: 1 0 100%; overflow-x: auto; scrollbar-width: none; margin: 0 -10px; padding: 0 0 1px; }
-  .tools .gap { margin: 0 4px; }
-}
-@media (max-height: 560px) {
-  .topbar, .path { position: static !important; }
-}
 @media (max-width: 960px) {
+  .topbar { padding: 10px 16px; gap: 10px; }
+  .tools { order: 3; flex-basis: 100%; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
   .shell { grid-template-columns: minmax(0, 1fr); }
   .path { position: sticky; top: var(--bar-h); z-index: 10; height: auto; padding: 0; border-right: 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
   .path-title { display: none; }
@@ -268,7 +252,7 @@ dialog[open] { animation: rise .16s ease-out; }
   .path li + li { margin-top: 0; }
   .step { display: flex; align-items: center; gap: 8px; padding: 6px 10px; white-space: nowrap; }
   .step .hint, .step .cnt { display: none; }
-  .step .num { width: 22px; height: 22px; font-size: 12px; }
+  .step .num { width: 22px; height: 22px; font-size: 11px; }
   .step-label { padding: 0; font-size: 14px; }
   main { padding: 26px 16px 70px; }
   .stage-head h2 { font-size: 26px; }
@@ -306,7 +290,7 @@ dialog[open] { animation: rise .16s ease-out; }
   <span id="status"></span>
 </header>
 <div class="shell">
-  <nav class="path" aria-label="Design sections"><p class="path-title">Reading path</p><ol id="path"></ol></nav>
+  <nav class="path" aria-label="Design sections"><p class="path-title">Path</p><ol id="path"></ol></nav>
   <main id="main"></main>
 </div>
 <dialog id="legend" aria-labelledby="legend-title">
@@ -368,11 +352,7 @@ dialog[open] { animation: rise .16s ease-out; }
   const opsOfFile = {};
   path.operations.forEach((op) => list(op.files).forEach((p) => { const f = fileFor(p); if (f) (opsOfFile[f.id] = opsOfFile[f.id] || []).push(op.id); }));
   const decisionsOfOp = {};
-  const opsOfDecision = {};
-  path.operations.forEach((op) => {
-    decisionsOfOp[op.id] = list(op.realizes);
-    list(op.realizes).forEach((id) => { (opsOfDecision[id] = opsOfDecision[id] || []).push(op.id); });
-  });
+  design.decisions.forEach((d) => list(d.realizedIn).forEach((id) => { (decisionsOfOp[id] = decisionsOfOp[id] || []).push(d.id); }));
   const decisionsOfFile = (f) => Array.from(new Set(list(opsOfFile[f.id]).flatMap((op) => list(decisionsOfOp[op])))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
   function idLink(id) {
@@ -444,16 +424,14 @@ dialog[open] { animation: rise .16s ease-out; }
   // ---------- Header ----------
   const approved = design.status === "Approved";
   const title = path.title || design.designId;
-  document.getElementById("title").textContent = title;
+  document.getElementById("title").innerHTML = '<span class="kind">Design — </span>' + esc(title);
   document.getElementById("title").title = title;
-  const subtitle = document.getElementById("subtitle");
-  subtitle.innerHTML = [
-    '<span>Design <span class="mono">' + esc(design.designId) + "</span></span>",
+  document.getElementById("subtitle").innerHTML = [
+    '<span class="mono">' + esc(design.designId) + "</span>",
     "<span>" + design.obligations.length + (design.obligations.length === 1 ? " obligation" : " obligations") + "</span>",
     path.generator ? "<span>generated by " + esc(path.generator) + "</span>" : "",
-    design.planName ? '<span>plan <span class="mono">' + esc(design.planName) + "</span></span>" : "",
+    design.planName ? "<span>plan <code>" + esc(design.planName) + "</code></span>" : "",
   ].join("");
-  subtitle.title = Array.from(subtitle.children).map((s) => s.textContent).join(", ");
   document.getElementById("status").innerHTML =
     '<span class="stamp ' + (design.modifiedAfterApproval ? "changed" : approved ? "approved" : "draft") + '" title="' + esc(approved ? "Approved " + when(design.approvedAt) : "Last change " + when(design.updatedAt)) + '"><b>' +
     esc(design.modifiedAfterApproval ? "Changed after approval" : design.status) + "</b><small>" + esc(day(approved ? design.approvedAt : design.updatedAt)) + "</small></span>";
@@ -478,13 +456,13 @@ dialog[open] { animation: rise .16s ease-out; }
     const others = options.filter((o) => o !== chosen);
     const option = (o) => '<div class="option"' + (o.id ? ' id="' + esc(o.id) + '"' : "") + '><span class="mono">' + esc(o.id || "") + "</span><div>" + inline(o.text) + "</div></div>";
     const badges = (highlightedDecision(d) ? badge("Highlight", "solid risk") : "") + (d.source ? facet("source", d.source) : "") +
-      (list(opsOfDecision[d.id]).length ? "" : highlightedDecision(d) ? badge("not realized by code", "dashed") : badge("not realized yet", "warn"));
+      (list(d.realizedIn).length ? "" : highlightedDecision(d) ? badge("not realized by code", "dashed") : badge("not realized yet", "warn"));
     return card(d.id, badges, inline(d.topic),
       (d.question ? '<p class="question">' + inline(d.question) + "</p>" : "") +
       spec([["Context", d.context && prose(d.context), true], ["Why it is asked", d.why && prose(d.why), true], ["How the answer is used", d.how && prose(d.how), true]], "flush context") +
       '<div class="answer' + (chosen ? "" : " open") + '"><p class="label">' + (chosen ? "Answer" : "No answer chosen yet") + "</p>" + (chosen ? option(chosen) : "") + "</div>" +
       (others.length ? '<p class="label">Other answers considered</p><div class="others">' + others.map(option).join("") + "</div>" : "") +
-      (list(opsOfDecision[d.id]).length ? spec([["Realized in", idLinks(opsOfDecision[d.id])]]) : ""),
+      (list(d.realizedIn).length ? spec([["Realized in", idLinks(d.realizedIn)]]) : ""),
       highlightedDecision(d) ? "highlight" : "");
   }
   const highlighted = design.decisions.filter(highlightedDecision);
@@ -525,11 +503,11 @@ dialog[open] { animation: rise .16s ease-out; }
   }
   const opsDone = path.operations.filter((o) => o.implementationStatus === "Completed").length;
   const opsImplemented = path.operations.filter((o) => o.implementationStatus === "Implemented").length;
-  stage("plan", "Implementation plan", "How it is built", "The operations an implementor carries out, in order.",
+  stage("plan", "Implementation plan", "How it is built", path.operationsIntro || "The operations an implementor carries out, in order.",
     path.operations.length, "",
     (path.operations.length ? tally([[path.operations.length, "operations"], opsImplemented && [opsImplemented, "implemented, not verified", "warn"], [opsDone, "completed", opsDone === path.operations.length ? "ok" : ""]]) : "") +
     (path.operations.length ? path.operations.map((op) => card(op.id,
-      badge(op.kind, "ref") + (op.testType ? badge(op.testType) : "") + (weights[op.id] ? facet("weight", weights[op.id].weight, weights[op.id].authorisation) : "") + statusBadge(op.implementationStatus) + badge("from " + String(op.source || "design").toLowerCase()),
+      badge(op.kind, "ref") + (weights[op.id] ? facet("weight", weights[op.id].weight, weights[op.id].authorisation) : "") + statusBadge(op.implementationStatus) + badge("from " + String(op.source || "design").toLowerCase()),
       inline(op.operation),
       prose(op.instructions) + edges(op) +
       spec([
@@ -564,7 +542,7 @@ dialog[open] { animation: rise .16s ease-out; }
     }).join("");
   }
   const added = fsFiles.filter((f) => f.status === "Added").length;
-  stage("filesystem", "Filesystem", "Files modified and added", "The files the design adds or modifies. Open a file to see why it changes.",
+  stage("filesystem", "Filesystem", "Files modified and added", path.filesystem.intro || "The files the design adds or modifies. Open a file to see why it changes.",
     fsFiles.length, "",
     fsFiles.length
       ? tally([[fsFiles.length - added, "modified", "warn"], [added, "added", "ok"], [new Set(fsFiles.map((f) => f.module).filter(Boolean)).size, "modules touched"]]) +
@@ -623,7 +601,7 @@ dialog[open] { animation: rise .16s ease-out; }
             spec([["Applies to", o.class && inline(o.class)], ["Boundaries", o.boundaries && inline(o.boundaries)], ["Source in R", o.sourceRef && "<em>" + inline(o.sourceRef) + "</em>"], ["Carried out by", Object.keys(ops).length && idLinks(Object.keys(ops))]], "flush") +
             (els.length ? '<p class="label">Elements</p>' + table(["Element", "Kind", "Condition", "Carried out by"], els.map((e) => {
               const ref = o.id + "." + e.id;
-              return ['<span class="id-text" id="' + esc(ref) + '">' + esc(ref) + "</span>", badge(e.kind), inline(e.text), carried[ref] ? idLinks(carried[ref]) : badge("open", "warn")];
+              return ['<span class="mono" id="' + esc(ref) + '">' + esc(ref) + "</span>", badge(e.kind), inline(e.text), carried[ref] ? idLinks(carried[ref]) : badge("open", "warn")];
             })) : ""));
         }).join("")
       : empty("No obligations recorded yet."), true);
@@ -675,9 +653,8 @@ dialog[open] { animation: rise .16s ease-out; }
     '<li><a class="step" href="#' + s.id + '" data-to="' + s.id + '"><span class="num">' + (i + 1) + '</span><span class="step-label">' + esc(s.title) +
     '<span class="hint">' + esc(s.hint) + "</span></span>" + (s.count ? '<span class="cnt ' + s.countKind + '">' + esc(s.count) + "</span>" : "<span></span>") + "</a></li>").join("");
   // Consulted stages appear in the header only when they hold something; checks always do.
-  const shortTool = { "file-references": "References", "knowledge-references": "Knowledge" };
   document.getElementById("consult").innerHTML = stages.filter((s) => s.consult && (s.id === "checks" || s.count)).map((s) =>
-    '<a class="tool ' + s.countKind + '" href="#' + s.id + '" data-to="' + s.id + '" title="' + esc(s.title) + '">' + (shortTool[s.id] ? '<span class="lbl-long">' + esc(s.title) + '</span><span class="lbl-short">' + esc(shortTool[s.id]) + "</span>" : esc(s.title)) + '<span class="n">' + esc(s.count) + "</span></a>").join("");
+    '<a class="tool ' + s.countKind + '" href="#' + s.id + '" data-to="' + s.id + '">' + esc(s.title) + '<span class="n">' + esc(s.count) + "</span></a>").join("");
 
   // The header can wrap; the sidebar and anchors sit below whatever height it has.
   const topbar = document.getElementById("topbar");
@@ -738,9 +715,7 @@ dialog[open] { animation: rise .16s ease-out; }
     ["D#.k", "An option of a decision. Name one by its ID to make it the answer."],
     ["Highlight", "A decision where the developer's judgment is most needed. One about the situation, such as a missing input or process, is not realized by code."],
     ["IM#", "An operation: one ordered step of the implementation plan."],
-    ["Operation kind", "What the operation does: Code (production source, wiring included), NotCode (non-source files or no output), Commands (long-running generators or migrations), Testing (unit, integration, E2E or temporary harnesses) or Build (build, error checks and lint)."],
-    ["Testing", "An operation that writes and runs testing code; like Commands, it requires the developer's authorisation."],
-    ["Weight", "The weight class of an operation: authoring, commands, testing or build. It is metadata only: the plan order is the order declared, and a dependency is the only precedence constraint."],
+    ["Weight", "The class an operation is served in: authoring, external-execution, unit-test, integration-test, verification. Only authoring runs without the developer's authorisation; a dependency always comes first."],
     ["Implemented", "An operation the implementor closed that the verifier has not passed yet. Completed means verified."],
     ["FS#", "A file the design adds (A) or modifies (M). Click a file to see why it changes."],
     ["CT#", "An internal contract: what a module promises, with its signature."],

@@ -29,27 +29,20 @@ A placeholder is `{{O#.k}}` (an element) or `{{O#}}` (an obligation without elem
 | `operation-instruction-missing-reference` | an operation declares an element its instructions never name |
 | `operation-instruction-undeclared-reference` | an operation's instructions name an element it does not declare |
 | `operation-instruction-placeholders-crowded` | a placeholder in an operation's instructions is followed by fewer than 4 words |
-| `operation-without-elements` | a `Code` operation declares no element or obligation |
-| `operation-without-failures` | an operation (other than `NotCode`) carries a `Guard`, `Effect` or `StateSemantics` element but states no `negatives` and no `exceptions` |
+| `operation-without-elements` | a `Code` or `Wiring` operation declares no element or obligation |
+| `operation-without-failures` | an operation (other than `Changelog`/`Documentation`) carries a `Guard`, `Effect` or `StateSemantics` element but states no `negatives` and no `exceptions` |
 | `operation-source-without-ref` | an operation sets a `source` other than `Design` without a `sourceRef` |
 | `operation-dependency-unknown` | `dependsOn` names an operation that does not exist |
 | `operation-dependency-order` | `dependsOn` names the operation itself or one scheduled after it |
 | `element-not-realized` | operations exist and no operation carries out an element |
 | `obligation-not-realized` | operations exist and no operation carries out an obligation without elements |
 | `decision-chosen-count` | a decision does not have exactly one chosen option |
-| `decision-realized-unknown` | an operation's `realizes` names a decision that does not exist (a decision deleted after the plan cited it) |
-| `decision-not-realized` | operations exist and no operation cites a decision that is not highlighted in `realizes` |
+| `decision-realized-unknown` | `realizedIn` names an id that does not exist |
+| `decision-not-realized` | operations exist and a decision that is not highlighted has no `IM#` in `realizedIn` |
 | `file-without-operation` | a filesystem row's path is listed by no operation |
-| `build-operation-missing` | operations exist and none is a `Build` operation |
-| `build-operation-multiple` | the plan declares more than one `Build` operation; reported on the second |
-| `build-operation-order` | a `Code` or `NotCode` operation comes after the `Build` operation, or a `Commands` or `Testing` operation before it |
-| `testing-operation-without-type` | a `Testing` operation declares no `testType` |
-| `testing-operations` | two `Testing` operations declare the same `testType`; reported on the second |
-| `operation-test-type-misplaced` | an operation of another kind declares a `testType` |
+| `unit-test-operations` | the plan declares more than one `UnitTest` operation (the served walkthrough: "more than one `UnitTest` operation is a design error"); reported on the second |
 
-The Build and Testing rules are the design errors the served walkthrough states; their slugs are Lab-authored, because no capture shows them.
-
-A highlighted decision (`highlight: true`, or the 3.0.0 `blocking: true`) is exempt from `decision-not-realized`. Before any operation exists, the realization and Build rules do not apply. A partial `#capability:design-submit` is applied whatever these rules report; the design cannot be approved until they pass.
+A highlighted decision (`highlight: true`, or the 3.0.0 `blocking: true`) is exempt from `decision-not-realized`. Before any operation exists, the realization rules do not apply.
 
 ## Warnings
 

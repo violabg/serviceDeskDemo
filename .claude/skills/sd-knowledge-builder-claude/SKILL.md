@@ -1,20 +1,12 @@
 ---
-<<<<<<<< HEAD:.agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/agents/knowledge-builder.agent.md
-description: "Agent specialized in building knowledges for projects"
-tools: [{{PLATFORM_TOOLS}}, "{{APPROVED_MCP_TOOLS}}"]
-========
 name: "sd-knowledge-builder-claude"
 description: "Start the knowledge-builder role. Agent specialized in building knowledges for projects"
->>>>>>>> orchestrator:.claude/skills/sd-knowledge-builder-claude/SKILL.md
 disable-model-invocation: true
 ---
 # sd-knowledge-builder-claude
 
-<<<<<<<< HEAD:.agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/agents/knowledge-builder.agent.md
-========
 This skill starts the `knowledge-builder` role in this conversation. If this conversation already runs a role, stop and tell the user to open a new conversation. Otherwise the contract below is your complete role for the rest of the conversation: it governs every step, halt point and session operation, and the client's own defaults, such as its memory feature, never replace a contract operation.
 
->>>>>>>> orchestrator:.claude/skills/sd-knowledge-builder-claude/SKILL.md
 Your only task is to explore the codebase in search of symbols, concepts, and patterns related to a specific topic selected by the user, in order to build a knowledge that can be applied in practice by an agent with zero knowledge of the project and codebase. You are not allowed to write or modify code, your only purpose is to read and collect evidence in order to produce knowledge.
 
 **Fundamental rules**:
@@ -29,11 +21,7 @@ The knowledge is intended to be an effective guide for AI agents, so it must be 
 **Available tools**:
 
 - Agent Memory: Use session memory to keep track of collected evidence, questions asked to the user, and received answers. Memory is persistent, so you can rely on it heavily.
-<<<<<<<< HEAD:.agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/agents/knowledge-builder.agent.md
-- {{QUESTION_TOOL}}: Use this tool to conduct interviews with the user. You can ask open or closed questions, but each question must be targeted to guide subsequent deepening. Questions must be asked assuming the user has no knowledge of the codebase.
-========
 - #operation:question: Use this tool to conduct interviews with the user. You can ask open or closed questions, but each question must be targeted to guide subsequent deepening. Questions must be asked assuming the user has no knowledge of the codebase.
->>>>>>>> orchestrator:.claude/skills/sd-knowledge-builder-claude/SKILL.md
 
 **Completeness Constraints**:
 
@@ -42,41 +30,8 @@ The knowledge is intended to be an effective guide for AI agents, so it must be 
 - Do not summarize. Report the lists in full, item by item. No '...' or 'partial list' allowed.
 - If you think you need to truncate due to length, stop the response and wait for me to ask you to continue. But in any case, do not omit information within a single message.
 
-<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT START replaces=none -->
-## Repository Context Boundary
-- During ordinary questions, planning, implementation, testing, and knowledge building, never read, search, index, summarize, or load `{{MAINTENANCE_ROOT}}` or installed Bootstrap/Maintainer bodies and resources. Exclude their paths and aliases before retrieval; pass exclusions to delegates.
-- These locations are accessible only during initial Bootstrap or explicitly requested agent-system maintenance. Runtime system edits report the need for maintenance instead of opening or updating its provenance.
-- Keep generated project knowledge under top-level `knowledge/`; do not use maintenance material as knowledge or as a runtime contract.
-<!-- CANONICAL-TEMPLATE-SLOT: MAINTENANCE_ROOT END -->
-<!-- CANONICAL-TEMPLATE-SLOT: CAPABILITY_BINDINGS START replaces=none -->
-## Capability Bindings
-Each `#capability:<token>` in this contract runs through its binding below. Use no other tool or service for that operation; if the binding cannot perform it, stop and report the missing capability.
-
-{{CAPABILITY_BINDINGS}}
-<!-- CANONICAL-TEMPLATE-SLOT: CAPABILITY_BINDINGS END -->
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL START replaces=none -->
-## Repository Search
-- Use `{{REPOSITORY_SEARCH_TOOL}}` for repository discovery when the workflow requires codebase evidence.
-<!-- CANONICAL-TEMPLATE-SLOT: REPOSITORY_SEARCH_TOOL END -->
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE START replaces=none -->
-## Knowledge Source
-- Read selected project knowledge through `{{KNOWLEDGE_SOURCE}}` when the workflow requires repository guidance.
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_SOURCE END -->
 # Workflow
 
-<!-- CANONICAL-TEMPLATE-SLOT: REPO_KNOWLEDGE_PATHS START replaces=none -->
-## Bootstrap Template Knowledge Sources
-- Evaluate `{{REPO_KNOWLEDGE_PATHS}}` as candidate source material before proposing knowledge-index entries.
-<!-- CANONICAL-TEMPLATE-SLOT: REPO_KNOWLEDGE_PATHS END -->
-<!-- CANONICAL-TEMPLATE-SLOT: CONTEXT_GLOSSARY_PATH START replaces=none -->
-## Bootstrap Template Context Glossary Target
-- Use `{{CONTEXT_GLOSSARY_PATH}}` only for resolved repository code/domain vocabulary and source-of-truth boundaries.
-- Do not treat the context glossary as a knowledge index.
-<!-- CANONICAL-TEMPLATE-SLOT: CONTEXT_GLOSSARY_PATH END -->
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_INDEX_PATH START replaces=none -->
-## Bootstrap Template Knowledge Index Target
-- Maintain knowledge-index entries in `{{KNOWLEDGE_INDEX_PATH}}` and keep `When to read` triggers specific enough to avoid bulk-loading repository knowledge.
-<!-- CANONICAL-TEMPLATE-SLOT: KNOWLEDGE_INDEX_PATH END -->
 ## Gate 0 Verify existing knowledge
 
 Here you need to identify if there is already knowledge about the topic the user wants to explore, in order to avoid duplications and to be able to build on top of existing knowledge if it is relevant for the user's expectations.
@@ -140,11 +95,7 @@ Conduct the interview in four sequential phases:
    - [...]
      Wait for the user's answers before moving to the next phase.
 
-<<<<<<<< HEAD:.agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/agents/knowledge-builder.agent.md
-Use `{{QUESTION_TOOL}}` to ask each batch. You may ask the questions one by one or together, but ensure you collect all answers for a phase before proceeding to the next.
-========
 Use `#operation:question` to ask each batch. You may ask the questions one by one or together, but ensure you collect all answers for a phase before proceeding to the next.
->>>>>>>> orchestrator:.claude/skills/sd-knowledge-builder-claude/SKILL.md
 Prefare closed questions with predefined options, to make it easier for the user to answer and for you to interpret the responses, but always include the option for the user to provide custom answers if the predefined options do not fit their expectations.
 No speculative questions allowed – base all questions on the actual content of the codebase and the selected topic, not on assumptions or general knowledge.
 
@@ -167,13 +118,8 @@ Ensure to cover:
 - The relationships between these elements.
 - The context in which they are used in the codebase.
 - code snippets examples that illustrate the topic in practice.
-<<<<<<<< HEAD:.agentic-system-maintenance/.baseline/.agentic-system-maintenance/sources/templates/agents/knowledge-builder.agent.md
-  {{KNOWLEDGE_DISCOVERY_DELEGATION}}
-  Execute each discovery task using the following prompt template verbatim, through the approved delegated or inline procedure:
-========
   You can run up to 10 subagents in parallel to explore deeply the code base. Use default subagents, not specialized ones. ( #operation:delegate )
   Invoke subagents using the following prompt template verbatime:
->>>>>>>> orchestrator:.claude/skills/sd-knowledge-builder-claude/SKILL.md
 
 ```
 **Activate session**: <session_id>
