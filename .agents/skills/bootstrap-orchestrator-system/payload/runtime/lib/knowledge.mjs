@@ -116,24 +116,34 @@ export function read(ctx, args) {
   const entries = buildCatalog(ctx);
   const ids = idsOf(args);
   const parts = [];
-  const served = [];
+  const served = new Map();
   for (const id of ids) {
     const entry = entries.find((e) => e.file_id === id);
     if (!entry) {
       parts.push(`# file_id ${id}\n(not found in the current index: call knowledge-catalog again, file ids change on rebuild)`);
       continue;
     }
-    served.push(entry.path);
+    served.set(id, entry.path);
     // Lab-authored: every line carries its number, so a knowledge reference can name its range (s to e).
     const numbered = documentLines(ctx, entry.path).map((line, index) => `${index + 1}| ${line}`).join("\n");
     parts.push(`# file_id ${id} — ${entry.title}\n${numbered}`);
   }
-  recordKnowledgeReads(ctx, arg(args, "sessionId"), served);
-  // A part never splits a document: it starts only at a `# file_id` heading.
+  const sessionId = arg(args, "sessionId");
+  const session = sessionId ? ` --sessionId ${sessionId}` : "";
+  // A part starts at a `# file_id` heading. A document longer than one part continues under the same heading.
   return servePart(`${parts.join("\n\n---\n\n")}\n`, args, {
     tool: "knowledge-read",
+    limit: ctx.partLimit,
     starts: (line) => /^# file_id \d+/.test(line),
-    next: (k) => `call knowledge-read again with the same file ids and part ${k} (CLI: --fileIds ${ids.join(",")} --part ${k}).`,
+    next: (k) => `call knowledge-read again with the same file ids and part ${k} (CLI: --fileIds ${ids.join(",")}${session} --part ${k}).`,
+    // A document counts as read when the part holding its last line is served, not when it was requested.
+    onServed: (n, pages) => {
+      const idsIn = (page) => new Set([...page.matchAll(/^# file_id (\d+)/gm)].map((m) => Number(m[1])));
+      const later = new Set(pages.slice(n).flatMap((page) => [...idsIn(page)]));
+      const finished = [...idsIn(pages[n - 1])].filter((id) => !later.has(id));
+      const paths = finished.map((id) => served.get(id)).filter(Boolean);
+      if (paths.length) recordKnowledgeReads(ctx, sessionId, paths);
+    },
   });
 }
 

@@ -1,11 +1,12 @@
 // Loads and validates the answers file Bootstrap writes after the decision register, and derives the slot values.
+import { isHiddenLocation } from "./migrate.mjs";
 import { InstallError, isOutside } from "./util.mjs";
 
 const repoLocations = ["runtimeRoot", "knowledgeRoot", "maintenanceRoot", "guideRoot"];
 const defaults = {
-  runtimeRoot: ".agentic-system",
+  runtimeRoot: "agentic-system",
   knowledgeRoot: "knowledge",
-  maintenanceRoot: ".agentic-system-maintenance",
+  maintenanceRoot: "agentic-system-maintenance",
   guideRoot: "docs/agentic-system",
   userRuntimeRoot: "~/.agentic-system",
   documentationTemplates: "user",
@@ -28,6 +29,9 @@ export function normalizeAnswers(raw, profiles) {
   const locations = { ...defaults, ...raw.locations };
   for (const key of Object.keys(locations)) if (typeof locations[key] === "string") locations[key] = trim(locations[key]);
   for (const key of repoLocations) need(!isOutside(locations[key]), `answers.locations.${key} must be a repository-relative path`);
+  for (const key of ["runtimeRoot", "maintenanceRoot", "guideRoot", "sessionsRoot"]) {
+    need(!isHiddenLocation(locations[key]), `answers.locations.${key} is '${locations[key]}': a system folder in the repository must be visible, so its name must not start with a dot. For an existing installation run: node install.mjs migrate plan`);
+  }
   need(["user", "workspace"].includes(locations.documentationTemplates), "answers.locations.documentationTemplates must be user or workspace");
   if (raw.prefix !== "") need(/^[a-z0-9][a-z0-9-]*$/.test(raw.prefix), "answers.prefix may hold lowercase letters, digits and hyphens only");
 
@@ -46,12 +50,9 @@ export function normalizeAnswers(raw, profiles) {
     const delegation = env.delegation ?? "native";
     need(["native", "subprocess"].includes(delegation), `${where}.delegation must be native or subprocess`);
     if (delegation === "subprocess") need(Boolean(profile?.delegation.subprocess), `${where}: ${env.profile} has no subprocess command; the workflows are blocked in this client`);
-    const skillSuffix = env.skillSuffix ?? "";
-    need(/^(-[a-z0-9]+)*$/.test(skillSuffix), `${where}.skillSuffix must be empty or hyphen-led lowercase segments, for example -claude`);
-    return { ...env, profile, profileId: env.profile, route, delegation, skillSuffix, bindings: env.bindings ?? {}, roleTools: env.roleTools ?? {}, verification: env.verification ?? {} };
+    return { ...env, profile, profileId: env.profile, route, delegation, bindings: env.bindings ?? {}, roleTools: env.roleTools ?? {}, verification: env.verification ?? {} };
   });
-  need(raw.sharedSkills === undefined || typeof raw.sharedSkills === "boolean", "answers.sharedSkills must be a boolean");
-  if (raw.sharedSkills) need(new Set(environments.map((env) => env.profile?.skills.dir)).size === 1, "answers.sharedSkills needs every environment to use the same skills.dir (set it with overrides)");
+  const skillSharing = normalizeSkillSharing(raw, environments, need);
   if (errors.length) throw new InstallError(errors.join("\n"));
 
   return {
@@ -62,10 +63,48 @@ export function normalizeAnswers(raw, profiles) {
     validationCommands: raw.validationCommands,
     tracker: { adapter: raw.tracker.adapter, localContract: raw.tracker.localContract ?? `${locations.runtimeRoot}/work-items/README.md` },
     skills: raw.skills,
-    sharedSkills: raw.sharedSkills === true,
+    skillSharing,
     environments,
     raw,
   };
+}
+
+// The selected clients with their overrides applied, for the ranking before the answers are complete.
+export function selectedClients(raw, profiles) {
+  return (raw.environments ?? []).filter((env) => profiles[env.profile]).map((env) => ({ id: env.id, profile: deepMerge(structuredClone(profiles[env.profile]), env.overrides ?? {}) }));
+}
+
+// Every project folder a client documents discovering skills from, its own first.
+export const skillFolders = (profile) => [profile.skills.dir, ...(profile.skills.discovers ?? []).map((d) => d.dir)];
+
+// The candidate shared folders, widest coverage first. A tie keeps the order the first client lists them in.
+export function rankSkillFolders(environments) {
+  const folders = [...new Set(environments.flatMap((env) => skillFolders(env.profile)))];
+  return folders
+    .map((folder) => ({ folder, clients: environments.filter((env) => skillFolders(env.profile).includes(folder)).map((env) => env.id) }))
+    .sort((a, b) => b.clients.length - a.clients.length);
+}
+
+// One authoritative copy of each workflow skill. Each client reaches it `native`ly, through a `symlink`, or keeps
+// an approved client-specific `copy`. A single client needs no decision: its own folder is the shared folder.
+function normalizeSkillSharing(raw, environments, need) {
+  const sharing = raw.skillSharing;
+  if (!sharing) {
+    need(environments.length === 1, `answers.skillSharing is required with more than one client: choose the shared skills folder (question skills-folder; node install.mjs skills-folder ranks the candidates)`);
+    const [env] = environments;
+    return { folder: env?.profile?.skills.dir, clients: env ? { [env.id]: { via: "native", evidence: "the only selected client" } } : {} };
+  }
+  need(typeof sharing.folder === "string" && sharing.folder !== "" && !isOutside(sharing.folder), "answers.skillSharing.folder must be a repository-relative path");
+  const clients = sharing.clients ?? {};
+  for (const env of environments) {
+    const entry = clients[env.id];
+    const where = `answers.skillSharing.clients.${env.id}`;
+    need(["native", "symlink", "copy"].includes(entry?.via), `${where}.via must be native, symlink or copy`);
+    need(typeof (entry?.evidence ?? entry?.reason) === "string", `${where} must record its evidence (native, symlink) or the approved reason (copy)`);
+    if (entry?.via === "copy") need(typeof entry.reason === "string", `${where}: a client-specific copy needs the reason the user approved it`);
+    if (entry?.via === "native" && env.profile) need(skillFolders(env.profile).includes(sharing.folder), `${where}: ${env.profile.label} does not document discovering ${sharing.folder}; use a symlink, an approved copy, or an override with its source`);
+  }
+  return { folder: sharing.folder?.replace(/\/+$/, ""), clients };
 }
 
 function deepMerge(target, overrides) {

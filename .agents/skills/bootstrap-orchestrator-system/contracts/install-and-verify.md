@@ -24,7 +24,7 @@ node <skill>/scripts/install.mjs apply --repo <target> [--take <path>]... [--kee
 
 Apply writes the plan, merges client settings, wraps `AGENTS.md`, `CLAUDE.md`, `.gitignore` and the Codex config in managed blocks so content outside them is never touched, keeps a baseline copy of every customizable file (router, skills), and writes `<maintenance root>/manifest.json` with the kit version and the hash of every file. It refuses to run while an entry is unresolved.
 
-Then carry out the approved integration configuration and the logins the user can complete now.
+Then carry out the approved integration configuration, the approved tooling exclusions, exactly as approved, and the logins the user can complete now.
 
 ## Phase F: Verify
 
@@ -34,7 +34,7 @@ Static checks first:
 node <skill>/scripts/verify.mjs --repo <target>
 ```
 
-It confirms that the installed files match the answers with no unfilled slot, that the runtime starts and serves the three workflows, and that the sessions folder is reachable.
+It confirms that the installed files match the answers with no unfilled slot and no hidden system folder, that no other copy of a workflow skill sits outside the shared folder, that the runtime starts and serves the three workflows, and that the sessions folder is reachable. If tooling exclusions were added, run the validation commands once to confirm they still work.
 
 Then, in each selected client and on each surface the team uses, in a disposable session (never on product code or a real session):
 
@@ -43,6 +43,8 @@ Then, in each selected client and on each surface the team uses, in a disposable
 3. It starts one delegate (for example `design-verifier` on a throwaway job) and the delegate runs in its own context and reports back.
 4. Each bound host token works from the role that uses it: one work item read, one image inspected, one wiki page when bound.
 5. On the skill route, a role skill refuses to start inside a conversation that already runs a role.
+6. Each shared workflow skill is discovered on this surface, once, with its role activation working. Installed files that parse do not prove it.
+7. A runtime-only delegate is refused when it calls a runtime command outside its role, and a long runtime answer reaches it whole, part by part.
 
 Record each check in `environments[].verification` of the answers file as `verified-native`, `verified-fallback`, `blocked` or `unverified`, with a short note. Run `install.mjs apply` again: the guides now show the results. A check you cannot run stays `unverified`; never mark a client compatible because its files parse.
 

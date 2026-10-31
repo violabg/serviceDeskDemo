@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Install the orchestrator agentic system into the target repository. The system is fixed: seven roles, three workflows served one instruction at a time by a local Node runtime, and the skills that start them. What you decide with the user is how it binds to this repository: the clients, where files live, the tracker and the other integrations.
 
-Bootstrap writes agent-system files only: role files, skills, routers, the runtime and its config, workflows, contracts, client settings for the runtime command, guides and the installation records. It never changes application code, product tests, schema or application configuration.
+Bootstrap writes agent-system files only: role files, skills, routers, the runtime and its config, workflows, contracts, client settings for the runtime command, guides and the installation records. It never changes application code, product tests or schema. It changes application configuration only to add the exact tooling exclusions the user approved for the visible system folders.
 
 Run Bootstrap in a plain session of the client, never inside one of the roles it installs. If this conversation already runs a generated role, stop and ask the user to open a new session.
 
@@ -33,7 +33,7 @@ Load each contract when its phase starts, not before.
 | Phase | Purpose | Contract |
 | --- | --- | --- |
 | A Intake | Target repository, the clients and their surfaces, the execution host, Node, plan-only or install. | `contracts/intake-and-decisions.md` |
-| B Discovery | Read-only: re-check each selected profile against current documentation, find the tracker, MCP servers, wiki, docs, glossary, validation commands and path collisions. | `contracts/intake-and-decisions.md`, `contracts/integrations.md` |
+| B Discovery | Read-only: re-check each selected profile against current documentation, find the tracker, MCP servers, wiki, docs, glossary, validation commands, skill folders, tooling globs and path collisions. | `contracts/intake-and-decisions.md`, `contracts/integrations.md` |
 | C Decisions | Settle `registry/questions.json` one material question at a time, routine defaults grouped. Write the answers file. | `contracts/intake-and-decisions.md`, `contracts/locations-and-permissions.md`, `contracts/client-bindings.md` |
 | D File plan | `install.mjs plan`, plus the integration setup plan. Wait for explicit approval. | `contracts/install-and-verify.md` |
 | E Apply | `install.mjs apply`, then the approved integration registration and authentication. | `contracts/install-and-verify.md`, `contracts/integrations.md` |
@@ -45,6 +45,8 @@ Load each contract when its phase starts, not before.
 - A recommendation is never an answer. Record what the user approved.
 - Nothing is written before the user approves the file plan. The answers file and the records live in the maintenance folder and are written with the plan.
 - Delegates always run with their own context: native subagents, or a separate CLI process where the client has no subagents. Never run a delegate inline in the orchestrator's conversation.
+- Install one authoritative copy of each workflow skill in the folder the most selected clients discover. Record the decision; a client-specific copy needs the user's approval.
+- A system folder in the repository is always visible: its name never starts with a dot.
 - Every location outside the repository must be recorded in the answers file, reachable by every selected client, and verified.
 - Never store a credential value in the answers file, the records, a guide or the chat.
 - Installed is not verified. Report each client's checks as `verified-native`, `verified-fallback`, `blocked` or `unverified`.

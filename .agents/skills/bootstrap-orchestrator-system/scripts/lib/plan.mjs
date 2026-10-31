@@ -3,10 +3,12 @@
 // Actions: create, update, unchanged, merge (a customizable file was edited by hand and the kit changed it),
 // conflict (a non-customizable file was edited by hand, or an unmanaged file is in the way), delete (a file
 // the previous install wrote and nothing renders any more). merge and conflict need --take or --keep.
-import { existsSync, readFileSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, rmSync, rmdirSync, symlinkSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { skillFolders } from "./answers.mjs";
+import { LEGACY_ROOTS } from "./migrate.mjs";
 import { render } from "./render.mjs";
-import { InstallError, absolutePath, contains, mergeInto, readText, sha256, writeText } from "./util.mjs";
+import { InstallError, absolutePath, contains, isOutside, mergeInto, readText, sha256, writeText } from "./util.mjs";
 
 const markers = {
   html: ["<!-- agentic-system:start -->", "<!-- agentic-system:end -->"],
@@ -44,9 +46,31 @@ export function loadManifest(repo, answers) {
   return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : { version: 1, files: {} };
 }
 
+const lstat = (path) => lstatSync(path, { throwIfNoEntry: false });
+
+// The nearest symlink on the way to a path in the repository, the path itself included. The installer never
+// writes through one: it could change files that belong to another system.
+function symlinkOnPath(repo, path) {
+  if (isOutside(path)) return null;
+  const segments = path.split("/");
+  for (let i = 1; i <= segments.length; i++) {
+    const prefix = segments.slice(0, i).join("/");
+    if (lstat(join(repo, prefix))?.isSymbolicLink()) return prefix;
+  }
+  return null;
+}
+
+const filesUnder = (dir, prefix) =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((item) => (item.isDirectory() ? filesUnder(join(dir, item.name), `${prefix}/${item.name}`) : [`${prefix}/${item.name}`]));
+
 // The current state of one output in the target: the comparable content, or null when absent.
 function current(repo, output) {
   const path = absolutePath(repo, output.path);
+  if (output.mode === "symlink") {
+    const stat = lstat(path);
+    if (!stat) return { exists: false, value: null, text: null };
+    return stat.isSymbolicLink() ? { exists: true, value: readlinkSync(path), text: null } : { exists: true, value: null, text: null, realFolder: stat.isDirectory() };
+  }
   if (!existsSync(path)) return { exists: false, value: null, text: null };
   const text = readText(path);
   if (output.mode === "block") return { exists: true, value: readBlock(text, output.syntax)?.content ?? null, text };
@@ -64,12 +88,26 @@ export function plan(kit, answers, repo) {
   const { outputs, errors, warnings } = render(kit, answers);
   const manifest = loadManifest(repo, answers);
   const entries = [];
+  const rendered = new Set(outputs.map((o) => o.path));
   for (const output of outputs) {
     const state = current(repo, output);
     const recorded = manifest.files[output.path];
     let action;
     let reason = "";
-    if (output.mode === "json-merge") {
+    const link = output.mode === "symlink" ? (output.path.includes("/") ? symlinkOnPath(repo, dirname(output.path)) : null) : symlinkOnPath(repo, output.path);
+    if (link) errors.push(`${output.path}: ${link} is a symlink; the installer never writes through one. Remove it or choose another folder`);
+    if (output.mode === "symlink") {
+      output.sha256 = sha256(output.target);
+      if (state.realFolder) {
+        // A folder whose files were all installed here becomes the link once they are deleted.
+        const owned = filesUnder(absolutePath(repo, output.path), output.path).every((file) => manifest.files[file] && !rendered.has(file));
+        [action, reason] = owned ? ["create", "replaces the client-specific copy"] : ["conflict", "a folder the agentic system did not write is in the way; move it first"];
+      } else if (!state.exists) action = "create";
+      else if (state.value === null) [action, reason] = ["conflict", "a file is in the way"];
+      else if (state.value === output.target) action = "unchanged";
+      else if (recorded && sha256(state.value) === recorded.sha256) action = "update";
+      else [action, reason] = ["conflict", `a symlink to ${state.value} is already there`];
+    } else if (output.mode === "json-merge") {
       const hash = sha256(JSON.stringify(output.add));
       output.sha256 = hash;
       if (state.unparseable) [action, reason] = ["conflict", "the settings file is not plain JSON; add the entries by hand"];
@@ -100,16 +138,46 @@ export function plan(kit, answers, repo) {
     }
     entries.push({ ...output, action, reason });
   }
-  const rendered = new Set(outputs.map((o) => o.path));
   for (const [path, recorded] of Object.entries(manifest.files)) {
     if (rendered.has(path) || recorded.mode === "json-merge") continue;
+    if (symlinkOnPath(repo, dirname(path)) && recorded.mode !== "symlink") continue;
     const state = current(repo, { path, mode: recorded.mode, syntax: recorded.syntax });
     if (state.value === null) continue;
     const untouched = sha256(state.value) === recorded.sha256;
     entries.push({ path, mode: recorded.mode, syntax: recorded.syntax, kind: recorded.kind, envs: recorded.envs ?? [], action: untouched ? "delete" : "conflict", reason: untouched ? "no longer installed" : "no longer installed, but edited by hand" });
   }
   entries.sort((a, b) => a.path.localeCompare(b.path));
-  return { entries, errors, warnings, manifest };
+  const duplicates = duplicateSkills(kit, answers, repo, rendered, manifest);
+  const hiddenRoots = LEGACY_ROOTS.filter((root) => existsSync(join(repo, root)));
+  for (const problem of [...duplicates, ...hiddenRoots.map((root) => `${root}/ is a hidden system folder that is still in the repository; finish the migration (install.mjs migrate)`)]) warnings.push(problem);
+  return { entries, errors, warnings, manifest, duplicates, hiddenRoots };
+}
+
+// A copy of a workflow skill outside the shared folder that nothing will remove. Discovery precedence could load it
+// instead of the authoritative body, so it is reported, and only the user removes it.
+function duplicateSkills(kit, answers, repo, rendered, manifest) {
+  const { folder, clients } = answers.skillSharing;
+  const found = new Set();
+  for (const env of answers.environments.filter((e) => clients[e.id].via !== "copy")) {
+    for (const dir of skillFolders(env.profile).filter((d) => d !== folder)) {
+      for (const skill of kit.index.skills) {
+        const path = `${dir}/${skill.name}`;
+        const stat = lstat(join(repo, path));
+        if (!stat || rendered.has(path)) continue;
+        if (stat.isSymbolicLink() && resolve(repo, dir, readlinkSync(join(repo, path))) === resolve(repo, folder, skill.name)) continue;
+        if (Object.keys(manifest.files).some((file) => file.startsWith(`${path}/`))) continue;
+        found.add(`${path} is another copy of the ${skill.name} skill, outside the shared folder ${folder}; ${env.profile.label} could load it instead. Reconcile it with the user`);
+      }
+    }
+  }
+  return [...found];
+}
+
+function pruneEmptyParents(repo, path) {
+  for (let dir = dirname(path); dir.startsWith(`${repo}/`); dir = dirname(dir)) {
+    if (!existsSync(dir) || readdirSync(dir).length) return;
+    rmdirSync(dir);
+  }
 }
 
 export function apply(kit, answers, repo, { take = [], keep = [] } = {}) {
@@ -122,14 +190,32 @@ export function apply(kit, answers, repo, { take = [], keep = [] } = {}) {
 
   const files = {};
   const baselineRoot = join(repo, answers.locations.maintenanceRoot, "baseline");
-  for (const entry of result.entries) {
+  // Removals come first: a client-specific copy must be gone before the symlink takes its place.
+  const removal = (entry) => entry.action === "delete" || (entry.action === "conflict" && entry.sha256 === undefined);
+  for (const entry of [...result.entries.filter(removal), ...result.entries.filter((e) => !removal(e))]) {
     const target = absolutePath(repo, entry.path);
     const kept = keep.includes(entry.path);
-    if (entry.action === "delete" || (entry.action === "conflict" && entry.sha256 === undefined)) {
+    if (removal(entry)) {
       if (!kept) {
         if (entry.mode === "block") writeText(target, removeBlock(readText(target), entry.syntax));
-        else rmSync(target);
+        else {
+          rmSync(target);
+          pruneEmptyParents(repo, target);
+        }
       }
+      continue;
+    }
+    if (entry.mode === "symlink") {
+      if (["create", "update"].includes(entry.action) || (take.includes(entry.path) && !kept)) {
+        const stat = lstat(target);
+        if (stat && !stat.isSymbolicLink()) {
+          if (stat.isFile() || readdirSync(target).length) throw new InstallError(`${entry.path}: something is still in the way of the symlink; move it first`);
+          rmdirSync(target);
+        } else if (stat) rmSync(target);
+        mkdirSync(dirname(target), { recursive: true });
+        symlinkSync(entry.target, target, "dir");
+      }
+      files[entry.path] = { sha256: entry.sha256, kind: entry.kind, mode: entry.mode, envs: entry.envs, customizable: false };
       continue;
     }
     const write = ["create", "update"].includes(entry.action) || (take.includes(entry.path) && !kept);
@@ -161,7 +247,7 @@ export function apply(kit, answers, repo, { take = [], keep = [] } = {}) {
 // Drift and unfilled slots in the installed tree. An empty list means the target matches the answers.
 export function check(kit, answers, repo) {
   const result = plan(kit, answers, repo);
-  const problems = [...result.errors];
+  const problems = [...result.errors, ...result.duplicates, ...result.hiddenRoots.map((root) => `${root}/ is a hidden system folder that is still in the repository`)];
   for (const entry of result.entries) if (entry.action !== "unchanged") problems.push(`${entry.action} ${entry.path}${entry.reason ? `: ${entry.reason}` : ""}`);
   // Only declared slots count: workflow text also carries design placeholders such as {{O1}}.
   const slots = new Set(Object.keys(kit.index.slots));

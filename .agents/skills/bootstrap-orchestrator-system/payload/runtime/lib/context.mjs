@@ -2,7 +2,8 @@
 //
 //   runtime root  the folder holding bin/, lib/, assets/ (and, in a target repo, workflows/ and config.json)
 //   config file   <runtime root>/config.json, optional: { workspaceRoot, knowledgeRoot, userRoot,
-//                 workflowsRoot, sessionsRoot, cacheRoot } — relative paths resolve against the runtime root
+//                 workflowsRoot, sessionsRoot, cacheRoot, partLimit, roles } — relative paths resolve against
+//                 the runtime root; partLimit is the largest part in bytes; roles lists each role's tokens
 //   sessions      may live outside the repository; the cache defaults to <sessionsRoot>/.cache so the
 //                 runtime root itself stays free of generated files
 //   environment   AGENTIC_SYSTEM_<KEY> overrides the config (e.g. AGENTIC_SYSTEM_WORKSPACE_ROOT)
@@ -10,6 +11,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PART_LIMIT } from "./util.mjs";
 
 const defaultRuntimeRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -39,6 +41,8 @@ export function createContext(overrides = {}) {
     documentationRoot: pick("documentationRoot", "DOCUMENTATION_ROOT", "documentation"),
     // Installed beside the runtime in a target (<runtime root>/contracts); in the Lab, beside runtime/.
     contractsRoot: pick("contractsRoot", "CONTRACTS_ROOT", existsSync(join(runtimeRoot, "contracts")) ? "contracts" : "../contracts"),
+    partLimit: overrides.partLimit ?? (Number(env.AGENTIC_SYSTEM_PART_LIMIT) || config.partLimit || PART_LIMIT),
+    roles: overrides.roles ?? config.roles ?? null,
     now: overrides.now ?? (() => new Date()),
   };
 }

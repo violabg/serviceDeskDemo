@@ -147,7 +147,7 @@ export function verificationView(design, grounding = []) {
   // Lab-authored: name the call, so the verifier reads the documents instead of grepping or skipping them.
   if (grounding.length) {
     const ids = grounding.map((k) => k.file_id).join(",");
-    out.push("", `Read every document above before judging: call knowledge-read with these file ids (CLI: --fileIds ${ids}) and follow its parts.`);
+    out.push("", `Read every document above before judging: call knowledge-read with these file ids and this session (CLI: --fileIds ${ids} --sessionId ${design.sessionId}) and follow its parts.`);
   }
   out.push("");
   const addressing = new Set();
@@ -178,10 +178,19 @@ export function verificationView(design, grounding = []) {
     out.push(`- knowledge grounding: ${grounding.length ? [...new Set(grounding)].join("; ") : "none"}`);
     out.push("");
   }
+  // The conformance comparison covers every section and every planned element, in plan order, whether or not it
+  // addresses an obligation: a build or test step can break a sequencing or representation prescription too.
+  const names = new Map(p.operations.map((op) => [op.id, `"${oneLine(op.operation)}"`]));
+  const planned = new Set(p.operations.flatMap((op) => op.files ?? []));
   out.push("# Operations", "");
-  for (const op of p.operations.filter((o) => addressing.has(o.id))) {
+  p.operations.forEach((op, index) => {
     const files = new Set(op.files ?? []);
     out.push(`## "${oneLine(op.operation)}" (${lower(op.kind)})`);
+    out.push(`- plan position: ${index + 1} of ${p.operations.length}${op.testType ? ` | test type: ${lower(op.testType)}` : ""} | depends on: ${join((op.dependsOn ?? []).map((id) => names.get(id) ?? "(unknown operation)"))}`);
+    if (!addressing.has(op.id)) out.push("- addresses no obligation", `- instructions: ${oneLine(op.instructions) || "none"}`);
+    if (op.source) out.push(`- source: ${lower(op.source)}${op.sourceRef ? ` (${oneLine(op.sourceRef)})` : ""}`);
+    const cited = (op.knowledgeReferences ?? []).map((kid) => (design.knowledgeReferences ?? []).find((r) => r.kid === kid)).filter(Boolean);
+    if (cited.length) out.push(`- knowledge: ${cited.map((r) => `${r.filePath ?? "(no file)"} lines ${r.range?.s}–${r.range?.e}`).join("; ")}`);
     const arms = failureArms(op);
     out.push("- failure arms:");
     if (arms.length === 0) out.push("  - none");
@@ -189,21 +198,36 @@ export function verificationView(design, grounding = []) {
     const contracts = p.contracts.filter((c) => files.has(c.file));
     out.push("- contracts:");
     if (contracts.length === 0) out.push("  - none");
-    for (const c of contracts) out.push(`  - ${oneLine(c.promises)} | signature: ${oneLine(c.signature)}`);
+    for (const c of contracts) out.push(`  - ${oneLine(c.promises)} | signature: ${oneLine(c.signature)}${c.type ? ` | type: ${lower(c.type)}` : ""}`);
     const fsRows = p.filesystem.files.filter((f) => files.has(f.path));
     out.push("- files:");
     if (fsRows.length === 0) out.push("  - none");
     for (const f of fsRows) out.push(`  - ${f.path} (${lower(f.status)}): ${oneLine(f.change)}`);
     out.push("");
+  });
+  const looseContracts = p.contracts.filter((c) => !planned.has(c.file));
+  const looseFiles = p.filesystem.files.filter((f) => !planned.has(f.path));
+  if (looseContracts.length) {
+    out.push("# Contracts in no operation", "");
+    for (const c of looseContracts) out.push(`- ${oneLine(c.promises)} | signature: ${oneLine(c.signature)}${c.type ? ` | type: ${lower(c.type)}` : ""} | file: ${c.file ?? "none"}`);
+    out.push("");
   }
-  const realizing = (d) => p.operations.filter((op) => addressing.has(op.id) && (op.realizes ?? []).includes(d.id));
-  const decisions = design.decisions.filter((d) => realizing(d).length);
+  if (looseFiles.length) {
+    out.push("# Files in no operation", "");
+    for (const f of looseFiles) out.push(`- ${f.path} (${lower(f.status)}): ${oneLine(f.change)}`);
+    out.push("");
+  }
+  if (p.apis.length) {
+    out.push("# Public APIs", "");
+    for (const a of p.apis) out.push(`- ${a.method} ${a.path} | purpose: ${oneLine(a.purpose)} | auth: ${oneLine(a.auth)} | request: ${oneLine(a.request)}`);
+    out.push("");
+  }
   out.push("# Decisions", "");
-  if (decisions.length === 0) out.push("- none");
-  for (const d of decisions) {
+  if (design.decisions.length === 0) out.push("- none");
+  for (const d of design.decisions) {
     const chosen = d.options.find((o) => o.chosen);
-    const realizedBy = realizing(d).map((op) => `"${oneLine(op.operation)}"`);
-    out.push(`- ${oneLine(d.question)} → ${oneLine(chosen?.text)} | realized in: ${realizedBy.join(", ")}`);
+    const realizedBy = p.operations.filter((op) => (op.realizes ?? []).includes(d.id)).map((op) => `"${oneLine(op.operation)}"`);
+    out.push(`- ${oneLine(d.question)} → ${oneLine(chosen?.text)} | realized in: ${join(realizedBy)} | source: ${lower(d.source) || "none"} | highlight: ${isHighlighted(d)}`);
   }
   out.push("");
   return `${out.join("\n")}`;
@@ -253,9 +277,8 @@ export function implementationContext(design) {
 }
 
 // One served operation, with the text of every knowledge reference it declares already expanded.
-export function servedOperation(op, { weight, authorisation, knowledge, note }) {
+export function servedOperation(op, { weight, authorisation, knowledge }) {
   const out = [`# Operation ${op.id} — ${oneLine(op.operation)}`];
-  if (note) out.push(note);
   out.push(`- kind: ${op.kind}${op.testType ? ` | test type: ${op.testType}` : ""} | weight: ${weight} | authorisation: ${authorisation}`);
   out.push(`- dependsOn: ${join(op.dependsOn)} | files: ${join(op.files)} | implements: ${join([...(op.refObligations ?? []), ...(op.refElements ?? [])])} | realizes: ${join(op.realizes)}`);
   if (op.source) out.push(`- source: ${op.source}${op.sourceRef ? ` (${oneLine(op.sourceRef)})` : ""}`);

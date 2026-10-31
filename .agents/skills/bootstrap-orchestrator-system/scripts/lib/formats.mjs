@@ -5,7 +5,7 @@ import { InstallError, tomlMultiline, tomlString, yamlFrontmatter } from "./util
 const has = (role, op) => role.operations.includes(op);
 
 // OpenCode expresses tool access as permissions; every key a role does not need is denied.
-function opencodePermission(role, runtimeCommand, delegates) {
+function opencodePermission(role, runtimeCommand, delegates, runtimeTokens) {
   const allow = (cond) => (cond ? "allow" : "deny");
   const permission = {
     read: allow(has(role, "read")),
@@ -13,19 +13,27 @@ function opencodePermission(role, runtimeCommand, delegates) {
     glob: allow(has(role, "search")),
     list: allow(has(role, "search")),
     edit: allow(has(role, "write")),
-    bash: has(role, "terminal") ? "allow" : has(role, "runtime") ? { "*": "deny", [`${runtimeCommand} *`]: "allow" } : "deny",
+    bash: has(role, "terminal") ? "allow" : has(role, "runtime") ? { "*": "deny", ...Object.fromEntries(runtimeTokens.map((token) => [`${runtimeCommand} ${token} *`, "allow"])) } : "deny",
     question: allow(has(role, "question")),
     task: delegates.length ? { "*": "deny", ...Object.fromEntries(delegates.map((d) => [d, "allow"])) } : "deny",
   };
   return permission;
 }
 
+// A subagent hook that limits a runtime-only role's shell to its own runtime commands.
+function claudeRoleHook(role, runtimeRoot) {
+  const command = `node "$CLAUDE_PROJECT_DIR/${runtimeRoot}/bin/role-guard.mjs" ${role.name}`;
+  return ["hooks:", "  PreToolUse:", '    - matcher: "Bash"', "      hooks:", "        - type: command", `          command: ${JSON.stringify(command)}`].join("\n");
+}
+
+export const isRuntimeOnly = (role) => has(role, "runtime") && !has(role, "terminal");
+
 export function agentFile(env, spec) {
-  const { role, name, description, body, tools, delegates, isDelegate, runtimeCommand } = spec;
+  const { role, name, description, body, tools, delegates, isDelegate, runtimeCommand, runtimeRoot, runtimeTokens } = spec;
   const dir = env.profile.agents.dir;
   switch (env.profile.agents.format) {
     case "claude":
-      return { path: `${dir}/${name}.md`, content: yamlFrontmatter({ name, description, tools: tools.length ? tools.join(", ") : undefined }) + body };
+      return { path: `${dir}/${name}.md`, content: withHook(yamlFrontmatter({ name, description, tools: tools.length ? tools.join(", ") : undefined }), isRuntimeOnly(role) ? claudeRoleHook(role, runtimeRoot) : null) + body };
     case "copilot":
       return {
         path: `${dir}/${name}.agent.md`,
@@ -46,7 +54,7 @@ export function agentFile(env, spec) {
             description,
             mode: isDelegate ? "subagent" : "primary",
             hidden: isDelegate ? true : undefined,
-            permission: opencodePermission(role, runtimeCommand, delegates),
+            permission: opencodePermission(role, runtimeCommand, delegates, runtimeTokens),
           }) + body,
       };
     case "cursor": {
@@ -62,6 +70,8 @@ export function agentFile(env, spec) {
       throw new InstallError(`client format '${env.profile.agents.format}' is not implemented`);
   }
 }
+
+const withHook = (frontmatter, hook) => (hook ? frontmatter.replace(/---\n$/, `${hook}\n---\n`) : frontmatter);
 
 // Whether the format can restrict a role's tools at runtime; otherwise the role's limits are instruction-only.
 export const enforcesTools = (env) => ["claude", "copilot", "opencode"].includes(env.profile.agents.format);

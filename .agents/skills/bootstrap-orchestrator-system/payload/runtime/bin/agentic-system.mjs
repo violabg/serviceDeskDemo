@@ -3,12 +3,13 @@
 //
 //   node agentic-system.mjs <token> [--json <file> | --json -] [--<argument> <value> ...]
 //   node agentic-system.mjs <token> --help      the token's arguments, from its contract
+//   --role <role>                               runs the token as that role; a token outside the role is refused
 //
 // The JSON payload is the operation's argument object (e.g. { "sessionId", "jobId", "request" }). Flags
 // set top-level arguments and override the payload. Large payloads must go through a file or stdin:
 // inline JSON flags are refused above INLINE_LIMIT characters so shell quoting never mangles a design.
 import { readFileSync } from "node:fs";
-import { call, handlers } from "../lib/api.mjs";
+import { call, handlers, roleRefusal } from "../lib/api.mjs";
 import { createContext } from "../lib/context.mjs";
 import { tokenHelp } from "../lib/help.mjs";
 
@@ -79,6 +80,9 @@ if (handlers[argv[0]] && argv.slice(1).some((a) => a === "--help" || a === "-h")
     console.error(`agentic-system: ${error.message}`);
     process.exit(2);
   }
-  const result = await call(createContext(), parsed.token, parsed.args);
+  const { role, ...args } = parsed.args;
+  const ctx = createContext();
+  const refusal = roleRefusal(ctx, role, parsed.token);
+  const result = refusal ? { output: refusal, exitCode: 2 } : await call(ctx, parsed.token, args);
   finish(result.exitCode === 0 ? process.stdout : process.stderr, result.output, result.exitCode);
 }

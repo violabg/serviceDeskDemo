@@ -107,6 +107,7 @@ function serve(ctx, job) {
 function servePartOf(ctx, job, args, tool) {
   return servePart(serve(ctx, job), args, {
     tool,
+    limit: ctx.partLimit,
     starts: (line, previous) => line.trim() !== "" && previous !== undefined && previous.trim() === "",
     next: (k) => `call workflow-step-pending with part ${k} (CLI: --part ${k}) to read the rest of instruction ${job.currentStep}; it does not advance the workflow.`,
   });

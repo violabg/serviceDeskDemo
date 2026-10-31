@@ -121,14 +121,55 @@ export function arg(source, name) {
   return key === undefined ? undefined : source[key];
 }
 
-// Lab-authored: the largest part a long answer is served in. Shell hosts cap a command's visible output
-// (about 30,000 characters in Claude Code) and spill the rest to a file the agent then slices by hand,
-// losing text; a part below the cap arrives whole.
+// Lab-authored: the default size of a part, in UTF-8 bytes, including its markers. Shell hosts cap the output
+// they show of one command and spill the rest to a file the agent may not be able to read: about 30,000
+// characters in Claude Code, about 8 KB in Copilot CLI. `partLimit` in the runtime config overrides it, and
+// Bootstrap sets it to the smallest limit of the selected clients.
 export const PART_LIMIT = 24000;
 
-// Splits text into parts of at most PART_LIMIT characters. A part only ever starts at a unit boundary
-// (`starts(line, previous)` is true); a single unit longer than the limit is a part of its own.
-export function splitParts(text, starts) {
+// The header and footer of a part, kept out of the room its text may use.
+const PART_MARGIN = 500;
+const bytes = (text) => Buffer.byteLength(text, "utf8");
+
+// A heading repeated at the top of a later piece of a split unit, so the piece names what it continues.
+const continuation = (first) => (/^#{1,6} /.test(first) && first.length <= 200 ? `${first} (continued)` : null);
+
+// Cuts one line longer than the limit at character boundaries. Rare: only prose stored on a single line.
+function cutLine(line, limit) {
+  const pieces = [];
+  let piece = "";
+  for (const char of line) {
+    if (bytes(piece) + bytes(char) > limit) {
+      pieces.push(piece);
+      piece = "";
+    }
+    piece += char;
+  }
+  pieces.push(piece);
+  return pieces;
+}
+
+// A unit that fits stays whole; a longer one continues on line boundaries and loses no text.
+function piecesOf(unit, limit) {
+  if (bytes(unit) <= limit) return [unit];
+  const lines = unit.split("\n");
+  const heading = continuation(lines[0]);
+  const room = heading ? limit - bytes(heading) - 1 : limit;
+  const pieces = [];
+  let current = null;
+  for (const line of lines.flatMap((l) => (bytes(l) > room ? cutLine(l, room) : [l]))) {
+    if (current !== null && bytes(current) + 1 + bytes(line) > room) {
+      pieces.push(current);
+      current = line;
+    } else current = current === null ? line : `${current}\n${line}`;
+  }
+  pieces.push(current);
+  return pieces.map((piece, index) => (index > 0 && heading ? `${heading}\n${piece}` : piece));
+}
+
+// Splits text into parts of at most `limit` bytes. A part starts at a unit boundary (`starts(line, previous)`
+// is true), except inside a unit longer than the limit, which continues over several parts.
+export function splitParts(text, starts, limit = PART_LIMIT) {
   const lines = text.split("\n");
   const units = [];
   let unit = [];
@@ -142,28 +183,29 @@ export function splitParts(text, starts) {
   units.push(unit.join("\n"));
   const parts = [];
   let current = null;
-  for (const u of units) {
-    if (current !== null && current.length + 1 + u.length > PART_LIMIT) {
+  for (const piece of units.flatMap((u) => piecesOf(u, limit))) {
+    if (current !== null && bytes(current) + 1 + bytes(piece) > limit) {
       parts.push(current);
-      current = u;
-    } else current = current === null ? u : `${current}\n${u}`;
+      current = piece;
+    } else current = current === null ? piece : `${current}\n${piece}`;
   }
   parts.push(current);
   return parts;
 }
 
-// Serves part `args.part` (default 1, or "all") of a long answer, with a header and a footer that say where
-// the text continues. `next(k)` says how to request part k. An answer that fits is returned unchanged.
+// Serves part `args.part` (default 1) of a long answer, with a header and a footer that say where the text
+// continues. `next(k)` says how to request part k. An answer that fits is returned unchanged. `onServed(n, parts)`
+// runs only for a valid part, so a refused request records nothing.
 // Lab-authored: the footer asks for the next call as a command of its own, because an agent that loops over
 // parts or pipes them through `head`, `cut` or `dd` exceeds the host cap again and loses text.
-export function servePart(text, args, { tool, starts, next }) {
+export function servePart(text, args, { tool, starts, next, limit = PART_LIMIT, onServed }) {
   const requested = arg(args, "part");
-  if (requested !== undefined && String(requested).toLowerCase() === "all") return text;
-  const parts = splitParts(text, starts);
+  const parts = splitParts(text, starts, limit - PART_MARGIN);
   const n = requested === undefined ? 1 : Number(requested);
   if (!Number.isInteger(n) || n < 1 || n > parts.length) {
-    throw new RuntimeError(`${tool} failed: part must be a whole number from 1 to ${parts.length}, or "all". Provided value: '${requested}'.`);
+    throw new RuntimeError(`${tool} failed: part must be a whole number from 1 to ${parts.length}. Provided value: '${requested}'.`);
   }
+  onServed?.(n, parts);
   if (parts.length === 1) return text;
   const header = n > 1 ? `[part ${n} of ${parts.length}]\n` : "";
   const body = parts[n - 1].replace(/\n+$/, "");
