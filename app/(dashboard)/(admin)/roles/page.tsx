@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import {
   ACCESS_OPERATIONS,
   ACCESS_SECTIONS,
+  hasAnySectionPermission,
   hasPermission,
   permissionKey,
 } from "@/lib/access-control"
@@ -39,18 +40,11 @@ async function getRolesData(actorUserId: string) {
   return getRolesForManagement({ actorUserId })
 }
 
-async function getAvailablePermissions(
-  actorUserId: string,
-  canWriteRoles: boolean
-) {
+async function getAvailablePermissions() {
   "use cache"
 
   cacheLife("days")
   cacheTag(adminRolesListTag())
-
-  if (!canWriteRoles) {
-    return []
-  }
 
   return prisma.permission.findMany({
     orderBy: [{ section: "asc" }, { operation: "asc" }],
@@ -94,11 +88,11 @@ export default function RolesPage() {
   )
 }
 
-async function RolesPageContent() {
+export async function RolesPageContent() {
   const access = await requireCurrentApplicationAccess()
   const permissions = new Set(access.effectivePermissionKeys)
 
-  if (!hasPermission(permissions, "roles", "read")) {
+  if (!hasAnySectionPermission(permissions, "roles")) {
     redirect("/dashboard")
   }
 
@@ -113,10 +107,7 @@ async function RolesPageContent() {
       </ViewTransition>
       <ViewTransition default="none" update="content-fade">
         <Suspense fallback={<CreateRoleSkeleton />}>
-          <CreateRoleSection
-            actorUserId={access.user.id}
-            canWriteRoles={canWriteRoles}
-          />
+          <CreateRoleSection canWriteRoles={canWriteRoles} />
         </Suspense>
       </ViewTransition>
     </div>
@@ -189,100 +180,95 @@ async function RolesListSection({ actorUserId }: { actorUserId: string }) {
 }
 
 async function CreateRoleSection({
-  actorUserId,
   canWriteRoles,
 }: {
-  actorUserId: string
   canWriteRoles: boolean
 }) {
-  const availablePermissions = await getAvailablePermissions(
-    actorUserId,
-    canWriteRoles
-  )
+  const availablePermissions = await getAvailablePermissions()
 
   return (
     <section className="bg-card shadow-sm p-4 border rounded-lg text-card-foreground">
       <h2 className="font-heading font-semibold text-lg tracking-normal">
         Create Role
       </h2>
-      {canWriteRoles ? (
-        <form action={createRoleAction} className="gap-3 grid mt-4">
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="create-role-name">
-                Name <span className="text-destructive">*</span>
-              </FieldLabel>
-              <Input id="create-role-name" name="name" required />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="create-role-description">
-                Description
-              </FieldLabel>
-              <Textarea
-                id="create-role-description"
-                name="description"
-                className="min-h-24"
-              />
-            </Field>
-          </FieldGroup>
-          <FieldSet className="p-3 border rounded-md">
-            <FieldLegend variant="label">Permissions</FieldLegend>
-            {ACCESS_SECTIONS.map((section) => {
-              const sectionPermissions = availablePermissions
-                .filter((permission) => permission.section === section)
-                .sort(
-                  (left, right) =>
-                    (operationOrder.get(left.operation) ??
-                      ACCESS_OPERATIONS.length) -
-                    (operationOrder.get(right.operation) ??
-                      ACCESS_OPERATIONS.length)
-                )
-
-              if (sectionPermissions.length === 0) {
-                return null
-              }
-
-              return (
-                <div key={section} className="gap-2 grid">
-                  <p className="font-medium text-muted-foreground text-xs">
-                    {section}
-                  </p>
-                  <div className="gap-1.5 grid">
-                    {sectionPermissions.map((permission) => (
-                      <Field
-                        key={permission.id}
-                        orientation="horizontal"
-                        className="gap-2"
-                      >
-                        <Checkbox
-                          id={`create-role-permission-${permission.id}`}
-                          name="permissionIds"
-                          value={permission.id}
-                        />
-                        <FieldLabel
-                          htmlFor={`create-role-permission-${permission.id}`}
-                        >
-                          {permissionKey(
-                            permission.section,
-                            permission.operation
-                          )}
-                        </FieldLabel>
-                      </Field>
-                    ))}
-                  </div>
-                </div>
+      <form action={createRoleAction} className="gap-3 grid mt-4">
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="create-role-name">
+              Name <span className="text-destructive">*</span>
+            </FieldLabel>
+            <Input
+              id="create-role-name"
+              name="name"
+              required
+              disabled={!canWriteRoles}
+            />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="create-role-description">
+              Description
+            </FieldLabel>
+            <Textarea
+              id="create-role-description"
+              name="description"
+              className="min-h-24"
+              disabled={!canWriteRoles}
+            />
+          </Field>
+        </FieldGroup>
+        <FieldSet className="p-3 border rounded-md">
+          <FieldLegend variant="label">Permissions</FieldLegend>
+          {ACCESS_SECTIONS.map((section) => {
+            const sectionPermissions = availablePermissions
+              .filter((permission) => permission.section === section)
+              .sort(
+                (left, right) =>
+                  (operationOrder.get(left.operation) ??
+                    ACCESS_OPERATIONS.length) -
+                  (operationOrder.get(right.operation) ??
+                    ACCESS_OPERATIONS.length)
               )
-            })}
-          </FieldSet>
-          <div>
-            <Button type="submit">Create Role</Button>
-          </div>
-        </form>
-      ) : (
-        <p className="mt-4 text-muted-foreground text-sm">
-          You have read-only role access.
-        </p>
-      )}
+
+            if (sectionPermissions.length === 0) {
+              return null
+            }
+
+            return (
+              <div key={section} className="gap-2 grid">
+                <p className="font-medium text-muted-foreground text-xs">
+                  {section}
+                </p>
+                <div className="gap-1.5 grid">
+                  {sectionPermissions.map((permission) => (
+                    <Field
+                      key={permission.id}
+                      orientation="horizontal"
+                      className="gap-2"
+                    >
+                      <Checkbox
+                        id={`create-role-permission-${permission.id}`}
+                        name="permissionIds"
+                        value={permission.id}
+                        disabled={!canWriteRoles}
+                      />
+                      <FieldLabel
+                        htmlFor={`create-role-permission-${permission.id}`}
+                      >
+                        {permissionKey(permission.section, permission.operation)}
+                      </FieldLabel>
+                    </Field>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </FieldSet>
+        <div>
+          <Button type="submit" disabled={!canWriteRoles}>
+            Create Role
+          </Button>
+        </div>
+      </form>
     </section>
   )
 }

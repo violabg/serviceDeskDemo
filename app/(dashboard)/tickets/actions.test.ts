@@ -245,8 +245,12 @@ describe("ticket actions", () => {
   })
 
   describe("updateTicketStatusAction", () => {
-    it("returns forbidden and writes nothing without tickets:write", async () => {
-      grantPermissions([])
+    beforeEach(() => {
+      grantPermissions([MANAGE])
+    })
+
+    it("returns forbidden with only tickets:write, and writes nothing", async () => {
+      grantPermissions([WRITE])
 
       await expect(
         updateTicketStatusAction(makeFormData({ ticketId: "ticket-1", status: "Resolved" }))
@@ -271,17 +275,18 @@ describe("ticket actions", () => {
       expect(serviceMock.updateTicketStatus).not.toHaveBeenCalled()
     })
 
-    it("returns not-found for a missing ticket, even when reopening, and writes nothing", async () => {
+    it("returns not-found for a missing ticket and writes nothing", async () => {
       serviceMock.getTicketById.mockResolvedValue(null)
 
       await expect(
-        updateTicketStatusAction(makeFormData({ ticketId: "ticket-1", status: "Open" }))
+        updateTicketStatusAction(makeFormData({ ticketId: "ticket-1", status: "Resolved" }))
       ).resolves.toEqual({ ok: false, reason: "not-found" })
       expect(serviceMock.updateTicketStatus).not.toHaveBeenCalled()
       expect(updateTagMock).not.toHaveBeenCalled()
     })
 
-    it("returns forbidden when a write-only caller reopens a Closed ticket", async () => {
+    it("forbids a write-only caller from changing a Closed ticket", async () => {
+      grantPermissions([WRITE])
       serviceMock.getTicketById.mockResolvedValue({ id: "ticket-1", status: "Closed" })
 
       await expect(
@@ -291,8 +296,7 @@ describe("ticket actions", () => {
       expect(updateTagMock).not.toHaveBeenCalled()
     })
 
-    it("allows reopening a Closed ticket with tickets:manage and expires its tags", async () => {
-      grantPermissions([WRITE, MANAGE])
+    it("reopens a Closed ticket with tickets:manage and expires its tags", async () => {
       serviceMock.getTicketById.mockResolvedValue({ id: "ticket-1", status: "Closed" })
 
       await expect(
@@ -308,7 +312,7 @@ describe("ticket actions", () => {
       expect(updateTagMock).toHaveBeenCalledTimes(2)
     })
 
-    it("allows a write-only caller to change a Closed ticket to a status other than Open", async () => {
+    it("changes a Closed ticket to another status with tickets:manage", async () => {
       serviceMock.getTicketById.mockResolvedValue({ id: "ticket-1", status: "Closed" })
 
       await expect(
@@ -349,8 +353,12 @@ describe("ticket actions", () => {
   })
 
   describe("updateTicketPriorityAction", () => {
-    it("returns forbidden and writes nothing without tickets:write", async () => {
-      grantPermissions([])
+    beforeEach(() => {
+      grantPermissions([MANAGE])
+    })
+
+    it("returns forbidden with only tickets:write, and writes nothing", async () => {
+      grantPermissions([WRITE])
 
       await expect(
         updateTicketPriorityAction(makeFormData({ ticketId: "ticket-1", priority: "High" }))
@@ -401,7 +409,7 @@ describe("ticket actions", () => {
 
       accessMock.mockResolvedValue({
         user: { id: "user-2" },
-        effectivePermissionKeys: [WRITE],
+        effectivePermissionKeys: [MANAGE],
       })
       await updateTicketPriorityAction(makeFormData({ ticketId: "ticket-1", priority: "High" }))
 
@@ -415,8 +423,12 @@ describe("ticket actions", () => {
   })
 
   describe("assignTechnicianAction", () => {
-    it("returns forbidden and writes nothing without tickets:write", async () => {
-      grantPermissions([])
+    beforeEach(() => {
+      grantPermissions([MANAGE])
+    })
+
+    it("returns forbidden with only tickets:write, and writes nothing", async () => {
+      grantPermissions([WRITE])
 
       await expect(
         assignTechnicianAction(makeFormData({ ticketId: "ticket-1", technicianId: "tech-1" }))
@@ -494,8 +506,12 @@ describe("ticket actions", () => {
   })
 
   describe("addTicketNoteAction", () => {
-    it("returns forbidden and writes nothing without tickets:write", async () => {
-      grantPermissions([])
+    beforeEach(() => {
+      grantPermissions([MANAGE])
+    })
+
+    it("returns forbidden with only tickets:write, and writes nothing", async () => {
+      grantPermissions([WRITE])
 
       await expect(
         addTicketNoteAction(makeFormData({ ticketId: "ticket-1", content: "Note" }))

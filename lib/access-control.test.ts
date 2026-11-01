@@ -16,6 +16,7 @@ const prismaMock = vi.hoisted(() => ({
   permission: {
     upsert: vi.fn(),
     deleteMany: vi.fn(),
+    findMany: vi.fn(),
   },
   role: {
     upsert: vi.fn(),
@@ -34,6 +35,7 @@ const prismaMock = vi.hoisted(() => ({
     upsert: vi.fn(),
     update: vi.fn(),
     findUnique: vi.fn(),
+    findMany: vi.fn(),
   },
   userRole: {
     upsert: vi.fn(),
@@ -576,7 +578,200 @@ describe("management mutations", () => {
     ])
   })
 
-  it("requires users write permission before assigning a role", async () => {
+  it("reads the users list when the actor holds users write only", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "users", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.user.findMany.mockResolvedValue([
+      { id: "user-1", email: "one@example.com" },
+    ])
+
+    const { getUsersForManagement } = await import("@/lib/access-control/server")
+
+    const users = await getUsersForManagement({ actorUserId: "actor-writer" })
+
+    expect(users).toEqual([{ id: "user-1", email: "one@example.com" }])
+  })
+
+  it("reads the users list when the actor holds users manage only", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "users", operation: "manage" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.user.findMany.mockResolvedValue([
+      { id: "user-1", email: "one@example.com" },
+    ])
+
+    const { getUsersForManagement } = await import("@/lib/access-control/server")
+
+    const users = await getUsersForManagement({ actorUserId: "actor-manager" })
+
+    expect(users).toEqual([{ id: "user-1", email: "one@example.com" }])
+  })
+
+  it("refuses the users list when the actor holds none of the users keys", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({ roles: [] })
+
+    const { getUsersForManagement } = await import("@/lib/access-control/server")
+
+    await expect(
+      getUsersForManagement({ actorUserId: "actor-without-users" })
+    ).rejects.toThrow(
+      "Missing permission: any of users:read, users:write, users:manage"
+    )
+    expect(prismaMock.user.findMany).not.toHaveBeenCalled()
+  })
+
+  it("reads the roles list when the actor holds roles write only", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "roles", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.role.findMany.mockResolvedValue([{ id: "role-1", name: "Editor" }])
+
+    const { getRolesForManagement } = await import("@/lib/access-control/server")
+
+    const roles = await getRolesForManagement({ actorUserId: "actor-writer" })
+
+    expect(roles).toEqual([{ id: "role-1", name: "Editor" }])
+  })
+
+  it("reads the roles list when the actor holds roles manage only", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "roles", operation: "manage" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.role.findMany.mockResolvedValue([{ id: "role-1", name: "Editor" }])
+
+    const { getRolesForManagement } = await import("@/lib/access-control/server")
+
+    const roles = await getRolesForManagement({ actorUserId: "actor-manager" })
+
+    expect(roles).toEqual([{ id: "role-1", name: "Editor" }])
+  })
+
+  it("refuses the roles list when the actor holds none of the roles keys", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({ roles: [] })
+
+    const { getRolesForManagement } = await import("@/lib/access-control/server")
+
+    await expect(
+      getRolesForManagement({ actorUserId: "actor-without-roles" })
+    ).rejects.toThrow(
+      "Missing permission: any of roles:read, roles:write, roles:manage"
+    )
+    expect(prismaMock.role.findMany).not.toHaveBeenCalled()
+  })
+
+  it("reads a role detail when the actor holds roles manage only", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "roles", operation: "manage" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.role.findUnique.mockResolvedValue({
+      id: "role-1",
+      name: "Editor",
+      permissions: [],
+    })
+    prismaMock.permission.findMany.mockResolvedValue([])
+
+    const { getRoleForManagement } = await import("@/lib/access-control/server")
+
+    const result = await getRoleForManagement({
+      actorUserId: "actor-manager",
+      roleId: "role-1",
+    })
+
+    expect(result.role.id).toBe("role-1")
+    expect(result.sections).toEqual(ACCESS_SECTIONS)
+  })
+
+  it("requires users write permission before creating a user", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ roles: [] })
+
+    const { createUserForManagement } =
+      await import("@/lib/access-control/server")
+
+    await expect(
+      createUserForManagement({
+        actorUserId: "actor-without-users",
+        name: "New User",
+        email: "new@example.com",
+      })
+    ).rejects.toThrow("Missing permission: users:write")
+    expect(prismaMock.user.create).not.toHaveBeenCalled()
+  })
+
+  it("creates a user with the normalized email when the actor holds users write", async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      roles: [
+        {
+          role: {
+            permissions: [
+              { permission: { section: "users", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+    prismaMock.user.create.mockResolvedValue({
+      id: "user-new",
+      email: "new@example.com",
+      name: "New User",
+    })
+
+    const { createUserForManagement } =
+      await import("@/lib/access-control/server")
+
+    const user = await createUserForManagement({
+      actorUserId: "actor-writer",
+      name: "New User",
+      email: "  New@Example.com  ",
+    })
+
+    expect(user.id).toBe("user-new")
+    expect(prismaMock.user.create).toHaveBeenCalledWith({
+      data: { email: "new@example.com", name: "New User" },
+    })
+  })
+
+  it("requires users manage permission before assigning a role", async () => {
     prismaMock.user.findUnique.mockResolvedValue({ roles: [] })
 
     const { assignRoleToUser } = await import("@/lib/access-control/server")
@@ -587,17 +782,17 @@ describe("management mutations", () => {
         targetUserId: "target-user",
         roleId: "role-technician",
       })
-    ).rejects.toThrow("Missing permission: users:write")
+    ).rejects.toThrow("Missing permission: users:manage")
     expect(prismaMock.userRole.upsert).not.toHaveBeenCalled()
   })
 
-  it("assigns an existing role when the actor has users write permission", async () => {
+  it("assigns an existing role when the actor has users manage permission", async () => {
     prismaMock.user.findUnique.mockResolvedValue({
       roles: [
         {
           role: {
             permissions: [
-              { permission: { section: "users", operation: "write" } },
+              { permission: { section: "users", operation: "manage" } },
             ],
           },
         },
@@ -696,7 +891,7 @@ describe("management mutations", () => {
         {
           role: {
             permissions: [
-              { permission: { section: "roles", operation: "write" } },
+              { permission: { section: "roles", operation: "manage" } },
             ],
           },
         },
@@ -751,7 +946,7 @@ describe("management mutations", () => {
         {
           role: {
             permissions: [
-              { permission: { section: "roles", operation: "write" } },
+              { permission: { section: "roles", operation: "manage" } },
             ],
           },
         },

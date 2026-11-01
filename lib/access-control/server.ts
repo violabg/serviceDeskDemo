@@ -1,4 +1,5 @@
 import {
+  ACCESS_OPERATIONS,
   ACCESS_SECTIONS,
   ADMIN_ROLE_NAME,
   INITIAL_PERMISSIONS,
@@ -26,6 +27,11 @@ type RoleMutationInput = ManagementActorInput & {
   name: string
   description?: string | null
   permissionIds?: string[]
+}
+
+type UserCreateInput = ManagementActorInput & {
+  name?: string | null
+  email: string
 }
 
 type RoleUpdateInput = RoleMutationInput & {
@@ -93,6 +99,16 @@ function normalizeRequiredName(name: string) {
   return normalized
 }
 
+function normalizeRequiredEmail(email: string) {
+  const normalized = email.trim().toLowerCase()
+
+  if (!normalized) {
+    throw new Error("User email is required")
+  }
+
+  return normalized
+}
+
 function getUniquePermissionIds(permissionIds: string[]) {
   return [...new Set(permissionIds)].filter(Boolean)
 }
@@ -106,6 +122,21 @@ async function requireUserPermission(
 
   if (!allowed) {
     throw new Error(`Missing permission: ${permissionKey(section, operation)}`)
+  }
+}
+
+async function requireAnySectionPermission(
+  userId: string,
+  section: AccessSection
+) {
+  const effectivePermissions = await getUserEffectivePermissionKeys(userId)
+
+  if (!hasAnySectionPermission(effectivePermissions, section)) {
+    throw new Error(
+      `Missing permission: any of ${ACCESS_OPERATIONS.map((operation) =>
+        permissionKey(section, operation)
+      ).join(", ")}`
+    )
   }
 }
 
@@ -308,7 +339,7 @@ export async function userHasPermission(
 export async function getUsersForManagement({
   actorUserId,
 }: ManagementActorInput) {
-  await requireUserPermission(actorUserId, "users", "read")
+  await requireAnySectionPermission(actorUserId, "users")
 
   return prisma.user.findMany({
     orderBy: [{ email: "asc" }],
@@ -336,7 +367,7 @@ export async function getUserForManagement({
   actorUserId,
   targetUserId,
 }: ManagementActorInput & { targetUserId: string }) {
-  await requireUserPermission(actorUserId, "users", "read")
+  await requireAnySectionPermission(actorUserId, "users")
 
   const [user, availableRoles] = await Promise.all([
     prisma.user.findUnique({
@@ -383,12 +414,27 @@ export async function getUserForManagement({
   }
 }
 
+export async function createUserForManagement({
+  actorUserId,
+  name,
+  email,
+}: UserCreateInput) {
+  await requireUserPermission(actorUserId, "users", "write")
+
+  return prisma.user.create({
+    data: {
+      email: normalizeRequiredEmail(email),
+      name: normalizeOptionalText(name),
+    },
+  })
+}
+
 export async function assignRoleToUser({
   actorUserId,
   targetUserId,
   roleId,
 }: UserRoleMutationInput) {
-  await requireUserPermission(actorUserId, "users", "write")
+  await requireUserPermission(actorUserId, "users", "manage")
 
   return prisma.userRole.upsert({
     where: {
@@ -410,7 +456,7 @@ export async function removeRoleFromUser({
   targetUserId,
   roleId,
 }: UserRoleMutationInput) {
-  await requireUserPermission(actorUserId, "users", "write")
+  await requireUserPermission(actorUserId, "users", "manage")
 
   return prisma.userRole.delete({
     where: {
@@ -425,7 +471,7 @@ export async function removeRoleFromUser({
 export async function getRolesForManagement({
   actorUserId,
 }: ManagementActorInput) {
-  await requireUserPermission(actorUserId, "roles", "read")
+  await requireAnySectionPermission(actorUserId, "roles")
 
   return prisma.role.findMany({
     orderBy: [{ name: "asc" }],
@@ -448,7 +494,7 @@ export async function getRoleForManagement({
   actorUserId,
   roleId,
 }: ManagementActorInput & { roleId: string }) {
-  await requireUserPermission(actorUserId, "roles", "read")
+  await requireAnySectionPermission(actorUserId, "roles")
 
   const [role, permissions] = await Promise.all([
     prisma.role.findUnique({
@@ -513,7 +559,7 @@ export async function updateRoleForManagement({
   description,
   permissionIds,
 }: RoleUpdateInput) {
-  await requireUserPermission(actorUserId, "roles", "write")
+  await requireUserPermission(actorUserId, "roles", "manage")
 
   const role = await prisma.role.findUnique({
     where: { id: roleId },

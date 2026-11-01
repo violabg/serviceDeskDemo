@@ -27,6 +27,7 @@ vi.mock("next/cache", () => ({
 
 const READ = permissionKey("customers", "read")
 const WRITE = permissionKey("customers", "write")
+const MANAGE = permissionKey("customers", "manage")
 
 const customers = [
   { id: "customer-1", company: "Acme", name: "Ana Rossi", status: "Active", _count: { tickets: 2 } },
@@ -50,7 +51,7 @@ describe("CustomersPageContent", () => {
     getCustomerListMock.mockResolvedValue(customers)
   })
 
-  it("redirects users without customers:read before any customer is read", async () => {
+  it("redirects users with none of the customers keys before any customer is read", async () => {
     grant([])
     const redirectError = new Error("NEXT_REDIRECT")
     redirectMock.mockImplementation(() => {
@@ -60,6 +61,31 @@ describe("CustomersPageContent", () => {
     await expect(renderList()).rejects.toBe(redirectError)
     expect(redirectMock).toHaveBeenCalledWith("/dashboard")
     expect(getCustomerListMock).not.toHaveBeenCalled()
+  })
+
+  it("opens the list for a write-only holder with the create control enabled", async () => {
+    grant([WRITE])
+
+    render(await renderList())
+
+    expect(redirectMock).not.toHaveBeenCalled()
+    expect(screen.getByText("Primary contact")).toBeInTheDocument()
+    expect(screen.getAllByRole("article")).toHaveLength(2)
+    const newCustomer = screen.getByRole("button", { name: "New Customer" })
+    expect(newCustomer.tagName).toBe("A")
+    expect(newCustomer).toHaveAttribute("href", "/customers/new")
+  })
+
+  it("opens the list for a manage-only holder with the create control present but disabled", async () => {
+    grant([MANAGE])
+
+    render(await renderList())
+
+    expect(redirectMock).not.toHaveBeenCalled()
+    expect(screen.getByText("Primary contact")).toBeInTheDocument()
+    expect(screen.getAllByRole("article")).toHaveLength(2)
+    expect(screen.getByRole("button", { name: "New Customer" })).toBeDisabled()
+    expect(document.querySelector('a[href="/customers/new"]')).toBeNull()
   })
 
   it("renders a search form with a q input above the table, submitted to /customers", async () => {

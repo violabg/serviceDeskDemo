@@ -196,7 +196,9 @@ export function TicketFiltersForm({
           <Button render={<Link href="/tickets/new" />} nativeButton={false}>
             Nuovo Ticket
           </Button>
-        ) : null}
+        ) : (
+          <Button disabled>Nuovo Ticket</Button>
+        )}
       </div>
     </form>
   )

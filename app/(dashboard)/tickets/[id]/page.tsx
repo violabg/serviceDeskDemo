@@ -3,7 +3,7 @@ import { TicketDetailForms } from "@/app/(dashboard)/tickets/[id]/ticket-detail-
 import { ticketDetailTag } from "@/app/(dashboard)/tickets/_lib/cache-tags"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { hasPermission } from "@/lib/access-control"
+import { hasAnySectionPermission, hasPermission } from "@/lib/access-control"
 import { getAvailableTechnicians, getTicketById } from "@/lib/tickets/service"
 import { cacheLife, cacheTag } from "next/cache"
 import { notFound, redirect } from "next/navigation"
@@ -48,7 +48,7 @@ export default function TicketDetailPage({
   )
 }
 
-async function TicketDetailPageContent({
+export async function TicketDetailPageContent({
   params,
 }: {
   params: Promise<{ id: string }>
@@ -60,19 +60,16 @@ async function TicketDetailPageContent({
 
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
-  if (!hasPermission(effectivePermissions, "tickets", "read")) {
+  if (!hasAnySectionPermission(effectivePermissions, "tickets")) {
     redirect("/dashboard")
   }
 
-  const canWrite = hasPermission(effectivePermissions, "tickets", "write")
   const canManage = hasPermission(effectivePermissions, "tickets", "manage")
   const { ticket, technicians } = await getTicketDetailData(access.user.id, id)
 
   if (!ticket) {
     notFound()
   }
-
-  const reopenBlocked = ticket.status === "Closed" && !canManage
 
   return (
     <div className="gap-4 grid">
@@ -132,21 +129,15 @@ async function TicketDetailPageContent({
           <h2 className="font-heading font-semibold text-lg tracking-normal">
             Lifecycle
           </h2>
-          {!canWrite ? (
+          {!canManage ? (
             <p className="text-muted-foreground text-sm">Read-only access</p>
           ) : null}
         </div>
-        {reopenBlocked ? (
-          <p className="mt-3 text-amber-700 text-sm">
-            Reopen requires tickets:manage permission.
-          </p>
-        ) : null}
         <TicketDetailForms
           ticketId={ticket.id}
           status={ticket.status}
           priority={ticket.priority}
           assignedToId={ticket.assignedToId}
-          canWrite={canWrite}
           canManage={canManage}
           technicians={technicians}
         />

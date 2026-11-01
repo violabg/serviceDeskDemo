@@ -41,6 +41,7 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
   const [, startLookupTransition] = useTransition()
   const [message, setMessage] = useState("")
   const [matches, setMatches] = useState<MatchView[]>([])
+  const canSubmit = mode === "edit" ? canManage : canWrite
   const savedValues = mode === "edit" ? initialValues : undefined
   const { register, getValues, handleSubmit, formState: { errors } } = useForm<Values>({
     defaultValues: {
@@ -92,7 +93,7 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
   })
 
   function lookupDeactivatedMatches() {
-    if (!canWrite) return
+    if (!canSubmit) return
     const company = getValues("company").trim()
     const email = getValues("email").trim()
     if (!company || !email) return
@@ -124,7 +125,7 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
         <FieldLabel htmlFor="customer-company">Company name <span className="text-destructive">*</span></FieldLabel>
         <Input
           id="customer-company"
-          disabled={!canWrite}
+          disabled={!canSubmit}
           aria-invalid={errors.company ? true : undefined}
           {...companyField}
           onBlur={(event) => {
@@ -136,7 +137,7 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
       </Field>
       <Field data-invalid={errors.name ? true : undefined}>
         <FieldLabel htmlFor="customer-contact">Primary contact <span className="text-destructive">*</span></FieldLabel>
-        <Input id="customer-contact" disabled={!canWrite} aria-invalid={errors.name ? true : undefined} {...nameField} />
+        <Input id="customer-contact" disabled={!canSubmit} aria-invalid={errors.name ? true : undefined} {...nameField} />
         <FieldError errors={[errors.name]} />
       </Field>
       <Field data-invalid={errors.email ? true : undefined}>
@@ -144,7 +145,7 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
         <Input
           id="customer-email"
           type="email"
-          disabled={!canWrite}
+          disabled={!canSubmit}
           aria-invalid={errors.email ? true : undefined}
           {...emailField}
           onBlur={(event) => {
@@ -156,14 +157,14 @@ export function CustomerForm({ mode, canWrite, canManage, customerId, initialVal
       </Field>
       <Field>
         <FieldLabel htmlFor="customer-phone">Phone</FieldLabel>
-        <Input id="customer-phone" disabled={!canWrite} {...phoneField} />
+        <Input id="customer-phone" disabled={!canSubmit} {...phoneField} />
       </Field>
       <Field>
         <FieldLabel htmlFor="customer-notes">Operational notes</FieldLabel>
-        <Textarea id="customer-notes" disabled={!canWrite} {...notesField} />
+        <Textarea id="customer-notes" disabled={!canSubmit} {...notesField} />
       </Field>
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="submit" disabled={!canWrite || isPending}>{isPending ? "Saving…" : mode === "create" ? "Create Customer" : "Save Customer"}</Button>
+        <Button type="submit" disabled={!canSubmit || isPending}>{isPending ? "Saving…" : mode === "create" ? "Create Customer" : "Save Customer"}</Button>
         {cancelHref ? (
           <Button variant="outline" render={<Link href={cancelHref} />} nativeButton={false}>Cancel</Button>
         ) : null}

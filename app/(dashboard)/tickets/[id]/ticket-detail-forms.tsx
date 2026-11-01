@@ -50,7 +50,6 @@ export function TicketDetailForms({
   status,
   priority,
   assignedToId,
-  canWrite,
   canManage,
   technicians,
 }: {
@@ -58,7 +57,6 @@ export function TicketDetailForms({
   status: (typeof TICKET_STATUSES)[number]
   priority: (typeof TICKET_PRIORITIES)[number]
   assignedToId: string | null
-  canWrite: boolean
   canManage: boolean
   technicians: Array<{ id: string; name: string | null; email: string }>
 }) {
@@ -137,7 +135,7 @@ export function TicketDetailForms({
                   <Select
                     value={field.value}
                     onValueChange={(value) => field.onChange(value)}
-                    disabled={!canWrite && !canManage}
+                    disabled={!canManage}
                   >
                     <SelectTrigger id="ticket-status" className="w-full">
                       <SelectValue placeholder="Status" />
@@ -159,7 +157,7 @@ export function TicketDetailForms({
           <Button
             type="submit"
             variant="outline"
-            disabled={(!canWrite && !canManage) || isSubmitting}
+            disabled={!canManage || isSubmitting}
           >
             Update Status
           </Button>
@@ -178,7 +176,7 @@ export function TicketDetailForms({
                   <Select
                     value={field.value}
                     onValueChange={(value) => field.onChange(value)}
-                    disabled={!canWrite}
+                    disabled={!canManage}
                   >
                     <SelectTrigger id="ticket-priority" className="w-full">
                       <SelectValue placeholder="Priority" />
@@ -200,7 +198,7 @@ export function TicketDetailForms({
           <Button
             type="submit"
             variant="outline"
-            disabled={!canWrite || isSubmitting}
+            disabled={!canManage || isSubmitting}
           >
             Update Priority
           </Button>
@@ -217,7 +215,7 @@ export function TicketDetailForms({
                   <Select
                     value={field.value}
                     onValueChange={(value) => field.onChange(value)}
-                    disabled={!canWrite}
+                    disabled={!canManage}
                   >
                     <SelectTrigger id="ticket-technician" className="w-full">
                       <SelectValue placeholder="Unassigned" />
@@ -240,7 +238,7 @@ export function TicketDetailForms({
           <Button
             type="submit"
             variant="outline"
-            disabled={!canWrite || isSubmitting}
+            disabled={!canManage || isSubmitting}
           >
             Assign
           </Button>
@@ -261,12 +259,12 @@ export function TicketDetailForms({
             })}
             className="min-h-24"
             placeholder="Add an investigation note"
-            disabled={!canWrite || isSubmitting}
+            disabled={!canManage || isSubmitting}
             aria-invalid={noteForm.formState.errors.content ? true : undefined}
           />
           <FieldError errors={[noteForm.formState.errors.content]} />
         </Field>
-        <Button type="submit" disabled={!canWrite || isSubmitting}>
+        <Button type="submit" disabled={!canManage || isSubmitting}>
           Add Note
         </Button>
       </form>

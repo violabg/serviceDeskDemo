@@ -3,7 +3,7 @@ import { ticketListTag } from "@/app/(dashboard)/tickets/_lib/cache-tags"
 import { TicketFiltersForm } from "@/app/(dashboard)/tickets/ticket-filters-form"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { hasPermission } from "@/lib/access-control"
+import { hasAnySectionPermission, hasPermission } from "@/lib/access-control"
 import { getCustomerList } from "@/lib/customers/service"
 import {
   getTicketList,
@@ -82,7 +82,7 @@ export default function TicketsPage({
   )
 }
 
-async function TicketsPageContent({
+export async function TicketsPageContent({
   searchParams,
 }: {
   searchParams: Promise<TicketListSearchParams>
@@ -93,7 +93,7 @@ async function TicketsPageContent({
   ])
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
-  if (!hasPermission(effectivePermissions, "tickets", "read")) {
+  if (!hasAnySectionPermission(effectivePermissions, "tickets")) {
     redirect("/dashboard")
   }
 

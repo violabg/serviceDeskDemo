@@ -29,7 +29,7 @@ export async function createCustomerAction(formData: FormData) {
 
 export async function updateCustomerAction(formData: FormData) {
   const access = await requireCurrentApplicationAccess()
-  if (!hasPermission(new Set(access.effectivePermissionKeys), "customers", "write")) return { ok: false, reason: "forbidden" as const }
+  if (!hasPermission(new Set(access.effectivePermissionKeys), "customers", "manage")) return { ok: false, reason: "forbidden" as const }
   const id = readString(formData, "customerId")
   if (!id) return { ok: false, reason: "invalid" as const }
   const current = await getCustomerById(id)

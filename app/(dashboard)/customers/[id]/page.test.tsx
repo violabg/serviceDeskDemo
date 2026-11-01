@@ -64,7 +64,16 @@ const activeCustomer = {
 }
 
 function renderDetail(id: string) {
-  return CustomerDetailContent({ params: Promise.resolve({ id }) })
+  return CustomerDetailContent({
+    params: Promise.resolve({ id }),
+    searchParams: Promise.resolve(currentEditSearchParams()),
+  })
+}
+
+function currentEditSearchParams(): { edit?: string } {
+  const edit = searchParamsMock.current.get("edit")
+
+  return edit === null ? {} : { edit }
 }
 
 function expectValueUnderLabel(label: string, value: string) {
@@ -143,6 +152,32 @@ describe("CustomerDetailContent", () => {
     expect(screen.getByText("No operational notes")).toBeInTheDocument()
   })
 
+  it("opens the detail view for a write-only holder with both controls present but disabled", async () => {
+    grant([WRITE])
+
+    render(await renderDetail("customer-1"))
+
+    expect(redirectMock).not.toHaveBeenCalled()
+    expectValueUnderLabel("Company", "Acme")
+    expect(screen.getByRole("button", { name: "Edit" })).toBeDisabled()
+    expect(document.querySelector('a[href="/customers/customer-1?edit=true"]')).toBeNull()
+    expect(screen.getByRole("button", { name: "Deactivate Customer" })).toBeDisabled()
+    expect(screen.queryByLabelText("Company name *")).not.toBeInTheDocument()
+  })
+
+  it("opens the detail view for a manage-only holder with the edit control enabled", async () => {
+    grant([MANAGE])
+
+    render(await renderDetail("customer-1"))
+
+    expect(redirectMock).not.toHaveBeenCalled()
+    expectValueUnderLabel("Company", "Acme")
+    const edit = screen.getByRole("button", { name: "Edit" })
+    expect(edit.tagName).toBe("A")
+    expect(edit).toHaveAttribute("href", "/customers/customer-1?edit=true")
+    expect(screen.getByRole("button", { name: "Deactivate Customer" })).toBeEnabled()
+  })
+
   it("shows the read-only view without the edit form when the address has no edit parameter", async () => {
     grant([READ])
 
@@ -163,17 +198,17 @@ describe("CustomerDetailContent", () => {
     expect(screen.getByText("Ana Rossi")).toBeInTheDocument()
   })
 
-  it("shows no Edit control for users without customers:write", async () => {
-    grant([READ])
+  it("renders the Edit control disabled for users without customers:manage", async () => {
+    grant([READ, WRITE])
 
     render(await renderDetail("customer-1"))
 
-    expect(screen.queryByRole("button", { name: "Edit" })).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Edit" })).toBeDisabled()
     expect(document.querySelector('a[href="/customers/customer-1?edit=true"]')).toBeNull()
   })
 
-  it("renders the Edit control as a link to the same customer with edit=true for users with customers:write", async () => {
-    grant([READ, WRITE])
+  it("renders the Edit control as a link to the same customer with edit=true for users with customers:manage", async () => {
+    grant([READ, WRITE, MANAGE])
 
     render(await renderDetail("customer-1"))
 
@@ -183,8 +218,21 @@ describe("CustomerDetailContent", () => {
     expect(screen.queryByLabelText("Company name *")).not.toBeInTheDocument()
   })
 
-  it("renders the edit form with the stored values and the Cancel link when the address has edit=true", async () => {
+  it("redirects to the detail path without the edit parameter when write alone opens the edit address", async () => {
     grant([READ, WRITE])
+    addressWithEdit("true")
+    const redirectError = new Error("NEXT_REDIRECT")
+    redirectMock.mockImplementation(() => {
+      throw redirectError
+    })
+
+    await expect(renderDetail("customer-1")).rejects.toBe(redirectError)
+    expect(redirectMock).toHaveBeenCalledWith("/customers/customer-1")
+    expect(getCustomerByIdMock).not.toHaveBeenCalled()
+  })
+
+  it("renders the edit form with the stored values and the Cancel link when the address has edit=true", async () => {
+    grant([READ, WRITE, MANAGE])
     addressWithEdit("true")
 
     render(await renderDetail("customer-1"))
@@ -198,7 +246,7 @@ describe("CustomerDetailContent", () => {
   })
 
   it("renders a Cancel link to the path without the edit parameter in the edit view", async () => {
-    grant([READ, WRITE])
+    grant([READ, WRITE, MANAGE])
     addressWithEdit("true")
 
     render(await renderDetail("customer-1"))
@@ -210,7 +258,7 @@ describe("CustomerDetailContent", () => {
   })
 
   it("returns to the read-only view through the save redirect after the form saves successfully", async () => {
-    grant([READ, WRITE])
+    grant([READ, WRITE, MANAGE])
     addressWithEdit("true")
     actionsMock.updateCustomerAction.mockResolvedValue({ ok: true, customer: { id: "customer-1" } })
     const user = userEvent.setup()
@@ -245,7 +293,7 @@ describe("CustomerDetailContent", () => {
   })
 
   it("still refreshes the route when the push after a successful save throws", async () => {
-    grant([READ, WRITE])
+    grant([READ, WRITE, MANAGE])
     addressWithEdit("true")
     actionsMock.updateCustomerAction.mockResolvedValue({ ok: true, customer: { id: "customer-1" } })
     routerMock.push.mockImplementation(() => {
@@ -268,7 +316,7 @@ describe("CustomerDetailContent", () => {
   })
 
   it("keeps the edit form open and shows the duplicate message without redirecting when the update is refused", async () => {
-    grant([READ, WRITE])
+    grant([READ, WRITE, MANAGE])
     addressWithEdit("true")
     actionsMock.updateCustomerAction.mockResolvedValue({ ok: false, reason: "duplicate" })
     const user = userEvent.setup()
@@ -295,13 +343,12 @@ describe("CustomerDetailContent", () => {
     expect(screen.getByRole("button", { name: "Deactivate Customer" })).toBeInTheDocument()
   })
 
-  it("does not render the status control for users without customers:manage", async () => {
+  it("renders the status control disabled for users without customers:manage", async () => {
     grant([READ, WRITE])
 
     render(await renderDetail("customer-1"))
 
-    expect(screen.queryByRole("button", { name: "Deactivate Customer" })).not.toBeInTheDocument()
-    expect(screen.queryByRole("button", { name: "Reactivate Customer" })).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Deactivate Customer" })).toBeDisabled()
   })
 
   it("deactivates an Active customer through changeCustomerStatusAction and refreshes the page", async () => {

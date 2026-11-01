@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import {
   ACCESS_OPERATIONS,
+  hasAnySectionPermission,
   hasPermission,
   permissionKey,
 } from "@/lib/access-control"
@@ -52,7 +53,7 @@ export default function RoleDetailPage({
   )
 }
 
-async function RoleDetailPageContent({
+export async function RoleDetailPageContent({
   params,
 }: {
   params: Promise<{ roleId: string }>
@@ -63,17 +64,17 @@ async function RoleDetailPageContent({
   ])
   const permissions = new Set(access.effectivePermissionKeys)
 
-  if (!hasPermission(permissions, "roles", "read")) {
+  if (!hasAnySectionPermission(permissions, "roles")) {
     redirect("/dashboard")
   }
 
-  const canWriteRoles = hasPermission(permissions, "roles", "write")
+  const canManageRoles = hasPermission(permissions, "roles", "manage")
 
   return (
     <RoleDetailContent
       actorUserId={access.user.id}
       roleId={roleId}
-      canWriteRoles={canWriteRoles}
+      canManageRoles={canManageRoles}
     />
   )
 }
@@ -85,11 +86,11 @@ function RoleDetailPageSkeleton() {
 async function RoleDetailContent({
   actorUserId,
   roleId,
-  canWriteRoles,
+  canManageRoles,
 }: {
   actorUserId: string
   roleId: string
-  canWriteRoles: boolean
+  canManageRoles: boolean
 }) {
   const {
     role,
@@ -99,7 +100,7 @@ async function RoleDetailContent({
   const assignedPermissionIds = new Set(
     role.permissions.map(({ permissionId }) => permissionId)
   )
-  const canEditRole = canWriteRoles && !role.isSystem
+  const canEditRole = canManageRoles && !role.isSystem
 
   return (
     <>
@@ -116,7 +117,7 @@ async function RoleDetailContent({
           System roles are read-only to keep bootstrap access stable.
         </div>
       ) : null}
-      {!canWriteRoles ? (
+      {!canManageRoles ? (
         <div className="bg-muted/50 px-4 py-3 border rounded-lg text-muted-foreground text-sm">
           You have read-only role access.
         </div>
@@ -208,7 +209,13 @@ async function RoleDetailContent({
           <div>
             <Button type="submit">Save Role</Button>
           </div>
-        ) : null}
+        ) : (
+          <div>
+            <Button type="submit" disabled>
+              Save Role
+            </Button>
+          </div>
+        )}
       </form>
     </>
   )

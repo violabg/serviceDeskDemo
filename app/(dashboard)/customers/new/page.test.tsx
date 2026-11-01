@@ -71,8 +71,30 @@ describe("NewCustomerContent and the creation form", () => {
   })
 
   describe("access gate", () => {
-    it("redirects users without customers:read to /dashboard", async () => {
+    it("redirects users with none of the customers keys to /dashboard", async () => {
       grant([])
+      const redirectError = new Error("NEXT_REDIRECT")
+      redirectMock.mockImplementation(() => {
+        throw redirectError
+      })
+
+      await expect(NewCustomerContent()).rejects.toBe(redirectError)
+      expect(redirectMock).toHaveBeenCalledWith("/dashboard")
+    })
+
+    it("redirects a read-only holder to /dashboard without rendering the form", async () => {
+      grant([READ])
+      const redirectError = new Error("NEXT_REDIRECT")
+      redirectMock.mockImplementation(() => {
+        throw redirectError
+      })
+
+      await expect(NewCustomerContent()).rejects.toBe(redirectError)
+      expect(redirectMock).toHaveBeenCalledWith("/dashboard")
+    })
+
+    it("redirects a manage-only holder to /dashboard because creation needs customers:write", async () => {
+      grant([MANAGE])
       const redirectError = new Error("NEXT_REDIRECT")
       redirectMock.mockImplementation(() => {
         throw redirectError
@@ -89,6 +111,17 @@ describe("NewCustomerContent and the creation form", () => {
       expect(document.querySelector('[data-slot="skeleton"]')).not.toBeNull()
     })
 
+    it("renders the create form with enabled inputs and submit control for a write-only holder", async () => {
+      grant([WRITE])
+
+      render(await NewCustomerContent())
+
+      expect(redirectMock).not.toHaveBeenCalled()
+      expect(screen.getByLabelText("Company name *")).toBeEnabled()
+      expect(screen.getByLabelText("Contact email *")).toBeEnabled()
+      expect(screen.getByRole("button", { name: "Create Customer" })).toBeEnabled()
+    })
+
     it("renders the create form with enabled inputs and submit control for a writer", async () => {
       grant([READ, WRITE])
 
@@ -102,10 +135,14 @@ describe("NewCustomerContent and the creation form", () => {
       expect(screen.getByRole("button", { name: "Create Customer" })).toBeEnabled()
     })
 
-    it("renders the same form disabled, with no enabled submit control, for a reader", async () => {
-      grant([READ])
-
-      render(await NewCustomerContent())
+    it("renders the same form disabled, with no enabled submit control, without customers:write", () => {
+      render(
+        <CustomerForm
+          mode="create"
+          canWrite={false}
+          canManage={false}
+        />
+      )
 
       expect(screen.getByLabelText("Company name *")).toBeDisabled()
       expect(screen.getByLabelText("Primary contact *")).toBeDisabled()
@@ -229,7 +266,8 @@ describe("NewCustomerContent and the creation form", () => {
         await screen.findByText("A deactivated match exists. Reactivate that record instead.")
       ).toBeInTheDocument()
       expect(screen.getByText("Acme · Ana Rossi · ana@acme.com")).toBeInTheDocument()
-      expect(screen.getByRole("button", { name: "Reactivate" })).toBeEnabled()
+      const reactivate = await screen.findByRole("button", { name: "Reactivate" })
+      await waitFor(() => expect(reactivate).toBeEnabled())
     })
 
     it("reactivates the matching record through changeCustomerStatusAction and opens its details page", async () => {
@@ -245,7 +283,9 @@ describe("NewCustomerContent and the creation form", () => {
 
       await fillRequiredFields(user)
       await user.click(screen.getByRole("button", { name: "Create Customer" }))
-      await user.click(await screen.findByRole("button", { name: "Reactivate" }))
+      const reactivate = await screen.findByRole("button", { name: "Reactivate" })
+      await waitFor(() => expect(reactivate).toBeEnabled())
+      await user.click(reactivate)
 
       await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith("/customers/customer-old"))
       const formData = actionsMock.changeCustomerStatusAction.mock.calls[0][0] as FormData

@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { hasPermission } from "@/lib/access-control"
+import { hasAnySectionPermission, hasPermission } from "@/lib/access-control"
 import { getUserForManagement } from "@/lib/access-control/server"
 import { cacheLife, cacheTag } from "next/cache"
 import { redirect } from "next/navigation"
@@ -52,7 +52,7 @@ export default function UserDetailPage({
   )
 }
 
-async function UserDetailPageContent({
+export async function UserDetailPageContent({
   params,
 }: {
   params: Promise<{ userId: string }>
@@ -63,17 +63,17 @@ async function UserDetailPageContent({
   ])
   const permissions = new Set(access.effectivePermissionKeys)
 
-  if (!hasPermission(permissions, "users", "read")) {
+  if (!hasAnySectionPermission(permissions, "users")) {
     redirect("/dashboard")
   }
 
-  const canWriteUsers = hasPermission(permissions, "users", "write")
+  const canManageUsers = hasPermission(permissions, "users", "manage")
 
   return (
     <UserDetailContent
       actorUserId={access.user.id}
       targetUserId={userId}
-      canWriteUsers={canWriteUsers}
+      canManageUsers={canManageUsers}
     />
   )
 }
@@ -81,11 +81,11 @@ async function UserDetailPageContent({
 async function UserDetailContent({
   actorUserId,
   targetUserId,
-  canWriteUsers,
+  canManageUsers,
 }: {
   actorUserId: string
   targetUserId: string
-  canWriteUsers: boolean
+  canManageUsers: boolean
 }) {
   const { user, availableRoles, effectivePermissionKeys } =
     await getUserDetailData(actorUserId, targetUserId)
@@ -147,7 +147,7 @@ async function UserDetailContent({
           <h2 className="font-heading font-semibold text-lg tracking-normal">
             Roles
           </h2>
-          {!canWriteUsers ? (
+          {!canManageUsers ? (
             <p className="text-muted-foreground text-sm">Read-only access</p>
           ) : null}
         </div>
@@ -164,15 +164,18 @@ async function UserDetailContent({
                     {role.permissions.length} permissions
                   </p>
                 </div>
-                {canWriteUsers ? (
-                  <form action={removeUserRoleAction}>
-                    <input type="hidden" name="targetUserId" value={user.id} />
-                    <input type="hidden" name="roleId" value={role.id} />
-                    <Button type="submit" variant="outline" size="sm">
-                      Remove
-                    </Button>
-                  </form>
-                ) : null}
+                <form action={removeUserRoleAction}>
+                  <input type="hidden" name="targetUserId" value={user.id} />
+                  <input type="hidden" name="roleId" value={role.id} />
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    size="sm"
+                    disabled={!canManageUsers}
+                  >
+                    Remove
+                  </Button>
+                </form>
               </div>
             ))
           ) : (
@@ -181,39 +184,40 @@ async function UserDetailContent({
             </p>
           )}
         </div>
-        {canWriteUsers ? (
-          <form action={assignUserRoleAction} className="gap-3 grid mt-4">
-            <input type="hidden" name="targetUserId" value={user.id} />
-            <Field>
-              <FieldLabel>
-                Role <span className="text-destructive">*</span>
-              </FieldLabel>
-              <Select
-                name="roleId"
-                defaultValue={assignableRoles[0]?.id}
-                disabled={assignableRoles.length === 0}
-              >
-                <SelectTrigger className="w-full md:max-w-72">
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {assignableRoles.map((role) => (
-                      <SelectItem key={role.id} value={role.id}>
-                        {role.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </Field>
-            <div>
-              <Button type="submit" disabled={assignableRoles.length === 0}>
-                Assign Role
-              </Button>
-            </div>
-          </form>
-        ) : null}
+        <form action={assignUserRoleAction} className="gap-3 grid mt-4">
+          <input type="hidden" name="targetUserId" value={user.id} />
+          <Field>
+            <FieldLabel>
+              Role <span className="text-destructive">*</span>
+            </FieldLabel>
+            <Select
+              name="roleId"
+              defaultValue={assignableRoles[0]?.id}
+              disabled={!canManageUsers || assignableRoles.length === 0}
+            >
+              <SelectTrigger className="w-full md:max-w-72">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {assignableRoles.map((role) => (
+                    <SelectItem key={role.id} value={role.id}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+          <div>
+            <Button
+              type="submit"
+              disabled={!canManageUsers || assignableRoles.length === 0}
+            >
+              Assign Role
+            </Button>
+          </div>
+        </form>
       </section>
     </>
   )

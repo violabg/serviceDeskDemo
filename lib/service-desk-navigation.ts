@@ -1,6 +1,5 @@
 import {
-    hasPermission,
-    type AccessOperation,
+    hasAnySectionPermission,
     type AccessSection,
 } from "@/lib/access-control"
 
@@ -8,10 +7,7 @@ export type ServiceDeskNavigationItem = {
   id: string
   title: string
   url: string
-  requiredPermission: {
-    section: AccessSection
-    operation: AccessOperation
-  }
+  section: AccessSection
 }
 
 export type ServiceDeskNavigationGroup = {
@@ -29,13 +25,13 @@ export const SERVICE_DESK_NAVIGATION = [
         id: "customers",
         title: "Customers",
         url: "/customers",
-        requiredPermission: { section: "customers", operation: "read" },
+        section: "customers",
       },
       {
         id: "tickets",
         title: "Tickets",
         url: "/tickets",
-        requiredPermission: { section: "tickets", operation: "read" },
+        section: "tickets",
       },
     ],
   },
@@ -47,13 +43,13 @@ export const SERVICE_DESK_NAVIGATION = [
         id: "users",
         title: "Users",
         url: "/users",
-        requiredPermission: { section: "users", operation: "read" },
+        section: "users",
       },
       {
         id: "roles",
         title: "Roles",
         url: "/roles",
-        requiredPermission: { section: "roles", operation: "read" },
+        section: "roles",
       },
     ],
   },
@@ -68,11 +64,7 @@ export function getReadableServiceDeskNavigationGroups(
   return SERVICE_DESK_NAVIGATION.map((group) => ({
     ...group,
     items: group.items.filter((item) =>
-      hasPermission(
-        effectivePermissions,
-        item.requiredPermission.section,
-        item.requiredPermission.operation
-      )
+      hasAnySectionPermission(effectivePermissions, item.section)
     ),
   })).filter((group) => group.items.length > 0)
 }

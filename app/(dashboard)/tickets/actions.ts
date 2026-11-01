@@ -159,7 +159,7 @@ export async function updateTicketStatusAction(
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
-  if (!isWriteAllowed(effectivePermissions)) {
+  if (!isManageAllowed(effectivePermissions)) {
     return failureResult("forbidden")
   }
 
@@ -176,12 +176,6 @@ export async function updateTicketStatusAction(
     return failureResult("not-found")
   }
 
-  const isReopen = currentTicket.status === "Closed" && status === "Open"
-
-  if (isReopen && !isManageAllowed(effectivePermissions)) {
-    return failureResult("forbidden")
-  }
-
   await updateTicketStatus(ticketId, status, access.user.id)
 
   updateTag(ticketDetailTag(ticketId))
@@ -196,7 +190,7 @@ export async function updateTicketPriorityAction(
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
-  if (!isWriteAllowed(effectivePermissions)) {
+  if (!isManageAllowed(effectivePermissions)) {
     return failureResult("forbidden")
   }
 
@@ -224,7 +218,7 @@ export async function assignTechnicianAction(
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
-  if (!isWriteAllowed(effectivePermissions)) {
+  if (!isManageAllowed(effectivePermissions)) {
     return failureResult("forbidden")
   }
 
@@ -254,7 +248,7 @@ export async function addTicketNoteAction(
   const access = await requireCurrentApplicationAccess()
   const effectivePermissions = new Set(access.effectivePermissionKeys)
 
-  if (!isWriteAllowed(effectivePermissions)) {
+  if (!isManageAllowed(effectivePermissions)) {
     return failureResult("forbidden")
   }
 

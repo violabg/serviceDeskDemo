@@ -166,8 +166,8 @@ describe("customer actions", () => {
   })
 
   describe("updateCustomerAction", () => {
-    it("returns forbidden without customers:write, before any read or write", async () => {
-      grantPermissions([MANAGE])
+    it("returns forbidden with only customers:write, before any read or write", async () => {
+      grantPermissions([WRITE])
 
       await expect(updateCustomerAction(makeFormData(validUpdateForm))).resolves.toEqual({
         ok: false,
@@ -175,6 +175,21 @@ describe("customer actions", () => {
       })
       expect(serviceMock.getCustomerById).not.toHaveBeenCalled()
       expect(serviceMock.updateCustomer).not.toHaveBeenCalled()
+    })
+
+    it("updates the customer when only customers:manage is granted", async () => {
+      grantPermissions([MANAGE])
+      serviceMock.getCustomerById.mockResolvedValue(existingCustomer)
+      serviceMock.updateCustomer.mockResolvedValue({
+        ok: true,
+        customer: { id: "customer-1" },
+      })
+
+      await expect(updateCustomerAction(makeFormData(validUpdateForm))).resolves.toEqual({
+        ok: true,
+        customer: { id: "customer-1" },
+      })
+      expect(serviceMock.updateCustomer).toHaveBeenCalled()
     })
 
     it("returns invalid when the customer id is empty", async () => {

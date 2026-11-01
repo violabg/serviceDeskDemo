@@ -77,20 +77,19 @@ vi.mock("@/components/ui/select", () => ({
 const technicians = [{ id: "tech-1", name: "Dana", email: "dana@example.com" }]
 
 describe("TicketDetailForms", () => {
-  it("allows status updates for manage-only users while keeping write-only actions disabled", () => {
+  it("disables every lifecycle control when manage is absent", () => {
     render(
       <TicketDetailForms
         ticketId="ticket-1"
         status="Closed"
         priority="High"
         assignedToId={null}
-        canWrite={false}
-        canManage={true}
+        canManage={false}
         technicians={technicians}
       />
     )
 
-    expect(screen.getByRole("button", { name: "Update Status" })).toBeEnabled()
+    expect(screen.getByRole("button", { name: "Update Status" })).toBeDisabled()
     expect(
       screen.getByRole("button", { name: "Update Priority" })
     ).toBeDisabled()
@@ -107,8 +106,7 @@ describe("TicketDetailForms", () => {
         status="Pending"
         priority="Medium"
         assignedToId={null}
-        canWrite={true}
-        canManage={false}
+        canManage={true}
         technicians={technicians}
       />
     )

@@ -1,7 +1,7 @@
 import { adminUsersListTag } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { Button } from "@/components/ui/button"
-import { hasPermission } from "@/lib/access-control"
+import { hasAnySectionPermission, hasPermission } from "@/lib/access-control"
 import { getUsersForManagement } from "@/lib/access-control/server"
 import { cacheLife, cacheTag } from "next/cache"
 import Link from "next/link"
@@ -37,53 +37,66 @@ export default function UsersPage() {
   )
 }
 
-async function UsersPageContent() {
+export async function UsersPageContent() {
   const access = await requireCurrentApplicationAccess()
   const permissions = new Set(access.effectivePermissionKeys)
 
-  if (!hasPermission(permissions, "users", "read")) {
+  if (!hasAnySectionPermission(permissions, "users")) {
     redirect("/dashboard")
   }
+
+  const canWriteUsers = hasPermission(permissions, "users", "write")
 
   const users = await getUsersData(access.user.id)
 
   return (
-    <section className="bg-card shadow-sm border rounded-lg overflow-hidden text-card-foreground">
-      <div className="gap-4 grid grid-cols-[1.4fr_1fr_0.8fr_auto] bg-muted/50 px-4 py-3 border-b font-medium text-muted-foreground text-sm">
-        <span>User</span>
-        <span>Roles</span>
-        <span>Account</span>
-        <span className="sr-only">Open</span>
+    <section className="gap-4 grid">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        {canWriteUsers ? (
+          <Button render={<Link href="/users/new" />} nativeButton={false}>
+            New User
+          </Button>
+        ) : (
+          <Button disabled>New User</Button>
+        )}
       </div>
-      <div className="divide-y">
-        {users.map((user) => (
-          <article
-            key={user.id}
-            className="items-center gap-4 grid grid-cols-[1.4fr_1fr_0.8fr_auto] px-4 py-3 text-sm"
-          >
-            <div className="min-w-0">
-              <p className="font-medium truncate">{user.name || user.email}</p>
-              <p className="text-muted-foreground truncate">{user.email}</p>
-            </div>
-            <p className="text-muted-foreground truncate">
-              {user.roles.length > 0
-                ? user.roles.map(({ role }) => role.name).join(", ")
-                : "No roles"}
-            </p>
-            <p className="text-muted-foreground">
-              {user.neonAuthId ? "Linked" : "Seeded"}
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              render={<Link href={`/users/${user.id}`} />}
-              nativeButton={false}
+      <section className="bg-card shadow-sm border rounded-lg overflow-hidden text-card-foreground">
+        <div className="gap-4 grid grid-cols-[1.4fr_1fr_0.8fr_auto] bg-muted/50 px-4 py-3 border-b font-medium text-muted-foreground text-sm">
+          <span>User</span>
+          <span>Roles</span>
+          <span>Account</span>
+          <span className="sr-only">Open</span>
+        </div>
+        <div className="divide-y">
+          {users.map((user) => (
+            <article
+              key={user.id}
+              className="items-center gap-4 grid grid-cols-[1.4fr_1fr_0.8fr_auto] px-4 py-3 text-sm"
             >
-              Open
-            </Button>
-          </article>
-        ))}
-      </div>
+              <div className="min-w-0">
+                <p className="font-medium truncate">{user.name || user.email}</p>
+                <p className="text-muted-foreground truncate">{user.email}</p>
+              </div>
+              <p className="text-muted-foreground truncate">
+                {user.roles.length > 0
+                  ? user.roles.map(({ role }) => role.name).join(", ")
+                  : "No roles"}
+              </p>
+              <p className="text-muted-foreground">
+                {user.neonAuthId ? "Linked" : "Seeded"}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                render={<Link href={`/users/${user.id}`} />}
+                nativeButton={false}
+              >
+                Open
+              </Button>
+            </article>
+          ))}
+        </div>
+      </section>
     </section>
   )
 }

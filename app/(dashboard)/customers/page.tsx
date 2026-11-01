@@ -3,7 +3,7 @@ import { customerListTag } from "@/app/(dashboard)/customers/_lib/cache-tags"
 import { CustomerSearchForm } from "@/app/(dashboard)/customers/customer-search-form"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { hasPermission } from "@/lib/access-control"
+import { hasAnySectionPermission, hasPermission } from "@/lib/access-control"
 import { getCustomerList } from "@/lib/customers/service"
 import { cacheLife, cacheTag } from "next/cache"
 import Link from "next/link"
@@ -28,7 +28,7 @@ export default function CustomersPage({ searchParams }: { searchParams: Promise<
 export async function CustomersPageContent({ searchParams }: { searchParams: Promise<CustomersSearchParams> }) {
   const [{ q }, access] = await Promise.all([searchParams, requireCurrentApplicationAccess()])
   const permissions = new Set(access.effectivePermissionKeys)
-  if (!hasPermission(permissions, "customers", "read")) redirect("/dashboard")
+  if (!hasAnySectionPermission(permissions, "customers")) redirect("/dashboard")
   const canWrite = hasPermission(permissions, "customers", "write")
   const term = q?.trim() ?? ""
   const customers = await getCustomersData(term)

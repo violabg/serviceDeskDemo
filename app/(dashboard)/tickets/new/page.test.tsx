@@ -49,7 +49,7 @@ describe("NewTicketPageContent", () => {
     vi.clearAllMocks()
   })
 
-  it("redirects users without tickets:read", async () => {
+  it("redirects users with none of the ticket keys to /dashboard", async () => {
     const redirectError = new Error("NEXT_REDIRECT")
     requireCurrentApplicationAccessMock.mockResolvedValue({
       user: { id: "user-1" },
@@ -63,19 +63,53 @@ describe("NewTicketPageContent", () => {
     expect(redirectMock).toHaveBeenCalledWith("/dashboard")
   })
 
-  it("renders a read-only notice without tickets:write", async () => {
+  it("redirects a read-only holder to /dashboard instead of rendering a panel", async () => {
+    const redirectError = new Error("NEXT_REDIRECT")
     requireCurrentApplicationAccessMock.mockResolvedValue({
       user: { id: "user-1" },
       effectivePermissionKeys: [permissionKey("tickets", "read")],
     })
+    redirectMock.mockImplementation(() => {
+      throw redirectError
+    })
+
+    await expect(NewTicketPageContent()).rejects.toBe(redirectError)
+    expect(redirectMock).toHaveBeenCalledWith("/dashboard")
+    expect(getActiveCustomersMock).not.toHaveBeenCalled()
+  })
+
+  it("loads reference data and renders the form for a write-only holder", async () => {
+    requireCurrentApplicationAccessMock.mockResolvedValue({
+      user: { id: "user-1" },
+      effectivePermissionKeys: [permissionKey("tickets", "write")],
+    })
+    getActiveCustomersMock.mockResolvedValue([{ id: "customer-1" }])
+    getAssetsMock.mockResolvedValue([{ id: "asset-1" }])
+    getAvailableTechniciansMock.mockResolvedValue([{ id: "tech-1" }])
 
     render(await NewTicketPageContent())
 
+    expect(getActiveCustomersMock).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText(
-        /read-only access\. you need tickets:write to create a new ticket\./i
+        "Loaded form with 1 customers, 1 assets, and 1 technicians"
       )
     ).toBeInTheDocument()
+  })
+
+  it("redirects a manage-only holder to /dashboard because the new page requires tickets:write", async () => {
+    const redirectError = new Error("NEXT_REDIRECT")
+    requireCurrentApplicationAccessMock.mockResolvedValue({
+      user: { id: "user-1" },
+      effectivePermissionKeys: [permissionKey("tickets", "manage")],
+    })
+    redirectMock.mockImplementation(() => {
+      throw redirectError
+    })
+
+    await expect(NewTicketPageContent()).rejects.toBe(redirectError)
+    expect(redirectMock).toHaveBeenCalledWith("/dashboard")
+    expect(getActiveCustomersMock).not.toHaveBeenCalled()
   })
 
   it("loads reference data and renders the form for writable users", async () => {

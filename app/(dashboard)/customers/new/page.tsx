@@ -1,7 +1,7 @@
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
 import { CustomerForm } from "@/app/(dashboard)/customers/_components/customer-form"
 import { Skeleton } from "@/components/ui/skeleton"
-import { hasPermission } from "@/lib/access-control"
+import { hasAnySectionPermission, hasPermission } from "@/lib/access-control"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
@@ -19,8 +19,9 @@ export default function NewCustomerPage() {
 export async function NewCustomerContent() {
   const access = await requireCurrentApplicationAccess()
   const permissions = new Set(access.effectivePermissionKeys)
-  if (!hasPermission(permissions, "customers", "read")) redirect("/dashboard")
+  if (!hasAnySectionPermission(permissions, "customers")) redirect("/dashboard")
   const canWrite = hasPermission(permissions, "customers", "write")
+  if (!canWrite) redirect("/dashboard")
   const canManage = hasPermission(permissions, "customers", "manage")
   return <CustomerForm mode="create" canWrite={canWrite} canManage={canManage} />
 }

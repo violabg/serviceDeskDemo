@@ -8,12 +8,15 @@ import {
   adminUsersListTag,
 } from "@/app/(dashboard)/admin/_lib/cache-tags"
 import { requireCurrentApplicationAccess } from "@/app/(dashboard)/admin/_lib/current-application-user"
+import { hasPermission } from "@/lib/access-control"
 import {
   assignRoleToUser,
   createRoleForManagement,
+  createUserForManagement,
   removeRoleFromUser,
   updateRoleForManagement,
 } from "@/lib/access-control/server"
+import { Prisma } from "@/lib/generated/prisma/client"
 import { updateTag } from "next/cache"
 import { redirect } from "next/navigation"
 
@@ -21,6 +24,50 @@ function getFormString(formData: FormData, name: string) {
   const value = formData.get(name)
 
   return typeof value === "string" ? value : ""
+}
+
+function isDuplicateEmailError(error: unknown) {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2002"
+  )
+}
+
+export async function createUserAction(formData: FormData) {
+  const access = await requireCurrentApplicationAccess()
+
+  if (
+    !hasPermission(new Set(access.effectivePermissionKeys), "users", "write")
+  ) {
+    return { ok: false as const, reason: "forbidden" as const }
+  }
+
+  const name = getFormString(formData, "name").trim()
+  const email = getFormString(formData, "email").trim()
+
+  if (!email) {
+    return { ok: false as const, reason: "invalid" as const }
+  }
+
+  const user = await createUserForManagement({
+    actorUserId: access.user.id,
+    name,
+    email,
+  }).catch((error: unknown) => {
+    if (isDuplicateEmailError(error)) {
+      return null
+    }
+
+    throw error
+  })
+
+  if (!user) {
+    return { ok: false as const, reason: "duplicate" as const }
+  }
+
+  updateTag(adminUsersListTag())
+
+  redirect(`/users/${user.id}`)
 }
 
 export async function assignUserRoleAction(formData: FormData) {

@@ -95,19 +95,19 @@ export function CustomerDetails({
               <dd className="whitespace-pre-wrap">{customer.notes ?? "No operational notes"}</dd>
             </div>
           </dl>
-          {canWrite ? (
+          {canManage ? (
             <Button variant="outline" className="justify-self-start" render={<Link href={customerPathForState(basePath, true)} />} nativeButton={false}>Edit</Button>
-          ) : null}
+          ) : (
+            <Button variant="outline" className="justify-self-start" disabled>Edit</Button>
+          )}
         </div>
       )}
-      {canManage ? (
-        <div className="gap-2 grid justify-items-start">
-          <Button type="button" variant="outline" disabled={isPending} onClick={changeStatus}>
-            {customer.status === "Active" ? "Deactivate Customer" : "Reactivate Customer"}
-          </Button>
-          {message ? <p role="status">{message}</p> : null}
-        </div>
-      ) : null}
+      <div className="gap-2 grid justify-items-start">
+        <Button type="button" variant="outline" disabled={!canManage || isPending} onClick={changeStatus}>
+          {customer.status === "Active" ? "Deactivate Customer" : "Reactivate Customer"}
+        </Button>
+        {message ? <p role="status">{message}</p> : null}
+      </div>
     </section>
   )
 }
