@@ -43,7 +43,7 @@ Each section has three independent grants: `read`, `write`, and `manage`. No gra
 - Removing a role's `section:read` grant does not remove its visibility of existing pages if the role still has `section:write` or `section:manage`. It still removes the read key from the effective grant set.
 - Bootstrap grants every generated key to Admin, including each section's read key.
 - Test that effective permission keys remain exact and do not acquire implied operations. Separately test that each of `section:read`, `section:write`, and `section:manage` permits existing-page visibility, that only `section:write` permits new-content pages and their calls to action, that creation requires `section:write`, and that edits to existing entities require `section:manage`.
-- The dashboard page follows the same existing-page visibility rule for `dashboard`. Action access remains operation-specific: creating an entity requires its section's write key, and editing an existing entity requires its section's manage key.
+- The dashboard page follows the same existing-page visibility rule for `dashboard`. Action access remains operation-specific: creating an entity requires its section's write key, and editing an existing entity requires its section's manage key. Known gap (#16): the dashboard gate currently checks `dashboard:read` only; see `dashboard-navigation-boundaries.md`.
 - Keep the actor identity derived from the server session and gate writes on the server.
 
 ## Requirement Roles and Permission Keys

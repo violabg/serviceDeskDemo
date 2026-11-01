@@ -25,7 +25,7 @@ Use this before adding or changing dashboard breadcrumbs, sidebar groups or link
 | `app/(dashboard)/tickets/new/page.tsx` | `/tickets/new` |
 
 - `(dashboard)` and `(admin)` organize the inspected page sources without adding URL segments. The separate `admin/_lib` helper location does not establish a public `/admin` landing page; none appears in the scoped dashboard page inventory.
-- The dashboard layout owns the sidebar and breadcrumb shell. It redirects unauthenticated users to `/login` and users without any of `dashboard:read`, `dashboard:write`, or `dashboard:manage` to `/pending-access`, then passes effective permission keys to `AppSidebar` (`app/(dashboard)/layout.tsx`).
+- The dashboard layout owns the sidebar and breadcrumb shell. It redirects unauthenticated users to `/login` and users without any of `dashboard:read`, `dashboard:write`, or `dashboard:manage` to `/pending-access`, then passes effective permission keys to `AppSidebar` (`app/(dashboard)/layout.tsx`). Known gap (#16): `canReadDashboard` in `lib/access-control/server.ts` currently checks `dashboard:read` only, so users holding only write or manage still reach `/pending-access` until that issue is fixed.
 - Existing Customers, Users, Roles, and Tickets pages are viewable when the user holds any one of that section's exact read, write, or manage grants. New-content pages, including `/customers/new` and `/tickets/new`, require the section's write grant. Creating a new entity requires write; editing an existing entity requires manage.
 
 ### Sidebar ownership and visibility
