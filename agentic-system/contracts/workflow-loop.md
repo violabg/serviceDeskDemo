@@ -26,10 +26,11 @@ Write `sessions/<sessionId>/jobs/<jobId>.json`:
 ```json
 { "jobId": "...", "sessionId": "...", "agentName": "orchestrator", "workflowType": "DESIGN",
   "designId": "...", "steps": ["shared/01-user-instruction-space", "design/02-image-intake", "..."],
-  "currentStep": 0, "createdAt": "..." }
+  "currentStep": 0, "knowledgeBaseline": { "<document path>": "<sha256>" }, "createdAt": "..." }
 ```
 
 - `steps` is the ordered list of the type in `workflow-types.yaml`, frozen into the job.
+- `knowledgeBaseline` holds a hash of every knowledge document at job creation, for the check in `workflow-step-next`. A job without it predates the check and is not checked.
 - A DESIGN job without `designId` creates a new design whose id is the job id. A job with `designId` reuses that existing design, approval included: follow-up work continues on the same design.
 - A FAST_IMPLEMENTATION job without `designId` creates a job design whose id is the job id, as a DESIGN job does: it holds the obligations of step 3 (the requirement of the flow), the open points and the knowledge references. It has no approval gate.
 - DOCUMENTATION jobs have no design (`designId: null`); every `#capability:design-*` operation on them is refused.
@@ -41,7 +42,7 @@ Response: `Agent job created;\nJobId: <jobId>\nDesignId: <designId given, or <no
 
 `workflow-step-pending` — arguments `sessionId`, `jobId`, optional `part`. Serve the current instruction; on a new job this is instruction 1. Calling it again re-serves the same instruction, and `part` selects which part of it (see Parts).
 
-`workflow-step-next` — arguments `sessionId`, `jobId`. Advance `currentStep` by one and serve part 1 of that instruction. After the last instruction it is refused: the final instruction says the workflow is complete and the orchestrator stays with the developer.
+`workflow-step-next` — arguments `sessionId`, `jobId`. Advance `currentStep` by one and serve part 1 of that instruction. After the last instruction it is refused: the final instruction says the workflow is complete and the orchestrator stays with the developer. It is also refused, without advancing, when a knowledge document differs from `knowledgeBaseline` and the difference was not left by `knowledge-create` or `knowledge-update`, whose latest hashes are kept in `knowledge-writes.json` under the cache root. The refusal names the documents; the change must be restored or applied through `knowledge-builder`.
 
 The served text is:
 

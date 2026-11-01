@@ -2,6 +2,7 @@
 // knowledge root, each with a front matter that declares its tier. The catalogue assigns file ids by path
 // order and is rebuilt on every call, so an id is valid only for the current index. The last index is
 // cached under <cache root> (default <sessions root>/.cache/) for humans; the knowledge folder itself is never written by a read.
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { knowledgeReads, recordKnowledgeReads } from "./session.mjs";
@@ -14,6 +15,8 @@ const TIERS = {
 };
 const CATALOG_FILE = "knowledge-catalog.yaml";
 const SETTINGS_FILE = "kbsettings.yaml";
+const WRITES_FILE = "knowledge-writes.json";
+const hashOf = (path) => createHash("sha256").update(readFileSync(path)).digest("hex");
 
 function globToRegExp(glob) {
   let pattern = "";
@@ -201,6 +204,7 @@ export function create(ctx, args) {
   if (existsSync(path)) throw new RuntimeError(`${tool} failed: a knowledge document already exists at ${relative(ctx.knowledgeRoot, path)}; use knowledge-update.`);
   const keywords = arg(args, "keywords");
   writeText(path, frontmatter({ title, tier, keywords, intent: arg(args, "intent") ?? "", editable: true }) + content.trimEnd() + "\n");
+  recordWrite(ctx, path);
   const entry = buildCatalog(ctx).find((e) => join(ctx.knowledgeRoot, e.path) === path);
   writeIndex(ctx, buildCatalog(ctx));
   return `Knowledge created: file_id ${entry?.file_id ?? "?"} (${relative(ctx.knowledgeRoot, path)}).`;
@@ -217,6 +221,33 @@ export function update(ctx, args) {
   const { data } = parseFrontmatter(readFileSync(path, "utf8"));
   const intent = arg(args, "intent") ?? data.intent;
   writeText(path, frontmatter({ ...data, intent }) + content.trimEnd() + "\n");
+  recordWrite(ctx, path);
   writeIndex(ctx, buildCatalog(ctx));
   return `Knowledge updated: file_id ${id} (${entry.path}).`;
+}
+
+export function knowledgeFingerprint(ctx) {
+  return Object.fromEntries(documents(ctx).map((file) => [file, hashOf(join(ctx.knowledgeRoot, file))]));
+}
+
+// The last content each runtime write left, so knowledge-create and knowledge-update never read as a direct edit.
+function runtimeWrites(ctx) {
+  const path = join(ctx.cacheRoot, WRITES_FILE);
+  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
+}
+
+function recordWrite(ctx, path) {
+  const writes = { ...runtimeWrites(ctx), [relative(ctx.knowledgeRoot, path).split("\\").join("/")]: hashOf(path) };
+  writeText(join(ctx.cacheRoot, WRITES_FILE), JSON.stringify(writes, null, 2));
+}
+
+// Documents that differ from the job's baseline and were not left that way by a runtime write.
+// A job with no baseline predates the check.
+export function knowledgeEditsOutsideRuntime(ctx, baseline) {
+  if (!baseline) return [];
+  const now = knowledgeFingerprint(ctx);
+  const writes = runtimeWrites(ctx);
+  return [...new Set([...Object.keys(baseline), ...Object.keys(now)])]
+    .filter((file) => now[file] !== baseline[file] && (now[file] === undefined || now[file] !== writes[file]))
+    .sort();
 }

@@ -389,7 +389,8 @@
       "kind": "contract",
       "mode": "file",
       "envs": [],
-      "customizable": false
+      "customizable": false,
+      "keptSha256": "3364da8f8b49ccfb378186ee6583427f77cd4d2f90706687ebfd5b4eb16dd2b0"
     },
     "agentic-system/documentation/templates/example-api-contract.md": {
       "sha256": "9e22d1dc4eb343de7d18eb23fd03dd72d229daed2a6084d22051497938c7310c",
@@ -480,7 +481,8 @@
       "kind": "runtime",
       "mode": "file",
       "envs": [],
-      "customizable": false
+      "customizable": false,
+      "keptSha256": "a46721c92aebe7e0a8e369ce4cc67fab5a03e8857c89ec7209c63f393401f2e7"
     },
     "agentic-system/lib/plan.mjs": {
       "sha256": "6305c9a6c8057fdf4319abfc153a01ef4cee4abbd86f581db3dd223f12eeb49b",
@@ -536,7 +538,8 @@
       "kind": "runtime",
       "mode": "file",
       "envs": [],
-      "customizable": false
+      "customizable": false,
+      "keptSha256": "eea0b1501b307bd89c38b4c36c307407671f56ad9a5e30ca3d40be5031793edf"
     },
     "agentic-system/workflows/design/02-image-intake.md": {
       "sha256": "05c7d30cc14f7cab00d7b6e2183cdcf89d2ea2419fb3d0faeb4cf3f365ff73f1",
