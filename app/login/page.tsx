@@ -22,10 +22,10 @@ export async function LoginPageContent() {
   const sessionUser = session?.user
 
   if (sessionUser) {
-    const { canReadDashboard } =
+    const { canAccessDashboard } =
       await getDashboardAccessForSessionUser(sessionUser)
 
-    redirect(canReadDashboard ? "/dashboard" : "/pending-access")
+    redirect(canAccessDashboard ? "/dashboard" : "/pending-access")
   }
 
   return (

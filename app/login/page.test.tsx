@@ -53,7 +53,7 @@ describe("LoginPageContent", () => {
     const redirectError = new Error("NEXT_REDIRECT")
     getSessionMock.mockResolvedValue({ data: { user: { id: "neon-1" } } })
     getDashboardAccessForSessionUserMock.mockResolvedValue({
-      canReadDashboard: false,
+      canAccessDashboard: false,
     })
     redirectMock.mockImplementation(() => {
       throw redirectError

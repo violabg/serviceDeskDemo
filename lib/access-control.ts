@@ -58,18 +58,27 @@ export function hasPermission(
   return effectivePermissions.has(permissionKey(section, operation))
 }
 
+export function hasAnySectionPermission(
+  effectivePermissions: ReadonlySet<string>,
+  section: AccessSection
+) {
+  return ACCESS_OPERATIONS.some((operation) =>
+    hasPermission(effectivePermissions, section, operation)
+  )
+}
+
 export function getDashboardAccessRedirectPath({
   isAuthenticated,
-  canReadDashboard,
+  canAccessDashboard,
 }: {
   isAuthenticated: boolean
-  canReadDashboard?: boolean
+  canAccessDashboard?: boolean
 }) {
   if (!isAuthenticated) {
     return "/login"
   }
 
-  if (!canReadDashboard) {
+  if (!canAccessDashboard) {
     return "/pending-access"
   }
 

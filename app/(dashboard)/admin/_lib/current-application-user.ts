@@ -18,7 +18,7 @@ export async function requireCurrentApplicationAccess() {
 
   const access = await getDashboardAccessForSessionUser(sessionUser)
 
-  if (!access.canReadDashboard) {
+  if (!access.canAccessDashboard) {
     redirect("/pending-access")
   }
 

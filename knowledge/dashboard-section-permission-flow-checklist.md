@@ -4,13 +4,13 @@ intent: "Before adding a database entity needing independent privileges or a new
 ---
 # When to read this
 
-Use this checklist before adding a database entity that needs an independent permission boundary or a new ACCESS_SECTIONS entry for a dashboard/admin section or gateway. Nested routes and entities accessed only inside an existing gated workflow use that section's permission and do not automatically need a separate section key.
+Use this checklist before adding a data model that needs an independent permission boundary or a new ACCESS_SECTIONS entry for a dashboard/admin section or gateway. Nested routes and data accessed only inside an existing gated workflow use that section's permission and do not automatically need a separate section key.
 
 ## Dashboard Section and Permission Creation Flow Checklist
 
 ## Unified Add-a-Section Runbook
 
-Use this sequence when introducing an independently protected section such as assets or technicians. A new Prisma model alone does not create privileges: Asset data currently participates in ticket workflows under tickets permissions, while Customer data has its own customers section. Keep a new access boundary's permissions, navigation, routes, and tests in one change set.
+Use this sequence when introducing an independently protected section. Neither a new Prisma model nor a migration creates privileges. Keep a new access boundary's permissions, navigation, routes, and tests in one change set.
 
 1. Extend permission source of truth
 
@@ -28,10 +28,11 @@ Use this sequence when introducing an independently protected section such as as
 
 3. Scaffold protected dashboard routes
 
-- Create route files under app/(dashboard)/... following existing section patterns (for example tickets, customers and admin users). A route folder without a page file serves no URL.
-- In each existing section page, resolve current application access server-side and allow rendering when the user has any one exact section-id:read, section-id:write, or section-id:manage grant. Do not require read solely to view an existing page. Gate new-content pages with section-id:write.
-- Redirect users who do not meet the applicable page visibility rule to /dashboard from server components.
-- In server actions, gate mutations with the exact operation key: write for creation and manage for editing existing entities or changing their status. Keep edit and status-change controls behind manage, and new-content links or calls to action behind write.
+- Create the section's list page, new page, detail page, and edit page or edit form, following the existing section patterns. A route folder without a page file serves no URL.
+- Resolve current application access server-side in every section page and allow rendering when the user holds any one of section-id:read, section-id:write, or section-id:manage.
+- Show the create control on the list page to every user and disable it unless the user holds section-id:write. Show the edit control on the detail page to every user and disable it unless the user holds section-id:manage.
+- Redirect a user who reaches the new page without section-id:write to /dashboard. Redirect a user who reaches an edit page or edit form without section-id:manage to the detail page.
+- In server actions, gate creation with section-id:write and editing with section-id:manage. A disabled control is not authorization.
 - Keep actor identity server-derived using requireCurrentApplicationAccess; do not trust client-submitted actor ids.
 
 4. Update automated tests in the same PR
@@ -39,7 +40,7 @@ Use this sequence when introducing an independently protected section such as as
 - Extend lib/access-control.test.ts to assert the new section is in ACCESS_SECTIONS and receives read/write/manage generated permissions.
 - Extend lib/access-control.test.ts to assert that a role holding only section-id:write or only section-id:manage does not resolve section-id:read, and that a role holding section-id:write together with section-id:read resolves both. Keep effective permission keys exact; visibility must not synthesize read or any other grant.
 - Extend lib/service-desk-navigation.test.ts to assert that the section is visible with each exact read, write, and manage grant, and hidden when none is held.
-- Add or update route/action tests to assert that existing section pages allow each exact read, write, and manage grant; new-content pages and creation require write; and edits or status changes require manage.
+- Add or update route and action tests to assert that any one of read, write, or manage opens every section page, that the new page and creation require section-id:write, that the edit page or form and editing require section-id:manage, and that each control is disabled rather than hidden without its key.
 
 5. Seed the approved database and validate before handoff
 
@@ -63,7 +64,7 @@ Use this sequence when introducing an independently protected section such as as
 - Permission creation source of truth is code constants in access-control.
 - Permission persistence runs through bootstrapAccessControl in server access-control.
 - Role assignment happens through admin role management pages and actions.
-- User effective permissions are resolved server-side as the union of the permissions granted on the user's roles. No key is implied: write and manage grants do not add read, and visibility does not synthesize grants. Existing section pages and sidebar entries accept any one exact read, write, or manage grant; do not assign read merely to make them visible. Assign read when a read-only role or an explicitly read-gated operation needs it. New-content pages and their links or calls to action, and creation actions, require write. Editing existing entities and changing their status require manage. Keep server-side checks exact for the operation performed.
+- User effective permissions are resolved server-side as the union of the permissions granted on the user's roles. No key is implied: write and manage grants do not add read, and no page rule synthesizes a grant. Any one of a section's read, write, or manage keys opens its pages and its sidebar entry. Write is needed to create and to reach the new page; manage is needed to edit and to reach the edit form. Assign read only when a read-only role or an explicitly read-gated operation needs it.
 
 ## Security and Auth Implications
 
@@ -78,7 +79,8 @@ Use this sequence when introducing an independently protected section such as as
 - Adding a navigation item without a permission-aware visibility rule that accepts any one exact section read, write, or manage grant.
 - Adding permission checks only in UI and skipping server enforcement.
 - Forgetting tests when introducing a new navigation group or permission-dependent section.
-- Gating existing section page or sidebar visibility on read alone. Accept any one exact read, write, or manage grant, without adding an implied read key.
-- Requiring a role or user to hold read alongside write or manage solely to view existing section pages or navigation.
-- Adding an independently gated database entity but skipping Admin role grants or the configured administrator's Admin assignment.
+- Gating a section page or sidebar entry on read alone: any one of the section's exact read, write, or manage keys opens both.
+- Hiding the create or edit control instead of disabling it, or treating a disabled control as authorization.
+- Requiring a role or user to hold read alongside write or manage to view pages or navigation.
+- Adding an independently gated data model but skipping Admin role grants or the configured administrator's Admin assignment.
 - Running seed against an unapproved target or dropping an existing ACCESS_SECTIONS key without accounting for permission deletion.

@@ -63,11 +63,11 @@ async function DashboardLayoutContent({
 
   const {
     user: applicationUser,
-    canReadDashboard,
+    canAccessDashboard,
     effectivePermissionKeys,
   } = await getDashboardAccessForSessionUser(sessionUser)
 
-  if (!canReadDashboard) {
+  if (!canAccessDashboard) {
     redirect("/pending-access")
   }
 

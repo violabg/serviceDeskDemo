@@ -7,6 +7,7 @@ import {
     INITIAL_PERMISSIONS,
     getDashboardAccessRedirectPath,
     getEffectivePermissionKeys,
+    hasAnySectionPermission,
     hasPermission,
     permissionKey,
 } from "@/lib/access-control"
@@ -111,6 +112,63 @@ describe("access-control permissions", () => {
     expect(hasPermission(permissions, "users", "manage")).toBe(false)
   })
 
+  it("treats any one of read, write, or manage as section visibility", () => {
+    expect(
+      hasAnySectionPermission(
+        new Set([permissionKey("dashboard", "read")]),
+        "dashboard"
+      )
+    ).toBe(true)
+    expect(
+      hasAnySectionPermission(
+        new Set([permissionKey("dashboard", "write")]),
+        "dashboard"
+      )
+    ).toBe(true)
+    expect(
+      hasAnySectionPermission(
+        new Set([permissionKey("dashboard", "manage")]),
+        "dashboard"
+      )
+    ).toBe(true)
+  })
+
+  it("does not treat another section grant as dashboard visibility", () => {
+    expect(
+      hasAnySectionPermission(
+        new Set([permissionKey("users", "write")]),
+        "dashboard"
+      )
+    ).toBe(false)
+    expect(hasAnySectionPermission(new Set(), "dashboard")).toBe(false)
+  })
+
+  it("keeps effective keys exact when only dashboard write or manage is granted", () => {
+    const writeKeys = getEffectivePermissionKeys([
+      {
+        role: {
+          permissions: [
+            { permission: { section: "dashboard", operation: "write" } },
+          ],
+        },
+      },
+    ])
+    const manageKeys = getEffectivePermissionKeys([
+      {
+        role: {
+          permissions: [
+            { permission: { section: "dashboard", operation: "manage" } },
+          ],
+        },
+      },
+    ])
+
+    expect(writeKeys).toEqual(new Set([permissionKey("dashboard", "write")]))
+    expect(writeKeys.has(permissionKey("dashboard", "read"))).toBe(false)
+    expect(manageKeys).toEqual(new Set([permissionKey("dashboard", "manage")]))
+    expect(manageKeys.has(permissionKey("dashboard", "read"))).toBe(false)
+  })
+
   it("returns dashboard redirect paths for unauthenticated and unauthorized access", () => {
     expect(getDashboardAccessRedirectPath({ isAuthenticated: false })).toBe(
       "/login"
@@ -118,13 +176,13 @@ describe("access-control permissions", () => {
     expect(
       getDashboardAccessRedirectPath({
         isAuthenticated: true,
-        canReadDashboard: false,
+        canAccessDashboard: false,
       })
     ).toBe("/pending-access")
     expect(
       getDashboardAccessRedirectPath({
         isAuthenticated: true,
-        canReadDashboard: true,
+        canAccessDashboard: true,
       })
     ).toBeNull()
   })
@@ -298,9 +356,85 @@ describe("first-login application user access", () => {
       image: null,
     })
 
-    expect(access.canReadDashboard).toBe(false)
+    expect(access.canAccessDashboard).toBe(false)
     expect(access.isAdmin).toBe(false)
     expect(access.user.id).toBe("user-zero-role")
+  })
+
+  it("allows dashboard access for a user holding only dashboard write", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      id: "writer-user",
+      neonAuthId: "neon-writer",
+      email: "writer@example.com",
+      name: "Writer User",
+      image: null,
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            name: "Writer",
+            permissions: [
+              { permission: { section: "dashboard", operation: "write" } },
+            ],
+          },
+        },
+      ],
+    })
+
+    const { getDashboardAccessForSessionUser } =
+      await import("@/lib/access-control/server")
+
+    const access = await getDashboardAccessForSessionUser({
+      id: "neon-writer",
+      email: "writer@example.com",
+      name: "Writer User",
+      image: null,
+    })
+
+    expect(access.canAccessDashboard).toBe(true)
+    expect(access.effectivePermissionKeys).toEqual([
+      permissionKey("dashboard", "write"),
+    ])
+    expect(access.isAdmin).toBe(false)
+  })
+
+  it("allows dashboard access for a user holding only dashboard manage", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      id: "manager-user",
+      neonAuthId: "neon-manager",
+      email: "manager@example.com",
+      name: "Manager User",
+      image: null,
+    })
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      roles: [
+        {
+          role: {
+            name: "Manager",
+            permissions: [
+              { permission: { section: "dashboard", operation: "manage" } },
+            ],
+          },
+        },
+      ],
+    })
+
+    const { getDashboardAccessForSessionUser } =
+      await import("@/lib/access-control/server")
+
+    const access = await getDashboardAccessForSessionUser({
+      id: "neon-manager",
+      email: "manager@example.com",
+      name: "Manager User",
+      image: null,
+    })
+
+    expect(access.canAccessDashboard).toBe(true)
+    expect(access.effectivePermissionKeys).toEqual([
+      permissionKey("dashboard", "manage"),
+    ])
+    expect(access.isAdmin).toBe(false)
   })
 
   it("does not treat dashboard read permission as administrator access", async () => {
@@ -341,7 +475,7 @@ describe("first-login application user access", () => {
       image: null,
     })
 
-    expect(access.canReadDashboard).toBe(true)
+    expect(access.canAccessDashboard).toBe(true)
     expect(access.isAdmin).toBe(false)
   })
 
@@ -383,7 +517,7 @@ describe("first-login application user access", () => {
       image: null,
     })
 
-    expect(access.canReadDashboard).toBe(true)
+    expect(access.canAccessDashboard).toBe(true)
     expect(access.isAdmin).toBe(true)
     expect(access.user.id).toBe("admin-user")
   })

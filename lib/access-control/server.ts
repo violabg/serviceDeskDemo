@@ -3,6 +3,7 @@ import {
   ADMIN_ROLE_NAME,
   INITIAL_PERMISSIONS,
   getEffectivePermissionKeys,
+  hasAnySectionPermission,
   hasPermission,
   permissionKey,
   type AccessOperation,
@@ -245,10 +246,9 @@ export async function getDashboardAccessForSessionUser(
   const effectivePermissionKeys = getEffectivePermissionKeys(
     userWithRoles?.roles ?? []
   )
-  const canReadDashboard = hasPermission(
+  const canAccessDashboard = hasAnySectionPermission(
     effectivePermissionKeys,
-    "dashboard",
-    "read"
+    "dashboard"
   )
   const isAdmin =
     userWithRoles?.roles.some(({ role }) => role.name === ADMIN_ROLE_NAME) ??
@@ -256,7 +256,7 @@ export async function getDashboardAccessForSessionUser(
 
   return {
     user,
-    canReadDashboard,
+    canAccessDashboard,
     isAdmin,
     effectivePermissionKeys: [...effectivePermissionKeys],
   }

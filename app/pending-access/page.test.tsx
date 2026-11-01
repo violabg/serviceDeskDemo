@@ -48,7 +48,7 @@ describe("PendingAccessPageContent", () => {
     const redirectError = new Error("NEXT_REDIRECT")
     getSessionMock.mockResolvedValue({ data: { user: { id: "neon-1" } } })
     getDashboardAccessForSessionUserMock.mockResolvedValue({
-      canReadDashboard: true,
+      canAccessDashboard: true,
     })
     redirectMock.mockImplementation(() => {
       throw redirectError
@@ -61,7 +61,7 @@ describe("PendingAccessPageContent", () => {
   it("renders the waiting state for signed-in users without access", async () => {
     getSessionMock.mockResolvedValue({ data: { user: { id: "neon-1" } } })
     getDashboardAccessForSessionUserMock.mockResolvedValue({
-      canReadDashboard: false,
+      canAccessDashboard: false,
     })
 
     render(await PendingAccessPageContent())

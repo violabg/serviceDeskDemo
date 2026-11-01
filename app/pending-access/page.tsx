@@ -25,10 +25,10 @@ export async function PendingAccessPageContent() {
     redirect("/login")
   }
 
-  const { canReadDashboard } =
+  const { canAccessDashboard } =
     await getDashboardAccessForSessionUser(sessionUser)
 
-  if (canReadDashboard) {
+  if (canAccessDashboard) {
     redirect("/dashboard")
   }
 
