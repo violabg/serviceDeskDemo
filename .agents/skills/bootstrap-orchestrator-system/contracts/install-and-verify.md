@@ -63,4 +63,5 @@ Always recommend:
 - running `knowledge-builder` to build the project knowledge in the knowledge folder, with the `MustHave`, `PerContext` and `PerComponent` tiers, referencing existing docs where they are;
 - `manage-work-item` for creating or updating tracker items, or which binding would enable it when it was skipped;
 - `author-repo-skill` for repository-specific procedures;
-- `maintain-orchestrator-system` after a hand edit of installed files, a change of decisions, or a newer kit.
+- `maintain-orchestrator-system` after a hand edit of installed files, a change of decisions, or a newer kit;
+- `improve-orchestrator-system` after a session, to audit its token use, its adherence to the flow, and any gaps in the runtime, the knowledge or the issue.

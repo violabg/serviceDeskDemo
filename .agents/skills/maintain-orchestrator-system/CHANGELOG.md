@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning.
 
+## 1.2.0
+
+- New `patch` mode: applies an approved fix to the installed runtime and records it as a kept customization, so the next upgrade recognizes it. Workflows and role contracts stay out of scope.
+
 ## 1.1.0
 
 - Moves an installation from hidden system folders to visible ones without losing session data, answers, manifests, baselines or customizations.

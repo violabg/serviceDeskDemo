@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 4.2.1
+
+The installation guide and the closing recommendations name `improve-orchestrator-system`. Nothing else changes for a target.
+
 ## 4.2.0
 
 Agents can retrieve what they need, from a comparison with real upstream sessions and a second test on two clients. A target re-installed from this version keeps its answers and sessions.
