@@ -1,15 +1,15 @@
-// Persistence of the structured design (contracts/design-model.md). Every write goes through saveDesign,
-// which records an integrity hash and re-renders the projections, so a reader never sees a stale view.
+// Persistence of the structured design (contracts/design-model.md). Every write goes through saveDesign, which
+// records an integrity hash and re-renders the review document. Agents read the projections from the runtime, which
+// builds them from design.json on each call, so no copy of them is stored.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { designGrounding, resolveKnowledgeReference } from "./knowledge.mjs";
+import { resolveKnowledgeReference } from "./knowledge.mjs";
 import { renderDocument } from "./render.mjs";
-import { snapshot, verificationView } from "./projections.mjs";
 import { RuntimeError, iso, readJson, sha256, writeJson, writeText } from "./util.mjs";
 
-export const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 2;
 
-export function designDir(ctx, sessionId, designId) {
+function designDir(ctx, sessionId, designId) {
   return join(ctx.sessionsRoot, sessionId, "designs", designId);
 }
 
@@ -20,8 +20,6 @@ export function designPaths(ctx, sessionId, designId) {
     json: join(dir, "design.json"),
     integrity: join(dir, "design.integrity.json"),
     html: join(dir, "design.html"),
-    snapshot: join(dir, "snapshot.md"),
-    verification: join(dir, "verification-view.md"),
     iterations: join(dir, "iterations"),
   };
 }
@@ -99,8 +97,6 @@ export function saveDesign(ctx, design) {
   const text = `${JSON.stringify(design, null, 2)}\n`;
   writeText(paths.json, text);
   writeJson(paths.integrity, { sha256: sha256(text), sealedAt: iso(ctx.now()) });
-  writeText(paths.snapshot, snapshot(design));
-  writeText(paths.verification, verificationView(design, designGrounding(ctx, design)));
   const template = readFileSync(join(ctx.assetsRoot, "design-review.html"), "utf8");
   const knowledge = design.knowledgeReferences.map((ref) => ({ kid: ref.kid, ...resolveKnowledgeReference(ctx, ref) }));
   writeText(paths.html, renderDocument(template, design, { knowledge }));

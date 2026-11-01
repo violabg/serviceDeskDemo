@@ -7,7 +7,7 @@ import { join, relative } from "node:path";
 import { knowledgeReads, recordKnowledgeReads } from "./session.mjs";
 import { RuntimeError, arg, frontmatter, parseFrontmatter, requireString, servePart, writeText } from "./util.mjs";
 
-export const TIERS = {
+const TIERS = {
   MustHave: "Mandatory knowledges for the project. Agent must always apply them",
   PerContext: "Context depending knowledges. Agent must evalueate them as context evolve",
   PerComponent: "Component depending knowledges. Agent must evalueate them based on the component involved in its implementation",
@@ -57,7 +57,7 @@ function documents(ctx) {
   return files.filter((file) => !skip.some((re) => re.test(file))).sort();
 }
 
-export function buildCatalog(ctx) {
+function buildCatalog(ctx) {
   return documents(ctx).map((path, index) => {
     const { data } = parseFrontmatter(readFileSync(join(ctx.knowledgeRoot, path), "utf8"));
     const tier = TIERS[data.tier] ? data.tier : "PerContext";

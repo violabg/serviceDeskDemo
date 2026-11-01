@@ -108,7 +108,7 @@ export const ARGUMENTS = {
   "workflow-step-pending": [...JOB, "part"],
   "workflow-step-next": JOB,
   "design-checks": [...JOB, "acceptExternalEdit"],
-  "design-snapshot": [...JOB, "part", "revision"],
+  "design-snapshot": [...JOB, "part", "revision", "section", "ids"],
   "design-verification-view": [...JOB, "part", "revision"],
   "design-implementation-context": [...JOB, "part", "revision"],
   "design-implementation-operation": [...JOB, "operationId", "id", "part"],
@@ -150,7 +150,10 @@ export function roleRefusal(ctx, role, token) {
 
 // The neutral operations a role runs with its client's own tools (conversion.yaml `valid_operations` minus
 // `runtime`). Agents send them here when they read `#operation:<op>` as a runtime token.
-export const HOST_OPERATIONS = new Set(["read", "search", "write", "terminal", "question", "delegate"]);
+const HOST_OPERATIONS = new Set(["read", "search", "write", "terminal", "question", "delegate"]);
+
+// The capability tokens a client binds to its own tools (`kind: host` in capabilities.yaml, the operations above aside).
+const CLIENT_TOOLS = new Set(["visual-evidence", "work-item-retrieval", "work-item-type-retrieval", "work-item-batch-retrieval", "work-item-comment-retrieval", "work-item-create", "work-item-update", "wiki-catalog-read", "wiki-page-list", "wiki-page-read"]);
 
 // An unknown token is a wrong call, never a missing runtime: the answer says so, or agents halt on the
 // availability guard.
@@ -159,6 +162,9 @@ function unknownCommand(token) {
   if (HOST_OPERATIONS.has(token)) {
     const how = token === "question" ? "ask the user with your client's own question tool" : `use your client's own tool for \`#operation:${token}\``;
     return `'${token}' is not a runtime command: it is a host operation, so ${how} (the Bindings section of your role file names it). The runtime is installed and working; this is not a runtime outage. ${commands}`;
+  }
+  if (CLIENT_TOOLS.has(token)) {
+    return `'${token}' is not a runtime command: it is a client tool, bound in your role file or in the prompt that started you. The runtime is installed and working; this is not a runtime outage.`;
   }
   return `unknown command '${token}'. The runtime is installed and working; this is not a runtime outage. ${commands}. \`--help\` alone lists the arguments of every command.`;
 }

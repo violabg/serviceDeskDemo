@@ -24,6 +24,8 @@ status: Draft | plan: ... | approved: ... | title: ... | requirement: <3.0.0 req
 ## Coverage            - obligations 3/3 | elements 7/7
 ```
 
+Optional arguments `section` and `ids` (Lab-authored; the captured tool has neither) answer part of the snapshot, so an agent that needs one thing need not read every part: `section` names one section or a comma-separated list (`Operations`), `ids` names rows by their first field (`IM3,CT1,kid 7`, an array in a JSON payload), and both together select within the section. The rows read exactly as in the whole snapshot, under the same two header lines and their section heading. An id that is missing is listed in a `Not found:` line; a section that does not exist, or a selection that finds no row, refuses and changes nothing. A long whole snapshot says so in the footer of part 1.
+
 On a FAST_IMPLEMENTATION job the snapshot projects its job design (obligations, open points, knowledge references). On a DOCUMENTATION job, which has no design, the snapshot says the job has no design artifact. A long snapshot is served in parts (optional argument `part`, `contracts/workflow-loop.md`, Parts) that start at a section heading or an item.
 
 `weight` is the operation's weight class and `status` its implementation flag (contracts/design-model.md, implementation-loop). A decision stored with the 3.0.0 `blocking` flag shows it as `highlight`.
@@ -67,7 +69,7 @@ The heading, the section order and the rows follow the 3.0.1 run-3 capture, take
 ## Knowledge grounding    - file_id <n>: <path> (MustHave, read during the design, named by the design)
                           Read every document above before judging: call knowledge-read ... (CLI: --fileIds <ids> --sessionId <id>) ...
 ## O1                     - claim / class / boundaries / origin / required elements: O1.1 (guard) ...
-                          - mechanisms: in "<operation name>" (<kind>): {{O1.1}} <the text up to the next placeholder>
+                          - mechanisms:  in "<operation name>" (<kind>): {{O1.1}} <the text up to the next placeholder>
                           - knowledge grounding: ...
 # Operations
 ## "<operation name>" (<kind>)   - plan position / test type / depends on / source / knowledge
@@ -75,6 +77,7 @@ The heading, the section order and the rows follow the 3.0.1 run-3 capture, take
                                  - an operation that addresses no obligation also says so and shows its instructions
 # Contracts in no operation      (only when there are some)
 # Files in no operation          (only when there are some)
+# Knowledge references in no operation  (only when there are some) - <path> lines <s>–<e> (<scope>)
 # Public APIs                    (only when there are some)
 # Decisions
 - <question> → <chosen answer> | realized in: "<operation name>", ... | source: ... | highlight: true|false
@@ -88,7 +91,13 @@ The verifier's conformance comparison reads every section and every planned elem
 
 Only obligation and element labels (`O#`, `O#.k`) are kept. Operation, decision, contract and file ids are left out, so the verifier judges the content presented and never reconstructs the mapping.
 
-A long view is served in parts (`contracts/workflow-loop.md`, Parts) that start at a section, an obligation or an operation. The stored `verification-view.md` is always whole.
+`# Knowledge references in no operation` (Lab-authored; `get_design_verification` has no capture) lists the knowledge references the design registered that no operation names in `knowledgeReferences` or, on a `Knowledge` operation, in `sourceRef`. It states the fact and asks nothing: the verifier reads those documents whole, and only this section says which prescriptions the author registered and then used nowhere.
+
+What each `mechanisms` list does not carry is said once, after the knowledge grounding, rather than under every obligation.
+
+A projection is built from `design.json` on each call, so no copy of it is stored and it can never be stale (Lab-authored; upstream's session folders hold none either).
+
+A long view is served in parts (`contracts/workflow-loop.md`, Parts) that start at a section, an obligation or an operation.
 
 ## document
 

@@ -20,7 +20,7 @@ import {
 const USAGE_INSTRUCTION =
   "Start from now you have a long term memory and a logger.Read memory at startup and before critical decisions. Write validated data, agent reasoning, and reusable artifacts.Use the logger to record actions, decisions, errors, and key events. Log consistently for traceability and debugging.";
 
-export function sessionDir(ctx, sessionId) {
+function sessionDir(ctx, sessionId) {
   return join(ctx.sessionsRoot, sessionId);
 }
 
@@ -73,7 +73,6 @@ export function sessionActivate(ctx, args) {
   for (const [file, initial] of [
     ["memory.md", ""],
     ["log.md", ""],
-    ["execution-report.json", "[]\n"],
   ]) {
     if (!existsSync(join(dir, file))) writeFileSync(join(dir, file), initial);
   }
@@ -120,7 +119,7 @@ function readArtifactMeta(dir, name) {
   return { name, ...data, body, path };
 }
 
-export function listArtifacts(dir) {
+function listArtifacts(dir) {
   if (!existsSync(artifactsDir(dir))) return [];
   return readdirSync(artifactsDir(dir))
     .filter((file) => file.endsWith(".md"))
@@ -268,6 +267,7 @@ export async function imageAttach(ctx, args) {
 }
 
 export function executionReport(ctx, args) {
-  const dir = requireSession(ctx, arg(args, "sessionId"), "session-execution-report-read");
-  return linedJson(readJson(join(dir, "execution-report.json"), []));
+  // Nothing in the served workflows reports an entry, in the capture or here: the answer is the captured empty report.
+  requireSession(ctx, arg(args, "sessionId"), "session-execution-report-read");
+  return "[]";
 }

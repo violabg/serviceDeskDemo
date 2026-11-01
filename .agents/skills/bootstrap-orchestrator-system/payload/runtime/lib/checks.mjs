@@ -3,7 +3,7 @@
 
 // Lab-authored: the minimum number of words that must follow a placeholder before the next placeholder
 // (or the end of the text). The captured server only says "closer than a few words".
-export const MIN_WORDS_AFTER_PLACEHOLDER = 4;
+const MIN_WORDS_AFTER_PLACEHOLDER = 4;
 
 const PLACEHOLDER = /\{\{O(\d+)(?:\.(\d+))?\}\}/g;
 const ACCESSORY_KINDS = new Set(["NotCode"]);
@@ -13,7 +13,7 @@ const CODE_KINDS = new Set(["Code"]);
 // A decision stored before `highlight` replaced `blocking` reads its old flag as the highlight.
 export const isHighlighted = (decision) => Boolean(decision.highlight || decision.blocking);
 
-export function elementRef(obligationId, elementId) {
+function elementRef(obligationId, elementId) {
   return elementId === undefined ? obligationId : `${obligationId}.${elementId}`;
 }
 
@@ -41,7 +41,7 @@ export function crowdedPlaceholders(text) {
 }
 
 // Every anchor an obligation set requires: O#.k per element, or O# for an obligation with no elements.
-export function requiredAnchors(design) {
+function requiredAnchors(design) {
   const anchors = [];
   for (const obligation of design.obligations) {
     if (obligation.elements?.length) for (const element of obligation.elements) anchors.push(elementRef(obligation.id, element.id));

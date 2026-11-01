@@ -2,6 +2,16 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 4.2.0
+
+Agents can retrieve what they need, from a comparison with real upstream sessions and a second test on two clients. A target re-installed from this version keeps its answers and sessions.
+
+- **Field definitions.** `--help` on a design command prints every field of `request` and of its rows, with its type, allowed values and description. A rejected field names the fields allowed there.
+- **One item of the design.** `design-snapshot` takes optional `section` and `ids`, so an agent can read `IM3` or the operations without reading every part.
+- **Unused knowledge.** The verification view lists the knowledge references the design registered and no operation cites. A verifier may now fail a design it would have passed.
+- **A smaller session store.** New designs and sessions no longer write `snapshot.md`, `verification-view.md` or `execution-report.json`: nothing read them, and the runtime builds its answers on each call. Files already in a session are left in place, and nothing reads them.
+- **Clearer answers.** The argument list says what `outline`, `section` and `ids` do, the usage line names inline JSON, a client tool asked of the runtime is answered as one, and the verification view is a little smaller.
+
 ## 4.1.0
 
 Runtime and role-file fixes from a parallel test of the system on two clients. A target re-installed from this version keeps its answers and sessions.

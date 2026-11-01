@@ -16,7 +16,7 @@ function templateFolders(ctx, extra) {
   return folders;
 }
 
-export function parseDirectives(text) {
+function parseDirectives(text) {
   const directives = [];
   for (const match of text.matchAll(DIRECTIVE)) {
     const inner = match[1];
