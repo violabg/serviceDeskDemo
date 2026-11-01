@@ -114,6 +114,12 @@ export function parseFrontmatter(text) {
 }
 
 // Case-insensitive lookup of an argument, so `WorkspacePath` and `workspacePath` are both accepted.
+// The flags that name a job in the call for a later part, so that call can be run exactly as printed. The role travels
+// with it: a role's calls must name the role (contracts/workflow-loop.md, Parts and Roles).
+export function jobFlags(source, { role } = {}) {
+  return `--sessionId ${arg(source, "sessionId")} --jobId ${arg(source, "jobId")}${role ? ` --role ${role}` : ""}`;
+}
+
 export function arg(source, name) {
   if (!source || typeof source !== "object") return undefined;
   if (name in source) return source[name];

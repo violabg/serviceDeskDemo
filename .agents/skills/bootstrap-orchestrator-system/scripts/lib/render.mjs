@@ -37,7 +37,12 @@ export function render(kit, answers) {
         env.delegation === "subprocess"
           ? `Start each delegate as a separate process with \`${profile.delegation.subprocess}\`: its prompt first tells it to read and follow the role's file under \`${profile.agents.dir}\` as its complete instructions, then carries the prompt the step gives, unchanged. The process output is the report. A process cannot be resumed: re-run the same role with the complete correction prompt, as the step's arm for a host without resume says.`
           : profile.delegation.native.replaceAll("{name}", nativeName("code-implementor"));
-      return `${how} Role names here: ${[...map, general].join("; ")}. A delegate sees only its own file, not this section: when the prompt you pass names a \`#capability:<token>\` its file does not bind (always the case for \`general-purpose\`), append that token's line from this section to the prompt.`;
+      // A profile whose native text already says how, or that it cannot, keeps its own words.
+      const resume =
+        env.delegation === "subprocess" || profile.delegation.resume || /resum/i.test(profile.delegation.native)
+          ? ""
+          : " This client documents no way to resume a delegate by id: start the same role again with the complete correction prompt, as the step's arm for a host without resume says.";
+      return `${how}${resume} Role names here: ${[...map, general].join("; ")}. A delegate sees only its own file, not this section: when the prompt you pass names a \`#capability:<token>\` its file does not bind (always the case for \`general-purpose\`), append that token's line from this section to the prompt.`;
     };
 
     // An `#operation:<op>` named in prose is a host tool; binding it here keeps agents from sending it to the runtime.

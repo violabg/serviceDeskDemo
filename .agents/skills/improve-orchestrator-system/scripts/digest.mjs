@@ -68,11 +68,29 @@ function installation(options) {
 
 // --- locate ------------------------------------------------------------------------------------------------------
 
-// A transcript belongs to a session when a runtime call names it, not when a conversation only mentions it.
-function runtimeCallLines(text, id) {
-  const name = new RegExp(`(?<![A-Za-z0-9_])${id}(?![A-Za-z0-9_])`);
-  return text.split("\n").filter((line) => line.includes("agentic-system.mjs") && name.test(line)).length;
+const isRuntimeCall = (command) => typeof command === "string" && command.includes("agentic-system.mjs");
+
+// The values of an argument in a runtime call: as a flag, or inside an inline or stdin JSON object.
+const argumentValues = (command, name) =>
+  [...command.matchAll(new RegExp(`--${name}[ =]["']?([A-Za-z0-9_]+)|"${name}"\\s*:\\s*"([A-Za-z0-9_]+)"`, "gi"))].map((m) => m[1] ?? m[2]);
+
+// The shell commands a transcript ran. Text around them, such as a prompt or a tool result, is never a call.
+function commandsOf(text) {
+  return text.split("\n").flatMap((line) => {
+    let event;
+    try {
+      event = JSON.parse(line);
+    } catch {
+      return [];
+    }
+    if (event?.type === "tool.execution_start") return [event.data?.arguments?.command];
+    const content = event?.message?.content;
+    return Array.isArray(content) ? content.filter((c) => c?.type === "tool_use").map((c) => c.input?.command) : [];
+  }).filter(isRuntimeCall);
 }
+
+// A transcript belongs to a session when a runtime call has it as the session argument, not when anything mentions it.
+const runtimeCalls = (commands, id) => commands.filter((command) => argumentValues(command, "sessionId").includes(id)).length;
 
 function transcriptFolders(repo) {
   const claude = join(homedir(), ".claude", "projects", repo.replace(/[^A-Za-z0-9]/g, "-"));
@@ -85,14 +103,14 @@ function transcriptFolders(repo) {
 
 function locate(options) {
   const { repo } = installation(options);
-  const candidates = transcriptFolders(repo).map((c) => ({ ...c, text: readFileSync(c.path, "utf8") }));
+  const candidates = transcriptFolders(repo).map((c) => ({ ...c, commands: commandsOf(readFileSync(c.path, "utf8")) }));
   const found = {};
   for (const id of options.sessions) {
-    found[id] = candidates.flatMap(({ client, path, text }) => {
-      const runtimeCalls = runtimeCallLines(text, id);
-      if (!runtimeCalls) return [];
+    found[id] = candidates.flatMap(({ client, path, commands }) => {
+      const calls = runtimeCalls(commands, id);
+      if (!calls) return [];
       const stat = statSync(path);
-      return [{ client, path, runtimeCalls, bytes: stat.size, modified: stat.mtime.toISOString() }];
+      return [{ client, path, runtimeCalls: calls, bytes: stat.size, modified: stat.mtime.toISOString() }];
     }).sort((a, b) => b.runtimeCalls - a.runtimeCalls);
   }
   return found;
@@ -187,7 +205,17 @@ function steps(responses, stepsOfJob) {
   return out.map(({ startTurn, ...step }) => step);
 }
 
-function digestTranscript(file, stepsOfJob) {
+// A transcript with runtime calls counts for a session only when it ran one of that session's jobs, or, for a session
+// with no job, any call on it. One stray call naming the session must not hand it the whole transcript's usage and failures.
+function belongsTo(responses, id, jobIds) {
+  const calls = responses.map((r) => r.input?.command).filter(isRuntimeCall);
+  // No call to judge by, such as a client whose transcript does not parse: that is unmeasured, not another session's.
+  if (!calls.length) return true;
+  const own = calls.filter((command) => argumentValues(command, "sessionId").includes(id));
+  return jobIds.length ? own.some((command) => argumentValues(command, "jobId").some((job) => jobIds.includes(job))) : own.length > 0;
+}
+
+function digestTranscript(file, stepsOfJob, id) {
   if (!existsSync(file)) throw new DigestError(`transcript ${file} does not exist`);
   const t = load(file);
   const summary = summarize(t);
@@ -216,6 +244,7 @@ function digestTranscript(file, stepsOfJob) {
   return {
     file,
     client: t.client,
+    belongs: belongsTo(t.responses, id, Object.keys(stepsOfJob)),
     usageAvailable: t.usageAvailable,
     turns: summary.turns,
     weighted: t.usageAvailable ? summary.weighted : null,
@@ -244,7 +273,7 @@ function compare(sessions) {
 
   const seen = new Map();
   for (const s of sessions) {
-    for (const t of s.transcripts) {
+    for (const t of s.transcripts.filter((x) => x.belongs)) {
       for (const f of t.failed) {
         const key = failureKey(f.type, f.excerpt);
         if (!seen.has(key)) seen.set(key, { type: f.type, excerpt: f.excerpt, sessions: new Set() });
@@ -255,15 +284,16 @@ function compare(sessions) {
   const recurring = [...seen.values()].filter((r) => r.sessions.size > 1).map((r) => ({ ...r, sessions: [...r.sessions] }));
 
   const row = (s) => {
-    const measured = s.transcripts.filter((t) => t.usageAvailable);
-    const count = (read) => s.transcripts.reduce((n, t) => n + read(t), 0);
+    const own = s.transcripts.filter((t) => t.belongs);
+    const measured = own.filter((t) => t.usageAvailable);
+    const count = (read) => own.reduce((n, t) => n + read(t), 0);
     return {
       session: s.session,
       issue: issueOf(s),
-      clients: [...new Set(s.transcripts.map((t) => t.client))],
-      usage: !s.transcripts.length ? "no transcript" : measured.length === s.transcripts.length ? "recorded" : measured.length ? "partial" : "unavailable",
+      clients: [...new Set(own.map((t) => t.client))],
+      usage: !s.transcripts.length ? "no transcript" : !own.length ? "another session's transcript" : measured.length === own.length ? "recorded" : measured.length ? "partial" : "unavailable",
       turns: count((t) => t.turns),
-      weighted: measured.length === s.transcripts.length && measured.length ? measured.reduce((n, t) => n + t.weighted, 0) : null,
+      weighted: measured.length === own.length && measured.length ? measured.reduce((n, t) => n + t.weighted, 0) : null,
       failed: count((t) => t.failedTotal),
       repeatedCalls: count((t) => t.repeatedTotal),
       jobs: s.jobs.map((j) => `${j.jobId} ${j.step}/${j.steps}`),
@@ -284,7 +314,7 @@ function digest(options) {
   });
   const sessions = [...new Set(options.sessions)].map((id) => {
     const { stepsOfJob, ...store } = digestStore(install, id);
-    return { ...store, transcripts: named.filter((n) => n.session === id).map((n) => digestTranscript(n.file, stepsOfJob)) };
+    return { ...store, transcripts: named.filter((n) => n.session === id).map((n) => digestTranscript(n.file, stepsOfJob, id)) };
   });
   const { answers } = install;
   return {
@@ -311,6 +341,7 @@ function textLocate(found) {
 
 function textTranscript(t, lines) {
   lines.push(`\n## Transcript (${t.client}) ${t.file}`);
+  if (!t.belongs) lines.push("WARNING: this transcript ran no job of this session. Its figures below are another session's: they are left out of the comparison and must not be reported for this session.");
   lines.push(`${t.turns} model turns. Usage ${t.usageAvailable ? `recorded, weighted input-equivalent tokens ${t.weighted}` : "unavailable"}. Spilled responses ${t.spilled}. --help probes ${t.helpProbes}.`);
   if (t.perConversation.length) lines.push(`Conversations (turns, weighted): ${t.perConversation.map((a) => `${a.agent} ${a.turns}, ${a.weighted}`).join("; ")}`);
   lines.push(`Largest responses (calls, chars): ${t.largestResponses.map((r) => `${r.type} ${r.calls}, ${r.chars}`).join("; ")}`);

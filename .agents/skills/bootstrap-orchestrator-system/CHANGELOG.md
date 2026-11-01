@@ -2,6 +2,13 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 4.2.2
+
+- The call the runtime prints for a later part now runs as printed: it names `--sessionId`, `--jobId` and the caller's `--role`. Following the old form was refused with `'sessionId' is required`.
+- The orchestrator's delegate binding states the resume position on clients that left it out (Codex, OpenCode): their documentation names no way to resume a delegate by id, so the step's arm for a host without resume applies.
+
+Nothing else changes for a target. A target re-installed from this version keeps its answers and sessions.
+
 ## 4.2.1
 
 The installation guide and the closing recommendations name `improve-orchestrator-system`. Nothing else changes for a target.

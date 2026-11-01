@@ -47,6 +47,8 @@ The digest's comparison settles what can be said:
 | `different-issues` | Recurring causes only. Never rank different work on cost. |
 | `unknown-issue` | Ask which issue each named session worked on, then treat them as one of the two above. |
 
+A transcript the digest warns about ran no job of the session it was named for: its figures belong to another session, so it stays out of the comparison and the recurring causes. Name the transcript of the right session, or report that session as having none.
+
 Merge the same cause across sessions into one finding that lists them. Rank by how many sessions it hit, then by cost. Call a cause seen in several sessions systemic, and one seen in a single session possibly a one-off.
 
 ## Classify each finding
