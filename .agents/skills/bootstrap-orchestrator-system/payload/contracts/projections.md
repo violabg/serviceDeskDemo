@@ -28,6 +28,8 @@ Optional arguments `section` and `ids` (Lab-authored; the captured tool has neit
 
 On a FAST_IMPLEMENTATION job the snapshot projects its job design (obligations, open points, knowledge references). On a DOCUMENTATION job, which has no design, the snapshot says the job has no design artifact. A long snapshot is served in parts (optional argument `part`, `contracts/workflow-loop.md`, Parts) that start at a section heading or an item.
 
+Lab-authored: a call with no selection and no `part`, on a design too long for one part, answers an index instead of part 1: the two header lines, each section with its row count, first and last id and size, the coverage, and the calls that read the whole design (`--part 1`), one section or a few items. A filled design takes 20 or more parts, and an agent re-read them whole after a resume or compaction. The rows are one call away, and a snapshot that fits is returned unchanged.
+
 `weight` is the operation's weight class and `status` its implementation flag (contracts/design-model.md, implementation-loop). A decision stored with the 3.0.0 `blocking` flag shows it as `highlight`.
 
 ## implementation-context

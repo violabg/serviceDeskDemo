@@ -521,6 +521,8 @@
         "skills/plan-bug-from-id/SKILL.md"
       ],
       "tokens": [
+        "session-activate",
+        "session-artifact-write",
         "work-item-comment-retrieval",
         "work-item-retrieval"
       ]
@@ -535,6 +537,8 @@
         "skills/plan-user-story-from-id/SKILL.md"
       ],
       "tokens": [
+        "session-activate",
+        "session-artifact-write",
         "work-item-batch-retrieval",
         "work-item-comment-retrieval",
         "work-item-retrieval"

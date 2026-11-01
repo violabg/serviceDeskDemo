@@ -2,6 +2,12 @@
 
 Versions follow semantic versioning.
 
+## 1.0.2
+
+- A leading `cd` and a trailing echo of the exit code no longer count as a joined runtime call.
+- `digest` warns about a transcript that ran no workflow step.
+- `locate` says that OpenCode was not searched.
+
 ## 1.0.1
 
 - `locate` counts a runtime call only when the session is its session argument, in a command the transcript actually ran. A mention no longer counts.

@@ -181,8 +181,10 @@ const cleanExcerpt = (text) => text.replace(/\s*<shellId:[^>]*>/g, "").trim();
 const failureKey = (type, excerpt) => `${type}\n${excerpt.replace(/\d+/g, "N").slice(0, 80)}`;
 const isContract = (path) => typeof path === "string" && /(^|\/)contracts\//.test(path);
 
-// A runtime call joined or piped on its first line breaks the router's rule of one operation per shell command.
-const breaksCallRule = (command) => /agentic-system\.mjs/.test(command) && /(?:;|&&|\|\|?)\s*\S/.test(command.split("\n")[0].replace(/'[^']*'|"[^"]*"/g, ""));
+// A runtime call joined or piped on its first line breaks the router's rule of one operation per shell command. A leading
+// `cd` and a trailing echo of the exit code run no second operation and change no output the host caps, so they do not count.
+const withoutWrappers = (line) => line.replace(/^\s*cd\s+(?:"[^"]*"|'[^']*'|\S+)\s*&&\s*/, "").replace(/\s*(?:;|&&)\s*echo\b[^;&|]*\$\?[^;&|]*$/, "");
+const breaksCallRule = (command) => /agentic-system\.mjs/.test(command) && /(?:;|&&|\|\|?)\s*\S/.test(withoutWrappers(command.split("\n")[0]).replace(/'[^']*'|"[^"]*"/g, ""));
 
 function steps(responses, stepsOfJob) {
   const out = [];
@@ -241,6 +243,7 @@ function digestTranscript(file, stepsOfJob, id) {
     if (isContract(path)) contractReads.set(path, (contractReads.get(path) ?? 0) + r.chars);
     if (command && breaksCallRule(command)) brokenCallRules.set(r.type, (brokenCallRules.get(r.type) ?? 0) + 1);
   }
+  const servedSteps = steps(t.responses, stepsOfJob);
   return {
     file,
     client: t.client,
@@ -258,7 +261,7 @@ function digestTranscript(file, stepsOfJob, id) {
     helpProbes,
     contractReads: [...contractReads].map(([path, chars]) => ({ path, chars })).sort((a, b) => b.chars - a.chars),
     brokenCallRules: [...brokenCallRules].map(([type, count]) => ({ type, count })),
-    steps: steps(t.responses, stepsOfJob),
+    steps: servedSteps,
   };
 }
 
@@ -336,12 +339,14 @@ function textLocate(found) {
     lines.push(`${id}: ${candidates.length ? "" : "no transcript found"}`);
     for (const c of candidates) lines.push(`  ${c.client}  ${c.runtimeCalls} runtime calls  ${Math.round(c.bytes / 1024)} KB  ${c.modified}  ${c.path}`);
   }
+  lines.push("Searched Claude Code and Copilot CLI transcripts only. OpenCode keeps its sessions in its own database, which this script does not read, so a run there is not listed.");
   return lines.join("\n");
 }
 
 function textTranscript(t, lines) {
   lines.push(`\n## Transcript (${t.client}) ${t.file}`);
   if (!t.belongs) lines.push("WARNING: this transcript ran no job of this session. Its figures below are another session's: they are left out of the comparison and must not be reported for this session.");
+  else if (!t.steps.length) lines.push("WARNING: this transcript ran no workflow step. Check it is this session's run and not a side conversation before reporting its figures.");
   lines.push(`${t.turns} model turns. Usage ${t.usageAvailable ? `recorded, weighted input-equivalent tokens ${t.weighted}` : "unavailable"}. Spilled responses ${t.spilled}. --help probes ${t.helpProbes}.`);
   if (t.perConversation.length) lines.push(`Conversations (turns, weighted): ${t.perConversation.map((a) => `${a.agent} ${a.turns}, ${a.weighted}`).join("; ")}`);
   lines.push(`Largest responses (calls, chars): ${t.largestResponses.map((r) => `${r.type} ${r.calls}, ${r.chars}`).join("; ")}`);

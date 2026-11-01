@@ -2,6 +2,17 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 5.1.0
+
+Cheaper design runs, from an audit of real sessions. A target re-installed from this version keeps its answers and sessions.
+
+- **Shorter check answers.** Findings that differ only in the element they name are now one row, whose `element` lists them all and whose `detail` says `<element>`. On a 60-obligation design a partial `design-submit` answered 4 KB instead of 24 KB. No finding is lost.
+- **Index first.** `design-snapshot` with no selection on a design too long for one answer returns an index: status, each section's rows, ids and size, the coverage, and the calls that read more. `--part 1` reads the whole design as before.
+- **Add rows.** `--help` says an Add row omits its `id`, on all four row tables.
+- **The instruction register.** Step 1 registers only the developer's own words, not the text of the skill that started the workflow.
+- **Work item skills.** `plan-user-story-from-id` and `plan-bug-from-id` pass their bindings to the delegate that gathers the item.
+- **Waiting for a delegate.** The delegate binding says a report comes back on its own, so never sleep, poll or list agents while waiting.
+
 ## 5.0.0
 
 Only `knowledge-builder` changes knowledge. This changes what a target may do, so it is a major version; the answers do not change.

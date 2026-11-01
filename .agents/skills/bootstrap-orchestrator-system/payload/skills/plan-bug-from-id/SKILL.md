@@ -11,21 +11,21 @@ If the user doesn't provide a bug work item ID, ask for it.
 Before starting the plan creation worfklow, follow the following Gates to make sure you have all the necessary information to create a comprehensive and effective plan.
 
 # Bug Information Gathering
-Use the available tools to invoke subagent.
+Use the available tools to invoke subagent. The subagent sees only the prompt you pass, not this file: append to the template the runtime lines of this file's Bindings section and the line of every `#capability:` token the template names.
 Use the following prompt template for the subagent:
 
 ```
-Activate agent session with id `<sessionId>`.
+Activate agent session with id `<sessionId>` with `#capability:session-activate`.
 For the bug <WORK_ITEM_BUG_ID>, gather the information with the approved work item integration tools, which already return Markdown: call `#capability:work-item-retrieval` with the bug id for the title, the description, the URLs of the images and the acceptance criteria, then call `#capability:work-item-comment-retrieval` with the bug id for the comments.
 Do not include related work items.
 
-Attach to the session a new artifact with the Markdown returned by the tools, in this order:
+With `#capability:session-artifact-write`, attach to the session a new artifact with the Markdown returned by the tools, in this order:
 - title
 - description
 - Images
 - comments
 
-then tell me the name of the artifact you created, so I can read it and create the plan.
+then answer with the name of the artifact you created. The orchestrator that started you reads it and creates the plan.
 ```
 
 # Pulling related knowledge

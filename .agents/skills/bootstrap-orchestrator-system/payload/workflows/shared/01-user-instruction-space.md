@@ -1,6 +1,6 @@
 This is the **User Instruction Space**: the first step of every workflow. It exists so that the particular requests the developer makes in the first prompt are executed or evaluated and then stay binding for the rest of the workflow. It is served before any intake and before any documentation target is chosen.
 
-The developer's first prompt is the user message that opens the work of this job: the message that carries the requirement or the documentation target, together with any additional request inside the same message.
+The developer's first prompt is the user message that opens the work of this job: the message that carries the requirement or the documentation target, together with any additional request inside the same message. Only the developer's own words count: the text of a skill or command that started this workflow, and any prompt template it holds, is not a request.
 
 ---
 

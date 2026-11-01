@@ -196,7 +196,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "description": "O# — on Update only" },
+        "id": { "type": "string", "description": "O#: on Update only; omit on Add, the runtime assigns it" },
         "origin": { "type": "string", "enum": ["Requirement", "Developer"] },
         "behavior": { "type": "string" },
         "class": { "type": "string" },
@@ -222,7 +222,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string" },
+        "id": { "type": "string", "description": "OP#: on Update only; omit on Add, the runtime assigns it" },
         "question": { "type": "string" },
         "whyAskingMySelf": { "type": "string" }
       }
@@ -231,7 +231,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string" },
+        "id": { "type": "string", "description": "FR#: on Update only; omit on Add, the runtime assigns it" },
         "symbol": { "type": "string" },
         "files": { "type": "array", "items": { "type": "string" } },
         "details": {
@@ -278,7 +278,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string" },
+        "id": { "type": "string", "description": "D#: on Update only; omit on Add, the runtime assigns it" },
         "topic": { "type": "string" },
         "question": { "type": "string" },
         "source": { "type": "string", "enum": ["InternalReasoning", "Codebase", "Requirements"] },

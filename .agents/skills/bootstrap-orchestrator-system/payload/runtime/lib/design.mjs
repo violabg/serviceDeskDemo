@@ -3,11 +3,11 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
-import { crowdedPlaceholders, overviewFindings, runChecks } from "./checks.mjs";
+import { compactFindings, crowdedPlaceholders, overviewFindings, reportedChecks } from "./checks.mjs";
 import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
 import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./knowledge.mjs";
 import { authorisationOf, isAutomatic, isDone, unmetDependencies, weightOf } from "./plan.mjs";
-import { implementationContext, servedOperation, snapshot, snapshotSelection, verificationView } from "./projections.mjs";
+import { implementationContext, servedOperation, snapshot, snapshotIndex, snapshotSelection, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
 import { RuntimeError, arg, iso, jobFlags, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
@@ -142,7 +142,7 @@ export function rowTool(ctx, tool, args) {
     case "Add": {
       const added = [];
       for (const row of rows) {
-        if (row.id !== undefined) throw new RuntimeError(`${tool} rejected: an Add row carries no id; the runtime assigns ${table.prefix}# ids`);
+        if (row.id !== undefined) throw new RuntimeError(`${tool} rejected: an Add row carries no id; the runtime assigns ${table.prefix}# ids. Nothing was applied: remove id from the Add rows and send them again.`);
         if (tool === "design-file-references") {
           const existing = collection.find((r) => r.symbol === row.symbol);
           if (existing) {
@@ -313,7 +313,7 @@ export function overview(ctx, args) {
   if (request.gaps !== undefined && design.obligations.length === 0) {
     for (const ref of crowdedPlaceholders(gaps)) errors.push({ rule: "overview-gap-placeholders-crowded", element: "gaps", detail: `{{${ref}}} is too close to the next placeholder` });
   }
-  if (errors.length) return { output: linedJson({ status: "Rejected", errors }), exitCode: 1 };
+  if (errors.length) return { output: linedJson({ status: "Rejected", errors: compactFindings(errors) }), exitCode: 1 };
   if (request.currentState !== undefined) design.overview.currentState = request.currentState;
   if (request.gaps !== undefined) design.overview.gaps = request.gaps;
   touch(ctx, design, "updated", "design-overview");
@@ -446,7 +446,7 @@ export function submit(ctx, args) {
     touch(ctx, design, "submitted", `design-submit: +${applied.added.join(",") || "-"} ~${applied.patched.join(",") || "-"} x${applied.deleted.join(",") || "-"}`);
     saveDesign(ctx, design);
   }
-  const findings = runChecks(design);
+  const findings = reportedChecks(design);
   return linedJson({ status: design.status, applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage });
 }
 
@@ -461,7 +461,7 @@ export function checksTool(ctx, args) {
     touch(ctx, design, "resealed", "external edit accepted after review");
     saveDesign(ctx, design);
   }
-  return linedJson(runChecks(design));
+  return linedJson(reportedChecks(design));
 }
 
 function validateDesignShape(design) {
@@ -495,14 +495,15 @@ export function snapshotTool(ctx, args, caller) {
   const ids = arg(args, "ids");
   const selecting = section !== undefined || ids !== undefined;
   const same = `${section !== undefined ? ` --section "${section}"` : ""}${ids !== undefined ? ` --ids ${[ids].flat().join(",")}` : ""}`;
-  return servePart(selecting ? snapshotSelection(snapshot(design), { section, ids }) : snapshot(design), args, {
+  const text = selecting ? snapshotSelection(snapshot(design), { section, ids }) : snapshot(design);
+  const answer = servePart(text, args, {
     ...guard,
     limit: ctx.partLimit,
     starts: (line) => /^## /.test(line) || /^- /.test(line),
-    ...(selecting
-      ? { next: (k) => `call design-snapshot again with the same selection, part ${k} and revision ${design.updatedAt} (CLI: ${jobFlags(args, caller)}${same} --part ${k} --revision ${design.updatedAt}).` }
-      : { hint: "To read one section or item instead, call it with --section Operations or --ids IM3,CT1." }),
+    ...(selecting ? { next: (k) => `call design-snapshot again with the same selection, part ${k} and revision ${design.updatedAt} (CLI: ${jobFlags(args, caller)}${same} --part ${k} --revision ${design.updatedAt}).` } : {}),
   });
+  // A design too long for one answer opens with its index, so a resumed agent does not re-read what it needs no part of.
+  return !selecting && arg(args, "part") === undefined && answer !== text ? snapshotIndex(text, jobFlags(args, caller)) : answer;
 }
 
 export function verificationViewTool(ctx, args, caller) {
@@ -531,7 +532,7 @@ export function approve(ctx, args) {
   if (!/^[A-Za-z0-9_]{1,100}$/.test(request.planName)) {
     throw new RuntimeError(`${tool} rejected: planName must match ^[A-Za-z0-9_]{1,100}$. Provided value: '${request.planName}'.`);
   }
-  const findings = runChecks(design);
+  const findings = reportedChecks(design);
   if (findings.errors.length) {
     return {
       output: linedJson({ status: "Rejected", reason: "the design still has integrity errors; fix them and approve again", errors: findings.errors }),
