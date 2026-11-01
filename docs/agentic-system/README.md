@@ -28,4 +28,4 @@ The runtime needs Node.js. Never edit files under the sessions folder by hand: d
 
 ## Keeping it current
 
-The installation is recorded in the maintenance folder. To change a decision or move to a newer kit, run the `maintain-orchestrator-system` skill in a plain session, not inside one of the roles.
+The installation is recorded in the maintenance folder. To change a decision or move to a newer kit, run the `maintain-orchestrator-system` skill in a plain session, not inside one of the roles. To audit how a session went (token use, adherence to the flow, gaps in the runtime, the knowledge or the issue), run `improve-orchestrator-system` there with the session id.

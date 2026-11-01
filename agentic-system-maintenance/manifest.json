@@ -2,7 +2,7 @@
   "version": 1,
   "kit": {
     "skill": "bootstrap-orchestrator-system",
-    "version": "4.2.0"
+    "version": "4.2.1"
   },
   "appliedOn": "2026-11-01",
   "answersSha256": "f8953ee33c88542f750fa325e81f559c86b347b2ff83a94746a82d449ae9abd8",
@@ -746,7 +746,7 @@
       "customizable": false
     },
     "docs/agentic-system/README.md": {
-      "sha256": "c5520a08cdd408f7defae1ad0ce2d7b7d81479ed82683ecf50db3293eb7d308e",
+      "sha256": "2a8c07745818b6c257edc8a5528b14e5196edef04f869b0ca925114b873d5742",
       "kind": "guide",
       "mode": "file",
       "envs": [],
