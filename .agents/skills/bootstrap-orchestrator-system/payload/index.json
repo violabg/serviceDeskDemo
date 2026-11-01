@@ -285,7 +285,12 @@
       "name": "ask",
       "description": "Project-specific Q&A agent for the application development workflow",
       "invocation": "user",
-      "operations": ["read", "search", "question", "runtime"],
+      "operations": [
+        "read",
+        "search",
+        "question",
+        "runtime"
+      ],
       "delegates": [],
       "file": "agents/ask.agent.md",
       "tokens": [
@@ -310,7 +315,12 @@
       "name": "code-implementor",
       "description": "Generic code implementor subagent. Implements the work unit described in the prompt by creating, modifying and deleting codebase files, following the procedure and the specification the prompt and the served knowledge provide. It writes and runs tests only when the prompt or the served specification asks for tests",
       "invocation": "delegate",
-      "operations": ["read", "write", "terminal", "runtime"],
+      "operations": [
+        "read",
+        "write",
+        "terminal",
+        "runtime"
+      ],
       "delegates": [],
       "file": "agents/code-implementor.agent.md",
       "tokens": [
@@ -330,7 +340,9 @@
       "name": "design-verifier",
       "description": "Design coverage verifier: judges whether the design realizes the requirement, per obligation, and returns a short text report.",
       "invocation": "delegate",
-      "operations": ["runtime"],
+      "operations": [
+        "runtime"
+      ],
       "delegates": [],
       "file": "agents/design-verifier.agent.md",
       "tokens": [
@@ -343,7 +355,11 @@
       "name": "documentation-reviewer",
       "description": "Adversarial documentation reviewer subagent. Reads a produced guide and its entry point, finds unclear or ineffective sections, and fixes them in place.",
       "invocation": "delegate",
-      "operations": ["read", "search", "write"],
+      "operations": [
+        "read",
+        "search",
+        "write"
+      ],
       "delegates": [],
       "file": "agents/documentation-reviewer.agent.md",
       "tokens": []
@@ -352,7 +368,11 @@
       "name": "implementation-verifier",
       "description": "Implementation verifier subagent: judges whether the code produced for a work unit is congruent with its specification, applies the project knowledge and respects the specification it was given. Read-only.",
       "invocation": "delegate",
-      "operations": ["read", "search", "runtime"],
+      "operations": [
+        "read",
+        "search",
+        "runtime"
+      ],
       "delegates": [],
       "file": "agents/implementation-verifier.agent.md",
       "tokens": [
@@ -472,7 +492,9 @@
       "invocation": "user",
       "role": null,
       "dir": "skills/author-repo-skill",
-      "files": ["skills/author-repo-skill/SKILL.md"],
+      "files": [
+        "skills/author-repo-skill/SKILL.md"
+      ],
       "tokens": []
     },
     {
@@ -481,7 +503,9 @@
       "invocation": "user",
       "role": null,
       "dir": "skills/manage-work-item",
-      "files": ["skills/manage-work-item/SKILL.md"],
+      "files": [
+        "skills/manage-work-item/SKILL.md"
+      ],
       "tokens": [
         "work-item-comment-retrieval",
         "work-item-create",
@@ -495,8 +519,13 @@
       "invocation": "user",
       "role": "orchestrator",
       "dir": "skills/plan-bug-from-id",
-      "files": ["skills/plan-bug-from-id/SKILL.md"],
-      "tokens": ["work-item-comment-retrieval", "work-item-retrieval"]
+      "files": [
+        "skills/plan-bug-from-id/SKILL.md"
+      ],
+      "tokens": [
+        "work-item-comment-retrieval",
+        "work-item-retrieval"
+      ]
     },
     {
       "name": "plan-user-story-from-id",
@@ -504,7 +533,9 @@
       "invocation": "user",
       "role": "orchestrator",
       "dir": "skills/plan-user-story-from-id",
-      "files": ["skills/plan-user-story-from-id/SKILL.md"],
+      "files": [
+        "skills/plan-user-story-from-id/SKILL.md"
+      ],
       "tokens": [
         "work-item-batch-retrieval",
         "work-item-comment-retrieval",
@@ -517,7 +548,9 @@
       "invocation": "user",
       "role": null,
       "dir": "skills/user-story-analysis",
-      "files": ["skills/user-story-analysis/SKILL.md"],
+      "files": [
+        "skills/user-story-analysis/SKILL.md"
+      ],
       "tokens": []
     }
   ],
