@@ -137,10 +137,16 @@ function unknownArguments(token, args) {
   return `${token} failed: unknown argument ${unknown.map((name) => `'${name}'`).join(", ")}. Nothing was applied. Arguments: ${allowed.join(", ") || "none"}.`;
 }
 
+// Lab-authored: knowledge has one writer, whatever a role's upstream tool map grants (contracts/knowledge-catalog.md).
+const KNOWLEDGE_WRITES = new Set(["knowledge-create", "knowledge-update"]);
+
 // A role runs only the tokens its contract names (`roles` in the runtime config, rendered by Bootstrap). The
 // roles are named by the agents themselves, so this stops a wrong call, not a hostile one; the client's own tool
 // limits are the stronger layer where it has them. Without a table, nothing is restricted.
 export function roleRefusal(ctx, role, token) {
+  if (role !== undefined && KNOWLEDGE_WRITES.has(token) && role !== "knowledge-builder") {
+    return `'${token}' is not available to the ${role} role, and nothing was applied: only knowledge-builder changes knowledge.`;
+  }
   if (role === undefined || !ctx.roles || !handlers[token]) return null;
   const tokens = ctx.roles[role];
   if (!tokens) return `unknown role '${role}'. Roles: ${Object.keys(ctx.roles).join(", ")}.`;

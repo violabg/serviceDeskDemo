@@ -1,7 +1,7 @@
 // Renders every target file from the payload, the client profiles and the answers. Pure: reads the kit, never the target.
 import { dirname, join, relative } from "node:path";
 import { bindingFor, isLocalTracker, rankSkillFolders, skillFolders, slotValues } from "./answers.mjs";
-import { agentFile, enforcesTools, isRuntimeOnly, permissionOutput } from "./formats.mjs";
+import { agentFile, deniesKnowledgeEdits, enforcesTools, isRuntimeOnly, permissionOutput } from "./formats.mjs";
 import { fillSlots, isOutside, readText, runtimeRelative, splitFrontmatter, yamlFrontmatter } from "./util.mjs";
 
 const DEFAULT_PART_LIMIT = 24000;
@@ -139,6 +139,7 @@ export function render(kit, answers) {
           runtimeCommand,
           runtimeRoot: rt,
           runtimeTokens: role.tokens.filter((t) => index.tokens[t]?.kind === "runtime"),
+          knowledgeRoot: answers.locations.knowledgeRoot,
         });
         add({ ...file, kind: isDelegate ? "delegate" : "role", envs: [env.id] });
       } else {
@@ -172,7 +173,8 @@ export function render(kit, answers) {
     if (profile.scopedInstructions) {
       add({ path: `${profile.scopedInstructions.dir}/sessions.instructions.md`, kind: "instruction", envs: [env.id], content: fillSlots(payload("instructions/sessions.instructions.md"), slots) });
     }
-    const permission = permissionOutput(env, runtimeCommand, outsidePaths);
+    const permission = permissionOutput(env, runtimeCommand, outsidePaths, answers.locations.knowledgeRoot);
+    if (!deniesKnowledgeEdits(env)) warnings.push(`${env.id}: no path deny is rendered for the knowledge folder on ${profile.label}; a direct edit is caught only when the runtime refuses the next workflow step`);
     if (permission) add({ ...permission, kind: "permissions", envs: [env.id] });
     else warnings.push(`${env.id}: ${profile.label} has no project permission file; approve the runtime command${outsidePaths.length ? " and the outside sessions folder" : ""} on first use and record it`);
   }

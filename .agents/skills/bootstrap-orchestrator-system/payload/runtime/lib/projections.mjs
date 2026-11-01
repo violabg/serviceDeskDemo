@@ -68,6 +68,10 @@ function decisionsSection(design, out) {
   }
 }
 
+const obligationRows = (design) =>
+  design.obligations.map((o) => `- ${o.id} | ${lower(o.origin ?? "Requirement")} | ${oneLine(o.behavior)} | class: ${oneLine(o.class)} | boundaries: ${oneLine(o.boundaries)} | source: ${oneLine(o.sourceRef)} | ${elementsLine(o)}`);
+const openPointRows = (design) => design.openPoints.map((op) => `- ${op.id} | ${oneLine(op.question)} | why: ${oneLine(op.whyAskingMySelf)}`);
+
 export function snapshot(design) {
   const { coverage } = runChecks(design);
   const p = design.path;
@@ -83,12 +87,8 @@ export function snapshot(design) {
   out.push("", "## Overview");
   out.push(`- current codebase: ${oneLine(design.overview.currentState) || "(not recorded)"}`);
   out.push(`- gaps: ${oneLine(design.overview.gaps) || "(not recorded)"}`);
-  out.push("", "## Obligations");
-  for (const o of design.obligations) {
-    out.push(`- ${o.id} | ${lower(o.origin ?? "Requirement")} | ${oneLine(o.behavior)} | class: ${oneLine(o.class)} | boundaries: ${oneLine(o.boundaries)} | source: ${oneLine(o.sourceRef)} | ${elementsLine(o)}`);
-  }
-  out.push("", "## Open points");
-  for (const op of design.openPoints) out.push(`- ${op.id} | ${oneLine(op.question)} | why: ${oneLine(op.whyAskingMySelf)}`);
+  out.push("", "## Obligations", ...obligationRows(design));
+  out.push("", "## Open points", ...openPointRows(design));
   fileReferencesSection(design, out);
   out.push("", "## Knowledge references");
   for (const k of design.knowledgeReferences ?? []) {
@@ -305,8 +305,10 @@ function contextDecisions(design, out) {
 // The implementor's projection (captured shape): the file references split by scope, then the contracts, the
 // public APIs, the filesystem and the decisions, without any operation, obligation or knowledge reference. The
 // operations arrive one at a time from design-implementation-operation, so the future stays masked.
-export function implementationContext(design) {
+// `withRequirement`: a FAST_IMPLEMENTATION job has no operations, so its obligations are the implementor's specification.
+export function implementationContext(design, { withRequirement = false } = {}) {
   const out = [`# DESIGN SNAPSHOT — ${design.path.title || "(untitled)"}`];
+  if (withRequirement) out.push("## Obligations", ...obligationRows(design), "", "## Open points", ...openPointRows(design), "");
   for (const [heading, scope] of [["File references for the code", "Production"], ["File references for the tests", "Test"]]) {
     const rows = design.fileReferences.filter((fr) => (fr.scope ?? "Production") === scope);
     if (scope === "Test") out.push("");

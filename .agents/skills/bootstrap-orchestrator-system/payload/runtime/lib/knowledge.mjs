@@ -5,7 +5,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { knowledgeReads, recordKnowledgeReads } from "./session.mjs";
-import { RuntimeError, arg, frontmatter, parseFrontmatter, requireString, servePart, writeText } from "./util.mjs";
+import { RuntimeError, arg, frontmatter, parseFrontmatter, readJson, requireString, servePart, sha256, writeJson, writeText } from "./util.mjs";
 
 const TIERS = {
   MustHave: "Mandatory knowledges for the project. Agent must always apply them",
@@ -186,6 +186,41 @@ export function designGrounding(ctx, design) {
   });
 }
 
+// --- who changed the knowledge (contracts/knowledge-catalog.md, guard) ----------------------------------------
+
+// Every file under the knowledge root except dotfiles (a client's or an OS's own), catalogued or not: path to hash.
+export function knowledgeHashes(ctx) {
+  const hashes = {};
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir).sort()) {
+      if (entry.startsWith(".")) continue;
+      const path = join(dir, entry);
+      if (statSync(path).isDirectory()) walk(path);
+      else hashes[relative(ctx.knowledgeRoot, path).split("\\").join("/")] = sha256(readFileSync(path));
+    }
+  };
+  if (existsSync(ctx.knowledgeRoot)) walk(ctx.knowledgeRoot);
+  return hashes;
+}
+
+// Lab-authored: beside the sessions, not in the cache, because clearing a cache must not disown the runtime's writes.
+const writesPath = (ctx) => join(ctx.sessionsRoot, "knowledge-writes.json");
+
+function recordWrite(ctx, path) {
+  const file = relative(ctx.knowledgeRoot, path).split("\\").join("/");
+  writeJson(writesPath(ctx), { ...readJson(writesPath(ctx), {}), [file]: sha256(readFileSync(path)) });
+}
+
+// The paths that differ from the baseline and are not what knowledge-create or knowledge-update last left there,
+// and the paths the baseline had that are gone.
+export function knowledgeChangedOutsideRuntime(ctx, baseline) {
+  const now = knowledgeHashes(ctx);
+  const writes = readJson(writesPath(ctx), {});
+  const changed = Object.keys(now).filter((path) => now[path] !== baseline[path] && now[path] !== writes[path]);
+  const deleted = Object.keys(baseline).filter((path) => !(path in now));
+  return [...changed, ...deleted].sort();
+}
+
 function slug(title) {
   return title.replace(/[^A-Za-z0-9_]/g, "_").replace(/_+/g, "_").slice(0, 60);
 }
@@ -201,6 +236,7 @@ export function create(ctx, args) {
   if (existsSync(path)) throw new RuntimeError(`${tool} failed: a knowledge document already exists at ${relative(ctx.knowledgeRoot, path)}; use knowledge-update.`);
   const keywords = arg(args, "keywords");
   writeText(path, frontmatter({ title, tier, keywords, intent: arg(args, "intent") ?? "", editable: true }) + content.trimEnd() + "\n");
+  recordWrite(ctx, path);
   const entry = buildCatalog(ctx).find((e) => join(ctx.knowledgeRoot, e.path) === path);
   writeIndex(ctx, buildCatalog(ctx));
   return `Knowledge created: file_id ${entry?.file_id ?? "?"} (${relative(ctx.knowledgeRoot, path)}).`;
@@ -217,6 +253,7 @@ export function update(ctx, args) {
   const { data } = parseFrontmatter(readFileSync(path, "utf8"));
   const intent = arg(args, "intent") ?? data.intent;
   writeText(path, frontmatter({ ...data, intent }) + content.trimEnd() + "\n");
+  recordWrite(ctx, path);
   writeIndex(ctx, buildCatalog(ctx));
   return `Knowledge updated: file_id ${id} (${entry.path}).`;
 }

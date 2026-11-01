@@ -3,16 +3,21 @@
 import { InstallError, tomlMultiline, tomlString, yamlFrontmatter } from "./util.mjs";
 
 const has = (role, op) => role.operations.includes(op);
+const cleanRoot = (root) => root.replace(/^\.\//, "").replace(/\/+$/, "");
+
+// Whether this client's files deny direct edits of the knowledge folder (contracts/knowledge-catalog.md, guard).
+export const deniesKnowledgeEdits = (env) => env.profile.agents.format === "opencode" || env.profile.permissions.format === "claude-settings";
 
 // OpenCode expresses tool access as permissions; every key a role does not need is denied.
-function opencodePermission(role, runtimeCommand, delegates, runtimeTokens) {
+function opencodePermission(role, runtimeCommand, delegates, runtimeTokens, knowledgeRoot) {
   const allow = (cond) => (cond ? "allow" : "deny");
   const permission = {
     read: allow(has(role, "read")),
     grep: allow(has(role, "search")),
     glob: allow(has(role, "search")),
     list: allow(has(role, "search")),
-    edit: allow(has(role, "write")),
+    // Agent rules take precedence over the global config and the last matching rule wins, so the deny goes here, last.
+    edit: has(role, "write") ? { "*": "allow", [`${cleanRoot(knowledgeRoot)}/**`]: "deny" } : "deny",
     bash: has(role, "terminal") ? "allow" : has(role, "runtime") ? { "*": "deny", ...Object.fromEntries(runtimeTokens.map((token) => [`${runtimeCommand} ${token} *`, "allow"])) } : "deny",
     question: allow(has(role, "question")),
     task: delegates.length ? { "*": "deny", ...Object.fromEntries(delegates.map((d) => [d, "allow"])) } : "deny",
@@ -29,7 +34,7 @@ function claudeRoleHook(role, runtimeRoot) {
 export const isRuntimeOnly = (role) => has(role, "runtime") && !has(role, "terminal");
 
 export function agentFile(env, spec) {
-  const { role, name, description, body, tools, delegates, isDelegate, runtimeCommand, runtimeRoot, runtimeTokens } = spec;
+  const { role, name, description, body, tools, delegates, isDelegate, runtimeCommand, runtimeRoot, runtimeTokens, knowledgeRoot } = spec;
   const dir = env.profile.agents.dir;
   switch (env.profile.agents.format) {
     case "claude":
@@ -54,7 +59,7 @@ export function agentFile(env, spec) {
             description,
             mode: isDelegate ? "subagent" : "primary",
             hidden: isDelegate ? true : undefined,
-            permission: opencodePermission(role, runtimeCommand, delegates, runtimeTokens),
+            permission: opencodePermission(role, runtimeCommand, delegates, runtimeTokens, knowledgeRoot),
           }) + body,
       };
     case "cursor": {
@@ -78,7 +83,7 @@ export const enforcesTools = (env) => ["claude", "copilot", "opencode"].includes
 
 // The settings that let the roles run the runtime command and reach locations outside the repository.
 // Returns null when the client has no project permission file (approve on first use; recorded by Bootstrap).
-export function permissionOutput(env, runtimeCommand, outsidePaths) {
+export function permissionOutput(env, runtimeCommand, outsidePaths, knowledgeRoot) {
   const { format, file } = env.profile.permissions;
   const prune = (object) => JSON.parse(JSON.stringify(object));
   switch (format) {
@@ -86,7 +91,7 @@ export function permissionOutput(env, runtimeCommand, outsidePaths) {
       return {
         mode: "json-merge",
         path: file,
-        add: prune({ permissions: { allow: [`Bash(${runtimeCommand} *)`], additionalDirectories: outsidePaths.length ? outsidePaths : undefined } }),
+        add: prune({ permissions: { allow: [`Bash(${runtimeCommand} *)`], deny: [`Edit(/${cleanRoot(knowledgeRoot)}/**)`], additionalDirectories: outsidePaths.length ? outsidePaths : undefined } }),
       };
     case "vscode-settings":
       return { mode: "json-merge", path: file, add: { "chat.tools.terminal.autoApprove": { [runtimeCommand]: true } } };

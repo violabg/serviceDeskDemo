@@ -2,6 +2,16 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 5.0.0
+
+Only `knowledge-builder` changes knowledge. This changes what a target may do, so it is a major version; the answers do not change.
+
+- Every new job records a hash of the knowledge folder, in all three workflows. `workflow-step-next` refuses without advancing when a file changed outside `knowledge-create` and `knowledge-update`. A developer's hand edit, or a merge that changes knowledge during a job, is refused too: restore it, or apply it through `knowledge-builder`. Jobs that already exist are not checked.
+- `knowledge-create` and `knowledge-update` refuse every other named role. `ask` no longer holds them.
+- Claude Code gets a project `permissions.deny` rule on the knowledge folder, which also applies to a developer's other Claude Code sessions in that repository. OpenCode roles get an `edit` deny. Other clients get no path deny, and the installer warns about it.
+- On FAST_IMPLEMENTATION, `design-implementation-context` also serves the obligations and open points, so the implementor can read its specification after `design-snapshot` is refused.
+- A target that kept a local patch for the knowledge check drops it on upgrade. The patch's writes in the cache are not read: finish or restart a job that ran across `knowledge-builder` writes.
+
 ## 4.2.2
 
 - The call the runtime prints for a later part now runs as printed: it names `--sessionId`, `--jobId` and the caller's `--role`. Following the old form was refused with `'sessionId' is required`.

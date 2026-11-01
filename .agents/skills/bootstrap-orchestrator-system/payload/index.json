@@ -141,7 +141,7 @@
     },
     "design-implementation-context": {
       "kind": "runtime",
-      "summary": "Return the implementor's projection of the design — contracts, filesystem, decisions and file references, never an operation.",
+      "summary": "Return the implementor's projection of the design — contracts, filesystem, decisions and file references, never an operation; on a FAST_IMPLEMENTATION job also the obligations and open points.",
       "fallback": "contracts/projections.md#implementation-context"
     },
     "design-implementation-operation": {
@@ -295,10 +295,8 @@
       "file": "agents/ask.agent.md",
       "tokens": [
         "knowledge-catalog",
-        "knowledge-create",
         "knowledge-index-rebuild",
         "knowledge-read",
-        "knowledge-update",
         "session-activate",
         "session-artifact-list",
         "session-artifact-read",

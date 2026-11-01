@@ -33,6 +33,7 @@ Repository skills live in `{{SKILL_ROOT}}`. Read a skill's `SKILL.md` before run
 
 - Read the knowledge catalogue with `#capability:knowledge-catalog`. Every `MustHave` document is read in full; `PerContext` and `PerComponent` documents are read when the work touches them.
 - Knowledge documents live in `{{KNOWLEDGE_ROOT}}`. Resolve repository vocabulary in `{{CONTEXT_GLOSSARY_PATH}}`.
+- Only `knowledge-builder` changes knowledge. No workflow and no delegate creates, edits or deletes a file in `{{KNOWLEDGE_ROOT}}`, in a correction round either. A knowledge statement the work made stale is never fixed in place: report it to the developer, who takes it to `knowledge-builder`.
 
 ## Validation
 

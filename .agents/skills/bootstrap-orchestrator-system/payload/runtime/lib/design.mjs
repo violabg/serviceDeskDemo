@@ -565,9 +565,9 @@ export function operationStatus(ctx, args) {
 
 export function implementationContextTool(ctx, args, caller) {
   const tool = "design-implementation-context";
-  const { design } = jobDesign(ctx, args, tool);
+  const { job, design } = jobDesign(ctx, args, tool);
   // Parts start at a section heading or at an item, so a row is never split.
-  return servePart(implementationContext(design), args, {
+  return servePart(implementationContext(design, { withRequirement: job.workflowType === "FAST_IMPLEMENTATION" }), args, {
     ...revisionGuard(design, args, tool, caller),
     limit: ctx.partLimit,
     starts: (line) => /^## /.test(line) || /^- /.test(line),

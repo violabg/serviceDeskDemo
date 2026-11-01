@@ -7,9 +7,10 @@
         "https://code.claude.com/docs/en/sub-agents",
         "https://code.claude.com/docs/en/skills",
         "https://code.claude.com/docs/en/settings",
+        "https://code.claude.com/docs/en/permissions",
         "https://code.claude.com/docs/en/memory"
       ],
-      "checkedOn": "2026-10-31",
+      "checkedOn": "2026-11-01",
       "router": {
         "file": "CLAUDE.md",
         "import": "@AGENTS.md"
@@ -223,7 +224,7 @@
         "https://opencode.ai/docs/permissions/",
         "https://opencode.ai/docs/rules/"
       ],
-      "checkedOn": "2026-10-31",
+      "checkedOn": "2026-11-01",
       "router": {
         "file": "AGENTS.md",
         "import": null

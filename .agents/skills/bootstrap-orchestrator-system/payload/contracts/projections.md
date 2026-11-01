@@ -56,7 +56,11 @@ On a FAST_IMPLEMENTATION job the snapshot projects its job design (obligations, 
 - D1 | codebase | highlight: true | topic: ...
 ```
 
-The file references are split by scope (`Production` rows for the code, `Test` rows for the tests); every section is printed, empty or not, with a blank line before each heading. A decision is projected with its id, source, highlight and topic only: the implementor needs to know which decision a piece of code realizes, not to re-read its options. It deliberately carries no operation, no obligation and no knowledge reference: operations are served one at a time by `#capability:design-implementation-operation`, each with the text of its own knowledge references. A long context is served in parts that start at a section heading or an item.
+The file references are split by scope (`Production` rows for the code, `Test` rows for the tests); every section is printed, empty or not, with a blank line before each heading. A decision is projected with its id, source, highlight and topic only: the implementor needs to know which decision a piece of code realizes, not to re-read its options. It deliberately carries no operation, no obligation and no knowledge reference: operations are served one at a time by `#capability:design-implementation-operation`, each with the text of its own knowledge references.
+
+Lab-authored: on a FAST_IMPLEMENTATION job, which has no operations, the context starts with `## Obligations` and `## Open points`, in the rows of the snapshot, because they are the implementor's specification and `#capability:design-snapshot` is not available to that role. A DESIGN job's context never carries them.
+
+A long context is served in parts that start at a section heading or an item.
 
 The heading, the section order and the rows follow the 3.0.1 run-3 capture, taken against a populated design. Its contract also lists the overview, obligations and open points among the sections, but its response has none of them; the response is followed. Its note says the heading is `(untitled)` whatever the design title is, but the captured design has no title, so the note is unverified and the runtime keeps printing the title. Lab-authored: the `## Public APIs` row, which the capture shows only empty.
 
