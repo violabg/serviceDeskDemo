@@ -25,7 +25,7 @@ The orchestrator always asks which workflow you want when you have not said it, 
 What Bootstrap verified for this client:
 
 - Workflow skills: `.claude/skills`, reached natively (the documented project folder; verified by name in headless claude -p (2026-10-31, kit 3.0.1)).
-- static install and runtime (verify.mjs): verified-native (no drift, runtime serves the three workflows, sessions folder reachable (2026-10-31, kit 4.1.0))
+- static install and runtime (verify.mjs): verified-native (no drift, runtime serves the three workflows, sessions folder reachable (2026-11-01, kit 4.2.0))
 - work item read (issue_read get/get_labels/get_comments): verified-fallback (exercised in the VS Code extension from the Bootstrap session on #6, not yet from inside sd-orchestrator)
 - session created through the runtime from the role: verified-native (headless claude -p: /sd-orchestrator created a disposable session, removed afterwards; IDE surface not exercised (2026-10-31, kit 4.1.0))
 - delegate runs in its own context (sd-design-verifier): verified-native (headless claude -p: the delegate ran and returned its own report (2026-10-31, kit 4.1.0))
@@ -36,3 +36,4 @@ What Bootstrap verified for this client:
 - shared skill /plan-bug-from-id: verified-native (invoked by name in headless claude -p (2026-10-31, kit 3.0.1); hidden from the model by disable-model-invocation, as intended)
 - orchestrator starts via /sd-orchestrator and asks for the workflow type: verified-native (headless claude -p; IDE surface not exercised (2026-10-31, kit 4.1.0))
 - runtime-only delegate is refused outside its role: verified-fallback (in claude -p the delegate declined design-approve by its instructions, so the hook did not fire; role-guard.mjs run directly blocks another role command, chaining, pipes and a command after a heredoc, and allows its own command and a heredoc. A 6-part knowledge-read reached the shell part by part, run directly rather than through a delegate (2026-10-31, kit 4.1.0))
+- plan-bug-from-id loads the orchestrator with no role selected: verified-native (headless claude -p with a work item id: read .claude/skills/sd-orchestrator/SKILL.md, then listed sessions and workflows and asked for a session; no session created; IDE surface not exercised (2026-11-01, kit 4.2.0))

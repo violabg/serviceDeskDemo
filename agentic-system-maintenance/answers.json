@@ -106,7 +106,7 @@
       "verification": {
         "static install and runtime (verify.mjs)": {
           "status": "verified-native",
-          "note": "no drift, runtime serves the three workflows, sessions folder reachable (2026-10-31, kit 4.1.0)"
+          "note": "no drift, runtime serves the three workflows, sessions folder reachable (2026-11-01, kit 4.2.0)"
         },
         "work item read (issue_read get/get_labels/get_comments)": {
           "status": "verified-fallback",
@@ -147,6 +147,10 @@
         "runtime-only delegate is refused outside its role": {
           "status": "verified-fallback",
           "note": "in claude -p the delegate declined design-approve by its instructions, so the hook did not fire; role-guard.mjs run directly blocks another role command, chaining, pipes and a command after a heredoc, and allows its own command and a heredoc. A 6-part knowledge-read reached the shell part by part, run directly rather than through a delegate (2026-10-31, kit 4.1.0)"
+        },
+        "plan-bug-from-id loads the orchestrator with no role selected": {
+          "status": "verified-native",
+          "note": "headless claude -p with a work item id: read .claude/skills/sd-orchestrator/SKILL.md, then listed sessions and workflows and asked for a session; no session created; IDE surface not exercised (2026-11-01, kit 4.2.0)"
         }
       }
     },
@@ -295,6 +299,10 @@
         "CLI: skills resolve to the one .claude/skills copy": {
           "status": "verified-native",
           "note": "copilot skill list shows each workflow and role skill once (2026-10-31, kit 4.1.0)"
+        },
+        "CLI: plan-bug-from-id loads the orchestrator with no agent selected": {
+          "status": "verified-fallback",
+          "note": "copilot -p with no --agent and a work item id: read .github/agents/sd-orchestrator.agent.md and continued to the session question; no session created. In a run without an id, the model found the slash name by file search, so native skill resolution under -p is not proven, and it stopped on the missing id before loading the contract; interactive CLI and VS Code not exercised (2026-11-01, kit 4.2.0)"
         }
       }
     },
@@ -403,6 +411,10 @@
         "roles and runtime on kit 4.1.0": {
           "status": "unverified",
           "note": "not run: re-verification was limited to Claude Code and Copilot CLI; the other OpenCode results are from older kits (2026-10-31, kit 4.1.0)"
+        },
+        "plan-user-story-from-id loads the orchestrator from the default agent": {
+          "status": "verified-fallback",
+          "note": "opencode run under the build agent with a prompt to read the skill: read .opencode/agents/sd-orchestrator.md and continued to the session question; no session created; the TUI and the plan-* commands not exercised (2026-11-01, kit 4.2.0)"
         }
       }
     }

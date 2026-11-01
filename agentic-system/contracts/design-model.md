@@ -8,7 +8,6 @@ A DESIGN job produces one design; a FAST_IMPLEMENTATION job keeps its obligation
 | --- | --- |
 | `design.json` | the structured design (this contract) |
 | `design.integrity.json` | the hash of the last runtime write; a mismatch means `design.json` was edited outside the runtime |
-| `snapshot.md`, `verification-view.md` | the projections (contracts/projections.md), regenerated on every write |
 | `design.html` | the review document, regenerated on every write |
 | `iterations/IT<n>.snapshot.json` | the workspace snapshot taken when an iteration opens |
 
@@ -119,6 +118,8 @@ When the design carries obligations, the write is refused unless `gaps` anchors 
 Response: `{"status": "Draft", "currentState": true, "gaps": true}`, or `{"status": "Rejected", "errors": [ { "rule", "element", "detail" } ]}`.
 
 ## design-submit
+
+A row or a request property the schema does not know is refused with the captured `the JSON property '<name>' could not be mapped`; the Lab-authored rest of that sentence names the properties allowed there, so one retry is enough.
 
 `#capability:design-submit` — arguments `sessionId`, `jobId`, `request`:
 

@@ -1,7 +1,7 @@
-// Markdown projections of the design (contracts/projections.md). They are regenerated on every write.
+// Markdown projections of the design (contracts/projections.md), built from the design on each call.
 import { isHighlighted, placeholders, runChecks } from "./checks.mjs";
 import { weightOf } from "./plan.mjs";
-import { shortTime } from "./util.mjs";
+import { RuntimeError, shortTime } from "./util.mjs";
 
 const lower = (value) => (value ?? "").toString().toLowerCase();
 const join = (items) => (items?.length ? items.join(", ") : "none");
@@ -120,6 +120,39 @@ export function snapshot(design) {
   return `${out.join("\n")}\n`;
 }
 
+// Lab-authored: part of the snapshot, by section and by item id, read from the snapshot itself so a row reads the same
+// either way. A row's id is its first field (`IM3`, `CT1`, `kid 7`). A selection that finds nothing refuses, naming
+// what exists, and an id that is missing is reported beside the rows that were found.
+const listOf = (value) => [value].flat().flatMap((item) => String(item).split(",")).map((item) => item.trim()).filter(Boolean);
+
+export function snapshotSelection(text, { section, ids }) {
+  const [head, ...blocks] = text.replace(/\n+$/, "").split(/\n(?=## )/);
+  const sections = blocks.map((block) => {
+    const [heading, ...rows] = block.split("\n");
+    return { name: heading.slice(3), rows: rows.filter(Boolean) };
+  });
+  const wanted = section === undefined ? null : listOf(section).map((name) => name.toLowerCase());
+  const unknown = (wanted ?? []).filter((name) => !sections.some((s) => s.name.toLowerCase() === name));
+  if (unknown.length) throw new RuntimeError(`design-snapshot failed: no section '${unknown.join("', '")}'. Sections: ${sections.map((s) => s.name).join(", ")}.`);
+  const items = ids === undefined ? null : listOf(ids).map((id) => id.toLowerCase());
+  const found = new Set();
+  const out = [head.trimEnd()];
+  for (const s of sections) {
+    if (wanted && !wanted.includes(s.name.toLowerCase())) continue;
+    const rows = items === null ? s.rows : s.rows.filter((row) => {
+      const id = row.slice(2).split(" | ")[0].trim().toLowerCase();
+      if (!row.startsWith("- ") || !items.includes(id)) return false;
+      found.add(id);
+      return true;
+    });
+    if (items === null || rows.length) out.push("", `## ${s.name}`, ...rows);
+  }
+  const missing = (items ?? []).filter((id) => !found.has(id));
+  if (items && found.size === 0) throw new RuntimeError(`design-snapshot failed: no item '${missing.join("', '")}'${wanted ? " in that section" : ""}. A row's id is its first field: O1, OP1, FR1, kid 1, CT1, API1, FS1, IM1, D1, IT1.`);
+  if (missing.length) out.push("", `Not found: ${missing.join(", ")}.`);
+  return `${out.join("\n")}\n`;
+}
+
 // The text each of the given anchors owns in an operation's instructions: from its placeholder to the next
 // placeholder. Instructions that name none of the anchors are returned whole.
 function mechanisms(instructions, refs) {
@@ -149,7 +182,7 @@ export function verificationView(design, grounding = []) {
     const ids = grounding.map((k) => k.file_id).join(",");
     out.push("", `Read every document above before judging: call knowledge-read with these file ids and this session (CLI: --fileIds ${ids} --sessionId ${design.sessionId}) and follow its parts.`);
   }
-  out.push("");
+  out.push("", "Under each obligation, mechanisms shows the text that addresses it. Its failure arms, contracts and files are under Operations, and its decisions under Decisions.", "");
   const addressing = new Set();
   for (const obligation of design.obligations) {
     const refs = new Set([obligation.id, ...(obligation.elements ?? []).map((e) => `${obligation.id}.${e.id}`)]);
@@ -165,7 +198,7 @@ export function verificationView(design, grounding = []) {
     out.push("- required elements:");
     for (const e of obligation.elements ?? []) out.push(`  - ${obligation.id}.${e.id} (${lower(e.kind)}) ${oneLine(e.text)}`);
     if (!obligation.elements?.length) out.push("  - none");
-    out.push("- mechanisms (failure arms, contracts, files and decisions under Operations and Decisions):");
+    out.push("- mechanisms:");
     if (operations.length === 0) out.push("  - none");
     for (const op of operations) {
       addressing.add(op.id);
@@ -215,6 +248,15 @@ export function verificationView(design, grounding = []) {
   if (looseFiles.length) {
     out.push("# Files in no operation", "");
     for (const f of looseFiles) out.push(`- ${f.path} (${lower(f.status)}): ${oneLine(f.change)}`);
+    out.push("");
+  }
+  // Lab-authored, like the two sections above: the verifier reads the documents whole, and only this says which of
+  // the prescriptions the design registered as applying no operation carries.
+  const citing = p.operations.flatMap((op) => [...(op.knowledgeReferences ?? []), ...(op.source === "Knowledge" ? [String(op.sourceRef ?? "").trim()] : [])]).map(String);
+  const looseKnowledge = (design.knowledgeReferences ?? []).filter((r) => !citing.includes(String(r.kid)));
+  if (looseKnowledge.length) {
+    out.push("# Knowledge references in no operation", "", "The design registered these prescriptions as applying to it, and no operation cites them.", "");
+    for (const r of looseKnowledge) out.push(`- ${r.filePath ?? "(no file)"} lines ${r.range?.s}–${r.range?.e} (${lower(r.scope ?? "Production")})`);
     out.push("");
   }
   if (p.apis.length) {

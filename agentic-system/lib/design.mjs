@@ -7,7 +7,7 @@ import { crowdedPlaceholders, overviewFindings, runChecks } from "./checks.mjs";
 import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
 import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./knowledge.mjs";
 import { authorisationOf, isAutomatic, isDone, unmetDependencies, weightOf } from "./plan.mjs";
-import { implementationContext, servedOperation, snapshot, verificationView } from "./projections.mjs";
+import { implementationContext, servedOperation, snapshot, snapshotSelection, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
 import { RuntimeError, arg, iso, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
@@ -356,7 +356,7 @@ export function submit(ctx, args) {
   check(ctx, null, { sessionId: arg(args, "sessionId"), jobId: arg(args, "jobId"), request: Object.fromEntries(Object.entries(envelope).filter(([, v]) => v !== undefined)) }, tool);
   for (const key of Object.keys(request)) {
     if (!["header", "add", "patch", "delete"].includes(key)) {
-      throw new RuntimeError(`${tool} rejected`, { status: "Rejected", errors: [{ rule: "invalid-request", element: tool, detail: `/request/${key}: the JSON property '${key}' could not be mapped` }] });
+      throw new RuntimeError(`${tool} rejected`, { status: "Rejected", errors: [{ rule: "invalid-request", element: tool, detail: `/request/${key}: the JSON property '${key}' could not be mapped; the allowed properties are header, add, patch, delete` }] });
     }
   }
   const applied = { added: [], patched: [], deleted: [] };
@@ -388,7 +388,7 @@ export function submit(ctx, args) {
     for (const [table, rows] of Object.entries(block)) {
       const spec = SUBMIT_TABLES[table];
       if (!spec) {
-        rejected.push({ path: `${mode}.${table}`, id: null, reason: `the JSON property '${table}' could not be mapped` });
+        rejected.push({ path: `${mode}.${table}`, id: null, reason: `the JSON property '${table}' could not be mapped; the allowed properties are ${Object.keys(SUBMIT_TABLES).join(", ")}` });
         continue;
       }
       const accepted = [];
@@ -490,10 +490,18 @@ export function snapshotTool(ctx, args) {
   }
   // Parts start at a section heading or at an item, so a row is never split.
   const design = loadDesign(ctx, job.sessionId, job.designId);
-  return servePart(snapshot(design), args, {
-    ...revisionGuard(design, args, "design-snapshot"),
+  const guard = revisionGuard(design, args, "design-snapshot");
+  const section = arg(args, "section");
+  const ids = arg(args, "ids");
+  const selecting = section !== undefined || ids !== undefined;
+  const same = `${section !== undefined ? ` --section "${section}"` : ""}${ids !== undefined ? ` --ids ${[ids].flat().join(",")}` : ""}`;
+  return servePart(selecting ? snapshotSelection(snapshot(design), { section, ids }) : snapshot(design), args, {
+    ...guard,
     limit: ctx.partLimit,
     starts: (line) => /^## /.test(line) || /^- /.test(line),
+    ...(selecting
+      ? { next: (k) => `call design-snapshot again with the same selection, part ${k} and revision ${design.updatedAt} (CLI:${same} --part ${k} --revision ${design.updatedAt}).` }
+      : { hint: "To read one section or item instead, call it with --section Operations or --ids IM3,CT1." }),
   });
 }
 

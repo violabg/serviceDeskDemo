@@ -26,7 +26,7 @@ Write `sessions/<sessionId>/jobs/<jobId>.json`:
 ```json
 { "jobId": "...", "sessionId": "...", "agentName": "orchestrator", "workflowType": "DESIGN",
   "designId": "...", "steps": ["shared/01-user-instruction-space", "design/02-image-intake", "..."],
-  "currentStep": 0, "delegates": {}, "createdAt": "..." }
+  "currentStep": 0, "createdAt": "..." }
 ```
 
 - `steps` is the ordered list of the type in `workflow-types.yaml`, frozen into the job.
@@ -73,6 +73,8 @@ Structured answers are written as lined JSON (`linedJson` in `runtime/lib/util.m
 The CLI takes every value after a flag up to the next flag, and a repeated flag adds to the earlier values: `--fileIds 6 11`, `--fileIds 6 --fileIds 11` and `--fileIds 6,11` are the same call. `--json` takes exactly one value: a file path, `-` for stdin, or one quoted JSON object inline, up to 2,000 characters (Lab-authored: every verifier of one test session sent inline JSON first and spent a turn on the error). A value it cannot read or parse is a usage error with exit code 2 that names the accepted forms.
 
 **Arguments.** Only the design operations that write or act on the design take `{ "sessionId", "jobId", "request": { ... } }`: `design-obligations`, `design-open-points`, `design-file-references`, `design-decisions`, `design-knowledge-references`, `design-overview`, `design-submit`, `design-approve`, `design-operation-status`, `design-iteration-open` and `design-iteration-close` (`REQUEST_TOKENS` in `runtime/lib/api.mjs`). Every other operation takes its arguments at the top level. When one of those is sent a `request` object anyway, its fields are read as top-level arguments, and a top-level value wins (Lab-authored: agents carry the design envelope over to every call). `node agentic-system.mjs <token> --help` prints the token's argument shape and its definition from these contracts. `node agentic-system.mjs --help` lists the arguments of every command in one answer, one line each, and `--role <role>` limits the list to that role's commands (Lab-authored: `commandArguments` in `runtime/lib/help.mjs`, so an agent does not spend a turn probing each command).
+
+**Field definitions.** Upstream takes the shape of a design submission from the argument descriptions its server gives the client. A command line has no such channel, so `<token> --help` on a design operation that takes `request` prints every field of it from the schema the runtime validates by: name, `*` when required, type or allowed values, description and first example, then the fields of each kind of row it holds (Lab-authored; the descriptions themselves were not captured, so this is the schema's own text). After them comes the operation's definition from these contracts. A client tool asked of the runtime (`work-item-retrieval`) is answered as a client tool.
 
 An argument the token does not define is refused and applies nothing, as in the captured tool-call contract (`ARGUMENTS` in `runtime/lib/api.mjs`). The envelope fields `sessionId`, `jobId` and `request` are never unknown: they are ignored or unwrapped where they mean nothing. `session-memory-append` and `session-event-log` take their text under any field name, so they check nothing.
 

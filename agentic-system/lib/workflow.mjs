@@ -7,7 +7,7 @@ import { readArtifactBody, requireSession } from "./session.mjs";
 import { RuntimeError, arg, iso, readJson, requireId, requireString, servePart, writeJson } from "./util.mjs";
 
 // workflow-types.yaml is generated with a fixed, simple shape; this reader accepts exactly that shape.
-export function loadWorkflowTypes(ctx) {
+function loadWorkflowTypes(ctx) {
   const path = join(ctx.workflowsRoot, "workflow-types.yaml");
   if (!existsSync(path)) throw new RuntimeError(`workflow files are missing: ${path}`);
   const types = [];
@@ -26,7 +26,7 @@ export function workflowTypesList(ctx) {
   return `Available workflow types:\n${lines.join("\n")}`;
 }
 
-export function jobPath(ctx, sessionId, jobId) {
+function jobPath(ctx, sessionId, jobId) {
   return join(ctx.sessionsRoot, sessionId, "jobs", `${jobId}.json`);
 }
 
@@ -39,7 +39,7 @@ export function loadJob(ctx, args, tool) {
   return job;
 }
 
-export function saveJob(ctx, job) {
+function saveJob(ctx, job) {
   writeJson(jobPath(ctx, job.sessionId, job.jobId), job);
 }
 
@@ -82,7 +82,6 @@ export function jobActivate(ctx, args) {
     designId,
     steps: type.steps,
     currentStep: 0,
-    delegates: {},
     createdAt: iso(ctx.now()),
   });
   return `Agent job created;\nJobId: ${jobId}\nDesignId: ${requestedDesign ?? "<none>"}`;
@@ -117,7 +116,6 @@ export function stepPending(ctx, args) {
   const job = loadJob(ctx, args, "workflow-step-pending");
   if (job.currentStep === 0) {
     job.currentStep = 1;
-    job.servedAt = { ...(job.servedAt ?? {}), 1: iso(ctx.now()) };
     saveJob(ctx, job);
   }
   return servePartOf(ctx, job, args, "workflow-step-pending");
@@ -132,7 +130,6 @@ export function stepNext(ctx, args) {
     );
   }
   job.currentStep += 1;
-  job.servedAt = { ...(job.servedAt ?? {}), [job.currentStep]: iso(ctx.now()) };
   saveJob(ctx, job);
   return servePartOf(ctx, job, { part: 1 }, "workflow-step-next");
 }

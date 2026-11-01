@@ -35,3 +35,4 @@ What Bootstrap verified for this client:
 - Neon MCP and write denial: unverified (needs opencode mcp auth neon; deny rules confirmed as configuration only)
 - roles and runtime on kit 4.0.0: unverified (the opencode run was declined on 2026-10-31; earlier results in this list are from kit 3.0.1)
 - roles and runtime on kit 4.1.0: unverified (not run: re-verification was limited to Claude Code and Copilot CLI; the other OpenCode results are from older kits (2026-10-31, kit 4.1.0))
+- plan-user-story-from-id loads the orchestrator from the default agent: verified-fallback (opencode run under the build agent with a prompt to read the skill: read .opencode/agents/sd-orchestrator.md and continued to the session question; no session created; the TUI and the plan-* commands not exercised (2026-11-01, kit 4.2.0))

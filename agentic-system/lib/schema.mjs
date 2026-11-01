@@ -36,7 +36,7 @@ export function validate(schema, value, root = schema, path = "") {
       const childSchema = schema.properties?.[key];
       if (childSchema) errors.push(...validate(childSchema, child, root, `${path}/${key}`));
       else if (schema.additionalProperties === false) {
-        errors.push(`${path}/${key}: the JSON property '${key}' could not be mapped`);
+        errors.push(`${path}/${key}: the JSON property '${key}' could not be mapped; the allowed properties are ${Object.keys(schema.properties ?? {}).join(", ")}`);
       }
     }
   }
