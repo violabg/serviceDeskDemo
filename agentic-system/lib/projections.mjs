@@ -125,12 +125,47 @@ export function snapshot(design) {
 // what exists, and an id that is missing is reported beside the rows that were found.
 const listOf = (value) => [value].flat().flatMap((item) => String(item).split(",")).map((item) => item.trim()).filter(Boolean);
 
-export function snapshotSelection(text, { section, ids }) {
+function snapshotSections(text) {
   const [head, ...blocks] = text.replace(/\n+$/, "").split(/\n(?=## )/);
   const sections = blocks.map((block) => {
     const [heading, ...rows] = block.split("\n");
     return { name: heading.slice(3), rows: rows.filter(Boolean) };
   });
+  return { head, sections };
+}
+
+const rowId = (row) => row.slice(2).split(" | ")[0].trim();
+
+// Lab-authored: the first answer for a design too long for one answer: its status, what each section holds and how to
+// read it. The rows stay one call away, so no text becomes unavailable (contracts/projections.md).
+export function snapshotIndex(text, flags) {
+  const { head, sections } = snapshotSections(text);
+  const held = ({ name, rows }) => {
+    const ids = name === "Overview" || !rows.length ? "" : `, ${rowId(rows[0])} to ${rowId(rows[rows.length - 1])}`;
+    const size = Math.ceil(Buffer.byteLength(rows.join("\n"), "utf8") / 1024);
+    return `- ${name}: ${rows.length} row${rows.length === 1 ? "" : "s"}${ids}, ${size} KB`;
+  };
+  const coverage = sections.find((s) => s.name === "Coverage");
+  return [
+    head.trimEnd(),
+    "",
+    "This design is too long for one answer, so this is its index. Nothing is left out: read only what the current work needs.",
+    "",
+    "## Sections",
+    ...sections.filter((s) => s !== coverage).map(held),
+    "",
+    "## Coverage",
+    ...coverage.rows,
+    "",
+    `The whole design, in parts (CLI: ${flags} --part 1).`,
+    `One section (CLI: ${flags} --section Operations).`,
+    `A few items (CLI: ${flags} --ids IM3,CT1).`,
+    "",
+  ].join("\n");
+}
+
+export function snapshotSelection(text, { section, ids }) {
+  const { head, sections } = snapshotSections(text);
   const wanted = section === undefined ? null : listOf(section).map((name) => name.toLowerCase());
   const unknown = (wanted ?? []).filter((name) => !sections.some((s) => s.name.toLowerCase() === name));
   if (unknown.length) throw new RuntimeError(`design-snapshot failed: no section '${unknown.join("', '")}'. Sections: ${sections.map((s) => s.name).join(", ")}.`);
@@ -140,7 +175,7 @@ export function snapshotSelection(text, { section, ids }) {
   for (const s of sections) {
     if (wanted && !wanted.includes(s.name.toLowerCase())) continue;
     const rows = items === null ? s.rows : s.rows.filter((row) => {
-      const id = row.slice(2).split(" | ")[0].trim().toLowerCase();
+      const id = rowId(row).toLowerCase();
       if (!row.startsWith("- ") || !items.includes(id)) return false;
       found.add(id);
       return true;

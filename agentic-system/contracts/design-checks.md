@@ -12,6 +12,8 @@ The checks are facts about the artifact: anchors, elements, placeholders, an exe
   "coverage": { "obligationsTotal": 0, "obligationsRealized": 0, "elementsTotal": 0, "elementsRealized": 0 } }
 ```
 
+Findings that differ only in the element they name are one row, whose `element` lists them all (`O1.1, O1.2`) and whose `detail` says `<element>` in their place (Lab-authored: a partial `#capability:design-submit` answered one row per element not realized yet, about 24 KB on 60 obligations, and later turns carry that text). The same applies to the findings of `#capability:design-submit`, `#capability:design-overview` and `#capability:design-approve`.
+
 The design can be presented for approval only when `errors` is empty. Warnings never block approval. The answer is lined JSON, and a long one is served from a stored copy (`contracts/workflow-loop.md`, Stored responses).
 
 ## Placeholders

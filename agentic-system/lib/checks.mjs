@@ -117,6 +117,26 @@ function testingFindings(operations) {
   return findings;
 }
 
+// Lab-authored: findings that differ only in the element they name are one row, whose `element` lists them all. A
+// partial design-submit otherwise answers one row for every element not realized yet, and later turns carry that text.
+export function compactFindings(findings) {
+  const groups = new Map();
+  for (const finding of findings) {
+    const name = finding.element.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const detail = finding.detail.replace(new RegExp(`(?<![\\w.])${name}(?!\\w|\\.\\w)`, "g"), "<element>");
+    const key = `${finding.rule}\n${detail}`;
+    if (!groups.has(key)) groups.set(key, { finding, detail, elements: new Set() });
+    groups.get(key).elements.add(finding.element);
+  }
+  return [...groups.values()].map(({ finding, detail, elements }) => (elements.size === 1 ? finding : { rule: finding.rule, element: [...elements].join(", "), detail }));
+}
+
+// What an answer reports: every finding of runChecks, compacted.
+export function reportedChecks(design) {
+  const { errors, warnings, coverage } = runChecks(design);
+  return { errors: compactFindings(errors), warnings: compactFindings(warnings), coverage };
+}
+
 export function runChecks(design) {
   const errors = [];
   const warnings = [];

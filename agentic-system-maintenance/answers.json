@@ -159,6 +159,10 @@
         "Claude Code project path deny Edit(/knowledge/**)": {
           "status": "verified-fallback",
           "note": "rendered in .claude/settings.json and reported by the installer; configuration only, not exercised in a Claude Code session, where the runtime guard above is the layer that was verified (2026-11-01, kit 5.0.0)"
+        },
+        "static install and runtime (verify.mjs) after the 5.1.0 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 5.0.0 -> 5.1.0: 11 files updated, 2 skills merged (the kit changed only their bindings and delegate prompt; the repository kept its GitHub Copilot and OpenCode routing lines), 82 unchanged, no conflict; a repeated plan reports 95 unchanged and nothing to do. verify.mjs: no drift, no unfilled slot; runtime serves the workflows; sessions folder reachable. pnpm lint 0 errors (12 pre-existing warnings), typecheck clean, 327 tests passed. Runtime behaviors on a scratch session (scratchupgrade510, deleted afterwards) and read-only: workflow-step-pending served the instruction-register sentence that only the developer own words count; design-snapshot on us_11_op/us_11_op_design answered the index (section row counts, first and last ids, sizes, coverage, the three follow-up calls) instead of part 1, and --ids IM3 still returned that row; design-obligations --help says to omit id on Add; compactFindings turned O1.1/O1.2/O1.10 into one row listing all three with <element> in the detail (2026-11-01, kit 5.1.0)"
         }
       }
     },
@@ -319,6 +323,10 @@
         "knowledge path deny on kit 5.0.0": {
           "status": "verified-fallback",
           "note": "the installer renders no path deny for this client and warns about it; the guard it relies on (workflow-step-next refusing a knowledge change) was verified on the shared runtime from the Claude Code environment (2026-11-01, kit 5.0.0)"
+        },
+        "static install and runtime (verify.mjs) after the 5.1.0 upgrade": {
+          "status": "verified-native",
+          "note": "shared check: verify.mjs passes on all three checks and a repeated plan reports nothing to do; sd-orchestrator.agent.md gained the sentence that a delegate report comes back on its own, and plan-user-story-from-id / plan-bug-from-id keep the repository routing line that reads the role contract instead of asking for the agent picker (2026-11-01, kit 5.1.0); no Copilot session re-exercised"
         }
       }
     },
@@ -443,6 +451,10 @@
         "edit deny on knowledge/** in the five opencode agents": {
           "status": "verified-fallback",
           "note": "rendered as edit: { '*': allow, 'knowledge/**': deny } and reported by the installer; configuration only, not exercised in an opencode run, where the runtime guard verified on the shared code is the layer that was checked (2026-11-01, kit 5.0.0)"
+        },
+        "static install and runtime (verify.mjs) after the 5.1.0 upgrade": {
+          "status": "verified-native",
+          "note": "shared check: verify.mjs passes on all three checks and a repeated plan reports nothing to do; sd-orchestrator.md gained the sentence that a delegate report comes back on its own, and plan-user-story-from-id / plan-bug-from-id keep the repository OpenCode routing line that reads the role contract instead of asking for the Tab selection (2026-11-01, kit 5.1.0); not re-exercised in an opencode run"
         }
       }
     }
