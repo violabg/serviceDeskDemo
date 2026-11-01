@@ -8,10 +8,8 @@
   "roles": {
     "ask": [
       "knowledge-catalog",
-      "knowledge-create",
       "knowledge-index-rebuild",
       "knowledge-read",
-      "knowledge-update",
       "session-activate",
       "session-artifact-list",
       "session-artifact-read",

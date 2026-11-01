@@ -60,7 +60,19 @@ A document is recorded by path in `sessions/<sessionId>/knowledge-reads.json` (L
 
 `#capability:knowledge-update` — arguments `fileId`, `content`, optional `intent`. Replace the document's content, keeping its front matter; refuse a document with `editable: false`.
 
-Only the knowledge roles create or update knowledge.
+Knowledge has one writer: `knowledge-builder`, through these two operations. No workflow changes knowledge: not DESIGN, not FAST_IMPLEMENTATION, not DOCUMENTATION, and not a correction round. A call naming any other role is refused (Lab-authored: this overrides the upstream tool map, which also grants them to `ask`). A call naming no role is an operator's.
+
+## guard
+
+Lab-authored. A role's file tools can reach the knowledge folder, so the runtime also notices a change it did not make:
+
+- `workflow-job-activate` stores `knowledgeBaseline` in a new job: the SHA-256 of every file under the knowledge root, catalogued or not, except dotfiles.
+- `#capability:knowledge-create` and `#capability:knowledge-update` record the hash they leave in `<sessions root>/knowledge-writes.json`.
+- `workflow-step-next` refuses without advancing when a file differs from the baseline and is not the runtime's last write, or when a baseline file is gone. A job with no baseline is not checked.
+
+The refusal: `workflow-step-next failed: knowledge changed outside knowledge-create and knowledge-update: <paths>. No workflow agent may edit knowledge, and the step did not advance. Halt and report this to the developer: the change must be restored or applied through knowledge-builder.`
+
+Limits: it detects a change at the next advance and does not prevent it, so the client's own path deny is the stronger layer where it has one. A change after the last `workflow-step-next` of a job is not checked. A developer's hand edit, or a merge that changes knowledge during a job, is refused too.
 
 ## rebuild
 

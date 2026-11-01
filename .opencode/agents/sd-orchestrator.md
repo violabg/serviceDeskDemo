@@ -6,7 +6,9 @@ permission:
   grep: "allow"
   glob: "allow"
   list: "allow"
-  edit: "allow"
+  edit:
+    "*": "allow"
+    "knowledge/**": "deny"
   bash: "allow"
   question: "allow"
   task:

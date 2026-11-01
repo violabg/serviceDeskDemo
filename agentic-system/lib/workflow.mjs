@@ -3,7 +3,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createDesign, designExists } from "./design-store.mjs";
-import { knowledgeEditsOutsideRuntime, knowledgeFingerprint } from "./knowledge.mjs";
+import { knowledgeChangedOutsideRuntime, knowledgeHashes } from "./knowledge.mjs";
 import { readArtifactBody, requireSession } from "./session.mjs";
 import { RuntimeError, arg, iso, jobFlags, readJson, requireId, requireString, servePart, writeJson } from "./util.mjs";
 
@@ -83,8 +83,8 @@ export function jobActivate(ctx, args) {
     designId,
     steps: type.steps,
     currentStep: 0,
-    knowledgeBaseline: knowledgeFingerprint(ctx),
     createdAt: iso(ctx.now()),
+    knowledgeBaseline: knowledgeHashes(ctx),
   });
   return `Agent job created;\nJobId: ${jobId}\nDesignId: ${requestedDesign ?? "<none>"}`;
 }
@@ -131,11 +131,10 @@ export function stepNext(ctx, args, caller) {
       `workflow-step-next failed: the workflow is complete. Instruction ${job.steps.length}/${job.steps.length} was the final instruction; do not call workflow-step-next again.`,
     );
   }
-  const edited = knowledgeEditsOutsideRuntime(ctx, job.knowledgeBaseline);
-  if (edited.length) {
-    throw new RuntimeError(
-      `workflow-step-next failed: knowledge changed outside knowledge-create and knowledge-update: ${edited.join(", ")}. No workflow agent may edit knowledge, and the step did not advance. Halt and report this to the developer: the change must be restored or applied through knowledge-builder.`,
-    );
+  // No workflow changes knowledge. A job created before this check has no baseline and is not checked.
+  const outside = job.knowledgeBaseline ? knowledgeChangedOutsideRuntime(ctx, job.knowledgeBaseline) : [];
+  if (outside.length) {
+    throw new RuntimeError(`workflow-step-next failed: knowledge changed outside knowledge-create and knowledge-update: ${outside.join(", ")}. No workflow agent may edit knowledge, and the step did not advance. Halt and report this to the developer: the change must be restored or applied through knowledge-builder.`);
   }
   job.currentStep += 1;
   saveJob(ctx, job);

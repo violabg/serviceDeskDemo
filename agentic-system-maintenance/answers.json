@@ -151,6 +151,14 @@
         "plan-bug-from-id loads the orchestrator with no role selected": {
           "status": "verified-native",
           "note": "headless claude -p with a work item id: read .claude/skills/sd-orchestrator/SKILL.md, then listed sessions and workflows and asked for a session; no session created; IDE surface not exercised (2026-11-01, kit 4.2.0)"
+        },
+        "knowledge guard and single writer (kit 5.0.0)": {
+          "status": "verified-native",
+          "note": "scratch session scratchupgrade500, DOCUMENTATION job, deleted afterwards: the job recorded knowledgeBaseline for 13 files; a test file added under knowledge/ made workflow-step-next refuse without advancing and name it; deleting the file let it advance to 2/8; knowledge-create --role ask is refused. pnpm lint (0 errors, 12 pre-existing warnings), typecheck and 256 tests passed; the three previously kept knowledge-guard files were taken from the kit, so no kept customization remains there except the two plan-* skills (2026-11-01, kit 5.0.0)"
+        },
+        "Claude Code project path deny Edit(/knowledge/**)": {
+          "status": "verified-fallback",
+          "note": "rendered in .claude/settings.json and reported by the installer; configuration only, not exercised in a Claude Code session, where the runtime guard above is the layer that was verified (2026-11-01, kit 5.0.0)"
         }
       }
     },
@@ -303,6 +311,14 @@
         "CLI: plan-bug-from-id loads the orchestrator with no agent selected": {
           "status": "verified-fallback",
           "note": "copilot -p with no --agent and a work item id: read .github/agents/sd-orchestrator.agent.md and continued to the session question; no session created. In a run without an id, the model found the slash name by file search, so native skill resolution under -p is not proven, and it stopped on the missing id before loading the contract; interactive CLI and VS Code not exercised (2026-11-01, kit 4.2.0)"
+        },
+        "static install and runtime (verify.mjs) after the 5.0.0 upgrade": {
+          "status": "verified-native",
+          "note": "shared check: verify.mjs passes on all three checks and a repeated plan reports nothing to do; sd-ask.agent.md lost the knowledge-create and knowledge-update arguments it may no longer run (2026-11-01, kit 5.0.0); no Copilot session re-exercised"
+        },
+        "knowledge path deny on kit 5.0.0": {
+          "status": "verified-fallback",
+          "note": "the installer renders no path deny for this client and warns about it; the guard it relies on (workflow-step-next refusing a knowledge change) was verified on the shared runtime from the Claude Code environment (2026-11-01, kit 5.0.0)"
         }
       }
     },
@@ -419,6 +435,14 @@
         "static install and runtime (verify.mjs) after the 4.2.2 upgrade": {
           "status": "verified-native",
           "note": "shared check: verify.mjs passes on all three checks and agentic-system.mjs --help lists the commands; the opencode delegate binding now states the no-resume arm (2026-11-01, kit 4.2.2); not re-exercised in an opencode run"
+        },
+        "static install and runtime (verify.mjs) after the 5.0.0 upgrade": {
+          "status": "verified-native",
+          "note": "shared check: verify.mjs passes on all three checks and a repeated plan reports nothing to do; sd-ask.md lost the knowledge-create and knowledge-update arguments it may no longer run (2026-11-01, kit 5.0.0); not re-exercised in an opencode run"
+        },
+        "edit deny on knowledge/** in the five opencode agents": {
+          "status": "verified-fallback",
+          "note": "rendered as edit: { '*': allow, 'knowledge/**': deny } and reported by the installer; configuration only, not exercised in an opencode run, where the runtime guard verified on the shared code is the layer that was checked (2026-11-01, kit 5.0.0)"
         }
       }
     }

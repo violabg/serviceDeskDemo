@@ -33,6 +33,7 @@ Repository skills live in `.claude/skills (workflow skills), .claude/skills (Cla
 
 - Read the knowledge catalogue with `#capability:knowledge-catalog`. Every `MustHave` document is read in full; `PerContext` and `PerComponent` documents are read when the work touches them.
 - Knowledge documents live in `knowledge`. Resolve repository vocabulary in `CONTEXT.md`.
+- Only `knowledge-builder` changes knowledge. No workflow and no delegate creates, edits or deletes a file in `knowledge`, in a correction round either. A knowledge statement the work made stale is never fixed in place: report it to the developer, who takes it to `knowledge-builder`.
 
 ## Validation
 

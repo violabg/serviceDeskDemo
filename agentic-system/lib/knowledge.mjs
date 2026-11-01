@@ -2,11 +2,10 @@
 // knowledge root, each with a front matter that declares its tier. The catalogue assigns file ids by path
 // order and is rebuilt on every call, so an id is valid only for the current index. The last index is
 // cached under <cache root> (default <sessions root>/.cache/) for humans; the knowledge folder itself is never written by a read.
-import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { knowledgeReads, recordKnowledgeReads } from "./session.mjs";
-import { RuntimeError, arg, frontmatter, parseFrontmatter, requireString, servePart, writeText } from "./util.mjs";
+import { RuntimeError, arg, frontmatter, parseFrontmatter, readJson, requireString, servePart, sha256, writeJson, writeText } from "./util.mjs";
 
 const TIERS = {
   MustHave: "Mandatory knowledges for the project. Agent must always apply them",
@@ -15,8 +14,6 @@ const TIERS = {
 };
 const CATALOG_FILE = "knowledge-catalog.yaml";
 const SETTINGS_FILE = "kbsettings.yaml";
-const WRITES_FILE = "knowledge-writes.json";
-const hashOf = (path) => createHash("sha256").update(readFileSync(path)).digest("hex");
 
 function globToRegExp(glob) {
   let pattern = "";
@@ -189,6 +186,41 @@ export function designGrounding(ctx, design) {
   });
 }
 
+// --- who changed the knowledge (contracts/knowledge-catalog.md, guard) ----------------------------------------
+
+// Every file under the knowledge root except dotfiles (a client's or an OS's own), catalogued or not: path to hash.
+export function knowledgeHashes(ctx) {
+  const hashes = {};
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir).sort()) {
+      if (entry.startsWith(".")) continue;
+      const path = join(dir, entry);
+      if (statSync(path).isDirectory()) walk(path);
+      else hashes[relative(ctx.knowledgeRoot, path).split("\\").join("/")] = sha256(readFileSync(path));
+    }
+  };
+  if (existsSync(ctx.knowledgeRoot)) walk(ctx.knowledgeRoot);
+  return hashes;
+}
+
+// Lab-authored: beside the sessions, not in the cache, because clearing a cache must not disown the runtime's writes.
+const writesPath = (ctx) => join(ctx.sessionsRoot, "knowledge-writes.json");
+
+function recordWrite(ctx, path) {
+  const file = relative(ctx.knowledgeRoot, path).split("\\").join("/");
+  writeJson(writesPath(ctx), { ...readJson(writesPath(ctx), {}), [file]: sha256(readFileSync(path)) });
+}
+
+// The paths that differ from the baseline and are not what knowledge-create or knowledge-update last left there,
+// and the paths the baseline had that are gone.
+export function knowledgeChangedOutsideRuntime(ctx, baseline) {
+  const now = knowledgeHashes(ctx);
+  const writes = readJson(writesPath(ctx), {});
+  const changed = Object.keys(now).filter((path) => now[path] !== baseline[path] && now[path] !== writes[path]);
+  const deleted = Object.keys(baseline).filter((path) => !(path in now));
+  return [...changed, ...deleted].sort();
+}
+
 function slug(title) {
   return title.replace(/[^A-Za-z0-9_]/g, "_").replace(/_+/g, "_").slice(0, 60);
 }
@@ -224,30 +256,4 @@ export function update(ctx, args) {
   recordWrite(ctx, path);
   writeIndex(ctx, buildCatalog(ctx));
   return `Knowledge updated: file_id ${id} (${entry.path}).`;
-}
-
-export function knowledgeFingerprint(ctx) {
-  return Object.fromEntries(documents(ctx).map((file) => [file, hashOf(join(ctx.knowledgeRoot, file))]));
-}
-
-// The last content each runtime write left, so knowledge-create and knowledge-update never read as a direct edit.
-function runtimeWrites(ctx) {
-  const path = join(ctx.cacheRoot, WRITES_FILE);
-  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
-}
-
-function recordWrite(ctx, path) {
-  const writes = { ...runtimeWrites(ctx), [relative(ctx.knowledgeRoot, path).split("\\").join("/")]: hashOf(path) };
-  writeText(join(ctx.cacheRoot, WRITES_FILE), JSON.stringify(writes, null, 2));
-}
-
-// Documents that differ from the job's baseline and were not left that way by a runtime write.
-// A job with no baseline predates the check.
-export function knowledgeEditsOutsideRuntime(ctx, baseline) {
-  if (!baseline) return [];
-  const now = knowledgeFingerprint(ctx);
-  const writes = runtimeWrites(ctx);
-  return [...new Set([...Object.keys(baseline), ...Object.keys(now)])]
-    .filter((file) => now[file] !== baseline[file] && (now[file] === undefined || now[file] !== writes[file]))
-    .sort();
 }
