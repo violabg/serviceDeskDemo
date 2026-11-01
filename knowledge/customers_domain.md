@@ -11,7 +11,8 @@ Read this before changing customer pages, the customer form, customer status, or
 ## Business Rules
 
 - A customer is either Active or Deactivated. Only Active customers can be chosen on a new ticket.
-- Creating or editing a customer needs write permission; changing its status needs manage permission.
+- Creating a customer needs the `customers:write` key; editing an existing customer, changing its status, and reactivating a Deactivated customer from the new-customer form need the `customers:manage` key.
+- A holder of `customers:write` alone opens every customer page and can create a customer, with the Edit control and the status control disabled and an edit address redirected back to the plain detail page. Do not treat that write grant as permission to edit.
 - A Deactivated customer with the same company and email as a new one is reactivated, not duplicated.
 - A customer cannot be deactivated while it has a Critical ticket that is Open, InProgress or Pending.
 - Company and email are matched case-insensitively for duplicates.

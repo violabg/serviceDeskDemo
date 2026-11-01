@@ -46,3 +46,4 @@ opencode/
 # agentic-system:start
 agentic-system-sessions/
 # agentic-system:end
+setup-worktree.mjs
