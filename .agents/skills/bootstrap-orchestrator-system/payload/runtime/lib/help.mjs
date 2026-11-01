@@ -4,23 +4,134 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { ARGUMENTS, REQUEST_TOKENS, handlers } from "./api.mjs";
 
-const usage = (token) => `usage: node agentic-system.mjs ${token} [--json <file>|-] [--<argument> <value> ...]`;
+const usage = (token) => `usage: node agentic-system.mjs ${token} [--json <file>|-|'<inline JSON>'] [--<argument> <value> ...]`;
 
-// The `## <token>` section of a contract, or else the paragraph that defines the token
-// (`#capability:<token>` or `<token>` followed by " —", or a paragraph that lists it among others).
-function definition(text, token) {
+// The `## <token>` section of a contract or the paragraph that defines the token, best match first: its own
+// definition, then a definition it shares with other tokens, then a paragraph that opens by naming it. A paragraph
+// that ends with a colon or inside a code fence continues into the next one, so the shape it announces comes along.
+function definition(text, token, tier) {
   const lines = text.split("\n");
   const heading = lines.findIndex((l) => l.trim() === `## ${token}`);
   if (heading !== -1) {
+    if (tier !== 0) return undefined;
     const end = lines.findIndex((l, i) => i > heading && /^## /.test(l));
     return lines.slice(heading, end === -1 ? undefined : end).join("\n").trim();
   }
+  const named = `\`#capability:${token}\``;
+  const first = (p) => p.trim().split("\n")[0];
+  const matches = [
+    (p) => new RegExp(`^\`(#capability:)?${token}\` —`).test(p.trim()),
+    (p) => first(p).startsWith("`#capability:") && first(p).includes(" — ") && first(p).includes(named),
+    (p) => first(p).includes(named),
+  ][tier];
   const paragraphs = text.split(/\n\s*\n/);
-  const defines = new RegExp(`^\`(#capability:)?${token}\` —`);
-  return (
-    paragraphs.find((p) => defines.test(p.trim())) ??
-    paragraphs.find((p) => p.split("\n")[0].includes(`\`#capability:${token}\``))
-  )?.trim();
+  const at = paragraphs.findIndex(matches);
+  if (at === -1) return undefined;
+  let end = at;
+  const unfinished = () => {
+    const shown = paragraphs.slice(at, end + 1).join("\n\n");
+    return shown.trim().endsWith(":") || (shown.match(/^```/gm) ?? []).length % 2 === 1;
+  };
+  while (end + 1 < paragraphs.length && unfinished()) end += 1;
+  return paragraphs.slice(at, end + 1).join("\n\n").trim();
+}
+
+// The fields of `request` for each design operation that takes one, read from the request schema.
+const REQUEST_DEFS = {
+  "design-obligations": "rowRequest",
+  "design-open-points": "rowRequest",
+  "design-file-references": "rowRequest",
+  "design-decisions": "rowRequest",
+  "design-knowledge-references": "knowledgeReferencesRequest",
+  "design-overview": "overview",
+  "design-approve": "approve",
+  "design-operation-status": "operationStatus",
+  "design-iteration-open": "iterationOpen",
+  "design-iteration-close": "iterationClose",
+};
+
+// What the `rows` of a row request hold: the schema leaves them open, and the operation validates them by this def.
+const ROW_DEFS = {
+  "design-obligations": "obligation",
+  "design-open-points": "openPoint",
+  "design-file-references": "fileReference",
+  "design-decisions": "decision",
+};
+
+const requestSchema = (ctx) => JSON.parse(readFileSync(join(ctx.assetsRoot, "design-requests.schema.json"), "utf8"));
+const requestDef = (schema, token) => (token === "design-submit" ? schema.properties.request : schema.$defs[REQUEST_DEFS[token]]);
+
+function requestFields(ctx, token) {
+  return Object.keys(requestDef(requestSchema(ctx), token)?.properties ?? {});
+}
+
+const refName = (field) => field?.$ref?.split("/").pop();
+
+function typeText(field) {
+  if (field.$ref) return refName(field);
+  if (field.enum) return field.enum.join(" | ");
+  if (field.type === "array") return `list of ${field.items ? typeText(field.items) : "values"}`;
+  return [field.type ?? "any"].flat().join(" or ");
+}
+
+// One line per field: name (* when required), type, and the schema's description and first example.
+function fieldLines(def, rowDef, pad, refs) {
+  const lines = [];
+  for (const [name, declared] of Object.entries(def.properties ?? {})) {
+    const field = name === "rows" && rowDef ? { type: "array", items: { $ref: `#/$defs/${rowDef}` } } : declared;
+    const inner = field.type === "array" ? field.items : field;
+    if (refName(inner)) refs.add(refName(inner));
+    const required = def.required?.includes(name) ? "*" : "";
+    const note = declared.description ? ` — ${declared.description}` : "";
+    const example = declared.examples?.length ? ` (example: ${JSON.stringify(declared.examples[0])})` : "";
+    lines.push(`${pad}- ${name}${required}: ${typeText(field)}${note}${example}`);
+    if (inner?.properties) lines.push(...fieldLines(inner, null, `${pad}  `, refs));
+  }
+  return lines;
+}
+
+// Lab-authored: upstream takes the shape of a submission from the argument descriptions its server gives the
+// client. A command line has no such channel, so `--help` prints the fields from the schema the runtime validates by.
+function requestFieldsHelp(ctx, token) {
+  const schema = requestSchema(ctx);
+  const def = requestDef(schema, token);
+  if (!def) return "";
+  const refs = new Set();
+  const out = ["Fields of request (* = required):", ...fieldLines(def, ROW_DEFS[token], "", refs)];
+  for (const name of refs) out.push("", `Fields of ${name}:`, ...fieldLines(schema.$defs[name], null, "", refs));
+  return `\n${out.join("\n")}\n`;
+}
+
+// What an argument means, where its name alone does not say: shown in the role bindings and in `--help`.
+const ARGUMENT_NOTES = {
+  "design-snapshot": { section: "one section only, such as Operations", ids: "those items only, such as IM3,CT1" },
+};
+
+// One line per command with the arguments it accepts (from `ARGUMENTS` and the request schema), so an agent learns
+// every command's arguments in one call, or from its role file, instead of one `--help` call per command.
+export function commandArguments(ctx, role) {
+  const allowed = role ? ctx.roles?.[role] : null;
+  const tokens = Object.keys(handlers).filter((token) => !allowed || allowed.includes(token));
+  return tokens.map((token) => {
+    if (REQUEST_TOKENS.has(token)) {
+      const extra = token === "design-obligations" ? ", outline (with Read: the element ids only)" : "";
+      return `${token}: sessionId, jobId, request { ${requestFields(ctx, token).join(", ")} }${extra}`;
+    }
+    const list = ARGUMENTS[token];
+    if (list === null) return `${token}: sessionId, and the text under any field name`;
+    const notes = ARGUMENT_NOTES[token] ?? {};
+    return `${token}: ${list?.length ? list.map((name) => (notes[name] ? `${name} (${notes[name]})` : name)).join(", ") : "no arguments"}`;
+  });
+}
+
+export function commandsHelp(ctx, role) {
+  return [
+    "usage: node agentic-system.mjs <command> [--json <file>|-|'<inline JSON>'] [--<argument> <value> ...]",
+    "       node agentic-system.mjs <command> --help   (one command's full definition, from its contract)",
+    "",
+    "commands and their arguments:",
+    ...commandArguments(ctx, role).map((line) => `  ${line}`),
+  ].join("\n");
 }
 
 // The fields of `request` for each design operation that takes one, read from the request schema.
@@ -75,9 +186,12 @@ export function tokenHelp(ctx, token) {
     : "Arguments are top-level: never wrap them in request.";
   const root = ctx.contractsRoot;
   const files = existsSync(root) ? readdirSync(root).filter((f) => f.endsWith(".md")).sort() : [];
-  for (const file of files) {
-    const found = definition(readFileSync(join(root, file), "utf8"), token);
-    if (found) return `${usage(token)}\n${shape}\n\nFrom ${join(root, file)}:\n\n${found}\n`;
+  const fields = REQUEST_TOKENS.has(token) ? requestFieldsHelp(ctx, token) : "";
+  for (const tier of [0, 1, 2]) {
+    for (const file of files) {
+      const found = definition(readFileSync(join(root, file), "utf8"), token, tier);
+      if (found) return `${usage(token)}\n${shape}\n${fields}\nFrom ${join(root, file)}:\n\n${found}\n`;
+    }
   }
-  return `${usage(token)}\n${shape}\n\nNo contract section defines ${token}; read the contracts in ${root}.\n`;
+  return `${usage(token)}\n${shape}\n${fields}\nNo contract section defines ${token}; read the contracts in ${root}.\n`;
 }

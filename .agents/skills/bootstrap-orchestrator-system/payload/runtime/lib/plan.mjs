@@ -2,7 +2,7 @@
 // class of every operation and which classes need the developer's authorisation. The weight is metadata: the plan
 // is served in the order it was declared, and `dependsOn` is the only precedence constraint.
 
-export const WEIGHTS = ["authoring", "commands", "testing", "build"];
+const WEIGHTS = ["authoring", "commands", "testing", "build"];
 
 const WEIGHT_OF_KIND = {
   Code: "authoring",

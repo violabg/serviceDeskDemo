@@ -7,14 +7,14 @@ import { existsSync, readdirSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { arg, RuntimeError, requireString } from "./util.mjs";
 
-export const MIN_CLUSTER_SIZE = 5;
+const MIN_CLUSTER_SIZE = 5;
 const WALK_EXCLUDES = new Set([".git", "node_modules", "bin", "obj", "dist", "build", "coverage", ".next", "target"]);
 // Directories that organise a codebase without naming a domain of it.
 const STRUCTURAL_DIRS = new Set(["src", "source", "sources", "lib", "app", "apps", "packages", "modules", "components", "pages", "features", "common", "shared", "internal", "pkg", "main", "java", "kotlin", "resources"]);
 const TEST_DIRS = new Set(["test", "tests", "__tests__", "__mocks__", "mocks", "__fixtures__", "fixtures", "testing", "test-utils", "testutils", "e2e", "cypress", "playwright"]);
 const TEST_FILES = /^(setup-?tests|test-?utils|(jest|vitest)\.setup)$|\.(mock|fixture)$|Tests$/i;
-export const TESTS_CLUSTER = "Tests";
-export const GENERAL_CLUSTER = "General";
+const TESTS_CLUSTER = "Tests";
+const GENERAL_CLUSTER = "General";
 
 function workspaceOf(ctx, args, tool) {
   const raw = arg(args, "WorkspacePath") ?? ctx.workspaceRoot;
@@ -62,7 +62,7 @@ export function isTestInfrastructure(file, extension) {
   return segments.some((dir) => TEST_DIRS.has(dir.toLowerCase())) || TEST_FILES.test(base);
 }
 
-export function buildClusters(ctx, args, tool) {
+function buildClusters(ctx, args, tool) {
   const workspace = workspaceOf(ctx, args, tool);
   const extension = extensionOf(args, tool);
   const files = listFiles(workspace).filter((f) => f.toLowerCase().endsWith(extension));

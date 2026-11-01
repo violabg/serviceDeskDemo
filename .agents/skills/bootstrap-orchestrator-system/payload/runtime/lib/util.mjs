@@ -10,7 +10,7 @@ export class RuntimeError extends Error {
   }
 }
 
-export const ID_PATTERN = /^[A-Za-z0-9_]{1,100}$/;
+const ID_PATTERN = /^[A-Za-z0-9_]{1,100}$/;
 export const ARTIFACT_PATTERN = /^[A-Za-z0-9_.-]{1,150}$/;
 
 export function requireId(value, field, tool) {
@@ -215,7 +215,7 @@ export function splitParts(text, starts, limit = PART_LIMIT) {
 // Lab-authored: the footer asks for each call as a command of its own, because an agent that loops over parts or
 // pipes them through `head`, `cut` or `dd` exceeds the host cap again and loses text. Part 1 asks for every other
 // part at once: a client that runs tool calls in parallel then spends one turn on them instead of one per part.
-export function servePart(text, args, { tool, starts, next, limit = PART_LIMIT, onServed }) {
+export function servePart(text, args, { tool, starts, next, hint, limit = PART_LIMIT, onServed }) {
   const requested = arg(args, "part");
   const parts = splitParts(text, starts, limit - PART_MARGIN);
   const n = requested === undefined ? 1 : Number(requested);
@@ -232,5 +232,6 @@ export function servePart(text, args, { tool, starts, next, limit = PART_LIMIT, 
   if (n === 1 && total === 2) footer = `[part 1 of 2. The answer continues in part 2: ${next(2)} Run it ${alone}. Read every part before acting on any of it.]`;
   else if (n === 1) footer = `[part 1 of ${total}. The answer continues in parts 2 to ${total}: ${next(2)} Request each remaining part the same way, ${alone}: all in this turn as parallel tool calls if your client allows it, or else one by one. Read every part before acting on any of it.]`;
   else if (n < total) footer = `[part ${n} of ${total}. Parts ${n + 1} to ${total} follow, if you have not requested them yet: ${next(n + 1)} Run each ${alone}.]`;
+  if (n === 1 && hint) footer = `${footer.slice(0, -1)} ${hint}]`;
   return `${header}${body}\n\n${footer}\n`;
 }
