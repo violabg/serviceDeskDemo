@@ -106,7 +106,7 @@
       "verification": {
         "static install and runtime (verify.mjs)": {
           "status": "verified-native",
-          "note": "no drift, runtime serves the three workflows, sessions folder reachable (2026-11-01, kit 4.2.0)"
+          "note": "no drift, runtime serves the three workflows, sessions folder reachable; upgrade 4.2.1 -> 4.2.2 kept 89 files unchanged, updated 6, then pnpm lint (0 errors, 12 pre-existing warnings), typecheck and 251 tests passed (2026-11-01, kit 4.2.2)"
         },
         "work item read (issue_read get/get_labels/get_comments)": {
           "status": "verified-fallback",
@@ -415,6 +415,10 @@
         "plan-user-story-from-id loads the orchestrator from the default agent": {
           "status": "verified-fallback",
           "note": "opencode run under the build agent with a prompt to read the skill: read .opencode/agents/sd-orchestrator.md and continued to the session question; no session created; the TUI and the plan-* commands not exercised (2026-11-01, kit 4.2.0)"
+        },
+        "static install and runtime (verify.mjs) after the 4.2.2 upgrade": {
+          "status": "verified-native",
+          "note": "shared check: verify.mjs passes on all three checks and agentic-system.mjs --help lists the commands; the opencode delegate binding now states the no-resume arm (2026-11-01, kit 4.2.2); not re-exercised in an opencode run"
         }
       }
     }

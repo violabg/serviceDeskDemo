@@ -9,7 +9,7 @@ import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./kno
 import { authorisationOf, isAutomatic, isDone, unmetDependencies, weightOf } from "./plan.mjs";
 import { implementationContext, servedOperation, snapshot, snapshotSelection, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
-import { RuntimeError, arg, iso, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
+import { RuntimeError, arg, iso, jobFlags, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
 
 let cachedSchema = null;
@@ -475,22 +475,22 @@ function validateDesignShape(design) {
 
 // The parts of a projection belong to one revision of the design: a later part of an older revision is refused,
 // so text from two revisions is never read as one answer.
-function revisionGuard(design, args, tool) {
+function revisionGuard(design, args, tool, caller) {
   const revision = arg(args, "revision");
   if (revision !== undefined && revision !== design.updatedAt) {
     throw new RuntimeError(`${tool} failed: the design changed after the earlier parts were served (revision '${revision}', now '${design.updatedAt}'). Start again from part 1.`);
   }
-  return { tool, next: (k) => `call ${tool} again with part ${k} and revision ${design.updatedAt} (CLI: --part ${k} --revision ${design.updatedAt}).` };
+  return { tool, next: (k) => `call ${tool} again with part ${k} and revision ${design.updatedAt} (CLI: ${jobFlags(args, caller)} --part ${k} --revision ${design.updatedAt}).` };
 }
 
-export function snapshotTool(ctx, args) {
+export function snapshotTool(ctx, args, caller) {
   const job = loadJob(ctx, args, "design-snapshot");
   if (!job.designId) {
     return `# Design snapshot\nThis job runs ${job.workflowType}, which has no design artifact. There is nothing to project.\n`;
   }
   // Parts start at a section heading or at an item, so a row is never split.
   const design = loadDesign(ctx, job.sessionId, job.designId);
-  const guard = revisionGuard(design, args, "design-snapshot");
+  const guard = revisionGuard(design, args, "design-snapshot", caller);
   const section = arg(args, "section");
   const ids = arg(args, "ids");
   const selecting = section !== undefined || ids !== undefined;
@@ -500,16 +500,16 @@ export function snapshotTool(ctx, args) {
     limit: ctx.partLimit,
     starts: (line) => /^## /.test(line) || /^- /.test(line),
     ...(selecting
-      ? { next: (k) => `call design-snapshot again with the same selection, part ${k} and revision ${design.updatedAt} (CLI:${same} --part ${k} --revision ${design.updatedAt}).` }
+      ? { next: (k) => `call design-snapshot again with the same selection, part ${k} and revision ${design.updatedAt} (CLI: ${jobFlags(args, caller)}${same} --part ${k} --revision ${design.updatedAt}).` }
       : { hint: "To read one section or item instead, call it with --section Operations or --ids IM3,CT1." }),
   });
 }
 
-export function verificationViewTool(ctx, args) {
+export function verificationViewTool(ctx, args, caller) {
   const { design } = jobDesign(ctx, args, "design-verification-view");
   // Parts start at an obligation, an operation or a section heading, so none of them is ever split.
   return servePart(verificationView(design, designGrounding(ctx, design)), args, {
-    ...revisionGuard(design, args, "design-verification-view"),
+    ...revisionGuard(design, args, "design-verification-view", caller),
     limit: ctx.partLimit,
     starts: (line) => /^#{1,2} /.test(line),
   });
@@ -563,19 +563,19 @@ export function operationStatus(ctx, args) {
 
 // --- implementation loop ------------------------------------------------------------------------------
 
-export function implementationContextTool(ctx, args) {
+export function implementationContextTool(ctx, args, caller) {
   const tool = "design-implementation-context";
   const { design } = jobDesign(ctx, args, tool);
   // Parts start at a section heading or at an item, so a row is never split.
   return servePart(implementationContext(design), args, {
-    ...revisionGuard(design, args, tool),
+    ...revisionGuard(design, args, tool, caller),
     limit: ctx.partLimit,
     starts: (line) => /^## /.test(line) || /^- /.test(line),
   });
 }
 
 // The operation text is computed without the re-serve note, so a part means the same text on every call.
-function serveText(ctx, design, operation, note, args) {
+function serveText(ctx, design, operation, note, args, caller) {
   const tool = "design-implementation-operation";
   const weight = weightOf(operation);
   const knowledge = (operation.knowledgeReferences ?? []).map((kid) => {
@@ -586,7 +586,7 @@ function serveText(ctx, design, operation, note, args) {
     tool,
     limit: ctx.partLimit,
     starts: (line) => /^#{1,3} /.test(line),
-    next: (k) => `call ${tool} again with part ${k} (CLI: --part ${k}); it serves the rest of ${operation.id} and does not advance the plan.`,
+    next: (k) => `call ${tool} again with part ${k} (CLI: ${jobFlags(args, caller)} --part ${k}); it serves the rest of ${operation.id} and does not advance the plan.`,
     onServed: (n, parts) => recordOperationPart(ctx, design, operation, n, parts.length),
   });
   return note ? answer.replace("\n", `\n${note}\n`) : answer;
@@ -600,7 +600,7 @@ function recordOperationPart(ctx, design, operation, n, total) {
   saveDesign(ctx, design);
 }
 
-export function implementationOperation(ctx, args) {
+export function implementationOperation(ctx, args, caller) {
   const tool = "design-implementation-operation";
   const { design } = jobDesign(ctx, args, tool);
   const operations = design.path.operations;
@@ -611,7 +611,7 @@ export function implementationOperation(ctx, args) {
       throw new RuntimeError(`${tool} rejected: ${served.id} is served and not closed yet; close it with design-implementation-operation-close before asking for ${requested}.`);
     }
     const note = arg(args, "part") === undefined ? `${served.id} was already served and is not closed: implement it, then call design-implementation-operation-close.` : null;
-    return serveText(ctx, design, served, note, args);
+    return serveText(ctx, design, served, note, args, caller);
   }
   let operation;
   if (requested) {
@@ -635,7 +635,7 @@ export function implementationOperation(ctx, args) {
   design.servedOperation = operation.id;
   touch(ctx, design, "served", `${operation.id} served${requested ? " on the developer's authorisation" : ""}`);
   saveDesign(ctx, design);
-  return serveText(ctx, design, operation, null, args);
+  return serveText(ctx, design, operation, null, args, caller);
 }
 
 export function implementationOperationClose(ctx, args) {

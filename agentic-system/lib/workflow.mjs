@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createDesign, designExists } from "./design-store.mjs";
 import { readArtifactBody, requireSession } from "./session.mjs";
-import { RuntimeError, arg, iso, readJson, requireId, requireString, servePart, writeJson } from "./util.mjs";
+import { RuntimeError, arg, iso, jobFlags, readJson, requireId, requireString, servePart, writeJson } from "./util.mjs";
 
 // workflow-types.yaml is generated with a fixed, simple shape; this reader accepts exactly that shape.
 function loadWorkflowTypes(ctx) {
@@ -103,25 +103,25 @@ function serve(ctx, job) {
 
 // A long instruction is served in parts that start at a paragraph. workflow-step-next always serves part 1;
 // the rest of the same instruction comes from workflow-step-pending, which never advances the workflow.
-function servePartOf(ctx, job, args, tool) {
+function servePartOf(ctx, job, args, tool, caller) {
   return servePart(serve(ctx, job), args, {
     tool,
     limit: ctx.partLimit,
     starts: (line, previous) => line.trim() !== "" && previous !== undefined && previous.trim() === "",
-    next: (k) => `call workflow-step-pending with part ${k} (CLI: --part ${k}) to read the rest of instruction ${job.currentStep}; it does not advance the workflow.`,
+    next: (k) => `call workflow-step-pending with part ${k} (CLI: ${jobFlags(job, caller)} --part ${k}) to read the rest of instruction ${job.currentStep}; it does not advance the workflow.`,
   });
 }
 
-export function stepPending(ctx, args) {
+export function stepPending(ctx, args, caller) {
   const job = loadJob(ctx, args, "workflow-step-pending");
   if (job.currentStep === 0) {
     job.currentStep = 1;
     saveJob(ctx, job);
   }
-  return servePartOf(ctx, job, args, "workflow-step-pending");
+  return servePartOf(ctx, job, args, "workflow-step-pending", caller);
 }
 
-export function stepNext(ctx, args) {
+export function stepNext(ctx, args, caller) {
   const job = loadJob(ctx, args, "workflow-step-next");
   if (job.currentStep === 0) throw new RuntimeError("workflow-step-next failed: request the first instruction with workflow-step-pending.");
   if (job.currentStep >= job.steps.length) {
@@ -131,5 +131,5 @@ export function stepNext(ctx, args) {
   }
   job.currentStep += 1;
   saveJob(ctx, job);
-  return servePartOf(ctx, job, { part: 1 }, "workflow-step-next");
+  return servePartOf(ctx, job, { part: 1 }, "workflow-step-next", caller);
 }
