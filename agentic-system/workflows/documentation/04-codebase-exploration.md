@@ -30,12 +30,12 @@ After Pass F, produce the outputs the including instruction defines (Pass G).
   - listing directories merely to "see what is there";
   - re-running a search to verify what the cluster tools said;
   - substituting a search call for a failed cluster tool.
-- If a search call fails, record what remains unknown as an open point or a gap, or as a blocker when it stops the exploration.
+- If a search call fails, record what remains unknown as a gap, or as a blocker when it stops the exploration.
 
 ## Cluster-usage discipline
 - Prefer locating a component by reasoning on the cluster name and on the file names inside it; a `bash`/`grep`/`glob` search supplements the clusters, it is never the first move.
 - Cluster size is a scale signal, not a relevance proof. A large domain is where mechanisms concentrate; a small one is a leaf. Relevance comes from the work, never from the sound of the name.
-- When an expected domain is absent from the map, that absence is itself evidence about the codebase: record it as an open point or a gap instead of searching for it.
+- When an expected domain is absent from the map, that absence is itself evidence about the codebase: record it as a gap instead of searching for it.
 - When `#capability:codebase-cluster-files` answers that a cluster name is not found, re-read the map and use the exact name returned by `#capability:codebase-clusters`; never fall back to a file-system search.
 - The `Tests` and `General` low-confidence tiers are not domains: use them to find test infrastructure and residual files, never to infer a business boundary from them.
 
@@ -43,7 +43,7 @@ After Pass F, produce the outputs the including instruction defines (Pass G).
 - Read a file ONLY if your work cannot proceed without it.
 - Prefer the declaration surface — types, members, signatures, interfaces — over the implementation body. The exploration names the mechanism; it never re-derives it.
 - Read a full body only for the few components whose behaviour the work must state, and never dump a whole file when you need one member.
-- Never re-read a file, and never read a file your work does not need. When a question needs more reading than the components the work involves, it is a note, gap or open point, not a reason to read further.
+- Never re-read a file, and never read a file your work does not need. When a question needs more reading than the components the work involves, it is a note or a gap, not a reason to read further.
 - Do NOT follow dependency chains: do not read "the concrete implementation of a contract" or "the entity behind a facade" unless that file is one of the selected components.
 
 ## Failure arms

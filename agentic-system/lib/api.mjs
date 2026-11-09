@@ -22,7 +22,6 @@ export const handlers = {
   "session-artifact-read": (ctx, args) => session.artifactRead(ctx, args),
   "session-artifact-list": (ctx, args) => session.artifactList(ctx, args),
   "session-image-attach": (ctx, args) => session.imageAttach(ctx, args),
-  "session-execution-report-read": (ctx, args) => session.executionReport(ctx, args),
 
   "workflow-types-list": (ctx) => workflow.workflowTypesList(ctx),
   "workflow-job-activate": (ctx, args) => workflow.jobActivate(ctx, args),
@@ -30,16 +29,16 @@ export const handlers = {
   "workflow-step-next": (ctx, args, caller) => workflow.stepNext(ctx, args, caller),
 
   "design-obligations": (ctx, args) => design.rowTool(ctx, "design-obligations", args),
-  "design-open-points": (ctx, args) => design.rowTool(ctx, "design-open-points", args),
   "design-file-references": (ctx, args) => design.rowTool(ctx, "design-file-references", args),
   "design-decisions": (ctx, args) => design.rowTool(ctx, "design-decisions", args),
   "design-knowledge-references": (ctx, args) => design.knowledgeReferences(ctx, args),
   "design-overview": (ctx, args) => design.overview(ctx, args),
-  "design-submit": (ctx, args) => design.submit(ctx, args),
+  "design-contracts": (ctx, args) => design.sectionWrite(ctx, "design-contracts", args),
+  "design-file-system": (ctx, args) => design.sectionWrite(ctx, "design-file-system", args),
+  "design-operations": (ctx, args) => design.sectionWrite(ctx, "design-operations", args),
   "design-checks": (ctx, args) => design.checksTool(ctx, args),
   "design-snapshot": (ctx, args, caller) => design.snapshotTool(ctx, args, caller),
   "design-verification-view": (ctx, args, caller) => design.verificationViewTool(ctx, args, caller),
-  "design-implementation-context": (ctx, args, caller) => design.implementationContextTool(ctx, args, caller),
   "design-implementation-operation": (ctx, args, caller) => design.implementationOperation(ctx, args, caller),
   "design-implementation-operation-close": (ctx, args) => design.implementationOperationClose(ctx, args),
   "design-document": (ctx, args) => design.documentTool(ctx, args),
@@ -66,12 +65,13 @@ export const handlers = {
 // arguments at the top level.
 export const REQUEST_TOKENS = new Set([
   "design-obligations",
-  "design-open-points",
   "design-file-references",
   "design-decisions",
   "design-knowledge-references",
   "design-overview",
-  "design-submit",
+  "design-contracts",
+  "design-file-system",
+  "design-operations",
   "design-approve",
   "design-operation-status",
   "design-iteration-open",
@@ -102,7 +102,6 @@ export const ARGUMENTS = {
   "session-artifact-read": [...SESSION, "artifact", "artifactId", "artifactName", "name"],
   "session-artifact-list": SESSION,
   "session-image-attach": [...SESSION, ...FRONT_MATTER, "blobUrl"],
-  "session-execution-report-read": SESSION,
   "workflow-types-list": [],
   "workflow-job-activate": [...JOB, "agentName", "designId", "workflowType"],
   "workflow-step-pending": [...JOB, "part"],
@@ -110,7 +109,6 @@ export const ARGUMENTS = {
   "design-checks": [...JOB, "acceptExternalEdit"],
   "design-snapshot": [...JOB, "part", "revision", "section", "ids"],
   "design-verification-view": [...JOB, "part", "revision"],
-  "design-implementation-context": [...JOB, "part", "revision"],
   "design-implementation-operation": [...JOB, "operationId", "id", "part"],
   "design-implementation-operation-close": JOB,
   "design-document": JOB,
@@ -185,7 +183,7 @@ export async function call(ctx, token, args = {}, caller = {}) {
   const refused = unknownArguments(token, args);
   if (refused) return { output: refused, exitCode: 1 };
   try {
-    // A design call reads, changes and seals design.json: parallel design-submit calls run one after the other.
+    // A design call reads, changes and seals design.json: parallel design writes run one after the other.
     const run = () => handler(ctx, unwrapRequest(token, args), caller);
     const result = await (token.startsWith("design-") ? withLock(join(ctx.runtimeRoot, ".design-lock"), run) : run());
     return bounded(ctx, token, typeof result === "string" ? { output: result, exitCode: 0 } : result);

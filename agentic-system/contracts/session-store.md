@@ -84,6 +84,4 @@ Copy the file, or download the URL, to `artifacts/<name>.<ext>` and write `artif
 
 Attaching persists an image; it does not look at it. Looking at an image is `#capability:visual-evidence`, the model's own vision.
 
-## session-execution-report
-
-`session-execution-report-read` — arguments `sessionId`. Answer the captured empty report, `[]`: nothing in the served workflows reports an entry, so no file holds one (Lab-authored; the captures show only `[]`, and upstream's current session folders hold no report).
+There is no execution report: upstream stopped exposing `read_current_execution_report` in 3.0.1 and removed its capture in run 4 (3.0.3), so the runtime no longer serves it.

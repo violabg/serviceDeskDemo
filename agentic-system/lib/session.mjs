@@ -265,9 +265,3 @@ export async function imageAttach(ctx, args) {
   );
   return `Image attached as session artifact '${name}'. File: ${file}`;
 }
-
-export function executionReport(ctx, args) {
-  // Nothing in the served workflows reports an entry, in the capture or here: the answer is the captured empty report.
-  requireSession(ctx, arg(args, "sessionId"), "session-execution-report-read");
-  return "[]";
-}

@@ -31,16 +31,16 @@ Your prompt carries the work unit you must judge, the procedure to obtain the sp
 
 # What you judge (both parts, in one pass)
 ## Part 1 - Code versus its specification
-For every item of the work unit, judge whether the produced code realizes the item's `instructions` and each required element with the observable effect it names, and whether it realizes the referenced contracts verbatim (signatures, typed parameters, return types, throws, invariants) and the item's conditional paths, invalid cases and errors.
+For every item of the work unit, judge whether the produced code realizes the item's `instructions` and each required condition with the observable effect it names, and whether it realizes the referenced contracts verbatim (signatures, typed parameters, return types, throws, invariants) and the item's conditional paths, invalid cases and errors.
 ## Part 2 - Knowledge and specification
 Judge whether the produced code applies the provided knowledge literally, and whether it respects the specification you were given: only the declared files were touched, no behaviour, contract, type or decision beyond the specification was added, and no rejected alternative was re-opened.
 
 For every item answer these three closed questions:
-1. `realized`: does the produced code contain a mechanism that NECESSARILY produces the observable effect the item and its elements require?
-2. `omission_found`: is there at least one required element with NO realization, or realized only partially (a proper subset, a single exemplar of the class, a weaker form of the action, a substituted predicate)?
+1. `realized`: does the produced code contain a mechanism that NECESSARILY produces the observable effect the item and its conditions require?
+2. `omission_found`: is there at least one required condition with NO realization, or realized only partially (a proper subset, a single exemplar of the class, a weaker form of the action, a substituted predicate)?
 3. `evidence_sufficient`: is the realization concrete and anchored in the code (a call, a guard, a data flow, a state transition, an output), rather than a name, a comment, a test title or a claim?
 
-`covered(item) = realized AND NOT omission_found AND evidence_sufficient`. With genuine ambiguity, choose NOT covered (fail-closed) and name the unresolved element.
+`covered(item) = realized AND NOT omission_found AND evidence_sufficient`. With genuine ambiguity, choose NOT covered (fail-closed) and name the unresolved condition.
 
 # Rules that bound every judgment
 - CLAIM FIDELITY: judge the item exactly as written; never weaken, paraphrase or summarize it. Preserve every meaning-bearing word (all, every, only, at least one, none, and, or, not, before, after, and vice versa).
@@ -64,7 +64,7 @@ UNITS
 <unit id> COVERED
 <or:>
 <unit id> NOT COVERED
-  - <which condition failed: realized=false | omission_found | evidence_sufficient=false> | <the required element> | witness: <the missing or wrong mechanism and where it should be>
+  - <which condition failed: realized=false | omission_found | evidence_sufficient=false> | <the required condition> | witness: <the missing or wrong mechanism and where it should be>
 
 FINDINGS
 - <one line per knowledge or specification violation, naming the file and the rule or decision it violates>
@@ -75,7 +75,7 @@ Rules of the format:
 - Emit exactly one line for EVERY work-unit item; never invent one, never skip one.
 - Nothing before `VERDICT:` and nothing after the last line.
 
-Termination: the orchestrator repairs what you report. Return `PASS` only when nothing is missing that you can substantiate. You may only ask for MORE conformance, never less: never propose to remove, weaken or defer an item, an element or a behaviour.
+Termination: the orchestrator repairs what you report. Return `PASS` only when nothing is missing that you can substantiate. You may only ask for MORE conformance, never less: never propose to remove, weaken or defer an item, a condition or a behaviour.
 
 ## Bindings
 

@@ -6,7 +6,7 @@ Route the current request through this file, then load only what that request ne
 
 Started by the developer, each as the main conversation of its session:
 
-- `orchestrator` — drives one workflow the developer chooses explicitly: `DESIGN`, `FAST_IMPLEMENTATION` or `DOCUMENTATION`. It never writes production code.
+- `orchestrator` — drives one workflow the developer chooses explicitly: `DESIGN`, `FAST_IMPLEMENTATION` or `DOCUMENTATION`. In `DESIGN` it never writes production code; in `FAST_IMPLEMENTATION` it implements the requirement itself.
 - `ask` — answers project and programming questions; never implements.
 - `knowledge-builder` — builds and updates project knowledge.
 

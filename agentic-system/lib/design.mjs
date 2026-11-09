@@ -1,13 +1,13 @@
-// Design operations (contracts/design-model.md): row writes with server-assigned immutable ids, the design
-// submission, approval, operation status and implementation iterations.
+// Design operations (contracts/design-model.md): row writes with server-assigned immutable ids, the section writes
+// (contracts, filesystem, operations), approval, operation status and implementation iterations.
 import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
-import { compactFindings, crowdedPlaceholders, overviewFindings, reportedChecks } from "./checks.mjs";
+import { reportedChecks } from "./checks.mjs";
 import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
 import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./knowledge.mjs";
-import { authorisationOf, isAutomatic, isDone, unmetDependencies, weightOf } from "./plan.mjs";
-import { implementationContext, servedOperation, snapshot, snapshotIndex, snapshotSelection, verificationView } from "./projections.mjs";
+import { authorisationOf, batchOf, isDone, nextAutomatic, unmetDependencies } from "./plan.mjs";
+import { servedOperation, snapshot, snapshotIndex, snapshotSelection, verificationView } from "./projections.mjs";
 import { validate } from "./schema.mjs";
 import { RuntimeError, arg, iso, jobFlags, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
@@ -66,26 +66,9 @@ function jobDesign(ctx, args, tool, options) {
 
 const ROW_TABLES = {
   "design-obligations": { def: "obligation", collection: "obligations", counter: "obligation", prefix: "O" },
-  "design-open-points": { def: "openPoint", collection: "openPoints", counter: "openPoint", prefix: "OP" },
   "design-file-references": { def: "fileReference", collection: "fileReferences", counter: "fileReference", prefix: "FR" },
   "design-decisions": { def: "decision", collection: "decisions", counter: "decision", prefix: "D" },
 };
-
-function applyElements(target, elements, tool) {
-  target.elements ??= [];
-  target.elementCounter ??= target.elements.reduce((max, e) => Math.max(max, e.id), 0);
-  for (const element of elements) {
-    if (element.id !== undefined) {
-      const index = target.elements.findIndex((e) => e.id === element.id);
-      if (index === -1) throw new RuntimeError(`${tool} rejected: ${target.id} has no element ${element.id}`);
-      if (element.removed) target.elements.splice(index, 1);
-      else Object.assign(target.elements[index], { ...element, id: element.id });
-    } else if (!element.removed) {
-      target.elementCounter += 1;
-      target.elements.push({ id: target.elementCounter, kind: element.kind, text: element.text, sourceSpan: element.sourceSpan });
-    }
-  }
-}
 
 function applyOptions(decision, options) {
   decision.options ??= [];
@@ -108,17 +91,18 @@ function applyOptions(decision, options) {
 
 function mergeFileReference(row, incoming) {
   if (incoming.scope) row.scope = incoming.scope;
+  if (incoming.definitionPath) row.definitionPath = incoming.definitionPath;
   row.files = [...new Set([...(row.files ?? []), ...(incoming.files ?? []), ...(incoming.details ?? []).map((d) => d.path)])];
   const details = new Map((row.details ?? []).map((d) => [d.path, d]));
   for (const detail of incoming.details ?? []) details.set(detail.path, { ...details.get(detail.path), ...detail });
   row.details = [...details.values()];
 }
 
-// Lab-authored: `outline` answers the ids a later anchor needs, one obligation per line, so an agent does not read
-// and script over every row to get them. Agents did this by hand in both issue 11 sessions.
+// Lab-authored: `outline` answers the ids an operation's refObligations need, one obligation per line with its claim
+// on one line, so an agent does not read and script over every row to get them.
 function obligationOutline(obligations, ids) {
   const selected = ids.length ? obligations.filter((o) => ids.includes(o.id)) : obligations;
-  return selected.map((o) => `${o.id}: ${o.elements?.length ? o.elements.map((e) => `${o.id}.${e.id} ${e.kind}`).join(", ") : "(no elements)"}`).join("\n");
+  return selected.map((o) => `${o.id}: ${(o.behavior ?? "").replace(/\s*\n\s*/g, " ").trim()}`).join("\n");
 }
 
 export function rowTool(ctx, tool, args) {
@@ -153,12 +137,9 @@ export function rowTool(ctx, tool, args) {
         }
         design.counters[table.counter] += 1;
         const id = `${table.prefix}${design.counters[table.counter]}`;
-        const { elements, options, ...fields } = row;
+        const { options, ...fields } = row;
         const record = { id, ...fields };
-        if (tool === "design-obligations") {
-          record.origin ??= "Requirement";
-          applyElements(record, elements ?? [], tool);
-        }
+        if (tool === "design-obligations") record.origin ??= "Requirement";
         if (tool === "design-decisions") {
           record.highlight = Boolean(record.highlight);
           applyOptions(record, options ?? []);
@@ -181,10 +162,9 @@ export function rowTool(ctx, tool, args) {
       for (const row of rows) {
         const record = collection.find((r) => r.id === row.id);
         if (!record) throw new RuntimeError(`${tool} rejected: ${row.id ?? "(no id)"} does not exist`);
-        const { id, elements, options, ...fields } = row;
+        const { id, options, ...fields } = row;
         if (tool === "design-file-references") mergeFileReference(record, row);
         else Object.assign(record, fields);
-        if (elements) applyElements(record, elements, tool);
         if (options) applyOptions(record, options);
         updated.push(id);
       }
@@ -308,12 +288,6 @@ export function overview(ctx, args) {
   const { design } = jobDesign(ctx, args, tool);
   const request = requestOf(ctx, args, "overview", tool);
   if (request.operation === "Read") return linedJson(design.overview);
-  const gaps = request.gaps ?? design.overview.gaps;
-  const errors = request.gaps !== undefined ? overviewFindings(design, gaps) : [];
-  if (request.gaps !== undefined && design.obligations.length === 0) {
-    for (const ref of crowdedPlaceholders(gaps)) errors.push({ rule: "overview-gap-placeholders-crowded", element: "gaps", detail: `{{${ref}}} is too close to the next placeholder` });
-  }
-  if (errors.length) return { output: linedJson({ status: "Rejected", errors: compactFindings(errors) }), exitCode: 1 };
   if (request.currentState !== undefined) design.overview.currentState = request.currentState;
   if (request.gaps !== undefined) design.overview.gaps = request.gaps;
   touch(ctx, design, "updated", "design-overview");
@@ -321,133 +295,161 @@ export function overview(ctx, args) {
   return JSON.stringify({ status: design.status, currentState: Boolean(design.overview.currentState), gaps: Boolean(design.overview.gaps) });
 }
 
-// --- design submit ----------------------------------------------------------------------------------
+// --- section writes: contracts, filesystem, operations -----------------------------------------------------
 
-const SUBMIT_TABLES = {
-  contracts: { prefix: "CT", counter: "contract", get: (d) => d.path.contracts, set: (d, v) => (d.path.contracts = v) },
-  apis: { prefix: "API", counter: "api", get: (d) => d.path.apis, set: (d, v) => (d.path.apis = v) },
-  files: { prefix: "FS", counter: "pathFile", get: (d) => d.path.filesystem.files, set: (d, v) => (d.path.filesystem.files = v) },
-  operations: { prefix: "IM", counter: "operation", get: (d) => d.path.operations, set: (d, v) => (d.path.operations = v) },
+const TABLES = {
+  contracts: { prefix: "CT", counter: "contract", owner: "design-contracts", get: (d) => d.path.contracts },
+  apis: { prefix: "API", counter: "api", owner: "design-contracts", get: (d) => d.path.apis },
+  files: { prefix: "FS", counter: "pathFile", owner: "design-file-system", get: (d) => d.path.filesystem.files },
+  operations: { prefix: "IM", counter: "operation", owner: "design-operations", get: (d) => d.path.operations },
 };
 
-// Converts cardinal references to the persisted prefixed form.
+const SECTIONS = {
+  "design-contracts": { def: "contractsRequest", keys: ["header", "add", "patch", "delete"] },
+  "design-file-system": { def: "fileSystemRequest", keys: ["header", "add", "patch", "delete"] },
+  "design-operations": { def: "operationsRequest", keys: ["header", "add", "patch", "delete", "order"] },
+};
+
+const ownTables = (tool) => Object.keys(TABLES).filter((table) => TABLES[table].owner === tool);
+
+const cardinalOf = (table, id) => Number(id.slice(TABLES[table].prefix.length));
+
+// Converts the cardinal references of an operation to the persisted prefixed form.
 function persistRow(table, row) {
-  const { id, ...fields } = row;
-  const record = { ...fields };
+  const { id, ...record } = row;
   if (table === "operations") {
-    if (fields.dependsOn) record.dependsOn = fields.dependsOn.map((n) => `IM${n}`);
-    if (fields.refObligations) record.refObligations = fields.refObligations.map((n) => `O${n}`);
-    if (fields.refElements) record.refElements = fields.refElements.map((r) => `O${r.obligation}.${r.element}`);
+    const prefixed = (prefix) => (n) => `${prefix}${n}`;
+    if (record.dependsOn) record.dependsOn = record.dependsOn.map(prefixed("IM"));
+    if (record.refObligations) record.refObligations = record.refObligations.map(prefixed("O"));
+    if (record.refContracts) record.refContracts = record.refContracts.map(prefixed("CT"));
+    if (record.refApis) record.refApis = record.refApis.map(prefixed("API"));
+    if (record.fileReferences) record.fileReferences = record.fileReferences.map((ref) => (/^\d+$/.test(String(ref)) ? `FR${ref}` : String(ref)));
   }
   return record;
 }
 
-export function submit(ctx, args) {
-  const tool = "design-submit";
+// Problems a valid operation row can still have: references to rows of other sections that do not exist yet.
+function operationRowProblems(design, row) {
+  const problems = [];
+  const unknownKids = (row.knowledgeReferences ?? []).filter((kid) => !design.knowledgeReferences.some((r) => r.kid === kid));
+  if (unknownKids.length) problems.push(`knowledgeReferences names kid ${unknownKids.join(", ")}, which no knowledge reference registers; register it with design-knowledge-references first`);
+  const unknownDecisions = (row.realizes ?? []).filter((ref) => !design.decisions.some((d) => d.id === ref));
+  if (unknownDecisions.length) problems.push(`realizes names ${unknownDecisions.join(", ")}, which no decision declares; write the decision with design-decisions first`);
+  return problems;
+}
+
+// One section write. The call is all or nothing: a rejected row, a table of another section or a wrong `order`
+// rejects the whole call, and nothing is applied. The tool runs no mechanical checks: design-checks does.
+export function sectionWrite(ctx, tool, args) {
+  const section = SECTIONS[tool];
   refuseUnknown(args, tool);
   const request = arg(args, "request");
-  if (!request || typeof request !== "object" || Object.keys(request).length === 0) {
+  if (!request || typeof request !== "object" || Array.isArray(request) || Object.keys(request).length === 0) {
     throw new RuntimeError(`${tool} rejected: an empty request is never acceptable; send sessionId, jobId and request.`);
   }
   const { design } = jobDesign(ctx, args, tool);
-  // Validate the envelope; row-level problems are reported per row as `rejected`, not as a failed call.
   const root = schema(ctx);
-  const envelope = { header: request.header, delete: request.delete };
-  check(ctx, null, { sessionId: arg(args, "sessionId"), jobId: arg(args, "jobId"), request: Object.fromEntries(Object.entries(envelope).filter(([, v]) => v !== undefined)) }, tool);
-  for (const key of Object.keys(request)) {
-    if (!["header", "add", "patch", "delete"].includes(key)) {
-      throw new RuntimeError(`${tool} rejected`, { status: "Rejected", errors: [{ rule: "invalid-request", element: tool, detail: `/request/${key}: the JSON property '${key}' could not be mapped; the allowed properties are header, add, patch, delete` }] });
-    }
-  }
-  const applied = { added: [], patched: [], deleted: [] };
   const rejected = [];
+  const reject = (path, message) => rejected.push({ path, message });
+  const unmapped = (table) => `the JSON property '${table}' could not be mapped; the allowed properties are ${ownTables(tool).join(", ")}`;
 
-  if (request.header) {
-    for (const [key, value] of Object.entries(request.header)) if (value) design.path[key] = value;
+  for (const key of Object.keys(request)) {
+    if (!section.keys.includes(key)) reject(key, `the JSON property '${key}' could not be mapped; the allowed properties are ${section.keys.join(", ")}`);
   }
+  if (request.header !== undefined) for (const message of validate(root.$defs.header, request.header, root, "header")) reject("header", message);
 
-  for (const [table, rows] of Object.entries(request.delete ?? {})) {
-    const spec = SUBMIT_TABLES[table];
-    for (const n of rows) {
+  // delete: { table: [cardinal ids] }
+  const deletions = [];
+  for (const [table, ids] of Object.entries(request.delete ?? {})) {
+    const spec = TABLES[table];
+    if (!spec || spec.owner !== tool) {
+      reject(`delete.${table}`, spec ? `rejected here — ${table} belong to ${spec.owner}` : unmapped(table));
+      continue;
+    }
+    for (const n of Array.isArray(ids) ? ids : []) {
       const id = `${spec.prefix}${n}`;
-      const current = spec.get(design);
-      if (!current.some((r) => r.id === id)) rejected.push({ path: `delete.${table}`, id, reason: "does not exist" });
-      else {
-        spec.set(design, current.filter((r) => r.id !== id));
-        applied.deleted.push(id);
-      }
+      if (!spec.get(design).some((r) => r.id === id)) reject(`delete.${table}`, `${id} does not exist`);
+      else deletions.push({ table, id });
     }
   }
+
+  // add and patch: { table: [rows] }
+  const writes = [];
   for (const mode of ["add", "patch"]) {
     const block = request[mode];
-    if (!block) continue;
-    if (typeof block !== "object" || Array.isArray(block)) {
-      rejected.push({ path: mode, id: null, reason: "must be an object of tables" });
+    if (block === undefined) continue;
+    if (!block || typeof block !== "object" || Array.isArray(block)) {
+      reject(mode, "must be an object of tables");
       continue;
     }
     for (const [table, rows] of Object.entries(block)) {
-      const spec = SUBMIT_TABLES[table];
-      if (!spec) {
-        rejected.push({ path: `${mode}.${table}`, id: null, reason: `the JSON property '${table}' could not be mapped; the allowed properties are ${Object.keys(SUBMIT_TABLES).join(", ")}` });
+      const spec = TABLES[table];
+      if (!spec || spec.owner !== tool) {
+        reject(`${mode}.${table}`, spec ? `rejected here — ${table} belong to ${spec.owner}` : unmapped(table));
         continue;
       }
-      const accepted = [];
-      (rows ?? []).forEach((row, index) => {
-        const errors = validate(root.$defs.submitRows.properties[table].items, row, root, `${mode}.${table}[${index}]`);
-        const id = Number.isInteger(row?.id) ? `${spec.prefix}${row.id}` : null;
-        if (errors.length) {
-          rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: errors.join("; ") });
-          return;
-        }
-        const unknownKids = (row.knowledgeReferences ?? []).filter((kid) => !design.knowledgeReferences.some((r) => r.kid === kid));
-        if (unknownKids.length) {
-          rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: `knowledgeReferences names kid ${unknownKids.join(", ")}, which no knowledge reference registers; register it with design-knowledge-references first` });
-          return;
-        }
-        const unknownDecisions = (row.realizes ?? []).filter((ref) => !design.decisions.some((d) => d.id === ref));
-        if (unknownDecisions.length) {
-          rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: `realizes names ${unknownDecisions.join(", ")}, which no decision declares; write the decision with design-decisions first` });
-          return;
-        }
-        const current = spec.get(design);
-        const existing = current.find((r) => r.id === id);
-        if (mode === "add") {
-          if (existing || accepted.some((r) => r.id === id)) {
-            rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: "already exists" });
-            return;
-          }
-          const record = { id, ...persistRow(table, row) };
-          if (table === "operations") record.implementationStatus ??= null;
-          accepted.push(record);
-          design.counters[spec.counter] = Math.max(design.counters[spec.counter], row.id);
-          applied.added.push(id);
-        } else {
-          if (!existing) {
-            rejected.push({ path: `${mode}.${table}[${index}]`, id, reason: "does not exist" });
-            return;
-          }
-          Object.assign(existing, persistRow(table, row));
-          applied.patched.push(id);
-        }
+      (Array.isArray(rows) ? rows : []).forEach((row, index) => {
+        const path = `${mode}.${table}[${index}]`;
+        const errors = validate(root.$defs[table === "apis" ? "api" : table.slice(0, -1)], row, root, path);
+        if (errors.length) return reject(path, errors.join("; "));
+        if (table === "operations") for (const problem of operationRowProblems(design, row)) reject(path, problem);
+        const id = `${spec.prefix}${row.id}`;
+        const exists = spec.get(design).some((r) => r.id === id);
+        const repeated = writes.some((w) => w.table === table && w.mode === mode && w.id === id);
+        if (mode === "add" && (exists || repeated)) reject(path, `${id} already exists`);
+        if (mode === "patch" && !exists && !writes.some((w) => w.table === table && w.mode === "add" && w.id === id)) reject(path, `${id} does not exist; add it first`);
+        writes.push({ mode, table, id, row });
       });
-      // A call's rows keep their order and go before the first stored row with a higher id, so parallel calls
-      // with disjoint ranges build the same plan whichever arrives first. Stored rows are never reordered.
-      if (accepted.length) {
-        const cardinal = (record) => Number(record.id.slice(spec.prefix.length));
-        const lowest = Math.min(...accepted.map(cardinal));
-        const current = spec.get(design);
-        const at = current.findIndex((record) => cardinal(record) > lowest);
-        current.splice(at === -1 ? current.length : at, 0, ...accepted);
-      }
     }
   }
-  const changed = applied.added.length + applied.patched.length + applied.deleted.length > 0 || request.header;
-  if (changed) {
-    touch(ctx, design, "submitted", `design-submit: +${applied.added.join(",") || "-"} ~${applied.patched.join(",") || "-"} x${applied.deleted.join(",") || "-"}`);
-    saveDesign(ctx, design);
+
+  // order: a permutation of the operations that exist after the call.
+  if (request.order !== undefined) {
+    const after = new Set(design.path.operations.map((op) => op.id));
+    for (const { id } of deletions) after.delete(id);
+    for (const w of writes) if (w.mode === "add") after.add(w.id);
+    const order = Array.isArray(request.order) ? request.order.map((n) => `IM${n}`) : [];
+    const permutation = order.length === after.size && new Set(order).size === order.length && order.every((id) => after.has(id));
+    if (!permutation) reject("order", `order must name every operation once (${[...after].join(", ") || "none"}); it named ${order.join(", ") || "none"}`);
   }
-  const findings = reportedChecks(design);
-  return linedJson({ status: design.status, applied, rejected, errors: findings.errors, warnings: findings.warnings, coverage: findings.coverage });
+
+  const applied = { added: [], patched: [], deleted: [] };
+  if (rejected.length) return { output: linedJson({ status: design.status, applied, rejected }), exitCode: 1 };
+
+  if (request.header) for (const [key, value] of Object.entries(request.header)) if (value) design.path[key] = value;
+  for (const { table, id } of deletions) {
+    const rows = TABLES[table].get(design);
+    rows.splice(rows.findIndex((r) => r.id === id), 1);
+    applied.deleted.push(id);
+  }
+  // Added rows keep their call order and go before the first stored row with a higher id, so parallel calls with
+  // disjoint ranges build the same plan whichever arrives first. Stored rows are never reordered except by `order`.
+  for (const table of Object.keys(TABLES)) {
+    const added = writes.filter((w) => w.mode === "add" && w.table === table);
+    if (!added.length) continue;
+    const spec = TABLES[table];
+    const records = added.map((w) => ({ id: w.id, ...persistRow(table, w.row), ...(table === "operations" ? { implementationStatus: null } : {}) }));
+    const rows = spec.get(design);
+    const lowest = Math.min(...records.map((r) => cardinalOf(table, r.id)));
+    const at = rows.findIndex((r) => cardinalOf(table, r.id) > lowest);
+    rows.splice(at === -1 ? rows.length : at, 0, ...records);
+    for (const w of added) {
+      design.counters[spec.counter] = Math.max(design.counters[spec.counter], w.row.id);
+      applied.added.push(w.id);
+    }
+  }
+  for (const w of writes.filter((x) => x.mode === "patch")) {
+    Object.assign(TABLES[w.table].get(design).find((r) => r.id === w.id), persistRow(w.table, w.row));
+    applied.patched.push(w.id);
+  }
+  if (request.order !== undefined) {
+    const byId = new Map(design.path.operations.map((op) => [op.id, op]));
+    design.path.operations = request.order.map((n) => byId.get(`IM${n}`));
+  }
+
+  touch(ctx, design, "updated", `${tool}: +${applied.added.join(",") || "-"} ~${applied.patched.join(",") || "-"} x${applied.deleted.join(",") || "-"}${request.order ? " (reordered)" : ""}`);
+  saveDesign(ctx, design);
+  return linedJson({ status: design.status, applied, rejected });
 }
 
 // --- reads --------------------------------------------------------------------------------------------
@@ -466,7 +468,7 @@ export function checksTool(ctx, args) {
 
 function validateDesignShape(design) {
   const errors = [];
-  for (const key of ["obligations", "openPoints", "fileReferences", "decisions", "iterations"]) {
+  for (const key of ["obligations", "fileReferences", "decisions", "iterations"]) {
     if (!Array.isArray(design[key])) errors.push({ rule: "invalid-design", element: key, detail: `${key} must be an array` });
   }
   if (!design.path || !Array.isArray(design.path.operations)) errors.push({ rule: "invalid-design", element: "path", detail: "path.operations must be an array" });
@@ -564,26 +566,14 @@ export function operationStatus(ctx, args) {
 
 // --- implementation loop ------------------------------------------------------------------------------
 
-export function implementationContextTool(ctx, args, caller) {
-  const tool = "design-implementation-context";
-  const { job, design } = jobDesign(ctx, args, tool);
-  // Parts start at a section heading or at an item, so a row is never split.
-  return servePart(implementationContext(design, { withRequirement: job.workflowType === "FAST_IMPLEMENTATION" }), args, {
-    ...revisionGuard(design, args, tool, caller),
-    limit: ctx.partLimit,
-    starts: (line) => /^## /.test(line) || /^- /.test(line),
-  });
-}
-
 // The operation text is computed without the re-serve note, so a part means the same text on every call.
 function serveText(ctx, design, operation, note, args, caller) {
   const tool = "design-implementation-operation";
-  const weight = weightOf(operation);
   const knowledge = (operation.knowledgeReferences ?? []).map((kid) => {
     const reference = design.knowledgeReferences.find((r) => r.kid === kid);
     return reference ? { ...reference, ...resolveKnowledgeReference(ctx, reference) } : { kid, text: null, resolutionNote: `kid ${kid} is not registered` };
   });
-  const answer = servePart(servedOperation(operation, { weight, authorisation: authorisationOf(weight), knowledge }), args, {
+  const answer = servePart(servedOperation(design, operation, { batch: batchOf(operation), authorisation: authorisationOf(operation), knowledge }), args, {
     tool,
     limit: ctx.partLimit,
     starts: (line) => /^#{1,3} /.test(line),
@@ -625,10 +615,10 @@ export function implementationOperation(ctx, args, caller) {
     const unmet = unmetDependencies(operations, operation);
     if (unmet.length) throw new RuntimeError(`${tool} rejected: ${requested} depends on ${unmet.join(", ")}, which are not implemented yet; a declared dependency prevails over the developer's selection.`);
   } else {
-    operation = operations.find((op) => isAutomatic(op) && !isDone(op) && unmetDependencies(operations, op).length === 0);
+    operation = nextAutomatic(operations);
     if (!operation) {
       return operations.some((op) => !isDone(op))
-        ? "batch-complete: the automatic batch is exhausted. The operations that remain require the developer's explicit authorisation; return the control."
+        ? "batch-complete: the production and documentation batches are exhausted. The operations that remain (Testing, destructive, or waiting on one of them) require the developer's explicit selection; return the control."
         : "complete: every operation of the plan is implemented. Return the control.";
     }
   }
