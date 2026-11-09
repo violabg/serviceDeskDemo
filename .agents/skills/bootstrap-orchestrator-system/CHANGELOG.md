@@ -2,6 +2,20 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 6.0.0
+
+The workflows follow upstream 3.0.3. Runtime commands were removed and renamed and both code workflows changed shape, so this is a major version. Re-installing keeps the answers and sessions; a design written by 5.x stays readable and servable.
+
+- **DESIGN has eleven steps.** Obligations, knowledge, decisions, then the contracts, the filesystem and the operations in steps of their own. Step 9 is the orchestrator's adversarial review of its own design, ending at your approval; no verifier subagent is started. Step 10 hands the operations to the code implementor and reviews every work unit; step 11 is the wrap-up.
+- **FAST_IMPLEMENTATION has five steps** and no design: the orchestrator gathers the knowledge and implements the change itself, with its build and tests.
+- **Design writes.** `design-contracts`, `design-file-system` and `design-operations` replace `design-submit`. Each writes its own section, a call is all or nothing, and none runs the checks: call `design-checks` after them. `design-operations` takes `order` to reorder the plan.
+- **Removed:** `design-submit`, `design-open-points`, `design-implementation-context` and `session-execution-report-read`. Obligations no longer have elements, and overview gaps carry no `{{O#.k}}` anchors.
+- **Operations** are `Production`, `Documentation` or `Testing`. They name the contracts, APIs and file references they use, or the reason they need none, and can be marked destructive. Files can be `Deleted`. A decision can record a breaking change.
+- **Implementation loop:** the production batch, then the documentation batch; Testing and destructive operations only on your selection. Each served operation carries its overview, obligations, decisions, contracts, APIs, files, knowledge text and file references.
+- **Checks:** every contract and API must be realized by an operation, and a contract's file must be in the filesystem. The element, placeholder and Build rules are gone.
+- **Review document:** deleted files, a breaking-changes group, per-operation references and exemptions, and the operations that realize each contract and API.
+- The code implementor can search the codebase (Grep and Glob in Claude Code).
+
 ## 5.1.0
 
 Cheaper design runs, from an audit of real sessions. A target re-installed from this version keeps its answers and sessions.

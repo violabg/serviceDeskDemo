@@ -9,23 +9,22 @@ types:
       - design/02-image-intake
       - design/03-requirement-decomposition
       - design/04-knowledge-enrichment
-      - design/05-codebase-cold-start
-      - design/06-decision-consolidation
-      - design/07-design-walkthrough
-      - design/08-implementation
-      - design/09-terminal-handoff
+      - design/05-decision-consolidation
+      - design/06-contracts
+      - design/07-filesystem
+      - design/08-operations
+      - design/09-design-review
+      - design/10-implementation
+      - design/11-terminal-handoff
   - id: FAST_IMPLEMENTATION
     name: "Fast Implementation"
     description: "Smart and quick implementation workflow for simple requirements or mechanical tasks."
     steps:
       - shared/01-user-instruction-space
       - fast-implementation/02-intake
-      - fast-implementation/03-requirement-decomposition
-      - fast-implementation/04-knowledge
-      - fast-implementation/05-codebase-cold-start
-      - fast-implementation/06-implementation
-      - fast-implementation/07-validation
-      - fast-implementation/08-terminal-handoff
+      - fast-implementation/03-knowledge
+      - fast-implementation/04-implementation
+      - fast-implementation/05-terminal-handoff
   - id: DOCUMENTATION
     name: "Documentation"
     description: "Generate technical documentation."

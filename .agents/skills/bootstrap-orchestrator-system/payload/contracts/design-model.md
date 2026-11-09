@@ -1,8 +1,8 @@
 # Design model
 
-Lab-authored contract, derived from the captured design tools, the reference design artifact and the 3.0.1 design artifact and instructions (the implementation loop's serve and close have no tool capture). The runtime implements it in `runtime/lib/design.mjs` and `runtime/lib/design-store.mjs`. The runtime validates requests against `runtime/assets/design-requests.schema.json`; no command serves it, because upstream removed that tool. The argument descriptions of an operation are its section here, which `<token> --help` prints.
+Lab-authored contract, derived from the captured design tools, the reference design artifact and the 3.0.3 design artifact and instructions (the implementation loop's serve and close have no tool capture). The runtime implements it in `runtime/lib/design.mjs`, `runtime/lib/plan.mjs` and `runtime/lib/design-store.mjs`. The runtime validates requests against `runtime/assets/design-requests.schema.json`; no command serves it, because upstream removed that tool. The argument descriptions of an operation are its section here, which `<token> --help` prints.
 
-A DESIGN job produces one design; a FAST_IMPLEMENTATION job keeps its obligations, open points and knowledge references in a job design of its own, with no approval gate. A design lives in `sessions/<sessionId>/designs/<designId>/`:
+A DESIGN job produces one design. FAST_IMPLEMENTATION and DOCUMENTATION jobs have none, unless the job is started on an existing design (since 3.0.3 no FAST_IMPLEMENTATION step uses a design operation). A design lives in `sessions/<sessionId>/designs/<designId>/`:
 
 | File | What it is |
 | --- | --- |
@@ -18,28 +18,35 @@ A DESIGN job produces one design; a FAST_IMPLEMENTATION job keeps its obligation
   "schemaVersion": 2, "sessionId": "...", "designId": "...", "originJobId": "...",
   "status": "Draft | Approved", "approvedAt": null, "planName": null, "planDescription": null,
   "modifiedAfterApproval": false, "createdAt": "...", "updatedAt": "...",
-  "counters": { "obligation": 0, "openPoint": 0, "contract": 0, "api": 0, "pathFile": 0,
+  "counters": { "obligation": 0, "contract": 0, "api": 0, "pathFile": 0,
                 "operation": 0, "decision": 0, "fileReference": 0, "iteration": 0 },
   "obligations": [ { "id": "O1", "origin": "Requirement | Developer", "behavior": "...", "class": "...",
-                     "boundaries": "...", "sourceRef": "...",
-                     "elements": [ { "id": 1, "kind": "Guard", "text": "...", "sourceSpan": "..." } ] } ],
-  "openPoints": [ { "id": "OP1", "question": "...", "whyAskingMySelf": "..." } ],
-  "fileReferences": [ { "id": "FR1", "symbol": "Type.Member", "files": ["path"], "scope": "Production | Test",
-                        "details": [ { "path": "path", "why": "...", "purpose": "..." } ] } ],
+                     "boundaries": "...", "sourceRef": "..." } ],
+  "fileReferences": [ { "id": "FR1", "symbol": "Type.Member", "definitionPath": "path", "files": ["path"],
+                        "scope": "Production | Test",
+                        "details": [ { "path": "path", "line": 12, "why": "...", "purpose": "..." } ] } ],
   "knowledgeReferences": [ { "kid": 1, "fId": 4, "range": { "s": 3, "e": 9 }, "filePath": "core/changelog.md",
                              "scope": "Production | Test" } ],
-  "overview": { "currentState": "...", "gaps": "... {{O1.1}} ..." },
-  "decisions": [ { "id": "D1", "topic": "...", "question": "...", "source": "Requirements", "context": "...",
+  "overview": { "currentState": "...", "gaps": "..." },
+  "decisions": [ { "id": "D1", "topic": "...", "question": "...",
+                   "source": "Requirements | Codebase | InternalReasoning | BreakingChange", "context": "...",
                    "why": "...", "how": "...", "highlight": false,
                    "options": [ { "id": "D1.1", "text": "...", "chosen": true } ] } ],
-  "path": { "title": "...", "generator": "orchestrator", "requirementRef": null,
-            "contracts": [ { "id": "CT1", "...": "..." } ], "apis": [ { "id": "API1" } ],
-            "filesystem": { "files": [ { "id": "FS1", "path": "...", "status": "Added" } ] },
-            "operations": [ { "id": "IM1", "kind": "Code | NotCode | Commands | Testing | Build",
+  "path": { "title": "...", "generator": "orchestrator",
+            "contracts": [ { "id": "CT1", "type": "Interface", "module": "...", "file": "...", "signature": "...",
+                             "promises": "...", "premortem": [ { "what": "...", "mitigation": "..." } ] } ],
+            "apis": [ { "id": "API1", "method": "POST", "path": "/...", "purpose": "...", "auth": "...",
+                        "request": "...", "responses": [ { "status": "201", "description": "...", "body": "..." } ] } ],
+            "filesystem": { "files": [ { "id": "FS1", "path": "...", "status": "Added | Modified | Deleted",
+                                         "module": "...", "reason": "...", "change": "...", "impact": "..." } ] },
+            "operations": [ { "id": "IM1", "operation": "...", "kind": "Production | Documentation | Testing",
                               "testType": "Unit | Integration | E2E | Harness (Testing only)",
-                              "instructions": "{{O1.1}} ...", "dependsOn": ["IM0"],
-                              "files": [], "refObligations": ["O1"], "refElements": ["O1.1"], "knowledgeReferences": [1],
-                              "realizes": ["D1"],
+                              "instructions": "...", "dependsOn": ["IM0"], "files": [],
+                              "refObligations": ["O1"], "refContracts": ["CT1"], "refApis": ["API1"],
+                              "knowledgeReferences": [1], "fileReferences": ["FR1"],
+                              "referencesExemption": { "knowledge": "...", "file": "..." },
+                              "realizes": ["D1"], "source": "Design", "sourceRef": "...",
+                              "hasDestructiveSideEffects": false,
                               "branches": [], "negatives": [], "exceptions": [],
                               "implementationStatus": "null | InProgress | Implemented | Completed" } ] },
   "servedOperation": null,
@@ -50,15 +57,15 @@ A DESIGN job produces one design; a FAST_IMPLEMENTATION job keeps its obligation
 }
 ```
 
-Element `kind` is exactly one of `Direction | Conjunct | Quantifier | Guard | Effect | StateSemantics | Exception`; `Definition` is not a value.
+A design written before 3.0.3 may still hold obligation `elements`, `openPoints`, `refElements`, `path.requirementRef`, contract `confidence`/`evidence` and the operation kinds `Code`, `NotCode`, `Commands` and `Build`. The runtime keeps them as stored and no longer reads them, except the old kinds (see implementation-loop).
 
-**Identity.** The runtime assigns every id from `counters`, in order, and never renumbers, reuses or reorders one. The k-th element of an obligation is `O#.k`. Persisted references are prefixed (`IM1`, `O1.2`); `#capability:design-submit` takes cardinal numbers and converts them.
+**Identity.** The runtime assigns every id from `counters`, in order, and never renumbers or reuses one. Persisted references are prefixed (`IM1`, `O1`, `CT1`); the section writes take cardinal numbers and convert them.
 
 **Validation.** A payload with an unknown property is refused and nothing is applied. Every design operation takes `sessionId`, `jobId` and `request`; a request field sent beside them (for example `operation` at the top level) is refused as misplaced, naming the field, and nothing is applied. Error paths are absolute: `/request/operation`, `/request/rows/0/<field>`. The misplaced-field refusal and the absolute paths are Lab-authored: the captured server leaves them unspecified.
 
 ## row-writes
 
-`#capability:design-obligations`, `#capability:design-open-points`, `#capability:design-file-references`, `#capability:design-decisions` — arguments `sessionId`, `jobId`, `request`:
+`#capability:design-obligations`, `#capability:design-file-references`, `#capability:design-decisions` — arguments `sessionId`, `jobId`, `request`:
 
 ```json
 { "operation": "Add | Read | Update | Delete", "rows": [ ... ], "ids": [ "O1" ] }
@@ -71,13 +78,13 @@ Element `kind` is exactly one of `Direction | Conjunct | Quantifier | Guard | Ef
 | `Update` | each row names its `id`; only the fields sent change | `{"updated": ["O1"]}` |
 | `Delete` | removes the rows named by `ids` | `{"deleted": ["O1"]}` |
 
-`#capability:design-obligations` with `Read` also takes a top-level `outline: true` beside `request` (Lab-authored): the answer is one line per obligation, `O1: O1.1 Effect, O1.2 Guard`, or `O2: (no elements)`, which gives the anchors of the overview and the operations without reading every row. It holds no text, so a step that needs the obligations themselves still reads them. It is refused on any other operation and on any other table.
+`#capability:design-obligations` with `Read` also takes a top-level `outline: true` beside `request` (Lab-authored): the answer is one line per obligation, `O1: <its claim on one line>`, which gives the ids an operation's `refObligations` needs without reading every row. It is refused on any other operation and on any other table.
 
 Table rules:
 
-- **Obligations.** `origin` defaults to `Requirement`. On `Update`, an element with `id` is patched in place, an element without `id` is appended with the next element number, and an element with `removed: true` is deleted; a removed element number is never reused.
-- **Decisions.** Options get `D#.1`, `D#.2`, ... in the order sent. Exactly one option is chosen: on `Update`, the option sent with `chosen: true` becomes the only chosen one, every option keeps its id, and a new option without id is appended. `highlight` is honoured on `Add`. A decision carries no link to its operations: an operation cites it in `realizes`, and `realizedIn` is refused as an unknown property. `blocking`, its 3.0.0 name, is still accepted (the captured `design_decisions` sends it) and reads as `highlight` everywhere: the checks, the projections and the document.
-- **File references.** One row per symbol. Adding an existing symbol merges into that row; a `details` path missing from `files` is added to `files`. `scope` is `Production` (what governs the production code, the default for a row added without one) or `Test` (the test infrastructure: the test class to imitate, the base, helpers, builders, fakes); an update that sends no scope keeps the stored one.
+- **Obligations.** One closed claim each: `behavior`, `class`, `boundaries`, `sourceRef`. `origin` defaults to `Requirement`. Since 3.0.3 an obligation carries no elements: the run-4 `design_obligations` capture still shows them, but the 3.0.3 instructions, rendered design and checks dropped them (maintainer decision, 2026-11-09), so `elements` is refused as an unknown property.
+- **Decisions.** Options get `D#.1`, `D#.2`, ... in the order sent. Exactly one option is chosen: on `Update`, the option sent with `chosen: true` becomes the only chosen one, every option keeps its id, and a new option without id is appended. `highlight` is honoured on `Add`. `source` is `Requirements`, `Codebase` or `InternalReasoning`, or `BreakingChange` for a decision that records a break the design introduces (a broken contract signature, a broken public API, a changed persisted schema) instead of a provenance; the value name is Lab-authored, from the 3.0.3 instruction and the `breaking-change` the review document renders. A decision carries no link to its operations: an operation cites it in `realizes`, and `realizedIn` is refused as an unknown property. `blocking`, its 3.0.0 name, is still accepted and reads as `highlight` everywhere: the checks, the projections and the document.
+- **File references.** One row per symbol. Adding an existing symbol merges into that row; a `details` path missing from `files` is added to `files`. `definitionPath` names the file that defines the symbol and `details[].line` the line of a usage (both from the 3.0.3 instruction and rendered design; the run-4 capture predates them). `scope` is `Production` (what governs the production code, the default for a row added without one) or `Test` (the test infrastructure: the test class to imitate, the base, helpers, builders, fakes); an update that sends no scope keeps the stored one.
 
 ## knowledge-references
 
@@ -111,50 +118,58 @@ The request, the write response and the range error follow the 3.0.1 capture. La
 
 ## overview
 
-`#capability:design-overview` — arguments `sessionId`, `jobId`, `request: { currentState, gaps }` (or `{ "operation": "Read" }`).
+`#capability:design-overview` — arguments `sessionId`, `jobId`, `request: { currentState, gaps }` (or `{ "operation": "Read" }`). Written after the operations, as their final synthesis: the current state of the components involved and the gaps the design closes.
 
-When the design carries obligations, the write is refused unless `gaps` anchors every element as `{{O#.k}}` (an obligation with no elements as `{{O#}}`), names no unknown element, and follows every placeholder with at least the minimum number of words before the next one (contracts/design-checks.md). The anchor is a standing invariant: re-send the overview whenever an obligation is added.
+Response: `{"status": "Draft", "currentState": true, "gaps": true}`. Since 3.0.3 the gaps carry no `{{O#.k}}` anchors and the write runs no check; the run-4 `design_overview` capture still describes the anchors and was not re-captured (recorded 2026-11-09).
 
-Response: `{"status": "Draft", "currentState": true, "gaps": true}`, or `{"status": "Rejected", "errors": [ { "rule", "element", "detail" } ]}`.
+## section-writes
 
-## design-submit
-
-A row or a request property the schema does not know is refused with the captured `the JSON property '<name>' could not be mapped`; the Lab-authored rest of that sentence names the properties allowed there, so one retry is enough.
-
-`#capability:design-submit` — arguments `sessionId`, `jobId`, `request`:
+`#capability:design-contracts`, `#capability:design-file-system`, `#capability:design-operations` — arguments `sessionId`, `jobId`, `request`. Each writes its own section of the design, in this order: the contracts and public APIs, then the filesystem, then the operations.
 
 ```json
 { "header": { "title": "...", "generator": "orchestrator" },
-  "add":    { "contracts": [], "apis": [], "files": [], "operations": [] },
-  "patch":  { "contracts": [], "apis": [], "files": [], "operations": [] },
-  "delete": { "contracts": [1], "apis": [], "files": [], "operations": [] } }
+  "add":    { "contracts": [], "apis": [] },
+  "patch":  { "contracts": [], "apis": [] },
+  "delete": { "contracts": [1], "apis": [] } }
 ```
+
+| Operation | Tables of `add`, `patch`, `delete` | Also |
+| --- | --- | --- |
+| `#capability:design-contracts` | `contracts` (`CT#`), `apis` (`API#`) | `header` |
+| `#capability:design-file-system` | `files` (`FS#`) | `header` |
+| `#capability:design-operations` | `operations` (`IM#`) | `header`, `order` |
+
+A contract row: `{ "id": 1, "type": "Interface | Abstract | Record", "module", "file", "signature", "promises", "premortem": [ { "what", "mitigation" } ] }` — `file` is the repository-relative path that hosts it, and the filesystem must declare it. An API row: `{ "id": 1, "method", "path", "purpose", "auth", "request", "responses": [ { "status", "description", "body" } ] }`. A file row: `{ "id": 1, "path", "status": "Added | Modified | Deleted", "module", "reason", "change", "impact" }`, with `path` repository-relative, never absolute.
 
 An operation row:
 
 ```json
-{ "id": 1, "operation": "...", "kind": "Code", "testType": "Unit", "instructions": "{{O1.1}} ...", "dependsOn": [1],
-  "files": ["src/..."], "refObligations": [1], "refElements": [ { "obligation": 1, "element": 1 } ],
-  "knowledgeReferences": [1], "realizes": ["D1"], "source": "Knowledge", "sourceRef": "...",
+{ "id": 1, "operation": "...", "kind": "Production", "instructions": "...", "files": ["src/..."], "dependsOn": [1],
+  "realizes": ["D1"], "refObligations": [1], "refContracts": [1], "refApis": [1],
+  "knowledgeReferences": [1], "fileReferences": ["FR1"],
+  "referencesExemption": { "knowledge": "why no prescription applies", "file": "why no symbol is needed" },
+  "source": "Knowledge", "sourceRef": "...", "hasDestructiveSideEffects": false, "testType": "Unit",
   "branches": [ { "question": "...", "yes": { "label": "...", "note": "..." }, "no": { "label": "...", "note": "..." }, "why": "..." } ],
   "negatives": [ { "cause": "...", "behavior": "...", "impact": "High" } ],
   "exceptions": [ { "trigger": "...", "recovery": "..." } ] }
 ```
 
-- `kind`: `Code` writes production source (wiring included); `NotCode` acts on non-source files or writes no output; `Commands` starts long-running commands (generators, migrations); `Testing` writes and runs testing code; `Build` runs the build, the compiler-error checks, the linter and the static verifications.
+- `kind`: `Production` writes the production code; `Documentation` writes documentation; `Testing` writes and runs the tests, and fixes the production code when a test reveals a real defect in it.
 - `testType` (`Unit`, `Integration`, `E2E`, `Harness`) is declared by a `Testing` operation and by no other.
-- Ids are cardinal (`1, 2, 3`); the runtime prefixes them by table (`CT#`, `API#`, `FS#`, `IM#`). Cross references are cardinal: `dependsOn` → `IM#`, `refObligations` → `O#`, `refElements` `{obligation, element}` → `O#.k`. `realizes` carries the `D#` ids of the decisions the operation realizes.
-- `add` appends rows whose ids are new; `patch` updates existing rows field by field; `delete` removes rows. One call may combine all three, and non-empty `header` fields are applied.
-- **Partial calls.** A call may carry only a subset of the rows, and several calls may run in parallel, each with a disjoint interval of cardinal ids. A partial call is accepted: the rows apply, and the response reports what the design still lacks. The completeness gate is the approval (`#capability:design-approve`).
-- An invalid row is not applied and is listed in `rejected` with its path and reason; valid rows in the same call are applied. Re-send only the rejected rows: re-sending applied rows answers `already exists`.
-- An operation's `knowledgeReferences` lists the kids it needs (cardinal integers, stored as sent). A row naming a kid that no knowledge reference registers is rejected with the unknown kids; register the reference first.
-- A row whose `realizes` names a decision that does not exist is rejected in the same way. A decision added after the plan is linked by `patch`ing the operation that realizes it.
-- An empty request is refused.
-- `header.requirementRef`, the 3.0.0 reference of the requirement lock, is still accepted and stored; 3.0.1 sends none, because the obligations are the requirement.
+- `instructions` are complete: an implementor starting from an empty context executes the operation from them alone.
+- Ids are cardinal (`1, 2, 3`); the runtime prefixes them by table. Cross references of an operation are cardinal: `dependsOn` → `IM#`, `refObligations` → `O#`, `refContracts` → `CT#`, `refApis` → `API#`. `realizes` carries `D#` ids and `fileReferences` `FR#` ids (a bare number is read as `FR#`). `knowledgeReferences` lists kids, stored as sent.
+- Every operation sets `knowledgeReferences` and `fileReferences` to the ids it needs, or the matching `referencesExemption.knowledge` / `referencesExemption.file` to the reason that dimension needs none.
+- `hasDestructiveSideEffects: true` keeps the operation out of the automatic batches: it is served only on the developer's selection.
+- `order` (operations only) lists the cardinal operation ids in execution order after the call: a permutation of every operation that exists once the call's deletions and additions apply. Without `order`, added rows go before the first stored row with a higher id, so parallel calls with disjoint ranges build the same plan whichever arrives first; stored rows are reordered only by `order`.
+- `add` appends rows whose ids are new; `patch` updates existing rows field by field; `delete` removes rows. One call may combine them, and non-empty `header` fields are applied.
 
-Lab-authored, because the instruction states the parallel calls and leaves their mechanics open: design calls take a lock shared between runtime processes (`<runtime root>/.design-lock`, broken after 120 seconds when a process died holding it), so parallel calls run one after the other and none loses rows. The rows of one call keep the order they were sent in and go before the first stored row with a higher id, so disjoint ranges build the same plan whichever call arrives first. Stored rows are never reordered.
+**All or nothing.** A call that names a table of another section is rejected with `rejected here — <table> belong to <operation>`, as captured. A row the schema refuses (the captured case: a `premortem` entry with a property other than `what` and `mitigation`), an `add` of an id that exists, a `patch` or `delete` of one that does not, an operation naming a kid no knowledge reference registers or a decision that does not exist, and an `order` that is not a permutation are rejected too. Any rejection rejects the whole call: nothing is applied, every rejection is listed and the exit code is 1.
 
-Response: `{"status": "Draft", "applied": {"added", "patched", "deleted"}, "rejected": [], "errors": [], "warnings": [], "coverage": {}}`. `errors`, `warnings` and `coverage` are the full mechanical checks. The fields are the captured ones, written as lined JSON; a result longer than the part limit is served from a stored copy, so the write runs once and no finding is dropped (`contracts/workflow-loop.md`, Stored responses).
+**No checks.** A section write runs no mechanical check, as captured: call `#capability:design-checks` after the writes. The completeness gate is the approval (`#capability:design-approve`).
+
+Response, as captured: `{"status": "Draft", "applied": {"added": [], "patched": [], "deleted": []}, "rejected": [ { "path": "add.contracts[0]", "message": "..." } ]}`, written as lined JSON.
+
+Lab-authored: the rejection of rows other than the captured premortem case and of a misplaced table, the wording of every message, the exit code, and the placement of added rows. Design calls take a lock shared between runtime processes (`<runtime root>/.design-lock`, broken after 120 seconds when a process died holding it), so parallel calls run one after the other and none loses rows.
 
 No design write returns the document path: the rendered document is located only with `#capability:design-document` (see contracts/projections.md).
 
@@ -172,9 +187,9 @@ The approval is permanent. A later write (a modification requested at the termin
 
 `#capability:design-operation-status` — arguments `sessionId`, `jobId`, `request: { ids: ["IM1"], status: "InProgress | Completed" }`.
 
-All-or-nothing: if any id is unknown, no flag changes. `Completed` is set only after a passed verification of the work unit. Response: the JSON array of updated ids.
+All-or-nothing: if any id is unknown, no flag changes. `Completed` is set only after the orchestrator's review of the work unit passes. Response: the JSON array of updated ids.
 
-The flag of an operation moves `null` (not started) → `InProgress` (served by `#capability:design-implementation-operation`) → `Implemented` (closed by `#capability:design-implementation-operation-close`, not verified yet) → `Completed` (verified). `Implemented` is set only by the close.
+The flag of an operation moves `null` (not started) → `InProgress` (served by `#capability:design-implementation-operation`) → `Implemented` (closed by `#capability:design-implementation-operation-close`, not reviewed yet) → `Completed` (reviewed). `Implemented` is set only by the close.
 
 ## iterations
 
@@ -186,18 +201,18 @@ Snapshot the workspace: every file `git ls-files -co --exclude-standard` lists (
 
 ## implementation-loop
 
-The DESIGN Implementation step realizes the approved plan one operation at a time. A FAST_IMPLEMENTATION job design has no operation, so the loop answers `complete` there. The orchestrator never receives the operations: the implementor asks the runtime for them.
+The DESIGN Implementation step realizes the approved plan one operation at a time. The orchestrator never hands the operations to the implementor: the implementor asks the runtime for them.
 
-**Weight classes.** Every operation has a weight class, computed from its `kind`: `Code` and `NotCode` are `authoring`; `Commands` is `commands`; `Testing` is `testing`; `Build` is `build`. The weight is metadata only: the plan is served in the order the agent declared it, the runtime never reorders it, and `dependsOn` is the only precedence constraint: an operation is servable only when every operation it `dependsOn` is `Implemented` or `Completed`. `authoring` and `build` operations form the automatic batch; `commands` and `testing` operations need the developer's explicit authorisation. The kinds, the batch and the four classes come from the 3.0.1 run-3 instructions and review document. Lab-authored: an unknown kind, such as one stored in a design written before these kinds, is treated as `commands`.
+**Batches.** Every operation belongs to one batch, from its `kind` and its destructive flag: `Production` operations form the production batch and `Documentation` operations the documentation batch; a `Testing` operation (the test batch) and any operation with `hasDestructiveSideEffects` are served only on the developer's selection. The plan is served in the order the agent declared it, and `dependsOn` is the only precedence constraint: an operation is servable only when every operation it `dependsOn` is `Implemented` or `Completed`. The batches, their order and the selection rule come from the 3.0.3 Implementation instruction. Lab-authored: a design stored before 3.0.3 keeps its kinds, and `Code` joins the production batch, `NotCode` the documentation batch, while `Build`, `Commands` and any unknown kind wait for a selection.
 
 `#capability:design-implementation-operation` — arguments `sessionId`, `jobId`, optional `operationId` (`IM#`) and `part`. Answers one of:
 
-- **The operation to implement now**, in markdown: `# Operation IM# — <title>`, its kind (with its `testType`), weight class and authorisation, `dependsOn`, files, the elements it implements and the decisions it realizes, its instructions with the `{{O#.k}}` placeholders, its failure arms, and under `## Knowledge references` the resolved text of every kid it declares (with the document path, the range and the scope). Serving sets the flag to `InProgress` and records the operation as the served one. A long operation arrives in parts (`contracts/workflow-loop.md`, Parts) that start at a heading; reading a later part never advances the plan.
-- **`batch-complete: ...`** — without `operationId`, no automatic operation is servable but operations remain open; with `operationId`, the authorised operation is already `Implemented` or `Completed`, so the delegation's work is done. A closed operation is never reopened.
+- **The operation to implement now**, in markdown, with the whole context the implementor needs, already expanded: `# Operation IM# — <title>`, its kind (with its `testType`), batch and authorisation, `dependsOn`, files, the obligations it implements and the decisions it realizes; then `## Instructions`, `## Kind rules`, `## Failure arms`, `## Overview`, `## Obligations` (the rows it implements), `## Decisions` (topic, chosen answer and downstream use of each decision it realizes), `## Contracts` and `## Public APIs` (the ones it realizes), `## Filesystem` (the rows of its files), `## Knowledge references` (the resolved text of every kid it declares, with the document path, the range and the scope) and `## File references` (each symbol it consumes with its definition path and its usage files, lines, why and purpose). A dimension with no reference shows the operation's exemption reason. Serving sets the flag to `InProgress` and records the operation as the served one. A long operation arrives in parts (`contracts/workflow-loop.md`, Parts) that start at a heading; reading a later part never advances the plan.
+- **`batch-complete: ...`** — without `operationId`, the production and documentation batches have no servable operation but operations remain open; with `operationId`, the selected operation is already `Implemented` or `Completed`, so the delegation's work is done. A closed operation is never reopened.
 - **`complete: ...`** — every operation is `Implemented` or `Completed`.
 
-Without `operationId` the runtime serves the first servable automatic operation in plan order. With `operationId` it serves that operation on the developer's authorisation, whatever its class, and refuses it when it does not exist or depends on an operation that is not done. While an operation is served and not closed, every call answers that same operation again (and refuses a different `operationId`): one operation at a time. The answer never lists, counts or names the operations that follow.
+Without `operationId` the runtime serves the first servable operation of the production batch, in plan order, and then of the documentation batch. With `operationId` it serves that operation on the developer's selection, whatever its batch, and refuses it when it does not exist or depends on an operation that is not done. While an operation is served and not closed, every call answers that same operation again (and refuses a different `operationId`): one operation at a time. The answer never lists, counts or names the operations that follow, nor any contract, file, decision or reference the operation does not declare.
 
 `#capability:design-implementation-operation-close` — arguments `sessionId`, `jobId`. Closes the served operation: its flag becomes `Implemented` and the next operation becomes reachable. Refused when no operation is served, and when a part of the served operation was never served, since the operation's whole text is its specification. Response: `IM# closed as Implemented. ...`.
 
-Lab-authored: upstream has no capture of either tool. The answer formats, the terminator texts, the served-operation record, the re-serve of an unclosed operation and the refusals are chosen here; the batch membership, the terminators `batch-complete` and `complete`, the expansion of the knowledge references and the masked future come from the 3.0.1 Implementation instruction.
+Lab-authored: upstream has no capture of either tool. The answer formats, the terminator texts, the `## Kind rules` texts (the instruction says the answer carries "its kind rules" without stating them; they restate the rules the 3.0.3 steps and the implementor role give each kind), the served-operation record, the re-serve of an unclosed operation and the refusals are chosen here; the batches, the terminators `batch-complete` and `complete`, the expanded context and the masked future come from the 3.0.3 Implementation instruction.

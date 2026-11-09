@@ -144,7 +144,7 @@ function digestStore(install, id) {
     const design = readJson(join(dir, "designs", designId, "design.json"));
     if (!design) return [];
     const count = (key) => (Array.isArray(design[key]) ? design[key].length : 0);
-    return [{ designId, status: design.status, approvedAt: design.approvedAt ?? null, modifiedAfterApproval: Boolean(design.modifiedAfterApproval), obligations: count("obligations"), openPoints: count("openPoints"), decisions: count("decisions"), fileReferences: count("fileReferences"), knowledgeReferences: count("knowledgeReferences"), iterations: count("iterations"), edits: count("history") }];
+    return [{ designId, status: design.status, approvedAt: design.approvedAt ?? null, modifiedAfterApproval: Boolean(design.modifiedAfterApproval), obligations: count("obligations"), decisions: count("decisions"), operations: Array.isArray(design.path?.operations) ? design.path.operations.length : 0, fileReferences: count("fileReferences"), knowledgeReferences: count("knowledgeReferences"), iterations: count("iterations"), edits: count("history") }];
   });
   const logText = readText(join(dir, "log.md"));
   const logLines = logText.split("\n").filter(Boolean);
@@ -369,7 +369,7 @@ function textDigest(result) {
     lines.push(`\n# Session ${s.session}`);
     lines.push(`Issue candidates: ${s.issue.candidates.map((c) => `${c.id} (${c.from})`).join(", ") || "none"}`);
     for (const j of s.jobs) lines.push(`Job ${j.jobId} ${j.workflowType}: step ${j.step}/${j.steps} ${j.currentStep ?? ""}${j.atLastStep ? " (last step)" : ""}`);
-    for (const d of s.designs) lines.push(`Design ${d.designId}: ${d.status}${d.modifiedAfterApproval ? ", modified after approval" : ""}; ${d.obligations} obligations, ${d.openPoints} open points, ${d.decisions} decisions, ${d.fileReferences} files, ${d.knowledgeReferences} knowledge references, ${d.iterations} iterations, ${d.edits} edits`);
+    for (const d of s.designs) lines.push(`Design ${d.designId}: ${d.status}${d.modifiedAfterApproval ? ", modified after approval" : ""}; ${d.obligations} obligations, ${d.decisions} decisions, ${d.operations} operations, ${d.fileReferences} files, ${d.knowledgeReferences} knowledge references, ${d.iterations} iterations, ${d.edits} edits`);
     lines.push(`Log ${s.log.lines} lines. Memory ${s.memory.bytes} bytes. Artifacts: ${s.artifacts.map((a) => a.name).join(", ") || "none"}`);
     for (const p of s.log.problems) lines.push(`  ${p}`);
     lines.push(`Knowledge: ${s.knowledge.read} of ${s.knowledge.documents} documents read. Referenced, never read: ${s.knowledge.referencedNeverRead.join(", ") || "none"}. Read, never referenced: ${s.knowledge.readNeverReferenced.join(", ") || "none"}.`);

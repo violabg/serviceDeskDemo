@@ -59,11 +59,6 @@
       "summary": "Copy a local image or download an image URL into the session as an artifact with front matter.",
       "fallback": "contracts/session-store.md#session-images"
     },
-    "session-execution-report-read": {
-      "kind": "runtime",
-      "summary": "Return the session execution report entries.",
-      "fallback": "contracts/session-store.md#session-execution-report"
-    },
     "visual-evidence": {
       "kind": "host",
       "summary": "Look at an image from a local path or URL with the model's own vision.",
@@ -91,17 +86,12 @@
     },
     "design-obligations": {
       "kind": "runtime",
-      "summary": "Add, read, update or delete obligations (O#) and their elements (O#.k).",
-      "fallback": "contracts/design-model.md#row-writes"
-    },
-    "design-open-points": {
-      "kind": "runtime",
-      "summary": "Add, read, update or delete open points (OP#).",
+      "summary": "Add, read, update or delete obligations (O#).",
       "fallback": "contracts/design-model.md#row-writes"
     },
     "design-overview": {
       "kind": "runtime",
-      "summary": "Write the overview prose (currentState, gaps); gaps must anchor every element as {{O#.k}}.",
+      "summary": "Write the overview prose (currentState, gaps), the final synthesis of the operations.",
       "fallback": "contracts/design-model.md#overview"
     },
     "design-file-references": {
@@ -119,10 +109,20 @@
       "summary": "Add, read, update or delete knowledge references (kid) — one prescription as a knowledge file id and an inclusive line range.",
       "fallback": "contracts/design-model.md#knowledge-references"
     },
-    "design-submit": {
+    "design-contracts": {
       "kind": "runtime",
-      "summary": "Add, patch or delete contracts (CT#), APIs (API#), files (FS#) and operations (IM#), in one call or in partial calls with disjoint id ranges.",
-      "fallback": "contracts/design-model.md#design-submit"
+      "summary": "Write the header and add, patch or delete contracts (CT#) and public APIs (API#).",
+      "fallback": "contracts/design-model.md#section-writes"
+    },
+    "design-file-system": {
+      "kind": "runtime",
+      "summary": "Write the header and add, patch or delete the filesystem rows (FS#) — Added, Modified or Deleted files.",
+      "fallback": "contracts/design-model.md#section-writes"
+    },
+    "design-operations": {
+      "kind": "runtime",
+      "summary": "Write the header and add, patch, delete or reorder the operations (IM#); disjoint id ranges may be sent in parallel calls.",
+      "fallback": "contracts/design-model.md#section-writes"
     },
     "design-checks": {
       "kind": "runtime",
@@ -139,14 +139,9 @@
       "summary": "Return the per-obligation projection the design verifier judges.",
       "fallback": "contracts/projections.md#verification-view"
     },
-    "design-implementation-context": {
-      "kind": "runtime",
-      "summary": "Return the implementor's projection of the design — contracts, filesystem, decisions and file references, never an operation; on a FAST_IMPLEMENTATION job also the obligations and open points.",
-      "fallback": "contracts/projections.md#implementation-context"
-    },
     "design-implementation-operation": {
       "kind": "runtime",
-      "summary": "Serve the single operation to implement now, with its knowledge references expanded, or the batch terminator (batch-complete, complete).",
+      "summary": "Serve the single operation to implement now with its whole context (overview, obligations, decisions, contracts, APIs, filesystem entries, knowledge text, file references), or the batch terminator (batch-complete, complete).",
       "fallback": "contracts/design-model.md#implementation-loop"
     },
     "design-implementation-operation-close": {
@@ -315,6 +310,7 @@
       "invocation": "delegate",
       "operations": [
         "read",
+        "search",
         "write",
         "terminal",
         "runtime"
@@ -324,7 +320,6 @@
       "tokens": [
         "codebase-cluster-files",
         "codebase-clusters",
-        "design-implementation-context",
         "design-implementation-operation",
         "design-implementation-operation-close",
         "knowledge-catalog",
@@ -427,7 +422,6 @@
       "delegates": [
         "general-purpose",
         "design-verifier",
-        "implementation-verifier",
         "code-implementor",
         "documentation-reviewer"
       ],
@@ -438,21 +432,21 @@
         "delegate",
         "design-approve",
         "design-checks",
+        "design-contracts",
         "design-decisions",
         "design-document",
         "design-file-references",
-        "design-implementation-context",
+        "design-file-system",
         "design-implementation-operation",
         "design-implementation-operation-close",
         "design-iteration-close",
         "design-iteration-open",
         "design-knowledge-references",
         "design-obligations",
-        "design-open-points",
         "design-operation-status",
+        "design-operations",
         "design-overview",
         "design-snapshot",
-        "design-submit",
         "documentation-check",
         "documentation-template-read",
         "documentation-templates-list",
@@ -564,11 +558,13 @@
     "workflows/design/02-image-intake.md",
     "workflows/design/03-requirement-decomposition.md",
     "workflows/design/04-knowledge-enrichment.md",
-    "workflows/design/05-codebase-cold-start.md",
-    "workflows/design/06-decision-consolidation.md",
-    "workflows/design/07-design-walkthrough.md",
-    "workflows/design/08-implementation.md",
-    "workflows/design/09-terminal-handoff.md",
+    "workflows/design/05-decision-consolidation.md",
+    "workflows/design/06-contracts.md",
+    "workflows/design/07-filesystem.md",
+    "workflows/design/08-operations.md",
+    "workflows/design/09-design-review.md",
+    "workflows/design/10-implementation.md",
+    "workflows/design/11-terminal-handoff.md",
     "workflows/documentation/02-intake.md",
     "workflows/documentation/03-knowledge-discovery.md",
     "workflows/documentation/04-codebase-exploration.md",
@@ -577,12 +573,9 @@
     "workflows/documentation/07-review.md",
     "workflows/documentation/08-wrap-up.md",
     "workflows/fast-implementation/02-intake.md",
-    "workflows/fast-implementation/03-requirement-decomposition.md",
-    "workflows/fast-implementation/04-knowledge.md",
-    "workflows/fast-implementation/05-codebase-cold-start.md",
-    "workflows/fast-implementation/06-implementation.md",
-    "workflows/fast-implementation/07-validation.md",
-    "workflows/fast-implementation/08-terminal-handoff.md",
+    "workflows/fast-implementation/03-knowledge.md",
+    "workflows/fast-implementation/04-implementation.md",
+    "workflows/fast-implementation/05-terminal-handoff.md",
     "workflows/shared/01-user-instruction-space.md",
     "workflows/workflow-types.yaml"
   ],
@@ -634,22 +627,21 @@
     "session-artifact-read": "sessionId, artifact, artifactId, artifactName, name",
     "session-artifact-list": "sessionId",
     "session-image-attach": "sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, blobUrl",
-    "session-execution-report-read": "sessionId",
     "workflow-types-list": "no arguments",
     "workflow-job-activate": "sessionId, jobId, agentName, designId, workflowType",
     "workflow-step-pending": "sessionId, jobId, part",
     "workflow-step-next": "sessionId, jobId",
-    "design-obligations": "sessionId, jobId, request { operation, rows, ids }, outline (with Read: the element ids only)",
-    "design-open-points": "sessionId, jobId, request { operation, rows, ids }",
+    "design-obligations": "sessionId, jobId, request { operation, rows, ids }, outline (with Read: one line per obligation, its id and claim)",
     "design-file-references": "sessionId, jobId, request { operation, rows, ids }",
     "design-decisions": "sessionId, jobId, request { operation, rows, ids }",
     "design-knowledge-references": "sessionId, jobId, request { operation, references }",
     "design-overview": "sessionId, jobId, request { operation, currentState, gaps }",
-    "design-submit": "sessionId, jobId, request { header, add, patch, delete }",
+    "design-contracts": "sessionId, jobId, request { header, add, patch, delete }",
+    "design-file-system": "sessionId, jobId, request { header, add, patch, delete }",
+    "design-operations": "sessionId, jobId, request { header, add, patch, delete, order }",
     "design-checks": "sessionId, jobId, acceptExternalEdit",
     "design-snapshot": "sessionId, jobId, part, revision, section (one section only, such as Operations), ids (those items only, such as IM3,CT1)",
     "design-verification-view": "sessionId, jobId, part, revision",
-    "design-implementation-context": "sessionId, jobId, part, revision",
     "design-implementation-operation": "sessionId, jobId, operationId, id, part",
     "design-implementation-operation-close": "sessionId, jobId",
     "design-document": "sessionId, jobId",

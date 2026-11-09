@@ -44,9 +44,9 @@ function saveJob(ctx, job) {
   writeJson(jobPath(ctx, job.sessionId, job.jobId), job);
 }
 
-// A DESIGN job builds its design; a FAST_IMPLEMENTATION job keeps its obligations, open points and knowledge
-// references in a job design of its own, with no approval gate. DOCUMENTATION jobs have none.
-const JOB_DESIGN_WORKFLOWS = new Set(["DESIGN", "FAST_IMPLEMENTATION"]);
+// A DESIGN job builds its design. Since 3.0.3 FAST_IMPLEMENTATION writes no design row (its steps use no design
+// operation), so like DOCUMENTATION it has none unless the developer starts it on an existing design.
+const JOB_DESIGN_WORKFLOWS = new Set(["DESIGN"]);
 
 export function jobActivate(ctx, args) {
   const tool = "workflow-job-activate";

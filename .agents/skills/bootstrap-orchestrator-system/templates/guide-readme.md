@@ -2,11 +2,11 @@
 
 This repository runs an orchestrator-based agentic system. You choose one of three workflows, and a local runtime serves it one instruction at a time:
 
-- `DESIGN`: a structured design you review and approve in a review document, then implementation and verification.
-- `FAST_IMPLEMENTATION`: a quick path for simple or mechanical changes.
+- `DESIGN`: a structured design (obligations, decisions, contracts, filesystem, operations) that the orchestrator verifies against itself and you approve in a review document, then implementation and review.
+- `FAST_IMPLEMENTATION`: a quick path for simple or mechanical changes, with no design and no approval step.
 - `DOCUMENTATION`: a guide written from a template, then reviewed.
 
-The orchestrator never writes production code. It hands the code and the verifications to delegates, each working in its own context, and acts on their verdicts.
+In `DESIGN` the orchestrator never writes production code: it hands the operations to the code implementor, which works in its own context, and reviews every work unit itself. In `FAST_IMPLEMENTATION` the orchestrator implements the change directly.
 
 ## Where things live
 

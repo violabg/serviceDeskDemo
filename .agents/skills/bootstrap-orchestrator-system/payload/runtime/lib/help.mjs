@@ -39,11 +39,13 @@ function definition(text, token, tier) {
 // The fields of `request` for each design operation that takes one, read from the request schema.
 const REQUEST_DEFS = {
   "design-obligations": "rowRequest",
-  "design-open-points": "rowRequest",
   "design-file-references": "rowRequest",
   "design-decisions": "rowRequest",
   "design-knowledge-references": "knowledgeReferencesRequest",
   "design-overview": "overview",
+  "design-contracts": "contractsRequest",
+  "design-file-system": "fileSystemRequest",
+  "design-operations": "operationsRequest",
   "design-approve": "approve",
   "design-operation-status": "operationStatus",
   "design-iteration-open": "iterationOpen",
@@ -53,13 +55,12 @@ const REQUEST_DEFS = {
 // What the `rows` of a row request hold: the schema leaves them open, and the operation validates them by this def.
 const ROW_DEFS = {
   "design-obligations": "obligation",
-  "design-open-points": "openPoint",
   "design-file-references": "fileReference",
   "design-decisions": "decision",
 };
 
 const requestSchema = (ctx) => JSON.parse(readFileSync(join(ctx.assetsRoot, "design-requests.schema.json"), "utf8"));
-const requestDef = (schema, token) => (token === "design-submit" ? schema.properties.request : schema.$defs[REQUEST_DEFS[token]]);
+const requestDef = (schema, token) => schema.$defs[REQUEST_DEFS[token]];
 
 function requestFields(ctx, token) {
   return Object.keys(requestDef(requestSchema(ctx), token)?.properties ?? {});
@@ -114,7 +115,7 @@ export function commandArguments(ctx, role) {
   const tokens = Object.keys(handlers).filter((token) => !allowed || allowed.includes(token));
   return tokens.map((token) => {
     if (REQUEST_TOKENS.has(token)) {
-      const extra = token === "design-obligations" ? ", outline (with Read: the element ids only)" : "";
+      const extra = token === "design-obligations" ? ", outline (with Read: one line per obligation, its id and claim)" : "";
       return `${token}: sessionId, jobId, request { ${requestFields(ctx, token).join(", ")} }${extra}`;
     }
     const list = ARGUMENTS[token];

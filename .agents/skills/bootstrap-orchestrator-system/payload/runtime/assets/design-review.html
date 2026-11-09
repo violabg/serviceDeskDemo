@@ -124,7 +124,7 @@ main { min-width: 0; padding: 34px 44px 90px; }
 .badge.kv > .k { color: var(--faint); border-right: 1px solid var(--line); }
 .badge.kv > .v { color: var(--ink); font-weight: 600; }
 
-/* ID references link to their item; element references carry their condition as a tooltip. */
+/* ID references link to their item. */
 .id-text { font: 600 13px var(--sans); font-variant-numeric: tabular-nums; }
 .idref { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border: 1px solid color-mix(in srgb, var(--ref) 45%, transparent); border-radius: 999px; font: 600 12px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ref); text-decoration: none; white-space: nowrap; background: transparent; cursor: pointer; vertical-align: 1px; }
 .idref:hover { background: color-mix(in srgb, var(--ref) 12%, transparent); }
@@ -219,6 +219,7 @@ tr:last-child td { border-bottom: 0; }
 .row.file .name { color: var(--ink); }
 .row.file.A .name { color: color-mix(in srgb, var(--ok) 70%, var(--ink)); }
 .row.file.M .name { color: color-mix(in srgb, var(--warn) 60%, var(--ink)); }
+.row.file.D .name { color: color-mix(in srgb, var(--risk) 60%, var(--ink)); text-decoration: line-through; }
 .row.file .module { font: 12px var(--sans); color: var(--faint); overflow: hidden; text-overflow: ellipsis; }
 .row.file .tail { display: flex; gap: 5px; margin-left: auto; padding-left: 16px; }
 .row.file .tail .idref { pointer-events: none; height: 19px; font-size: 11px; }
@@ -343,21 +344,17 @@ dialog[open] { animation: rise .16s ease-out; }
   const knowledgeRefs = list(design.knowledgeReferences);
   const resolved = {};
   list(data.knowledge).forEach((k) => { resolved[k.kid] = k; });
-  const weights = data.weights || {};
+  const batches = data.batches || {};
   const fsFiles = path.filesystem.files;
 
   // Every ID in the design, mapped to the stage that shows it, so any mention can link to it.
   const stageOf = {};
-  const elementText = {};
   design.decisions.forEach((d) => { stageOf[d.id] = "decisions"; list(d.options).forEach((o) => { if (o.id) stageOf[o.id] = "decisions"; }); });
   path.operations.forEach((o) => { stageOf[o.id] = "plan"; });
   fsFiles.forEach((f) => { stageOf[f.id] = "filesystem"; });
   path.apis.forEach((a) => { stageOf[a.id] = "contracts"; });
   path.contracts.forEach((c) => { stageOf[c.id] = "contracts"; });
-  design.obligations.forEach((o) => {
-    stageOf[o.id] = "obligations";
-    list(o.elements).forEach((e) => { stageOf[o.id + "." + e.id] = "obligations"; elementText[o.id + "." + e.id] = e.text; });
-  });
+  design.obligations.forEach((o) => { stageOf[o.id] = "obligations"; });
   design.fileReferences.forEach((f) => { stageOf[f.id] = "file-references"; });
   knowledgeRefs.forEach((k) => { stageOf["kid-" + k.kid] = "knowledge-references"; });
   design.iterations.forEach((i) => { stageOf[i.id] = "history"; });
@@ -373,11 +370,12 @@ dialog[open] { animation: rise .16s ease-out; }
     decisionsOfOp[op.id] = list(op.realizes);
     list(op.realizes).forEach((id) => { (opsOfDecision[id] = opsOfDecision[id] || []).push(op.id); });
   });
-  const decisionsOfFile = (f) => Array.from(new Set(list(opsOfFile[f.id]).flatMap((op) => list(decisionsOfOp[op])))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  // The operations that realize a contract or an API: the ones that list it, or, before 3.0.3, the ones touching its file.
+  const opsRealizing = (field, id) => path.operations.filter((op) => list(op[field]).indexOf(id) !== -1).map((op) => op.id);
+  const decisionsOfFile = (f) =>Array.from(new Set(list(opsOfFile[f.id]).flatMap((op) => list(decisionsOfOp[op])))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
   function idLink(id) {
-    const tip = elementText[id] ? ' title="' + esc(elementText[id]) + '"' : "";
-    return stageOf[id] ? '<a class="idref" href="#' + esc(id) + '"' + tip + ">" + esc(id) + "</a>" : '<span class="mono">' + esc(id) + "</span>";
+    return stageOf[id] ? '<a class="idref" href="#' + esc(id) + '">' + esc(id) + "</a>" : '<span class="mono">' + esc(id) + "</span>";
   }
   const kidLink = (kid) => (stageOf["kid-" + kid] ? '<a class="idref" href="#kid-' + esc(kid) + '">kid ' + esc(kid) + "</a>" : '<span class="mono">kid ' + esc(kid) + "</span>");
   const fileLink = (p) => { const f = fileFor(p); return f ? '<a class="idref file" href="#' + esc(f.id) + '" title="' + esc(f.path) + '">' + esc(f.path) + "</a>" : "<code>" + esc(p) + "</code>"; };
@@ -470,7 +468,8 @@ dialog[open] { animation: rise .16s ease-out; }
 
   // Decisions: highlighted first, then the rest by where the question came from. A 3.0.0 `blocking` flag reads as highlight.
   const highlightedDecision = (d) => Boolean(d.highlight || d.blocking);
-  const sourceNames = { requirements: "From the requirement", requirement: "From the requirement", codebase: "From the codebase", internalreasoning: "From the agent's own reasoning" };
+  const sourceNames = { breakingchange: "Breaking changes", requirements: "From the requirement", requirement: "From the requirement", codebase: "From the codebase", internalreasoning: "From the agent's own reasoning" };
+  const sourceNotes = { breakingchange: "Decisions that record a break the design introduces: a contract signature, a public API or a persisted schema." };
   const sourceKey = (d) => String(d.source || "internal reasoning").toLowerCase().replace(/[^a-z]/g, "");
   function decision(d) {
     const options = list(d.options);
@@ -491,12 +490,12 @@ dialog[open] { animation: rise .16s ease-out; }
   const rest = design.decisions.filter((d) => !highlightedDecision(d));
   const bySource = {};
   rest.forEach((d) => { (bySource[sourceKey(d)] = bySource[sourceKey(d)] || []).push(d); });
-  const sourceOrder = ["requirements", "requirement", "codebase", "internalreasoning"].concat(Object.keys(bySource).filter((k) => !sourceNames[k]));
+  const sourceOrder = ["breakingchange", "requirements", "requirement", "codebase", "internalreasoning"].concat(Object.keys(bySource).filter((k) => !sourceNames[k]));
   stage("decisions", "Decisions", "The forks the design took", "Each decision is a question the design had to answer. Confirm the answer, or name another option by its ID to change it.",
     design.decisions.length, highlighted.length ? "warn" : "",
     design.decisions.length
       ? (highlighted.length ? groupHead("Highlighted", highlighted.length, "Where your judgment is most needed. Read them first; approving the design accepts them.") + highlighted.map(decision).join("") : "") +
-        sourceOrder.filter((k) => bySource[k]).map((k) => groupHead(sourceNames[k] || bySource[k][0].source, bySource[k].length) + bySource[k].map(decision).join("")).join("")
+        sourceOrder.filter((k) => bySource[k]).map((k) => groupHead(sourceNames[k] || bySource[k][0].source, bySource[k].length, sourceNotes[k]) + bySource[k].map(decision).join("")).join("")
       : empty("No decisions recorded yet."));
 
   // Implementation plan
@@ -529,16 +528,21 @@ dialog[open] { animation: rise .16s ease-out; }
     path.operations.length, "",
     (path.operations.length ? tally([[path.operations.length, "operations"], opsImplemented && [opsImplemented, "implemented, not verified", "warn"], [opsDone, "completed", opsDone === path.operations.length ? "ok" : ""]]) : "") +
     (path.operations.length ? path.operations.map((op) => card(op.id,
-      badge(op.kind, "ref") + (op.testType ? badge(op.testType) : "") + (weights[op.id] ? facet("weight", weights[op.id].weight, weights[op.id].authorisation) : "") + statusBadge(op.implementationStatus) + badge("from " + String(op.source || "design").toLowerCase()),
+      badge(op.kind, "ref") + (op.testType ? badge(op.testType) : "") + (batches[op.id] ? facet("batch", batches[op.id].batch, batches[op.id].authorisation) : "") +
+        (op.hasDestructiveSideEffects ? badge("destructive", "risk") : "") + statusBadge(op.implementationStatus) + badge("from " + String(op.source || "design").toLowerCase()),
       inline(op.operation),
       prose(op.instructions) + edges(op) +
       spec([
         ["Source reference", op.sourceRef && inline(op.sourceRef)],
         ["Depends on", list(op.dependsOn).length && idLinks(op.dependsOn)],
         ["Files", list(op.files).length ? '<span class="refs">' + list(op.files).map(fileLink).join("") + "</span>" : '<span class="none">none</span>'],
-        ["Elements", list(op.refElements).length && idLinks(op.refElements)],
         ["Implements", list(op.refObligations).length && idLinks(op.refObligations)],
-        ["Knowledge", list(op.knowledgeReferences).length && '<span class="refs">' + list(op.knowledgeReferences).map(kidLink).join("") + "</span>"],
+        ["Contracts", list(op.refContracts).length && idLinks(op.refContracts)],
+        ["APIs", list(op.refApis).length && idLinks(op.refApis)],
+        ["Knowledge", list(op.knowledgeReferences).length ? '<span class="refs">' + list(op.knowledgeReferences).map(kidLink).join("") + "</span>"
+          : op.referencesExemption && op.referencesExemption.knowledge ? '<span class="none">none: </span>' + inline(op.referencesExemption.knowledge) : ""],
+        ["File references", list(op.fileReferences).length ? idLinks(op.fileReferences)
+          : op.referencesExemption && op.referencesExemption.file ? '<span class="none">none: </span>' + inline(op.referencesExemption.file) : ""],
         ["Realizes decisions", list(decisionsOfOp[op.id]).length && idLinks(decisionsOfOp[op.id])],
       ]))).join("") : empty("No operations scheduled yet.")));
 
@@ -564,28 +568,30 @@ dialog[open] { animation: rise .16s ease-out; }
     }).join("");
   }
   const added = fsFiles.filter((f) => f.status === "Added").length;
-  stage("filesystem", "Filesystem", "Files modified and added", "The files the design adds or modifies. Open a file to see why it changes.",
+  const deleted = fsFiles.filter((f) => f.status === "Deleted").length;
+  stage("filesystem", "Filesystem", "Files modified, added and deleted", "The files the design adds, modifies or removes. Open a file to see why it changes.",
     fsFiles.length, "",
     fsFiles.length
-      ? tally([[fsFiles.length - added, "modified", "warn"], [added, "added", "ok"], [new Set(fsFiles.map((f) => f.module).filter(Boolean)).size, "modules touched"]]) +
+      ? tally([[fsFiles.length - added - deleted, "modified", "warn"], [added, "added", "ok"], deleted && [deleted, "deleted", "risk"], [new Set(fsFiles.map((f) => f.module).filter(Boolean)).size, "modules touched"]]) +
         '<div class="tree">' + fsNode(root) + "</div>"
       : empty("No files declared yet."));
 
   // Contracts
   const statusClass = (s) => { const c = String(s || "").trim().charAt(0); return c === "2" ? "ok" : c === "4" ? "warn" : c === "5" ? "risk" : ""; };
-  const confidence = (x) => (x.confidence ? facet("confidence", x.confidence) : "") + (x.evidence ? facet("evidence", x.evidence) : "");
+  const realizedBy = (ids) => (path.operations.length ? spec([["Realized by", ids.length ? idLinks(ids) : badge("no operation yet", "warn")]]) : "");
   const apis = path.apis.map((a) => card(a.id,
-    badge(a.method, "ref solid") + confidence(a), "<code>" + esc(a.path) + "</code>",
+    badge(a.method, "ref solid"), "<code>" + esc(a.path) + "</code>",
     '<p class="statement">' + inline(a.purpose) + "</p>" + spec([["Authorization", a.auth && inline(a.auth)]], "flush") +
     '<p class="label">Request</p><pre>' + esc(a.request || "") + "</pre>" +
     (list(a.responses).length ? '<p class="label">Responses</p>' + table(["Status", "Meaning", "Body"], list(a.responses).map((r) =>
-      [badge(r.status, statusClass(r.status)), inline(r.description), r.body ? "<code>" + esc(r.body) + "</code>" : ""])) : ""))).join("");
+      [badge(r.status, statusClass(r.status)), inline(r.description), r.body ? "<code>" + esc(r.body) + "</code>" : ""])) : "") +
+    realizedBy(opsRealizing("refApis", a.id)))).join("");
   const internal = path.contracts.map((c) => card(c.id,
-    (c.type ? badge(c.type, "ref") : "") + confidence(c), esc(c.module || c.id),
+    c.type ? badge(c.type, "ref") : "", esc(c.module || c.id),
     (c.file ? '<p><span class="refs">' + fileLink(c.file) + "</span></p>" : "") + '<p class="statement">' + inline(c.promises) + "</p>" +
     '<p class="label">Signature</p><pre>' + esc(c.signature || "") + "</pre>" +
     (list(c.premortem).length ? '<p class="label">What could break it</p>' + table(["Risk", "Mitigation"], list(c.premortem).map((m) => [inline(m.what), inline(m.mitigation)])) : "") +
-    (c.evidenceNote ? '<p class="label">Evidence</p>' + prose(c.evidenceNote) : ""))).join("");
+    realizedBy(opsRealizing("refContracts", c.id)))).join("");
   stage("contracts", "Contracts", "Signatures and APIs", "What each module promises, with its full signature, and every public endpoint the design exposes.",
     path.apis.length + path.contracts.length, "",
     groupHead("Public APIs", path.apis.length) + (apis || empty("The design exposes no HTTP endpoint.")) +
@@ -605,36 +611,26 @@ dialog[open] { animation: rise .16s ease-out; }
   // Obligations (consulted from the header)
   const cov = checks.coverage;
   const carried = {};
-  path.operations.forEach((op) => list(op.refElements).concat(list(op.refObligations)).forEach((r) => { (carried[r] = carried[r] || []).push(op.id); }));
-  const obligationDone = (o) => (list(o.elements).length ? list(o.elements).every((e) => carried[o.id + "." + e.id]) : Boolean(carried[o.id]));
-  stage("obligations", "Obligations", "", "The behaviors the requirement demands. Each one is split into elements that the operations must carry out.",
+  path.operations.forEach((op) => list(op.refObligations).forEach((r) => { (carried[r] = carried[r] || []).push(op.id); }));
+  const obligationDone = (o) => Boolean(carried[o.id]);
+  stage("obligations", "Obligations", "", "The behaviors the requirement demands. Each one must be realized by at least one operation.",
     design.obligations.length, design.obligations.some((o) => !obligationDone(o)) ? "warn" : "",
     design.obligations.length
-      ? tally([[cov.obligationsRealized + " / " + cov.obligationsTotal, "obligations realized", cov.obligationsRealized === cov.obligationsTotal ? "ok" : "warn"],
-               [cov.elementsRealized + " / " + cov.elementsTotal, "elements carried out", cov.elementsRealized === cov.elementsTotal ? "ok" : "warn"]]) +
-        design.obligations.map((o) => {
-          const els = list(o.elements);
-          const ops = {};
-          els.forEach((e) => list(carried[o.id + "." + e.id]).forEach((id) => { ops[id] = true; }));
-          list(carried[o.id]).forEach((id) => { ops[id] = true; });
-          return card(o.id,
-            (o.origin === "Developer" ? badge("decided by the developer", "violet") : badge("from the requirement")) + (obligationDone(o) ? badge("realized", "ok dot") : badge("not realized", "warn dot")) + (els.length ? facet("elements", els.length) : ""), "",
-            '<p class="statement">' + inline(o.behavior) + "</p>" +
-            spec([["Applies to", o.class && inline(o.class)], ["Boundaries", o.boundaries && inline(o.boundaries)], ["Source in R", o.sourceRef && "<em>" + inline(o.sourceRef) + "</em>"], ["Carried out by", Object.keys(ops).length && idLinks(Object.keys(ops))]], "flush") +
-            (els.length ? '<p class="label">Elements</p>' + table(["Element", "Kind", "Condition", "Carried out by"], els.map((e) => {
-              const ref = o.id + "." + e.id;
-              return ['<span class="id-text" id="' + esc(ref) + '">' + esc(ref) + "</span>", badge(e.kind), inline(e.text), carried[ref] ? idLinks(carried[ref]) : badge("open", "warn")];
-            })) : ""));
-        }).join("")
+      ? tally([[cov.obligationsRealized + " / " + cov.obligationsTotal, "obligations realized", cov.obligationsRealized === cov.obligationsTotal ? "ok" : "warn"]]) +
+        design.obligations.map((o) => card(o.id,
+          (o.origin === "Developer" ? badge("decided by the developer", "violet") : badge("from the requirement")) + (obligationDone(o) ? badge("realized", "ok dot") : badge("not realized", "warn dot")), "",
+          '<p class="statement">' + inline(o.behavior) + "</p>" +
+          spec([["Applies to", o.class && inline(o.class)], ["Boundaries", o.boundaries && inline(o.boundaries)], ["Source in R", o.sourceRef && "<em>" + inline(o.sourceRef) + "</em>"], ["Realized by", list(carried[o.id]).length && idLinks(carried[o.id])]], "flush"))).join("")
       : empty("No obligations recorded yet."), true);
 
   // File references (consulted from the header)
   stage("file-references", "File references", "", "The symbols the implementation needs, with existing files that already use them as examples.",
     design.fileReferences.length, "",
     design.fileReferences.length ? design.fileReferences.map((fr) => card(fr.id, scopeBadge(fr.scope) + facet("files", list(fr.files).length), "<code>" + esc(fr.symbol) + "</code>",
+      (fr.definitionPath ? spec([["Defined in", "<code>" + esc(fr.definitionPath) + "</code>"]], "flush") : "") +
       list(fr.files).map((f) => {
         const d = list(fr.details).filter((x) => String(x.path).toLowerCase() === String(f).toLowerCase())[0];
-        return '<p class="label"><code>' + esc(f) + "</code></p>" +
+        return '<p class="label"><code>' + esc(f) + (d && d.line ? ":" + esc(d.line) : "") + "</code></p>" +
           (d ? spec([["Why it is a reference", inline(d.why)], ["Use in this work", inline(d.purpose)]], "flush") : "<p>" + badge("no detail recorded", "warn") + "</p>");
       }).join(""))).join("") : empty("No file references recorded yet."), true);
 
@@ -654,10 +650,10 @@ dialog[open] { animation: rise .16s ease-out; }
   const where = (f) => (stageOf[f.element] ? idLink(f.element) : '<span class="mono">' + esc(f.element) + "</span>");
   const findings = checks.errors.map((f) => [badge("error", "risk"), '<span class="rule">' + esc(f.rule) + "</span>", where(f), inline(f.detail)])
     .concat(checks.warnings.map((f) => [badge("warning", "warn"), '<span class="rule">' + esc(f.rule) + "</span>", where(f), inline(f.detail)]));
-  stage("checks", "Checks", "", "Mechanical facts about the design: missing links, unrealized elements, crowded anchors. They do not judge whether the design is right.",
+  stage("checks", "Checks", "", "Mechanical facts about the design: missing links, unrealized obligations, contracts and decisions. They do not judge whether the design is right.",
     checks.errors.length + checks.warnings.length || "✓", checks.errors.length ? "err" : checks.warnings.length ? "warn" : "ok",
     findings.length ? '<div class="card">' + table(["Severity", "Rule", "Where", "Detail"], findings) + "</div>"
-      : '<p class="empty">' + badge("clean", "ok") + " No mechanical findings. Every element is carried out and every link resolves.</p>", true);
+      : '<p class="empty">' + badge("clean", "ok") + " No mechanical findings. Every obligation is realized and every link resolves.</p>", true);
 
   // ---------- Assemble ----------
   const reading = stages.filter((s) => !s.consult);
@@ -733,16 +729,15 @@ dialog[open] { animation: rise .16s ease-out; }
   const legend = [
     ["R", "The functional requirement. Everything in the design is anchored to it."],
     ["O#", "An obligation: one behavior R demands, or one the developer declared."],
-    ["O#.k", "An element: a condition of an obligation that can be checked on its own. Operations carry elements out."],
     ["D#", "A decision: a question the design had to answer, with the chosen answer and the other options."],
     ["D#.k", "An option of a decision. Name one by its ID to make it the answer."],
     ["Highlight", "A decision where the developer's judgment is most needed. One about the situation, such as a missing input or process, is not realized by code."],
     ["IM#", "An operation: one ordered step of the implementation plan."],
-    ["Operation kind", "What the operation does: Code (production source, wiring included), NotCode (non-source files or no output), Commands (long-running generators or migrations), Testing (unit, integration, E2E or temporary harnesses) or Build (build, error checks and lint)."],
-    ["Testing", "An operation that writes and runs testing code; like Commands, it requires the developer's authorisation."],
-    ["Weight", "The weight class of an operation: authoring, commands, testing or build. It is metadata only: the plan order is the order declared, and a dependency is the only precedence constraint."],
-    ["Implemented", "An operation the implementor closed that the verifier has not passed yet. Completed means verified."],
-    ["FS#", "A file the design adds (A) or modifies (M). Click a file to see why it changes."],
+    ["Operation kind", "What the operation does: Production (the production code), Documentation (documentation) or Testing (writes and runs the tests, and fixes the production code when a test reveals a real defect)."],
+    ["Batch", "When an operation is served: the production batch, then the documentation batch, without the developer's selection. A Testing operation, or one with destructive side effects, is served only when the developer selects it. A dependency is the only precedence constraint."],
+    ["Breaking change", "A decision that records a break the design introduces: a contract signature, a public API or a persisted schema."],
+    ["Implemented", "An operation the implementor closed that the orchestrator has not reviewed yet. Completed means reviewed."],
+    ["FS#", "A file the design adds (A), modifies (M) or deletes (D). Click a file to see why it changes."],
     ["CT#", "An internal contract: what a module promises, with its signature."],
     ["API#", "A public HTTP endpoint, with its request and responses."],
     ["FR#", "A file reference: a symbol the work needs, with files that already use it."],

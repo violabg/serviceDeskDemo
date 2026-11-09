@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning.
 
+## 2.0.0
+
+- `digest` reports a design's operations instead of its open points, which designs no longer have since bootstrap 6.0.0. The `openPoints` field of the design summary is replaced by `operations`.
+
 ## 1.0.2
 
 - A leading `cd` and a trailing echo of the exit code no longer count as a joined runtime call.

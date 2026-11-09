@@ -1,49 +1,83 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "design-submit",
-  "description": "The design-submit payload. Ids are plain cardinal numbers (1, 2, 3); the runtime adds the prefix by path (contracts CT#, apis API#, files FS#, operations IM#). Cross references are cardinal too: dependsOn -> IM#, refObligations -> O#, refElements -> O#.k. The $defs describe the payloads of the other design write operations.",
+  "title": "design write requests",
+  "description": "The `request` payloads of the design write operations. design-contracts, design-file-system and design-operations take a section request: ids are plain cardinal numbers (1, 2, 3) and the runtime adds the prefix by section (contracts CT#, apis API#, files FS#, operations IM#). Cross references of an operation are cardinal too: dependsOn -> IM#, refObligations -> O#, refContracts -> CT#, refApis -> API#.",
   "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "sessionId": { "type": "string", "description": "valid agent session id" },
-    "jobId": { "type": "string", "description": "agent job id" },
-    "request": {
+  "$defs": {
+    "header": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "header": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "requirementRef": { "type": "string", "description": "the 3.0.0 reference of the requirement lock, still accepted; 3.0.1 sends no requirement reference" },
-            "title": { "type": "string" },
-            "generator": { "type": "string" }
-          }
-        },
-        "add": { "$ref": "#/$defs/submitRows" },
-        "patch": { "$ref": "#/$defs/submitRows" },
+        "title": { "type": "string", "description": "the short name of the design" },
+        "generator": { "type": "string" }
+      }
+    },
+    "contractsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "header": { "$ref": "#/$defs/header" },
+        "add": { "$ref": "#/$defs/contractRows" },
+        "patch": { "$ref": "#/$defs/contractRows" },
         "delete": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "contracts": { "type": "array", "items": { "type": "integer" } },
-            "apis": { "type": "array", "items": { "type": "integer" } },
-            "files": { "type": "array", "items": { "type": "integer" } },
-            "operations": { "type": "array", "items": { "type": "integer" } }
+            "apis": { "type": "array", "items": { "type": "integer" } }
           }
         }
       }
-    }
-  },
-  "required": ["sessionId", "jobId", "request"],
-  "$defs": {
-    "submitRows": {
+    },
+    "contractRows": {
+      "type": "object",
+      "properties": {
+        "contracts": { "type": "array", "items": { "$ref": "#/$defs/contract" } },
+        "apis": { "type": "array", "items": { "$ref": "#/$defs/api" } }
+      }
+    },
+    "fileSystemRequest": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "contracts": { "type": "array", "items": { "$ref": "#/$defs/contract" } },
-        "apis": { "type": "array", "items": { "$ref": "#/$defs/api" } },
-        "files": { "type": "array", "items": { "$ref": "#/$defs/file" } },
+        "header": { "$ref": "#/$defs/header" },
+        "add": { "$ref": "#/$defs/fileRows" },
+        "patch": { "$ref": "#/$defs/fileRows" },
+        "delete": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "files": { "type": "array", "items": { "type": "integer" } }
+          }
+        }
+      }
+    },
+    "fileRows": {
+      "type": "object",
+      "properties": {
+        "files": { "type": "array", "items": { "$ref": "#/$defs/file" } }
+      }
+    },
+    "operationsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "header": { "$ref": "#/$defs/header" },
+        "add": { "$ref": "#/$defs/operationRows" },
+        "patch": { "$ref": "#/$defs/operationRows" },
+        "delete": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "operations": { "type": "array", "items": { "type": "integer" } }
+          }
+        },
+        "order": { "type": "array", "items": { "type": "integer" }, "description": "the cardinal operation ids in execution order after the call; a permutation of the resulting operations" }
+      }
+    },
+    "operationRows": {
+      "type": "object",
+      "properties": {
         "operations": { "type": "array", "items": { "$ref": "#/$defs/operation" } }
       }
     },
@@ -55,9 +89,9 @@
         "id": { "type": "integer" },
         "type": { "type": "string", "enum": ["Interface", "Abstract", "Record"] },
         "module": { "type": "string" },
-        "file": { "type": "string", "examples": ["src/Application/Facades/Approvals/IApprovalFlowService.cs"] },
+        "file": { "type": "string", "description": "the repository-relative path of the file that hosts the contract; the filesystem must declare it", "examples": ["src/Application/Facades/Approvals/IApprovalFlowService.cs"] },
         "promises": { "type": "string" },
-        "signature": { "type": "string", "examples": ["Task<Foo> Bar(int id, CancellationToken cancellationToken = default);"] },
+        "signature": { "type": "string", "description": "the complete signature", "examples": ["Task<Foo> Bar(int id, CancellationToken cancellationToken = default);"] },
         "premortem": {
           "type": "array",
           "items": {
@@ -65,10 +99,7 @@
             "additionalProperties": false,
             "properties": { "what": { "type": "string" }, "mitigation": { "type": "string" } }
           }
-        },
-        "confidence": { "type": "string", "enum": ["High", "Medium", "Low"] },
-        "evidence": { "type": "string", "enum": ["Docs", "DocsPartial", "Codebase", "DesignPast", "General", "Story", "TeamKnowledge", "None"] },
-        "evidenceNote": { "type": "string" }
+        }
       }
     },
     "api": {
@@ -89,10 +120,7 @@
             "additionalProperties": false,
             "properties": { "status": { "type": "string" }, "description": { "type": "string" }, "body": { "type": "string" } }
           }
-        },
-        "confidence": { "type": "string", "enum": ["High", "Medium", "Low"] },
-        "evidence": { "type": "string", "enum": ["Docs", "DocsPartial", "Codebase", "DesignPast", "General", "Story", "TeamKnowledge", "None"] },
-        "evidenceNote": { "type": "string" }
+        }
       }
     },
     "file": {
@@ -101,8 +129,8 @@
       "required": ["id"],
       "properties": {
         "id": { "type": "integer" },
-        "path": { "type": "string", "examples": ["src/Application/Facades/Approvals/ApprovalFlowService.cs"] },
-        "status": { "type": "string", "enum": ["Modified", "Added"] },
+        "path": { "type": "string", "description": "repository-relative, never absolute", "examples": ["src/Application/Facades/Approvals/ApprovalFlowService.cs"] },
+        "status": { "type": "string", "enum": ["Added", "Modified", "Deleted"] },
         "module": { "type": "string" },
         "reason": { "type": "string" },
         "change": { "type": "string", "description": "what exactly changes in the file: the members added or modified, the wiring, the schema" },
@@ -115,30 +143,27 @@
       "required": ["id"],
       "properties": {
         "id": { "type": "integer" },
-        "operation": { "type": "string" },
-        "kind": { "type": "string", "enum": ["Code", "NotCode", "Commands", "Testing", "Build"], "description": "Code writes production source (wiring included); NotCode acts on non-source files or writes no output; Commands starts long-running commands; Testing writes and runs testing code; Build runs the build, the error checks and the lint" },
+        "operation": { "type": "string", "description": "the title" },
+        "kind": { "type": "string", "enum": ["Production", "Documentation", "Testing"], "description": "Production writes the production code; Documentation writes documentation; Testing writes and runs the tests" },
         "testType": { "type": "string", "enum": ["Unit", "Integration", "E2E", "Harness"], "description": "required on a Testing operation, refused on any other; at most one Testing operation per type" },
-        "realizes": { "type": "array", "items": { "type": "string" }, "description": "the D# ids of the decisions this operation realizes; each decision must already exist" },
-        "instructions": { "type": "string", "examples": ["{{O1.1}} Resolve the acting user from the bearer token. {{O1.2}} Check the submit permission before creating the draft."] },
-        "dependsOn": { "type": "array", "items": { "type": "integer" }, "description": "cardinal operation numbers this one waits for (they become IM#)" },
+        "instructions": { "type": "string", "description": "complete, executable by an implementor starting from an empty context" },
         "files": { "type": "array", "items": { "type": "string" } },
-        "refObligations": { "type": "array", "items": { "type": "integer" }, "description": "cardinal obligation numbers this operation implements" },
-        "refElements": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["obligation", "element"],
-            "properties": {
-              "obligation": { "type": "integer", "description": "the cardinal obligation number" },
-              "element": { "type": "integer", "description": "the cardinal element index within that obligation (1-based, in written order)" }
-            }
-          },
-          "description": "the necessary elements this operation carries out, each as { obligation, element } (they become O#.k)"
-        },
+        "dependsOn": { "type": "array", "items": { "type": "integer" }, "description": "cardinal operation numbers this one waits for (they become IM#)" },
+        "realizes": { "type": "array", "items": { "type": "string" }, "description": "the D# ids of the decisions this operation realizes; each decision must already exist" },
+        "refObligations": { "type": "array", "items": { "type": "integer" }, "description": "cardinal obligation numbers this operation realizes (they become O#)" },
+        "refContracts": { "type": "array", "items": { "type": "integer" }, "description": "cardinal contract numbers this operation realizes (they become CT#)" },
+        "refApis": { "type": "array", "items": { "type": "integer" }, "description": "cardinal API numbers this operation realizes (they become API#)" },
         "knowledgeReferences": { "type": "array", "items": { "type": "integer" }, "description": "the kids of the knowledge references this operation needs, registered first with design-knowledge-references" },
+        "fileReferences": { "type": "array", "items": { "type": "string" }, "description": "the FR# ids of the file references this operation consumes" },
+        "referencesExemption": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "the reason a dimension needs no reference: set knowledge when knowledgeReferences is empty, file when fileReferences is empty",
+          "properties": { "knowledge": { "type": "string" }, "file": { "type": "string" } }
+        },
         "source": { "type": "string", "enum": ["Design", "Knowledge", "UserStory", "Developer", "JobArtifact"] },
         "sourceRef": { "type": "string" },
+        "hasDestructiveSideEffects": { "type": "boolean", "description": "true when the operation destroys data or state; it is then served only on the developer's selection" },
         "branches": {
           "type": "array",
           "items": {
@@ -198,33 +223,10 @@
       "properties": {
         "id": { "type": "string", "description": "O#: on Update only; omit on Add, the runtime assigns it" },
         "origin": { "type": "string", "enum": ["Requirement", "Developer"] },
-        "behavior": { "type": "string" },
+        "behavior": { "type": "string", "description": "one closed yes/no claim: trigger, conditions, required behavior, observable effect" },
         "class": { "type": "string" },
         "boundaries": { "type": "string" },
-        "sourceRef": { "type": "string" },
-        "elements": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "id": { "type": "integer", "description": "on Update: patches the element in place; omitted: appends" },
-              "kind": { "type": "string", "enum": ["Direction", "Conjunct", "Quantifier", "Guard", "Effect", "StateSemantics", "Exception"] },
-              "text": { "type": "string" },
-              "sourceSpan": { "type": "string" },
-              "removed": { "type": "boolean", "description": "on Update: deletes the element; its id is never reused" }
-            }
-          }
-        }
-      }
-    },
-    "openPoint": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "id": { "type": "string", "description": "OP#: on Update only; omit on Add, the runtime assigns it" },
-        "question": { "type": "string" },
-        "whyAskingMySelf": { "type": "string" }
+        "sourceRef": { "type": "string" }
       }
     },
     "fileReference": {
@@ -233,13 +235,14 @@
       "properties": {
         "id": { "type": "string", "description": "FR#: on Update only; omit on Add, the runtime assigns it" },
         "symbol": { "type": "string" },
+        "definitionPath": { "type": "string", "description": "the file that defines the symbol" },
         "files": { "type": "array", "items": { "type": "string" } },
         "details": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "properties": { "path": { "type": "string" }, "why": { "type": "string" }, "purpose": { "type": "string" } }
+            "properties": { "path": { "type": "string" }, "line": { "type": "integer" }, "why": { "type": "string" }, "purpose": { "type": "string" } }
           }
         },
         "scope": { "$ref": "#/$defs/scope" }
@@ -281,7 +284,7 @@
         "id": { "type": "string", "description": "D#: on Update only; omit on Add, the runtime assigns it" },
         "topic": { "type": "string" },
         "question": { "type": "string" },
-        "source": { "type": "string", "enum": ["InternalReasoning", "Codebase", "Requirements"] },
+        "source": { "type": "string", "enum": ["InternalReasoning", "Codebase", "Requirements", "BreakingChange"], "description": "BreakingChange records a break the design introduces (a contract signature, a public API, a persisted schema) instead of a provenance" },
         "context": { "type": "string" },
         "why": { "type": "string" },
         "how": { "type": "string" },

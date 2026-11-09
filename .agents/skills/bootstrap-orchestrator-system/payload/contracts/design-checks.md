@@ -1,67 +1,57 @@
 # Design checks
 
-Lab-authored contract, derived from the captured `get_design_checks` responses and the rules stated by the DESIGN instructions. The runtime implements it in `runtime/lib/checks.mjs`; without the runtime, apply each rule by hand to `design.json`.
+Lab-authored contract, derived from the captured `get_design_checks` responses, the rules the 3.0.3 `design_contracts`, `design_fileSystem` and `design_operations` captures say `get_design_checks` enforces, and the rules stated by the DESIGN instructions. The runtime implements it in `runtime/lib/checks.mjs`; without the runtime, apply each rule by hand to `design.json`.
 
-The checks are facts about the artifact: anchors, elements, placeholders, an executable plan, realized decisions. They never judge whether the design realizes R — that is the design verifier's job.
+The checks are facts about the artifact: references that resolve, realized obligations, contracts, APIs and decisions, an executable plan. They never judge whether the design realizes R — that is the orchestrator's adversarial review.
 
-`#capability:design-checks` — arguments `sessionId`, `jobId`. Response:
+`#capability:design-checks` — arguments `sessionId`, `jobId`. Response, as captured on 3.0.3:
 
 ```json
 { "errors": [ { "rule": "<slug>", "element": "<id>", "detail": "<text>" } ],
   "warnings": [ ... ],
-  "coverage": { "obligationsTotal": 0, "obligationsRealized": 0, "elementsTotal": 0, "elementsRealized": 0 } }
+  "coverage": { "obligationsTotal": 0, "obligationsRealized": 0 } }
 ```
 
-Findings that differ only in the element they name are one row, whose `element` lists them all (`O1.1, O1.2`) and whose `detail` says `<element>` in their place (Lab-authored: a partial `#capability:design-submit` answered one row per element not realized yet, about 24 KB on 60 obligations, and later turns carry that text). The same applies to the findings of `#capability:design-submit`, `#capability:design-overview` and `#capability:design-approve`.
+Findings that differ only in the element they name are one row, whose `element` lists them all (`O1, O2`) and whose `detail` says `<element>` in their place (Lab-authored: a design written in several calls otherwise answers one row for every item not realized yet). The same applies to the findings of `#capability:design-approve`.
 
-The design can be presented for approval only when `errors` is empty. Warnings never block approval. The answer is lined JSON, and a long one is served from a stored copy (`contracts/workflow-loop.md`, Stored responses).
-
-## Placeholders
-
-A placeholder is `{{O#.k}}` (an element) or `{{O#}}` (an obligation without elements). Every placeholder must be followed by at least **4 words** before the next placeholder or the end of the text. This minimum is Lab-authored: the captured server states only "closer than a few words".
+The section writes run no check: call `#capability:design-checks` after them. The design can be presented for approval only when `errors` is empty. Warnings never block approval. The answer is lined JSON, and a long one is served from a stored copy (`contracts/workflow-loop.md`, Stored responses).
 
 ## Errors
 
 | Rule | Reported when |
 | --- | --- |
-| `overview-gap-missing-element` | the design has obligations and `overview.gaps` does not anchor one of their elements |
-| `overview-gap-unknown-placeholder` | `overview.gaps` names an element that does not exist |
-| `overview-gap-placeholders-crowded` | a placeholder in `overview.gaps` is followed by fewer than 4 words |
-| `operation-reference-unknown` | an operation declares an obligation or element that does not exist |
-| `operation-instruction-missing-reference` | an operation declares an element its instructions never name |
-| `operation-instruction-undeclared-reference` | an operation's instructions name an element it does not declare |
-| `operation-instruction-placeholders-crowded` | a placeholder in an operation's instructions is followed by fewer than 4 words |
-| `operation-without-elements` | a `Code` operation declares no element or obligation |
-| `operation-without-failures` | an operation (other than `NotCode`) carries a `Guard`, `Effect` or `StateSemantics` element but states no `negatives` and no `exceptions` |
+| `operation-reference-unknown` | an operation's `refObligations`, `refContracts`, `refApis`, `fileReferences` or `knowledgeReferences` names a row that does not exist |
 | `operation-source-without-ref` | an operation sets a `source` other than `Design` without a `sourceRef` |
 | `operation-dependency-unknown` | `dependsOn` names an operation that does not exist |
 | `operation-dependency-order` | `dependsOn` names the operation itself or one scheduled after it |
-| `element-not-realized` | operations exist and no operation carries out an element |
-| `obligation-not-realized` | operations exist and no operation carries out an obligation without elements |
+| `obligation-not-realized` | operations exist and no operation lists an obligation in `refObligations` |
+| `contract-not-realized` | operations exist and no operation lists a contract in `refContracts` |
+| `api-not-realized` | operations exist and no operation lists a public API in `refApis` |
+| `contract-file-undeclared` | the filesystem has rows and a contract is hosted in a `file` none of them declares |
 | `decision-chosen-count` | a decision does not have exactly one chosen option |
 | `decision-realized-unknown` | an operation's `realizes` names a decision that does not exist (a decision deleted after the plan cited it) |
 | `decision-not-realized` | operations exist and no operation cites a decision that is not highlighted in `realizes` |
-| `file-without-operation` | a filesystem row's path is listed by no operation |
-| `build-operation-missing` | operations exist and none is a `Build` operation |
-| `build-operation-multiple` | the plan declares more than one `Build` operation; reported on the second |
-| `build-operation-order` | a `Code` or `NotCode` operation comes after the `Build` operation, or a `Commands` or `Testing` operation before it |
+| `file-without-operation` | operations exist and a filesystem row's path is listed by no operation |
 | `testing-operation-without-type` | a `Testing` operation declares no `testType` |
 | `testing-operations` | two `Testing` operations declare the same `testType`; reported on the second |
 | `operation-test-type-misplaced` | an operation of another kind declares a `testType` |
 
-The Build and Testing rules are the design errors the served walkthrough states; their slugs are Lab-authored, because no capture shows them.
+`decision-not-realized`, `file-without-operation` and `file-reference-without-detail` are captured slugs. The 3.0.3 captures state the realization of contracts and APIs and the declared contract file as `get_design_checks` rules without showing their slugs; those slugs, and the slugs of the other rules the instructions state, are Lab-authored.
 
-A highlighted decision (`highlight: true`, or the 3.0.0 `blocking: true`) is exempt from `decision-not-realized`. Before any operation exists, the realization and Build rules do not apply. A partial `#capability:design-submit` is applied whatever these rules report; the design cannot be approved until they pass.
+A highlighted decision (`highlight: true`, or the 3.0.0 `blocking: true`) is exempt from `decision-not-realized`. Before any operation exists, the realization rules and `file-without-operation` do not apply; before any filesystem row exists, `contract-file-undeclared` does not apply (Lab-authored: the 3.0.3 steps write the contracts, then the filesystem, then the operations, and a check that fires on a section not written yet tells the author nothing).
+
+Rules the 3.0.3 captures still list that the runtime cannot apply: an operation carrying a guard, an effect or a state semantics must declare `negatives` or `exceptions` — without obligation elements the artifact no longer says which operation carries one, so the rule stays an instruction the orchestrator's review applies. `build-operation-not-last-authoring` was reported by an earlier build and 3.0.3 has no `Build` kind.
 
 ## Warnings
 
 | Rule | Reported when |
 | --- | --- |
 | `file-reference-without-detail` | a file of a file reference has no `details` entry with both `why` and `purpose` |
+| `operation-references-undeclared` | an operation declares no `knowledgeReferences` and no `referencesExemption.knowledge`, or no `fileReferences` and no `referencesExemption.file` (Lab-authored: the 3.0.3 instructions require the references or the reason; no capture shows a finding for it, so it does not block approval) |
 
 ## Coverage
 
-An element is realized when an operation lists it in `refElements`. An obligation is realized when all its elements are realized, or, without elements, when an operation lists it in `refObligations`.
+An obligation is realized when at least one operation lists it in `refObligations`. Since 3.0.3 there are no elements and no element counters.
 
 ## Out-of-band edits
 
