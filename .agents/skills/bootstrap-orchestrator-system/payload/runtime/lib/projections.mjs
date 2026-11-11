@@ -1,7 +1,7 @@
 // Markdown projections of the design (contracts/projections.md), built from the design on each call.
 import { isHighlighted, runChecks } from "./checks.mjs";
 import { batchOf } from "./plan.mjs";
-import { RuntimeError, shortTime } from "./util.mjs";
+import { RuntimeError, findText, shortTime } from "./util.mjs";
 
 const lower = (value) => (value ?? "").toString().toLowerCase();
 const join = (items) => (items?.length ? items.join(", ") : "none");
@@ -146,26 +146,69 @@ export function snapshotIndex(text, flags) {
   ].join("\n");
 }
 
-export function snapshotSelection(text, { section, ids }) {
+// A section is named as the snapshot titles it; case, spaces and punctuation do not matter, and the table names the
+// design writes use are accepted too (`apis`, `files`).
+const plain = (name) => String(name).toLowerCase().replace(/[^a-z0-9]/g, "");
+const SECTION_ALIASES = { api: "publicapis", apis: "publicapis", file: "filesystem", files: "filesystem", knowledge: "knowledgereferences" };
+const sectionKey = (name) => SECTION_ALIASES[plain(name)] ?? plain(name);
+
+// The fields of a row are its `label: value` segments. A segment with no label continues the field before it.
+function rowFields(row, wanted) {
+  const [id, ...segments] = row.slice(2).split(" | ");
+  const kept = [];
+  let keep = false;
+  for (const segment of segments) {
+    const label = /^([A-Za-z][A-Za-z ]{0,30}): /.exec(segment);
+    if (label) keep = wanted.includes(plain(label[1]));
+    if (keep) kept.push(segment);
+  }
+  return kept.length ? `- ${id} | ${kept.join(" | ")}` : null;
+}
+
+const BRIEF_CHARS = 200;
+const GREP_AROUND = 80;
+const GREP_SHOWN = 5;
+
+// The places a row holds the text, each with the text around it, so a long row is not read to find one sentence.
+function rowMatches(row, query) {
+  const found = findText(row.toLowerCase(), String(query).toLowerCase());
+  if (!found.length) return null;
+  const shown = found.slice(0, GREP_SHOWN).map(([from, to]) => `…${row.slice(Math.max(2, from - GREP_AROUND), to + GREP_AROUND)}…`);
+  const more = found.length > GREP_SHOWN ? ` | (${found.length - GREP_SHOWN} more)` : "";
+  return `- ${rowId(row)} | ${found.length} match${found.length === 1 ? "" : "es"} | ${shown.join(" | ")}${more}`;
+}
+
+// Lab-authored: part of the snapshot. `section` and `ids` choose rows, `fields` the fields of each row, `grep` the
+// rows that hold a text, and `brief` cuts each row to its start. They combine, in that order.
+export function snapshotSelection(text, { section, ids, fields, brief, grep }) {
   const { head, sections } = snapshotSections(text);
-  const wanted = section === undefined ? null : listOf(section).map((name) => name.toLowerCase());
-  const unknown = (wanted ?? []).filter((name) => !sections.some((s) => s.name.toLowerCase() === name));
-  if (unknown.length) throw new RuntimeError(`design-snapshot failed: no section '${unknown.join("', '")}'. Sections: ${sections.map((s) => s.name).join(", ")}.`);
+  const wanted = section === undefined ? null : listOf(section).map(sectionKey);
+  const unknown = section === undefined ? [] : listOf(section).filter((name) => !sections.some((s) => plain(s.name) === sectionKey(name)));
+  if (unknown.length) throw new RuntimeError(`design-snapshot failed: no section '${unknown.map((name) => name.toLowerCase()).join("', '")}'. Sections: ${sections.map((s) => s.name).join(", ")}.`);
   const items = ids === undefined ? null : listOf(ids).map((id) => id.toLowerCase());
+  const columns = fields === undefined ? null : listOf(fields).map(plain);
   const found = new Set();
   const out = [head.trimEnd()];
+  let shown = 0;
   for (const s of sections) {
-    if (wanted && !wanted.includes(s.name.toLowerCase())) continue;
-    const rows = items === null ? s.rows : s.rows.filter((row) => {
+    if (wanted && !wanted.includes(plain(s.name))) continue;
+    let rows = items === null ? s.rows : s.rows.filter((row) => {
       const id = rowId(row).toLowerCase();
       if (!row.startsWith("- ") || !items.includes(id)) return false;
       found.add(id);
       return true;
     });
-    if (items === null || rows.length) out.push("", `## ${s.name}`, ...rows);
+    const narrowed = columns !== null || grep !== undefined;
+    if (columns) rows = rows.map((row) => (row.startsWith("- ") ? rowFields(row, columns) : null)).filter(Boolean);
+    if (grep !== undefined) rows = rows.map((row) => rowMatches(row, grep)).filter(Boolean);
+    if (brief) rows = rows.map((row) => (row.length > BRIEF_CHARS ? `${row.slice(0, BRIEF_CHARS)} …` : row));
+    shown += rows.length;
+    if (rows.length || (items === null && !narrowed)) out.push("", `## ${s.name}`, ...rows);
   }
   const missing = (items ?? []).filter((id) => !found.has(id));
   if (items && found.size === 0) throw new RuntimeError(`design-snapshot failed: no item '${missing.join("', '")}'${wanted ? " in that section" : ""}. A row's id is its first field: O1, FR1, kid 1, CT1, API1, FS1, IM1, D1, IT1.`);
+  if (columns && shown === 0 && grep === undefined) throw new RuntimeError(`design-snapshot failed: no field '${listOf(fields).join("', '")}' in those rows. A field is the label before a colon in a row, such as instructions, files, promises, signature or change.`);
+  if (grep !== undefined && shown === 0) out.push("", `No row contains '${grep}'.`);
   if (missing.length) out.push("", `Not found: ${missing.join(", ")}.`);
   return `${out.join("\n")}\n`;
 }

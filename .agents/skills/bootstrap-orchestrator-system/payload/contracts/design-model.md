@@ -61,7 +61,47 @@ A design written before 3.0.3 may still hold obligation `elements`, `openPoints`
 
 **Identity.** The runtime assigns every id from `counters`, in order, and never renumbers or reuses one. Persisted references are prefixed (`IM1`, `O1`, `CT1`); the section writes take cardinal numbers and convert them.
 
-**Validation.** A payload with an unknown property is refused and nothing is applied. Every design operation takes `sessionId`, `jobId` and `request`; a request field sent beside them (for example `operation` at the top level) is refused as misplaced, naming the field, and nothing is applied. Error paths are absolute: `/request/operation`, `/request/rows/0/<field>`. The misplaced-field refusal and the absolute paths are Lab-authored: the captured server leaves them unspecified.
+**Validation.** A payload with an unknown property is refused and nothing is applied. Every design operation takes `sessionId`, `jobId` and `request`. A request field sent beside them (`--operation Read`, or a flat JSON object) is read as that field of the request, and a field sent in both places is refused. Error paths are absolute: `/request/operation`, `/request/rows/0/<field>`. Lab-authored: the captured server leaves the flat form and the paths unspecified, and agents that sent a flat `Read` spent a turn on the refusal the runtime gave before.
+
+**Ids.** A session id, a job id and a design id match `^[A-Za-z0-9_][A-Za-z0-9_-]{0,99}$`. Lab-authored: the captured format has no hyphen, and agents proposed `work-item-11` in two of three measured runs; the first character is never a hyphen, so an id is never read as a flag. `planName` keeps the captured format.
+
+## edits
+
+Lab-authored; the captured tools have no such argument. Every design write that stores text takes `edit` beside `request`: `#capability:design-obligations`, `#capability:design-file-references`, `#capability:design-decisions`, `#capability:design-overview`, `#capability:design-contracts`, `#capability:design-file-system` and `#capability:design-operations`.
+
+```json
+{ "sessionId": "...", "jobId": "...",
+  "edit": [ { "id": "IM2", "field": "instructions", "from": "the text to find", "to": "the text that replaces it" } ] }
+```
+
+An edit changes text inside one field of a stored row, so a correction to long instructions sends the sentence and not the field (a patch replaces the whole field). `edit` is one edit or a list.
+
+- `id` is the row as the design shows it (`IM2`, `CT1`, `D3`). A bare number is read as the row of a command with one table (`2` is `IM2` on `design-operations`); `design-contracts` needs `CT#` or `API#`, and `design-overview` takes no id.
+- `field` is a text field of the row, by its name in the request schema; a nested one is a path (`options[0].text`, `premortem[1].mitigation`, `details[0].why`). An id, a list and a field with fixed values are not edited: they change with a patch or an `Update`.
+- `from` must occur exactly once in the field; `all: true` replaces every occurrence. Any run of white space in `from` matches any run of white space in the field, so text quoted from a one-line snapshot row finds stored line breaks.
+- The call is all or nothing and carries no `request`. A rejected edit is listed as `{ "path": "edit[0]", "message": "..." }` and none is applied. A row of another command is refused with its owner.
+
+Response: `{"edited": ["IM2.instructions"]}`. Measured before it existed: one run spent 26 turns writing and repairing find-and-replace scripts over its own payload files to change sentences in two 10 KB fields.
+
+## kept-requests
+
+Lab-authored. A design write is applied whole or not at all, as captured, so a refused request used to be sent again in full: in one measured run five refusals cost about 55,000 output tokens of resent payloads. A refused design write of 600 bytes or more is kept for a day (`<cache root>/requests/<id>.json`) and its refusal carries `kept`: the draft id and the call that corrects it. A smaller request is cheaper to send again and is not kept.
+
+```json
+{ "sessionId": "...", "jobId": "...", "draft": "3f9a2c1d0b7e",
+  "move": { "apis": "add.apis" }, "set": { "add.files[2].status": "Added" }, "drop": ["add.contracts"] }
+```
+
+The call names the draft and carries only the correction, with the paths the refusal reported (`add.contracts[0].premortem`, `/request/rows/3/elements`; a leading `request` is optional):
+
+| Argument | Effect on the kept request |
+| --- | --- |
+| `move` | `{ "<from>": "<to>" }`: a value sent in the wrong place. Onto a list it is appended, onto an object merged. |
+| `set` | `{ "<path>": <value> }`: a new value at a path. |
+| `drop` | `["<path>"]`: a value to remove; elements of one list are removed from the last, so each index names the element the refusal named. |
+| `replace` | `[{ "from", "to" }]`: text of a payload that was not valid JSON, each found exactly once, applied before it is parsed. |
+
+The kept request with the correction applied is validated and applied as one whole request, all or nothing, exactly as if it had been sent that way; a correction that leaves it invalid is refused and keeps the new form as a new draft when it is large enough. A draft of another command, an unknown draft and a path that names nothing are refused. The CLI keeps a `--json` payload that is not valid JSON the same way and names the place of the error (`near: …`), so it is repaired with `replace` (`runtime/lib/kept.mjs`).
 
 ## row-writes
 
@@ -163,7 +203,9 @@ An operation row:
 - `order` (operations only) lists the cardinal operation ids in execution order after the call: a permutation of every operation that exists once the call's deletions and additions apply. Without `order`, added rows go before the first stored row with a higher id, so parallel calls with disjoint ranges build the same plan whichever arrives first; stored rows are reordered only by `order`.
 - `add` appends rows whose ids are new; `patch` updates existing rows field by field; `delete` removes rows. One call may combine them, and non-empty `header` fields are applied.
 
-**All or nothing.** A call that names a table of another section is rejected with `rejected here — <table> belong to <operation>`, as captured. A row the schema refuses (the captured case: a `premortem` entry with a property other than `what` and `mitigation`), an `add` of an id that exists, a `patch` or `delete` of one that does not, an operation naming a kid no knowledge reference registers or a decision that does not exist, and an `order` that is not a permutation are rejected too. Any rejection rejects the whole call: nothing is applied, every rejection is listed and the exit code is 1.
+**All or nothing.** A call that names a table of another section is rejected with `rejected here — <table> belong to <operation>`, as captured. A row the schema refuses (the captured case: a `premortem` entry with a property other than `what` and `mitigation`), an `add` of an id that exists, a `patch` or `delete` of one that does not, an operation naming a kid no knowledge reference registers or a decision that does not exist, and an `order` that is not a permutation are rejected too. Any rejection rejects the whole call: nothing is applied, every rejection is listed and the exit code is 1. A rejected call of some size is kept, so it is corrected and not sent again (kept-requests).
+
+**Read.** Lab-authored: upstream gives the section writes no `Read`, and agents ask for one after the row writes, which have it. `request: { "operation": "Read", "ids": [1, "CT2"] }` answers the rows of the command's own section as `#capability:design-snapshot` shows them (contracts/projections.md): every row without `ids`, and with a cardinal id the row of each of its tables. A `Read` takes `ids` only.
 
 **No checks.** A section write runs no mechanical check, as captured: call `#capability:design-checks` after the writes. The completeness gate is the approval (`#capability:design-approve`).
 

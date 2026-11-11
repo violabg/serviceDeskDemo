@@ -1,8 +1,9 @@
-// `<token> --help`: the token's own definition, read from the runtime contracts, so an agent learns the
-// arguments from the source of truth instead of guessing them.
+// What a command takes, from the command table and the request schema: `--help`, the role bindings and the command
+// definitions a served step carries all read it here, so an agent learns the arguments from the source of truth
+// instead of guessing them.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { ARGUMENTS, REQUEST_TOKENS, handlers } from "./api.mjs";
+import { COMMANDS, REQUEST_TOKENS } from "./commands.mjs";
 
 const usage = (token) => `usage: node agentic-system.mjs ${token} [--json <file>|-|'<inline JSON>'] [--<argument> <value> ...]`;
 
@@ -36,34 +37,22 @@ function definition(text, token, tier) {
   return paragraphs.slice(at, end + 1).join("\n\n").trim();
 }
 
-// The fields of `request` for each design operation that takes one, read from the request schema.
-const REQUEST_DEFS = {
-  "design-obligations": "rowRequest",
-  "design-file-references": "rowRequest",
-  "design-decisions": "rowRequest",
-  "design-knowledge-references": "knowledgeReferencesRequest",
-  "design-overview": "overview",
-  "design-contracts": "contractsRequest",
-  "design-file-system": "fileSystemRequest",
-  "design-operations": "operationsRequest",
-  "design-approve": "approve",
-  "design-operation-status": "operationStatus",
-  "design-iteration-open": "iterationOpen",
-  "design-iteration-close": "iterationClose",
-};
+let cachedSchema = null;
+export function requestSchema(ctx) {
+  cachedSchema ??= JSON.parse(readFileSync(join(ctx.assetsRoot, "design-requests.schema.json"), "utf8"));
+  return cachedSchema;
+}
+const requestDef = (schema, token) => schema.$defs[COMMANDS[token]?.request];
 
-// What the `rows` of a row request hold: the schema leaves them open, and the operation validates them by this def.
-const ROW_DEFS = {
-  "design-obligations": "obligation",
-  "design-file-references": "fileReference",
-  "design-decisions": "decision",
-};
-
-const requestSchema = (ctx) => JSON.parse(readFileSync(join(ctx.assetsRoot, "design-requests.schema.json"), "utf8"));
-const requestDef = (schema, token) => schema.$defs[REQUEST_DEFS[token]];
-
-function requestFields(ctx, token) {
+// The fields of `request` for a design operation that takes one, as the schema names them.
+export function requestProperties(ctx, token) {
   return Object.keys(requestDef(requestSchema(ctx), token)?.properties ?? {});
+}
+
+// The fields shown: a second spelling of a field the schema accepts (`WorkspacePath` beside `workspacePath`) is not.
+function requestFields(ctx, token) {
+  const seen = new Set();
+  return requestProperties(ctx, token).filter((name) => !seen.has(name.toLowerCase()) && seen.add(name.toLowerCase()));
 }
 
 const refName = (field) => field?.$ref?.split("/").pop();
@@ -92,37 +81,44 @@ function fieldLines(def, rowDef, pad, refs) {
 }
 
 // Lab-authored: upstream takes the shape of a submission from the argument descriptions its server gives the
-// client. A command line has no such channel, so `--help` prints the fields from the schema the runtime validates by.
+// client. A command line has no such channel, so the fields are printed from the schema the runtime validates by.
 function requestFieldsHelp(ctx, token) {
   const schema = requestSchema(ctx);
   const def = requestDef(schema, token);
   if (!def) return "";
   const refs = new Set();
-  const out = ["Fields of request (* = required):", ...fieldLines(def, ROW_DEFS[token], "", refs)];
+  const out = ["Fields of request (* = required):", ...fieldLines(def, COMMANDS[token].rows, "", refs)];
   for (const name of refs) out.push("", `Fields of ${name}:`, ...fieldLines(schema.$defs[name], null, "", refs));
   return `\n${out.join("\n")}\n`;
 }
 
-// What an argument means, where its name alone does not say: shown in the role bindings and in `--help`.
-const ARGUMENT_NOTES = {
-  "design-snapshot": { section: "one section only, such as Operations", ids: "those items only, such as IM3,CT1" },
-};
+const noted = (notes = {}) => (name) => (notes[name] ? `${name} (${notes[name]})` : name);
 
-// One line per command with the arguments it accepts (from `ARGUMENTS` and the request schema), so an agent learns
-// every command's arguments in one call, or from its role file, instead of one `--help` call per command.
+// The arguments of one command on one line, from the command table and the request schema.
+function argumentsLine(ctx, token) {
+  const command = COMMANDS[token];
+  if (command.request) {
+    const beside = Object.keys(command.beside ?? {}).map(noted(command.beside));
+    return `sessionId, jobId, request { ${requestFields(ctx, token).join(", ")} }${beside.length ? `, ${beside.join(", ")}` : ""}`;
+  }
+  if (command.freeText) return "sessionId, and the text under any field name";
+  return command.args.length ? command.args.map(noted(command.notes)).join(", ") : "no arguments";
+}
+
+// One line per command with the arguments it accepts, so an agent learns every command's arguments in one call, or
+// from its role file, instead of one `--help` call per command.
 export function commandArguments(ctx, role) {
   const allowed = role ? ctx.roles?.[role] : null;
-  const tokens = Object.keys(handlers).filter((token) => !allowed || allowed.includes(token));
-  return tokens.map((token) => {
-    if (REQUEST_TOKENS.has(token)) {
-      const extra = token === "design-obligations" ? ", outline (with Read: one line per obligation, its id and claim)" : "";
-      return `${token}: sessionId, jobId, request { ${requestFields(ctx, token).join(", ")} }${extra}`;
-    }
-    const list = ARGUMENTS[token];
-    if (list === null) return `${token}: sessionId, and the text under any field name`;
-    const notes = ARGUMENT_NOTES[token] ?? {};
-    return `${token}: ${list?.length ? list.map((name) => (notes[name] ? `${name} (${notes[name]})` : name)).join(", ") : "no arguments"}`;
-  });
+  return Object.keys(COMMANDS)
+    .filter((token) => !allowed || allowed.includes(token))
+    .map((token) => `${token}: ${argumentsLine(ctx, token)}`);
+}
+
+// Lab-authored: what a served step says about a command it names (contracts/workflow-loop.md, Command definitions):
+// its arguments and, for a design write, every field of its request, so the step is followed without a `--help` call.
+export function commandDefinition(ctx, token) {
+  const fields = REQUEST_TOKENS.has(token) ? requestFieldsHelp(ctx, token).trimEnd() : "";
+  return `### ${token}\nArguments: ${argumentsLine(ctx, token)}${fields ? `\n${fields.trimStart()}` : ""}`;
 }
 
 export function commandsHelp(ctx, role) {

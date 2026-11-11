@@ -2,6 +2,17 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 6.1.0
+
+The workflows still follow upstream 3.0.3. The runtime gains edits in place and kept requests, so this is a minor version. Re-installing keeps the answers and sessions.
+
+- **Edit in place.** The design writes (`design-obligations`, `design-decisions`, `design-file-references`, `design-overview`, `design-contracts`, `design-file-system` and `design-operations`) take `edit`: a list of `{ id, field, from, to }` that changes text inside one field.
+- **Kept requests.** A refused design write of 600 bytes or more is kept for 24 hours. The next call sends only the correction (`draft`, `set`, `drop`, `move` or `replace`), and the kept request with the correction is applied as one whole request. Refused JSON text is kept as well, so `replace` repairs it without typing it again.
+- **Design snapshot filters.** `design-snapshot` takes `fields`, `brief` and `grep` to read only some fields, the start of each row, or the rows that contain some text.
+- **Command definitions.** The first instruction that names a design write in a job is followed by that command's arguments and request fields, so the agent does not probe `--help` first.
+- **Parts.** A long runtime answer is split by the client's limit, and every continuation names the client. A unit longer than the limit starts in the part that holds its lead-in.
+- **Argument help.** The runtime's `--help` and the role contracts list the arguments each command takes; accepted alternative spellings are no longer listed.
+
 ## 6.0.0
 
 The workflows follow upstream 3.0.3. Runtime commands were removed and renamed and both code workflows changed shape, so this is a major version. Re-installing keeps the answers and sessions; a design written by 5.x stays readable and servable.
