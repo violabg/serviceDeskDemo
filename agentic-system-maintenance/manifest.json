@@ -2,7 +2,7 @@
   "version": 1,
   "kit": {
     "skill": "bootstrap-orchestrator-system",
-    "version": "6.2.0"
+    "version": "6.2.1"
   },
   "appliedOn": "2026-11-11",
   "answersSha256": "e18cfd350af20b117b696e033d8b74d9437d0934292de69bdd21e0c4ea7acc8c",
@@ -85,7 +85,7 @@
       "customizable": true
     },
     ".claude/skills/plan-bug-from-id/SKILL.md": {
-      "sha256": "ed1e7ec387eca576e0f886e145577e0b41b46899ffaf3b6f477767a066f2a868",
+      "sha256": "53d2569712bf0de351ac0e6824409c1a7548ec41348576f88e12eb680ddd6ad4",
       "kind": "skill",
       "mode": "file",
       "envs": [
@@ -94,10 +94,10 @@
         "opencode"
       ],
       "customizable": true,
-      "keptSha256": "8790caa04640b6f126d6b017cf9feb8df593f9c9da451405252bb24a7d215c19"
+      "keptSha256": "ef365b24d889691fda5f80d42502937374aca2f6d5e322dffd5b2f959ede964e"
     },
     ".claude/skills/plan-user-story-from-id/SKILL.md": {
-      "sha256": "a30ae27f19b8c6cd6397ca5dfd83aedb4c7c5f92dbc15e80d0ab2e737e9802ad",
+      "sha256": "fddcf083fd9b807bde4b2f3e64bdc163368fa09e3260a2f42e11811b2d1e2b4b",
       "kind": "skill",
       "mode": "file",
       "envs": [
@@ -106,7 +106,7 @@
         "opencode"
       ],
       "customizable": true,
-      "keptSha256": "057c037216ba01cbd4adccaa66b76afc7e4a9d9fe35610a5175ce4f229b78202"
+      "keptSha256": "893bafb7cc7f15523d990a3d2af850852dce780d2e54fd55fb98b84ba78880c2"
     },
     ".claude/skills/sd-ask/SKILL.md": {
       "sha256": "8a7688197e81837e4bd235000d72dd988767bebbdc52eae6b96a332e8a434d00",
@@ -381,7 +381,7 @@
       "customizable": false
     },
     "agentic-system/contracts/session-store.md": {
-      "sha256": "9e292db013f7a82e825f6ed08d6c298b873f54f1e83a4f0ad6900ee761da65a0",
+      "sha256": "86c961db3bcca403560a7afbbd816aa45a3c0552486ff13b7505e6fc020b13d8",
       "kind": "contract",
       "mode": "file",
       "envs": [],
@@ -535,7 +535,7 @@
       "customizable": false
     },
     "agentic-system/lib/session.mjs": {
-      "sha256": "0213c93482442ef75353dcd1f8eb745864a148461c81f54a38c4fc39039f5613",
+      "sha256": "2491f156322998b895e3f0982156a038cd018a8c4760afc0e309831b0b9cbedd",
       "kind": "runtime",
       "mode": "file",
       "envs": [],
@@ -703,7 +703,7 @@
       "customizable": false
     },
     "agentic-system/workflows/shared/01-user-instruction-space.md": {
-      "sha256": "d4fe4d51363fe87ddaa161c038395b0f5b9ed5ddbd8386a1f2bf5fe5929b3eb0",
+      "sha256": "e99307006144eeb0223878b8d7efd89b99901bb3cb54652f70697be5b7b1e29a",
       "kind": "workflow",
       "mode": "file",
       "envs": [],
