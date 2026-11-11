@@ -79,6 +79,6 @@ Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<t
 - Runtime command arguments:
   - `design-verification-view`: sessionId, jobId, part, revision
   - `knowledge-catalog`: no arguments
-  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `knowledge-read`: sessionId, fileIds, part
 - Tool limits: this role may run the runtime command. The client enforces the tool list in this file.
 - Use the terminal only to run the runtime command above. The client cannot limit the terminal further, so this is an instruction.

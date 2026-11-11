@@ -5,7 +5,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { knowledgeReads, recordKnowledgeReads } from "./session.mjs";
-import { RuntimeError, arg, frontmatter, parseFrontmatter, readJson, requireString, servePart, sha256, writeJson, writeText } from "./util.mjs";
+import { RuntimeError, arg, callerFlags, frontmatter, parseFrontmatter, readJson, requireString, servePart, sha256, writeJson, writeText } from "./util.mjs";
 
 const TIERS = {
   MustHave: "Mandatory knowledges for the project. Agent must always apply them",
@@ -116,7 +116,8 @@ function documentLines(ctx, path) {
 // design read. A call that names no role (an operator's) still counts.
 const groundsTheDesign = (role) => role === undefined || role === "orchestrator";
 
-export function read(ctx, args, { role } = {}) {
+export function read(ctx, args, caller = {}) {
+  const { role } = caller;
   const entries = buildCatalog(ctx);
   const ids = idsOf(args);
   const parts = [];
@@ -134,7 +135,7 @@ export function read(ctx, args, { role } = {}) {
   }
   const sessionId = arg(args, "sessionId");
   // The role travels with the continuation, so a document finished by a later part is attributed to the same reader.
-  const session = `${sessionId ? ` --sessionId ${sessionId}` : ""}${role ? ` --role ${role}` : ""}`;
+  const session = `${sessionId ? ` --sessionId ${sessionId}` : ""}${callerFlags(caller)}`;
   // A part starts at a `# file_id` heading. A document longer than one part continues under the same heading.
   return servePart(`${parts.join("\n\n---\n\n")}\n`, args, {
     tool: "knowledge-read",

@@ -44,11 +44,11 @@ Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<t
 - Runtime command arguments:
   - `codebase-cluster-files`: WorkspacePath, fileExtension, clusterName
   - `codebase-clusters`: WorkspacePath, fileExtension
-  - `design-implementation-operation`: sessionId, jobId, operationId, id, part
+  - `design-implementation-operation`: sessionId, jobId, operationId, part
   - `design-implementation-operation-close`: sessionId, jobId
   - `knowledge-catalog`: no arguments
-  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `knowledge-read`: sessionId, fileIds, part
   - `session-activate`: sessionId
   - `session-artifact-list`: sessionId
-  - `session-artifact-read`: sessionId, artifact, artifactId, artifactName, name
+  - `session-artifact-read`: sessionId, name
 - Tool limits: this role may read files, search files, write files, run terminal commands, run the runtime command. The client enforces the tool list in this file.

@@ -167,6 +167,10 @@
         "static install and runtime (verify.mjs) after the 6.0.0 upgrade": {
           "status": "verified-native",
           "note": "upgrade 5.1.0 -> 6.0.0: 38 updated, 10 created, 11 deleted, 46 unchanged, no merge or conflict; a repeated plan reports 94 unchanged. verify.mjs passes on all three checks. agentic-system.mjs --help lists design-contracts, design-file-system, design-operations and no longer design-submit, design-open-points, design-implementation-context or session-execution-report-read. pnpm lint 0 errors (10 pre-existing warnings), typecheck clean, 327 tests passed. Scratch session scratchupgrade600 (deleted afterwards): a DESIGN job serves Instruction 1/11 and a FAST_IMPLEMENTATION job Instruction 1/5. No existing session held a 5.x design, so reading one under 6.0.0 was not exercised (2026-11-09, kit 6.0.0)"
+        },
+        "static install and runtime (verify.mjs) after the 6.1.0 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 6.0.0 -> 6.1.0: 32 updated, 2 created, 2 skills merged (the kit only dropped the alternative spellings from the session-artifact-write argument line; the repository kept its GitHub Copilot and OpenCode routing lines), 60 unchanged, no conflict; a repeated plan reports 96 unchanged. verify.mjs passes on all three checks. pnpm lint 0 errors (10 pre-existing warnings), typecheck clean, 327 tests passed. Scratch session scratchupgrade610 (deleted afterwards), DESIGN job run from the shell: Instruction 1/11 served in parts; design-obligations edit changed text inside O1.behavior and a Read returned it; design-snapshot --grep answered the match line and --fields class answered only that field (--fields behavior leaves no row, since behavior has no label, as the contract says); an Add of over 600 bytes with an invalid origin was refused and kept as a draft, and the call with that draft and only set /request/rows/0/origin added O2. Not exercised from inside a Claude Code role session (2026-11-11, kit 6.1.0)"
         }
       }
     },
@@ -335,6 +339,10 @@
         "static install and runtime (verify.mjs) after the 6.0.0 upgrade": {
           "status": "verified-native",
           "note": "upgrade 5.1.0 -> 6.0.0: 38 updated, 10 created, 11 deleted, 46 unchanged, no merge or conflict; a repeated plan reports 94 unchanged. verify.mjs passes on all three checks. agentic-system.mjs --help lists design-contracts, design-file-system, design-operations and no longer design-submit, design-open-points, design-implementation-context or session-execution-report-read (shared check, 2026-11-09, kit 6.0.0); not re-exercised in a Copilot session"
+        },
+        "static install and runtime (verify.mjs) after the 6.1.0 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 6.0.0 -> 6.1.0: 32 updated, 2 created, 2 skills merged (the kit only dropped the alternative spellings from the session-artifact-write argument line; the repository kept its GitHub Copilot and OpenCode routing lines), 60 unchanged, no conflict; a repeated plan reports 96 unchanged. verify.mjs passes on all three checks. The edit, kept-request and snapshot-filter behaviours were exercised on the shared runtime from the shell (scratch session, deleted afterwards) (shared check, 2026-11-11, kit 6.1.0); not re-exercised in a Copilot session"
         }
       }
     },
@@ -467,6 +475,10 @@
         "static install and runtime (verify.mjs) after the 6.0.0 upgrade": {
           "status": "verified-native",
           "note": "upgrade 5.1.0 -> 6.0.0: 38 updated, 10 created, 11 deleted, 46 unchanged, no merge or conflict; a repeated plan reports 94 unchanged. verify.mjs passes on all three checks. agentic-system.mjs --help lists design-contracts, design-file-system, design-operations and no longer design-submit, design-open-points, design-implementation-context or session-execution-report-read (shared check, 2026-11-09, kit 6.0.0); not re-exercised in a opencode run"
+        },
+        "static install and runtime (verify.mjs) after the 6.1.0 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 6.0.0 -> 6.1.0: 32 updated, 2 created, 2 skills merged (the kit only dropped the alternative spellings from the session-artifact-write argument line; the repository kept its GitHub Copilot and OpenCode routing lines), 60 unchanged, no conflict; a repeated plan reports 96 unchanged. verify.mjs passes on all three checks. The edit, kept-request and snapshot-filter behaviours were exercised on the shared runtime from the shell (scratch session, deleted afterwards) (shared check, 2026-11-11, kit 6.1.0); not re-exercised in an opencode run"
         }
       }
     }

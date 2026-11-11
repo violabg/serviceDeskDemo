@@ -104,33 +104,33 @@ Installed for Claude Code. This is how each `#capability:<token>` and `#operatio
   - `codebase-clusters`: WorkspacePath, fileExtension
   - `design-approve`: sessionId, jobId, request { planName, description }
   - `design-checks`: sessionId, jobId, acceptExternalEdit
-  - `design-contracts`: sessionId, jobId, request { header, add, patch, delete }
-  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }
+  - `design-contracts`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }])
   - `design-document`: sessionId, jobId
-  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }
-  - `design-file-system`: sessionId, jobId, request { header, add, patch, delete }
-  - `design-implementation-operation`: sessionId, jobId, operationId, id, part
+  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-file-system`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-implementation-operation`: sessionId, jobId, operationId, part
   - `design-implementation-operation-close`: sessionId, jobId
   - `design-iteration-close`: sessionId, jobId, request { iterationId, verifications, blocks, notes }
-  - `design-iteration-open`: sessionId, jobId, request { workspacePath, WorkspacePath, request }
+  - `design-iteration-open`: sessionId, jobId, request { workspacePath, request }
   - `design-knowledge-references`: sessionId, jobId, request { operation, references }
-  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline (with Read: one line per obligation, its id and claim)
+  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline (with Read: one line per obligation, its id and claim), edit (changes text inside a field in place: [{ id, field, from, to }])
   - `design-operation-status`: sessionId, jobId, request { ids, status }
-  - `design-operations`: sessionId, jobId, request { header, add, patch, delete, order }
-  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }
-  - `design-snapshot`: sessionId, jobId, part, revision, section (one section only, such as Operations), ids (those items only, such as IM3,CT1)
+  - `design-operations`: sessionId, jobId, request { header, add, patch, delete, order }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-snapshot`: sessionId, jobId, section (one section only, such as Operations), ids (those items only, such as IM3,CT1), fields (those fields of each row only, such as instructions), brief (true: the start of each row), grep (the rows that contain this text, with the text around each match), part, revision
   - `documentation-check`: templateNameOrPath, outputFile, outputContent, mode
   - `documentation-template-read`: templateNameOrPath
   - `documentation-templates-list`: templatesDirectory
   - `knowledge-catalog`: no arguments
   - `knowledge-index-rebuild`: no arguments
-  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `knowledge-read`: sessionId, fileIds, part
   - `session-activate`: sessionId
   - `session-artifact-list`: sessionId
-  - `session-artifact-read`: sessionId, artifact, artifactId, artifactName, name
-  - `session-artifact-write`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, content, contentFile
+  - `session-artifact-read`: sessionId, name
+  - `session-artifact-write`: sessionId, name, description, intendedUse, mimeType, origin, content, contentFile
   - `session-event-log`: sessionId, and the text under any field name
-  - `session-image-attach`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, blobUrl
+  - `session-image-attach`: sessionId, name, description, intendedUse, mimeType, origin, blobUrl
   - `session-list`: no arguments
   - `session-memory-append`: sessionId, and the text under any field name
   - `session-memory-read`: sessionId

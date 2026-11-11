@@ -91,6 +91,6 @@ Installed for OpenCode. This is how each `#capability:<token>` and `#operation:<
 - Runtime command arguments:
   - `design-verification-view`: sessionId, jobId, part, revision
   - `knowledge-catalog`: no arguments
-  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `knowledge-read`: sessionId, fileIds, part
 - Tool limits: this role may run the runtime command. The client enforces the tool list in this file.
 - Use the terminal only to run the runtime command above. The client denies any other shell command.

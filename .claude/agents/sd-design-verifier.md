@@ -84,6 +84,6 @@ Installed for Claude Code. This is how each `#capability:<token>` and `#operatio
 - Runtime command arguments:
   - `design-verification-view`: sessionId, jobId, part, revision
   - `knowledge-catalog`: no arguments
-  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `knowledge-read`: sessionId, fileIds, part
 - Tool limits: this role may run the runtime command. The client enforces the tool list in this file.
 - Use the terminal only to run the runtime command above. A client hook blocks any other shell command.

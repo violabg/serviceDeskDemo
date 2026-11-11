@@ -2,7 +2,9 @@
 // The runtime is the only clock: it serves one instruction at a time and never shows a future step.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { COMMANDS } from "./commands.mjs";
 import { createDesign, designExists } from "./design-store.mjs";
+import { commandDefinition } from "./help.mjs";
 import { knowledgeChangedOutsideRuntime, knowledgeHashes } from "./knowledge.mjs";
 import { readArtifactBody, requireSession } from "./session.mjs";
 import { RuntimeError, arg, iso, jobFlags, readJson, requireId, requireString, servePart, writeJson } from "./util.mjs";
@@ -89,24 +91,51 @@ export function jobActivate(ctx, args) {
   return `Agent job created;\nJobId: ${jobId}\nDesignId: ${requestedDesign ?? "<none>"}`;
 }
 
-function serve(ctx, job) {
+const namedTokens = (instruction) => [...new Set([...instruction.matchAll(/#capability:([a-z-]+)/g)].map((match) => match[1]))];
+
+// Lab-authored (contracts/workflow-loop.md, Command definitions). The design writes an instruction names for the
+// first time in its job are defined after it: their arguments and every field of their request. Agents asked `--help`
+// for each one before its first write, a turn per command. A later instruction only says where each was defined.
+// `job.defined` records the instruction that defined each command, so the same instruction always reads the same.
+function commandDefinitions(ctx, job, instruction, role) {
+  const allowed = role ? ctx.roles?.[role] : null;
+  const writes = namedTokens(instruction).filter((token) => COMMANDS[token]?.request && job.defined?.[token] && (!allowed || allowed.includes(token)));
+  if (!writes.length) return "";
+  const here = writes.filter((token) => job.defined[token] === job.currentStep);
+  const earlier = writes.filter((token) => job.defined[token] !== job.currentStep);
+  const out = ["", "---", "", "## RUNTIME COMMANDS OF THIS INSTRUCTION", "", "The arguments of the design writes this instruction names, from the schema the runtime validates by. Use them as given: no `--help` call is needed first."];
+  for (const token of here) out.push("", commandDefinition(ctx, token));
+  if (earlier.length) out.push("", `Defined with an earlier instruction, and unchanged: ${earlier.map((token) => `${token} (instruction ${job.defined[token]})`).join(", ")}. \`<command> --help\` prints one again.`);
+  return `${out.join("\n")}\n`;
+}
+
+// Records the commands the instruction the job just reached defines, before it is served.
+function defineCommands(ctx, job) {
+  const path = join(ctx.workflowsRoot, `${job.steps[job.currentStep - 1]}.md`);
+  if (!existsSync(path)) return;
+  job.defined ??= {};
+  for (const token of namedTokens(readFileSync(path, "utf8"))) if (COMMANDS[token]?.request) job.defined[token] ??= job.currentStep;
+}
+
+function serve(ctx, job, role) {
   const ref = job.steps[job.currentStep - 1];
   const path = join(ctx.workflowsRoot, `${ref}.md`);
   if (!existsSync(path)) throw new RuntimeError(`instruction file is missing: ${path}`);
-  let text = `Instruction ${job.currentStep}/${job.steps.length}.\n${readFileSync(path, "utf8").trimEnd()}\n`;
+  const instruction = readFileSync(path, "utf8").trimEnd();
+  let text = `Instruction ${job.currentStep}/${job.steps.length}.\n${instruction}\n`;
   if (job.currentStep > 1) {
     const name = `user_instruction_register_${job.jobId}`;
     const register = readArtifactBody(ctx, job.sessionId, name);
     text += `\n---\n\n## ACTIVE USER INSTRUCTION REGISTER\n\n`;
     text += register === null ? `(no session artifact '${name}' exists: the register was never created)\n` : `${register.trimEnd()}\n`;
   }
-  return text;
+  return text + commandDefinitions(ctx, job, instruction, role);
 }
 
 // A long instruction is served in parts that start at a paragraph. workflow-step-next always serves part 1;
 // the rest of the same instruction comes from workflow-step-pending, which never advances the workflow.
 function servePartOf(ctx, job, args, tool, caller) {
-  return servePart(serve(ctx, job), args, {
+  return servePart(serve(ctx, job, caller?.role), args, {
     tool,
     limit: ctx.partLimit,
     starts: (line, previous) => line.trim() !== "" && previous !== undefined && previous.trim() === "",
@@ -118,6 +147,7 @@ export function stepPending(ctx, args, caller) {
   const job = loadJob(ctx, args, "workflow-step-pending");
   if (job.currentStep === 0) {
     job.currentStep = 1;
+    defineCommands(ctx, job);
     saveJob(ctx, job);
   }
   return servePartOf(ctx, job, args, "workflow-step-pending", caller);
@@ -137,6 +167,7 @@ export function stepNext(ctx, args, caller) {
     throw new RuntimeError(`workflow-step-next failed: knowledge changed outside knowledge-create and knowledge-update: ${outside.join(", ")}. No workflow agent may edit knowledge, and the step did not advance. Halt and report this to the developer: the change must be restored or applied through knowledge-builder.`);
   }
   job.currentStep += 1;
+  defineCommands(ctx, job);
   saveJob(ctx, job);
   return servePartOf(ctx, job, { part: 1 }, "workflow-step-next", caller);
 }
