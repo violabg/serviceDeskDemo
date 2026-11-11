@@ -1,18 +1,23 @@
-// THE runtime contract: one handler per runtime capability token (system/canonical/capabilities.yaml).
-// A handler receives the context, the upstream argument object and the caller ({ role }), and returns the
-// response text, or { output, exitCode } for a structured refusal. Adapters (the CLI today, an MCP server if ever needed)
-// only translate transport around this table and hold no logic of their own.
+// THE runtime contract: one handler per runtime capability token (system/canonical/capabilities.yaml), declared in
+// commands.mjs. A handler receives the context, the argument object and the caller ({ role, client }), and returns
+// the response text, or { output, exitCode } for a structured refusal. Adapters (the CLI today, an MCP server if ever
+// needed) only translate transport around this table and hold no logic of their own.
 import { join } from "node:path";
 import * as codebase from "./codebase.mjs";
+import { COMMANDS, REQUEST_TOKENS, acceptedArguments } from "./commands.mjs";
 import * as design from "./design.mjs";
 import * as documentation from "./documentation.mjs";
+import { requestProperties } from "./help.mjs";
+import { keepRequest, keptNote, resolveKept } from "./kept.mjs";
 import * as knowledge from "./knowledge.mjs";
 import { bounded, storedPart } from "./responses.mjs";
 import * as session from "./session.mjs";
-import { arg, linedJson, withLock } from "./util.mjs";
+import { arg, jobFlags, linedJson, withLock } from "./util.mjs";
 import * as workflow from "./workflow.mjs";
 
-export const handlers = {
+export { REQUEST_TOKENS };
+
+const HANDLERS = {
   "session-list": (ctx) => session.sessionList(ctx),
   "session-activate": (ctx, args) => session.sessionActivate(ctx, args),
   "session-memory-read": (ctx, args) => session.memoryRead(ctx, args),
@@ -61,78 +66,54 @@ export const handlers = {
   "documentation-check": (ctx, args) => documentation.checkDocument(ctx, args),
 };
 
-// The design operations whose arguments are { sessionId, jobId, request }. Every other token takes its
-// arguments at the top level.
-export const REQUEST_TOKENS = new Set([
-  "design-obligations",
-  "design-file-references",
-  "design-decisions",
-  "design-knowledge-references",
-  "design-overview",
-  "design-contracts",
-  "design-file-system",
-  "design-operations",
-  "design-approve",
-  "design-operation-status",
-  "design-iteration-open",
-  "design-iteration-close",
-]);
+// The handlers in the order of the command table, which is the order `--help` lists them. A command without a
+// handler, or a handler without a command, fails here and in `validate:canonical`.
+export const handlers = Object.fromEntries(Object.keys(COMMANDS).map((token) => [token, HANDLERS[token]]));
+for (const token of Object.keys(HANDLERS)) if (!COMMANDS[token]) throw new Error(`handler ${token} has no entry in the command table`);
+for (const token of Object.keys(COMMANDS)) if (!HANDLERS[token]) throw new Error(`command ${token} has no handler`);
 
 // Agents learn the design envelope and send it to every token. For a token without a request, the fields
 // inside `request` are read as top-level arguments (a top-level value wins), instead of being ignored.
-function unwrapRequest(token, args) {
+function unwrapRequest(args) {
   const request = args?.request;
-  if (REQUEST_TOKENS.has(token) || !request || typeof request !== "object" || Array.isArray(request)) return args;
+  if (!request || typeof request !== "object" || Array.isArray(request)) return args;
   const { request: _, ...rest } = args;
   return { ...request, ...rest };
 }
 
-// The arguments each token accepts (the upstream contract: an unknown property applies nothing and is an
-// error). Names compare case-insensitively, as `arg` reads them. null: the handler takes free-form text.
-const SESSION = ["sessionId"];
-const JOB = ["sessionId", "jobId"];
-const FRONT_MATTER = ["artifactFrontMatter", "name", "artifactName", "description", "intendedUse", "intended_use", "use", "mimeType", "mime_type", "origin"];
-export const ARGUMENTS = {
-  "session-list": [],
-  "session-activate": SESSION,
-  "session-memory-read": SESSION,
-  "session-memory-append": null,
-  "session-event-log": null,
-  "session-artifact-write": [...SESSION, ...FRONT_MATTER, "content", "contentFile"],
-  "session-artifact-read": [...SESSION, "artifact", "artifactId", "artifactName", "name"],
-  "session-artifact-list": SESSION,
-  "session-image-attach": [...SESSION, ...FRONT_MATTER, "blobUrl"],
-  "workflow-types-list": [],
-  "workflow-job-activate": [...JOB, "agentName", "designId", "workflowType"],
-  "workflow-step-pending": [...JOB, "part"],
-  "workflow-step-next": JOB,
-  "design-checks": [...JOB, "acceptExternalEdit"],
-  "design-snapshot": [...JOB, "part", "revision", "section", "ids"],
-  "design-verification-view": [...JOB, "part", "revision"],
-  "design-implementation-operation": [...JOB, "operationId", "id", "part"],
-  "design-implementation-operation-close": JOB,
-  "design-document": JOB,
-  "knowledge-catalog": [],
-  "knowledge-read": [...SESSION, "fileIds", "fileId", "ids", "id", "part"],
-  "knowledge-create": ["title", "content", "tier", "folder", "keywords", "intent"],
-  "knowledge-update": ["fileId", "fileIds", "id", "ids", "content", "intent"],
-  "knowledge-index-rebuild": [],
-  "codebase-clusters": ["WorkspacePath", "fileExtension"],
-  "codebase-cluster-files": ["WorkspacePath", "fileExtension", "clusterName"],
-  "documentation-templates-list": ["templatesDirectory"],
-  "documentation-template-read": ["templateNameOrPath"],
-  "documentation-check": ["templateNameOrPath", "outputFile", "outputContent", "mode"],
-};
-// Agents learn the design envelope and send it to every token, so its fields are never unknown: `sessionId`
-// and `jobId` are ignored where they mean nothing, and `request` is unwrapped. A design operation checks its own
-// arguments, because it also says which field belongs inside `request`.
+// Lab-authored: a design write whose request fields arrive beside sessionId and jobId (`--operation Read`, or a flat
+// JSON object) means the same call, so the fields are read as the request. A field sent in both places is refused.
+function foldRequest(ctx, token, args) {
+  const accepted = acceptedArguments(token);
+  const declared = requestProperties(ctx, token);
+  // A section write also answers a Read (design.mjs, sectionRead), which the request schema does not declare.
+  const read = declared.includes("add") ? ["operation", "ids"] : [];
+  const fields = new Map([...declared, ...read].map((name) => [name.toLowerCase(), name]));
+  const flat = Object.keys(args).filter((key) => !accepted.has(key.toLowerCase()) && fields.has(key.toLowerCase()));
+  if (!flat.length) return { args };
+  const request = args.request === undefined ? {} : args.request;
+  if (request === null || typeof request !== "object" || Array.isArray(request)) return { args };
+  const twice = flat.filter((key) => fields.get(key.toLowerCase()) in request);
+  if (twice.length) return { refused: `${token} failed: ${twice.map((key) => `'${key}'`).join(", ")} was sent both inside request and beside it. Nothing was applied: send it once, inside request.` };
+  const folded = { ...args, request: { ...request } };
+  for (const key of flat) {
+    folded.request[fields.get(key.toLowerCase())] = args[key];
+    delete folded[key];
+  }
+  return { args: folded };
+}
+
+// The arguments each command accepts (the upstream contract: an unknown property applies nothing and is an error).
+// Names compare case-insensitively, as `arg` reads them. The envelope fields `sessionId`, `jobId` and `request` are
+// never unknown: agents send the design envelope to every command, so they are ignored or unwrapped where they mean nothing.
 function unknownArguments(token, args) {
-  const allowed = ARGUMENTS[token];
-  if (allowed === null || allowed === undefined) return null;
-  const known = new Set([...allowed, ...JOB, "request"].map((name) => name.toLowerCase()));
+  const command = COMMANDS[token];
+  if (command.freeText) return null;
+  const known = acceptedArguments(token);
   const unknown = Object.keys(args ?? {}).filter((name) => !known.has(name.toLowerCase()));
   if (!unknown.length) return null;
-  return `${token} failed: unknown argument ${unknown.map((name) => `'${name}'`).join(", ")}. Nothing was applied. Arguments: ${allowed.join(", ") || "none"}.`;
+  const shown = command.request ? ["sessionId", "jobId", "request", ...Object.keys(command.beside ?? {})] : command.args;
+  return `${token} failed: unknown argument ${unknown.map((name) => `'${name}'`).join(", ")}. Nothing was applied. Arguments: ${shown.join(", ") || "none"}.`;
 }
 
 // Lab-authored: knowledge has one writer, whatever a role's upstream tool map grants (contracts/knowledge-catalog.md).
@@ -173,23 +154,56 @@ function unknownCommand(token) {
   return `unknown command '${token}'. The runtime is installed and working; this is not a runtime outage. ${commands}. \`--help\` alone lists the arguments of every command.`;
 }
 
-// Runs one token and normalizes the result to { output, exitCode }, never longer than the part limit: `caller.role`
-// is the role named by the adapter, and `responseId` serves a part of an earlier long response without running
-// the operation again (contracts/workflow-loop.md, Parts).
-export async function call(ctx, token, args = {}, caller = {}) {
+// The context a call runs in: the part limit of the caller's client, when the config records one for it
+// (contracts/workflow-loop.md, Parts).
+function contextOf(ctx, caller) {
+  const limit = caller.client ? ctx.partLimits?.[caller.client] : undefined;
+  return Number.isInteger(limit) && limit > 0 ? { ...ctx, partLimit: limit } : ctx;
+}
+
+// A refused design write of some size is kept, and the refusal says how to correct it without sending it again.
+function refusedWrite(ctx, token, args, caller, result) {
+  // An edit is small by nature and is corrected by sending it again.
+  if (!REQUEST_TOKENS.has(token) || result.exitCode !== 1 || arg(args, "edit") !== undefined) return result;
+  const id = keepRequest(ctx, token, args);
+  if (!id) return result;
+  const note = keptNote(token, id, ` ${jobFlags(args, caller)}`);
+  let parsed = null;
+  try {
+    parsed = JSON.parse(result.output);
+  } catch {}
+  const output = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? linedJson({ ...parsed, kept: note }) : `${result.output.trimEnd()}\n${note}`;
+  return { output, exitCode: 1 };
+}
+
+// Runs one token and normalizes the result to { output, exitCode }, never longer than the part limit: `caller`
+// names the role and the client the adapter was given, and `responseId` serves a part of an earlier long response
+// without running the operation again (contracts/workflow-loop.md, Parts).
+export async function call(baseCtx, token, input = {}, caller = {}) {
   const handler = handlers[token];
   if (!handler) return { output: unknownCommand(token), exitCode: 2 };
-  if (arg(args, "responseId") !== undefined) return storedPart(ctx, token, args);
-  const refused = unknownArguments(token, args);
-  if (refused) return { output: refused, exitCode: 1 };
+  const ctx = contextOf(baseCtx, caller);
+  if (arg(input, "responseId") !== undefined) return storedPart(ctx, token, input, caller);
+  let args = input ?? {};
   try {
+    if (REQUEST_TOKENS.has(token)) {
+      if (arg(args, "draft") !== undefined) args = resolveKept(ctx, token, args);
+      const folded = foldRequest(ctx, token, args);
+      if (folded.refused) return { output: folded.refused, exitCode: 1 };
+      args = folded.args;
+    }
+    const refused = unknownArguments(token, args);
+    if (refused) return { output: refused, exitCode: 1 };
+    if (!REQUEST_TOKENS.has(token)) args = unwrapRequest(args);
     // A design call reads, changes and seals design.json: parallel design writes run one after the other.
-    const run = () => handler(ctx, unwrapRequest(token, args), caller);
+    const run = () => handler(ctx, args, caller);
     const result = await (token.startsWith("design-") ? withLock(join(ctx.runtimeRoot, ".design-lock"), run) : run());
-    return bounded(ctx, token, typeof result === "string" ? { output: result, exitCode: 0 } : result);
+    const answer = typeof result === "string" ? { output: result, exitCode: 0 } : result;
+    return bounded(ctx, token, refusedWrite(ctx, token, args, caller, answer), caller);
   } catch (error) {
     if (error && "payload" in error) {
-      return bounded(ctx, token, { output: error.payload ? linedJson(error.payload) : error.message, exitCode: 1 });
+      const answer = { output: error.payload ? linedJson(error.payload) : error.message, exitCode: 1 };
+      return bounded(ctx, token, refusedWrite(ctx, token, args, caller, answer), caller);
     }
     throw error;
   }

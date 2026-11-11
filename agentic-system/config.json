@@ -5,6 +5,10 @@
   "userRoot": "~/.agentic-system",
   "workflowsRoot": "workflows",
   "partLimit": 7000,
+  "partLimits": {
+    "claude-code": 24000,
+    "opencode": 24000
+  },
   "roles": {
     "ask": [
       "knowledge-catalog",

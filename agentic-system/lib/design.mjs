@@ -8,15 +8,10 @@ import { designPaths, loadDesign, saveDesign, touch } from "./design-store.mjs";
 import { designGrounding, knowledgeFile, resolveKnowledgeReference } from "./knowledge.mjs";
 import { authorisationOf, batchOf, isDone, nextAutomatic, unmetDependencies } from "./plan.mjs";
 import { servedOperation, snapshot, snapshotIndex, snapshotSelection, verificationView } from "./projections.mjs";
+import { requestSchema as schema } from "./help.mjs";
 import { validate } from "./schema.mjs";
-import { RuntimeError, arg, iso, jobFlags, linedJson, readJson, servePart, sha256, writeJson } from "./util.mjs";
+import { RuntimeError, arg, findText, iso, jobFlags, linedJson, pathGet, pathSet, pathSteps, readJson, servePart, sha256, writeJson } from "./util.mjs";
 import { loadJob } from "./workflow.mjs";
-
-let cachedSchema = null;
-function schema(ctx) {
-  cachedSchema ??= JSON.parse(readFileSync(join(ctx.assetsRoot, "design-requests.schema.json"), "utf8"));
-  return cachedSchema;
-}
 
 function check(ctx, defName, value, tool, path = "") {
   const root = schema(ctx);
@@ -30,27 +25,12 @@ function check(ctx, defName, value, tool, path = "") {
   }
 }
 
-// Every design operation takes { sessionId, jobId, request }. A request field sent beside sessionId and jobId
-// is named as misplaced instead of validating an empty request, whose errors would point the caller the wrong way.
-function requestOf(ctx, args, defName, tool, extras = []) {
-  const fields = Object.keys(schema(ctx).$defs[defName].properties ?? {}).map((k) => k.toLowerCase());
-  const misplaced = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request"].includes(k.toLowerCase()) && fields.includes(k.toLowerCase()));
-  if (misplaced.length) {
-    throw new RuntimeError(`${tool} rejected`, {
-      status: "Rejected",
-      errors: misplaced.map((key) => ({ rule: "invalid-request", element: tool, detail: `/${key}: '${key}' was sent beside sessionId and jobId; it belongs inside request: { "sessionId": "...", "jobId": "...", "request": { "${key}": ... } }` })),
-      applied: "nothing was applied",
-    });
-  }
-  refuseUnknown(args, tool, extras);
+// Every design operation takes { sessionId, jobId, request }. The entry point (api.mjs) has already read the request
+// fields sent beside them as the request, and refused the arguments the command does not take.
+function requestOf(ctx, args, defName, tool) {
   const request = arg(args, "request") ?? {};
   check(ctx, defName, request, tool, "/request");
   return request;
-}
-
-function refuseUnknown(args, tool, extras = []) {
-  const unknown = Object.keys(args ?? {}).filter((k) => !["sessionid", "jobid", "request", ...extras.map((e) => e.toLowerCase())].includes(k.toLowerCase()));
-  if (unknown.length) throw new RuntimeError(`${tool} failed: unknown argument ${unknown.map((k) => `'${k}'`).join(", ")}. Nothing was applied. Arguments: sessionId, jobId, request.`);
 }
 
 // Resolves the design of a job. DOCUMENTATION jobs have none.
@@ -106,11 +86,11 @@ function obligationOutline(obligations, ids) {
 }
 
 export function rowTool(ctx, tool, args) {
+  if (arg(args, "edit") !== undefined) return editTool(ctx, tool, args);
   const table = ROW_TABLES[tool];
   const { design } = jobDesign(ctx, args, tool);
-  const canOutline = tool === "design-obligations";
-  const outline = canOutline && String(arg(args, "outline") ?? "false") === "true";
-  const request = requestOf(ctx, args, "rowRequest", tool, canOutline ? ["outline"] : []);
+  const outline = String(arg(args, "outline") ?? "false") === "true";
+  const request = requestOf(ctx, args, "rowRequest", tool);
   if (outline && request.operation !== "Read") throw new RuntimeError(`${tool} rejected: outline applies to the operation Read only. Nothing was applied.`);
   const rows = request.rows ?? [];
   const ids = request.ids ?? [];
@@ -285,6 +265,7 @@ export function knowledgeReferences(ctx, args) {
 
 export function overview(ctx, args) {
   const tool = "design-overview";
+  if (arg(args, "edit") !== undefined) return editTool(ctx, tool, args);
   const { design } = jobDesign(ctx, args, tool);
   const request = requestOf(ctx, args, "overview", tool);
   if (request.operation === "Read") return linedJson(design.overview);
@@ -342,12 +323,13 @@ function operationRowProblems(design, row) {
 // rejects the whole call, and nothing is applied. The tool runs no mechanical checks: design-checks does.
 export function sectionWrite(ctx, tool, args) {
   const section = SECTIONS[tool];
-  refuseUnknown(args, tool);
+  if (arg(args, "edit") !== undefined) return editTool(ctx, tool, args);
   const request = arg(args, "request");
   if (!request || typeof request !== "object" || Array.isArray(request) || Object.keys(request).length === 0) {
     throw new RuntimeError(`${tool} rejected: an empty request is never acceptable; send sessionId, jobId and request.`);
   }
   const { design } = jobDesign(ctx, args, tool);
+  if (request.operation === "Read") return sectionRead(design, tool, request);
   const root = schema(ctx);
   const rejected = [];
   const reject = (path, message) => rejected.push({ path, message });
@@ -452,6 +434,101 @@ export function sectionWrite(ctx, tool, args) {
   return linedJson({ status: design.status, applied, rejected });
 }
 
+// --- reading a section through its own write ----------------------------------------------------------------
+
+const SECTION_NAMES = { "design-contracts": ["Contracts", "Public APIs"], "design-file-system": ["Filesystem"], "design-operations": ["Operations"] };
+
+// Lab-authored: a section write has no Read upstream, and agents ask for one after the row writes, which have it. It
+// answers the rows of the section as the snapshot shows them. A cardinal id names the row of each of its tables.
+function sectionRead(design, tool, request) {
+  const extra = Object.keys(request).filter((key) => key !== "operation" && key !== "ids");
+  if (extra.length) throw new RuntimeError(`${tool} rejected: a Read takes ids only; '${extra.join("', '")}' is not read. Nothing was applied.`);
+  const tables = ownTables(tool);
+  const sent = Array.isArray(request.ids) ? request.ids : request.ids === undefined ? [] : [request.ids];
+  const ids = sent.flatMap((id) => {
+    if (!/^\d+$/.test(String(id))) return [String(id)];
+    const named = tables.map((table) => `${TABLES[table].prefix}${id}`);
+    const existing = named.filter((name, index) => TABLES[tables[index]].get(design).some((row) => row.id === name));
+    return existing.length ? existing : named.slice(0, 1);
+  });
+  return snapshotSelection(snapshot(design), { section: SECTION_NAMES[tool].join(","), ids: ids.length ? ids : undefined });
+}
+
+// --- edits in place -----------------------------------------------------------------------------------------
+
+const EDIT_TABLES = {
+  O: { owner: "design-obligations", def: "obligation", rows: (d) => d.obligations },
+  FR: { owner: "design-file-references", def: "fileReference", rows: (d) => d.fileReferences },
+  D: { owner: "design-decisions", def: "decision", rows: (d) => d.decisions },
+  CT: { owner: "design-contracts", def: "contract", rows: (d) => d.path.contracts },
+  API: { owner: "design-contracts", def: "api", rows: (d) => d.path.apis },
+  FS: { owner: "design-file-system", def: "file", rows: (d) => d.path.filesystem.files },
+  IM: { owner: "design-operations", def: "operation", rows: (d) => d.path.operations },
+};
+
+// The schema of the value at a path inside a row, or null when the row has no such field.
+function fieldSchema(root, defName, steps) {
+  const resolve = (node) => (node?.$ref ? root.$defs[node.$ref.split("/").pop()] : node);
+  let node = resolve(root.$defs[defName]);
+  for (const step of steps) {
+    node = resolve(typeof step === "number" ? node?.items : node?.properties?.[step]);
+    if (!node) return null;
+  }
+  return node;
+}
+
+// Lab-authored (contracts/design-model.md, edits): changes text inside one field of a stored row, so a correction to
+// long instructions sends the sentence and not the field. `edit` is one edit or a list of { id, field, from, to, all }:
+// `from` must occur once in the field, or `all: true` replaces every occurrence; any white space in `from` matches any
+// white space. The call is all or nothing, like every design write, and carries no `request`.
+export function editTool(ctx, tool, args) {
+  const request = arg(args, "request");
+  if (request && typeof request === "object" && Object.keys(request).length) {
+    throw new RuntimeError(`${tool} rejected: a call carries either request or edit, not both. Nothing was applied.`);
+  }
+  const { design } = jobDesign(ctx, args, tool);
+  const root = schema(ctx);
+  const rejected = [];
+  const edited = [];
+  const owned = Object.keys(EDIT_TABLES).filter((prefix) => EDIT_TABLES[prefix].owner === tool);
+  [arg(args, "edit")].flat().forEach((edit, index) => {
+    const reject = (message) => rejected.push({ path: `edit[${index}]`, message });
+    if (!edit || typeof edit !== "object" || typeof edit.field !== "string" || typeof edit.from !== "string" || typeof edit.to !== "string") {
+      return reject("an edit is { id, field, from, to }: field names the text field, from the text to find and to the text that replaces it");
+    }
+    let target = design.overview;
+    let defName = "overview";
+    let label = "overview";
+    if (tool !== "design-overview") {
+      const given = String(edit.id ?? "");
+      const id = /^\d+$/.test(given) && owned.length === 1 ? `${owned[0]}${given}` : given;
+      const table = EDIT_TABLES[/^([A-Z]+)\d+$/.exec(id)?.[1]];
+      if (!table) return reject(`id '${given}' names no row; give the id as the design shows it (${owned.map((prefix) => `${prefix}1`).join(", ")})`);
+      if (table.owner !== tool) return reject(`${id} belongs to ${table.owner}; edit it there`);
+      target = table.rows(design).find((row) => row.id === id);
+      if (!target) return reject(`${id} does not exist`);
+      defName = table.def;
+      label = id;
+    }
+    const steps = pathSteps(edit.field);
+    const declared = fieldSchema(root, defName, steps);
+    const value = pathGet(target, steps);
+    const isText = declared && [declared.type].flat().includes("string") && !declared.enum && steps[0] !== "id";
+    if (!isText || typeof value !== "string") return reject(`${label} has no text field '${edit.field}' to edit; a list, an id or a fixed value is changed with a patch or an Update`);
+    const found = findText(value, edit.from);
+    if (found.length === 0) return reject(`the text was not found in ${label}.${edit.field} (${value.length} characters). Find it with design-snapshot and grep before editing`);
+    if (found.length > 1 && edit.all !== true) return reject(`the text occurs ${found.length} times in ${label}.${edit.field}; quote more of the text around it, or set all: true to replace every occurrence`);
+    let next = value;
+    for (const [from, to] of [...found].reverse()) next = next.slice(0, from) + edit.to + next.slice(to);
+    pathSet(target, steps, next);
+    edited.push(`${label}.${edit.field}`);
+  });
+  if (rejected.length) return { output: linedJson({ status: design.status, edited: [], rejected }), exitCode: 1 };
+  touch(ctx, design, "updated", `${tool}: edited ${[...new Set(edited)].join(", ")}`);
+  saveDesign(ctx, design);
+  return JSON.stringify({ edited });
+}
+
 // --- reads --------------------------------------------------------------------------------------------
 
 export function checksTool(ctx, args) {
@@ -493,11 +570,13 @@ export function snapshotTool(ctx, args, caller) {
   // Parts start at a section heading or at an item, so a row is never split.
   const design = loadDesign(ctx, job.sessionId, job.designId);
   const guard = revisionGuard(design, args, "design-snapshot", caller);
-  const section = arg(args, "section");
-  const ids = arg(args, "ids");
-  const selecting = section !== undefined || ids !== undefined;
-  const same = `${section !== undefined ? ` --section "${section}"` : ""}${ids !== undefined ? ` --ids ${[ids].flat().join(",")}` : ""}`;
-  const text = selecting ? snapshotSelection(snapshot(design), { section, ids }) : snapshot(design);
+  const selection = { section: arg(args, "section"), ids: arg(args, "ids"), fields: arg(args, "fields"), grep: arg(args, "grep"), brief: String(arg(args, "brief") ?? "false") === "true" };
+  const chosen = ["section", "ids", "fields", "grep"].filter((name) => selection[name] !== undefined);
+  const selecting = selection.brief || chosen.length > 0;
+  // The call for a later part repeats the selection, so it can be run exactly as printed. Ids keep their bare form.
+  const flag = (name) => (name === "ids" ? [selection.ids].flat().join(",") : `"${[selection[name]].flat().join(",").replace(/["\\$`]/g, "\\$&")}"`);
+  const same = chosen.map((name) => ` --${name} ${flag(name)}`).join("") + (selection.brief ? " --brief true" : "");
+  const text = selecting ? snapshotSelection(snapshot(design), selection) : snapshot(design);
   const answer = servePart(text, args, {
     ...guard,
     limit: ctx.partLimit,

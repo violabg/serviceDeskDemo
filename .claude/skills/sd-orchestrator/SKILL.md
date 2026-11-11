@@ -98,39 +98,39 @@ The scope and the boundary of the design are determined ONLY by the requirement 
 
 Installed for Claude Code. This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
 
-- Runtime operations: run `node agentic-system/bin/agentic-system.mjs <token> --role orchestrator` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); always pass `--role orchestrator`, and the runtime refuses a command outside this role; pass arguments as flags (`--sessionId s1`) or as one JSON object: inline when it is short (`--json '{"sessionId":"s1"}'`), on stdin in the same command when it is large (`--json -` with a quoted heredoc, in a POSIX shell), or else with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run `node agentic-system/bin/agentic-system.mjs <token> --help` only when a call is refused or you need a field's definition. On a design command it prints every field of `request` and of its rows, so read that rather than the contract files. A long answer arrives in parts: when it ends with `[part N of M. The answer continues …]`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `agentic-system/contracts/` gives and record that the gate ran instruction-only.
+- Runtime operations: run `node agentic-system/bin/agentic-system.mjs <token> --role orchestrator --client claude-code` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); always pass `--role orchestrator`, and the runtime refuses a command outside this role; always pass `--client claude-code` as well, in every call including the one for a later part, so that an answer is cut to what Claude Code shows whole; pass arguments as flags (`--sessionId s1`) or as one JSON object: inline when it is short (`--json '{"sessionId":"s1"}'`), on stdin in the same command when it is large (`--json -` with a quoted heredoc, in a POSIX shell), or else with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run `node agentic-system/bin/agentic-system.mjs <token> --help` only when a call is refused or you need a field's definition. On a design command it prints every field of `request` and of its rows, so read that rather than the contract files. A long answer arrives in parts: when it ends with `[part N of M. The answer continues …]`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `agentic-system/contracts/` gives and record that the gate ran instruction-only.
 - Runtime command arguments:
   - `codebase-cluster-files`: WorkspacePath, fileExtension, clusterName
   - `codebase-clusters`: WorkspacePath, fileExtension
   - `design-approve`: sessionId, jobId, request { planName, description }
   - `design-checks`: sessionId, jobId, acceptExternalEdit
-  - `design-contracts`: sessionId, jobId, request { header, add, patch, delete }
-  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }
+  - `design-contracts`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
   - `design-document`: sessionId, jobId
-  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }
-  - `design-file-system`: sessionId, jobId, request { header, add, patch, delete }
-  - `design-implementation-operation`: sessionId, jobId, operationId, id, part
+  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-file-system`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-implementation-operation`: sessionId, jobId, operationId, part
   - `design-implementation-operation-close`: sessionId, jobId
   - `design-iteration-close`: sessionId, jobId, request { iterationId, verifications, blocks, notes }
-  - `design-iteration-open`: sessionId, jobId, request { workspacePath, WorkspacePath, request }
+  - `design-iteration-open`: sessionId, jobId, request { workspacePath, request }
   - `design-knowledge-references`: sessionId, jobId, request { operation, references }
-  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline (with Read: one line per obligation, its id and claim)
+  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline (with Read: one line per obligation, its id and claim), edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
   - `design-operation-status`: sessionId, jobId, request { ids, status }
-  - `design-operations`: sessionId, jobId, request { header, add, patch, delete, order }
-  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }
-  - `design-snapshot`: sessionId, jobId, part, revision, section (one section only, such as Operations), ids (those items only, such as IM3,CT1)
+  - `design-operations`: sessionId, jobId, request { header, add, patch, delete, order }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-snapshot`: sessionId, jobId, section (one section only, such as Operations), ids (those items only, such as IM3,CT1), fields (those fields of each row only, such as instructions), brief (true: the start of each row), grep (the rows that contain this text, with the text around each match), part, revision
   - `documentation-check`: templateNameOrPath, outputFile, outputContent, mode
   - `documentation-template-read`: templateNameOrPath
   - `documentation-templates-list`: templatesDirectory
   - `knowledge-catalog`: no arguments
   - `knowledge-index-rebuild`: no arguments
-  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
+  - `knowledge-read`: sessionId, fileIds, part
   - `session-activate`: sessionId
   - `session-artifact-list`: sessionId
-  - `session-artifact-read`: sessionId, artifact, artifactId, artifactName, name
-  - `session-artifact-write`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, content, contentFile
+  - `session-artifact-read`: sessionId, name
+  - `session-artifact-write`: sessionId, name (letters, digits, `.`, `_` and `-` only, no spaces), description, intendedUse, mimeType, origin, content, contentFile
   - `session-event-log`: sessionId, and the text under any field name
-  - `session-image-attach`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, blobUrl
+  - `session-image-attach`: sessionId, name, description, intendedUse, mimeType, origin, blobUrl
   - `session-list`: no arguments
   - `session-memory-append`: sessionId, and the text under any field name
   - `session-memory-read`: sessionId

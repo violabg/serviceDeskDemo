@@ -225,14 +225,14 @@ Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<t
   - `knowledge-catalog`: no arguments
   - `knowledge-create`: title, content, tier, folder, keywords, intent
   - `knowledge-index-rebuild`: no arguments
-  - `knowledge-read`: sessionId, fileIds, fileId, ids, id, part
-  - `knowledge-update`: fileId, fileIds, id, ids, content, intent
+  - `knowledge-read`: sessionId, fileIds, part
+  - `knowledge-update`: fileId, content, intent
   - `session-activate`: sessionId
   - `session-artifact-list`: sessionId
-  - `session-artifact-read`: sessionId, artifact, artifactId, artifactName, name
-  - `session-artifact-write`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, content, contentFile
+  - `session-artifact-read`: sessionId, name
+  - `session-artifact-write`: sessionId, name (letters, digits, `.`, `_` and `-` only, no spaces), description, intendedUse, mimeType, origin, content, contentFile
   - `session-event-log`: sessionId, and the text under any field name
-  - `session-image-attach`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, blobUrl
+  - `session-image-attach`: sessionId, name, description, intendedUse, mimeType, origin, blobUrl
   - `session-list`: no arguments
   - `session-memory-append`: sessionId, and the text under any field name
   - `session-memory-read`: sessionId

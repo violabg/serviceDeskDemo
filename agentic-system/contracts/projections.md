@@ -27,7 +27,15 @@ status: Draft | plan: ... | approved: ... | title: ...
 ## Coverage            - obligations 3/3
 ```
 
-Optional arguments `section` and `ids` (Lab-authored; the captured tool has neither) answer part of the snapshot, so an agent that needs one thing need not read every part: `section` names one section or a comma-separated list (`Operations`), `ids` names rows by their first field (`IM3,CT1,kid 7`, an array in a JSON payload), and both together select within the section. The rows read exactly as in the whole snapshot, under the same two header lines and their section heading. An id that is missing is listed in a `Not found:` line; a section that does not exist, or a selection that finds no row, refuses and changes nothing. A long whole snapshot says so in the footer of part 1.
+Optional arguments `section` and `ids` (Lab-authored; the captured tool has neither) answer part of the snapshot, so an agent that needs one thing need not read every part: `section` names one section or a comma-separated list (`Operations`), `ids` names rows by their first field (`IM3,CT1,kid 7`, an array in a JSON payload), and both together select within the section. The rows read exactly as in the whole snapshot, under the same two header lines and their section heading. An id that is missing is listed in a `Not found:` line; a section that does not exist, or a selection that finds no row, refuses and changes nothing. A long whole snapshot says so in the footer of part 1. A section name ignores case, spaces and punctuation (`publicapis`, `Public APIs`), and the table names of the design writes are accepted (`apis`, `files`).
+
+Three more optional arguments read the design for a review without reading every row whole (Lab-authored: one measured run made 54 design reads, 206 KB, to review its own design). They combine with `section` and `ids` and with each other, in this order:
+
+- `fields` keeps, of each row, its id and the fields named, where a field is the label before a colon in the row (`instructions`, `files`, `promises`, `signature`, `change`). A segment with no label belongs to the field before it. Rows with none of the fields are left out; when none is left the call refuses.
+- `grep` keeps the rows that contain a text, ignoring case and reading any white space as one space, and answers for each `- <id> | <n> matches | …<80 characters before and after each of the first five>…`. A section with no match is left out, and a search that finds nothing says `No row contains '<text>'.`
+- `brief: true` cuts each row to its first 200 characters.
+
+The call for a later part repeats the whole selection.
 
 On a FAST_IMPLEMENTATION or DOCUMENTATION job, which has no design, the snapshot says the job has no design artifact. A long snapshot is served in parts (optional argument `part`, `contracts/workflow-loop.md`, Parts) that start at a section heading or an item.
 

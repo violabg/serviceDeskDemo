@@ -10,7 +10,9 @@ export class RuntimeError extends Error {
   }
 }
 
-const ID_PATTERN = /^[A-Za-z0-9_]{1,100}$/;
+// Lab-authored: a hyphen is accepted after the first character. Agents propose `work-item-11` for a session and
+// spent a turn on the refusal; the first character stays a letter, a digit or an underscore, so an id is never a flag.
+const ID_PATTERN = /^[A-Za-z0-9_][A-Za-z0-9_-]{0,99}$/;
 export const ARTIFACT_PATTERN = /^[A-Za-z0-9_.-]{1,150}$/;
 
 export function requireId(value, field, tool) {
@@ -19,7 +21,7 @@ export function requireId(value, field, tool) {
   }
   if (!ID_PATTERN.test(value)) {
     throw new RuntimeError(
-      `${tool} failed: ${field} contains unsupported characters. Allowed format: ^[A-Za-z0-9_]{1,100}$. Provided value: '${value}'.`,
+      `${tool} failed: ${field} contains unsupported characters. Allowed format: ^[A-Za-z0-9_][A-Za-z0-9_-]{0,99}$. Provided value: '${value}'.`,
     );
   }
   return value;
@@ -116,8 +118,14 @@ export function parseFrontmatter(text) {
 // Case-insensitive lookup of an argument, so `WorkspacePath` and `workspacePath` are both accepted.
 // The flags that name a job in the call for a later part, so that call can be run exactly as printed. The role travels
 // with it: a role's calls must name the role (contracts/workflow-loop.md, Parts and Roles).
-export function jobFlags(source, { role } = {}) {
-  return `--sessionId ${arg(source, "sessionId")} --jobId ${arg(source, "jobId")}${role ? ` --role ${role}` : ""}`;
+export function jobFlags(source, caller = {}) {
+  return `--sessionId ${arg(source, "sessionId")} --jobId ${arg(source, "jobId")}${callerFlags(caller)}`;
+}
+
+// The flags that name the caller. The client travels with the role, because it selects the part limit: a later
+// part asked without it would be cut at other boundaries (contracts/workflow-loop.md, Parts).
+export function callerFlags({ role, client } = {}) {
+  return `${role ? ` --role ${role}` : ""}${client ? ` --client ${client}` : ""}`;
 }
 
 export function arg(source, name) {
@@ -172,22 +180,44 @@ function cutLine(line, limit) {
 }
 
 // A unit that fits stays whole; a longer one continues on line boundaries and loses no text.
-function piecesOf(unit, limit) {
-  if (bytes(unit) <= limit) return [unit];
+// `first` is the room of the first piece, when the unit starts in a part that already holds text.
+function piecesOf(unit, limit, first = limit) {
+  if (bytes(unit) <= first) return [unit];
   const lines = unit.split("\n");
   const heading = continuation(lines[0]);
   const room = heading ? limit - bytes(heading) - 1 : limit;
   const pieces = [];
   let current = null;
-  for (const line of lines.flatMap((l) => (bytes(l) > room ? cutLine(l, room) : [l]))) {
-    if (current !== null && bytes(current) + 1 + bytes(line) > room) {
-      pieces.push(current);
-      current = line;
-    } else current = current === null ? line : `${current}\n${line}`;
+  let space = Math.min(first, room);
+  for (const whole of lines) {
+    // A line longer than a piece is cut, and its first cut fills the room left in the piece being built, unless
+    // that room is too small to be worth a cut.
+    const left = current === null ? space : space - bytes(current) - 1;
+    const fits = bytes(whole) <= (current === null ? space : room);
+    for (const line of fits ? [whole] : cutFirst(whole, left >= MIN_CUT ? left : room, room)) {
+      if (current !== null && bytes(current) + 1 + bytes(line) > space) {
+        pieces.push(current);
+        current = line;
+        space = room;
+      } else current = current === null ? line : `${current}\n${line}`;
+    }
   }
   pieces.push(current);
   return pieces.map((piece, index) => (index > 0 && heading ? `${heading}\n${piece}` : piece));
 }
+
+const MIN_CUT = 80;
+
+// Cuts one long line so its first piece fits `first` bytes and the others `room`.
+function cutFirst(line, first, room) {
+  if (first >= room) return cutLine(line, room);
+  const [head] = cutLine(line, first);
+  return [head, ...cutLine(line.slice(head.length), room)];
+}
+
+// Lab-authored: a part that held only a short lead-in (a title and a section heading before a row longer than the
+// limit) read as an empty answer. Below this share of the limit, the long unit starts in the same part.
+const LEAD_IN_SHARE = 0.25;
 
 // Splits text into parts of at most `limit` bytes. A part starts at a unit boundary (`starts(line, previous)`
 // is true), except inside a unit longer than the limit, which continues over several parts.
@@ -205,11 +235,14 @@ export function splitParts(text, starts, limit = PART_LIMIT) {
   units.push(unit.join("\n"));
   const parts = [];
   let current = null;
-  for (const piece of units.flatMap((u) => piecesOf(u, limit))) {
-    if (current !== null && bytes(current) + 1 + bytes(piece) > limit) {
-      parts.push(current);
-      current = piece;
-    } else current = current === null ? piece : `${current}\n${piece}`;
+  for (const unit of units) {
+    const leadIn = current !== null && bytes(unit) > limit && bytes(current) <= limit * LEAD_IN_SHARE;
+    for (const piece of leadIn ? piecesOf(unit, limit, limit - bytes(current) - 1) : piecesOf(unit, limit)) {
+      if (current !== null && bytes(current) + 1 + bytes(piece) > limit) {
+        parts.push(current);
+        current = piece;
+      } else current = current === null ? piece : `${current}\n${piece}`;
+    }
   }
   parts.push(current);
   return parts;
@@ -239,4 +272,51 @@ export function servePart(text, args, { tool, starts, next, limit = PART_LIMIT, 
   else if (n === 1) footer = `[part 1 of ${total}. The answer continues in parts 2 to ${total}: ${next(2)} Request each remaining part the same way, ${alone}: all in this turn as parallel tool calls if your client allows it, or else one by one. Read every part before acting on any of it.]`;
   else if (n < total) footer = `[part ${n} of ${total}. Parts ${n + 1} to ${total} follow, if you have not requested them yet: ${next(n + 1)} Run each ${alone}.]`;
   return `${header}${body}\n\n${footer}\n`;
+}
+
+// --- paths and text inside a request or a row (contracts/design-model.md, edits and kept requests) -------------
+
+// The steps of a path as the runtime reports it: `add.contracts[0].premortem[1].what`, or the absolute form
+// `/request/rows/3/behavior`. A leading `request` is dropped, so both forms name the same place.
+export function pathSteps(path) {
+  const steps = String(path)
+    .split(/[/.]|(?=\[)/)
+    .filter(Boolean)
+    .map((step) => (/^\[\d+\]$/.test(step) ? Number(step.slice(1, -1)) : /^\d+$/.test(step) ? Number(step) : step));
+  return steps[0] === "request" ? steps.slice(1) : steps;
+}
+
+export function pathGet(root, steps) {
+  return steps.reduce((node, step) => (node === null || node === undefined ? undefined : node[step]), root);
+}
+
+// Sets the value at a path, creating the objects and arrays on the way.
+export function pathSet(root, steps, value) {
+  let node = root;
+  steps.forEach((step, index) => {
+    if (index === steps.length - 1) node[step] = value;
+    else {
+      if (node[step] === null || typeof node[step] !== "object") node[step] = typeof steps[index + 1] === "number" ? [] : {};
+      node = node[step];
+    }
+  });
+}
+
+// Removes the value at a path and answers whether it was there.
+export function pathDrop(root, steps) {
+  const parent = pathGet(root, steps.slice(0, -1));
+  const last = steps[steps.length - 1];
+  if (parent === null || typeof parent !== "object" || !(last in parent)) return false;
+  if (Array.isArray(parent)) parent.splice(last, 1);
+  else delete parent[last];
+  return true;
+}
+
+// Where `from` occurs in `text`, reading any run of white space in either as one: an agent quotes text it read on
+// one line (a snapshot row) and the stored text may hold line breaks. Answers [start, end) pairs.
+export function findText(text, from) {
+  const words = String(from).trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return [];
+  const pattern = new RegExp(words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+"), "g");
+  return [...String(text).matchAll(pattern)].map((match) => [match.index, match.index + match[0].length]);
 }

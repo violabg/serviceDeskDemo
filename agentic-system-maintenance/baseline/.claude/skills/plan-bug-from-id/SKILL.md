@@ -22,17 +22,17 @@ Use the available tools to invoke subagent. The subagent sees only the prompt yo
 Use the following prompt template for the subagent:
 
 ```
-Activate agent session with id `<sessionId>` with `#capability:session-activate`.
+Activate agent session with id `<sessionId>` with `#capability:session-activate`. This subagent loads no role contract and no knowledge: it calls only the operations of this template and `#capability:session-artifact-write`.
 For the bug <WORK_ITEM_BUG_ID>, gather the information with the approved work item integration tools, which already return Markdown: call `#capability:work-item-retrieval` with the bug id for the title, the description, the URLs of the images and the acceptance criteria, then call `#capability:work-item-comment-retrieval` with the bug id for the comments.
 Do not include related work items.
 
-With `#capability:session-artifact-write`, attach to the session a new artifact with the Markdown returned by the tools, in this order:
+With `#capability:session-artifact-write`, attach to the session a new artifact named `work_item_<work item id>` with the Markdown returned by the tools, in this order:
 - title
 - description
 - Images
 - comments
 
-then answer with the name of the artifact you created. The orchestrator that started you reads it and creates the plan.
+then answer with the name of the artifact you created. Write the artifact once and do not read it back. The orchestrator that started you reads it and creates the plan.
 ```
 
 # Pulling related knowledge
@@ -89,6 +89,6 @@ This is how each `#capability:<token>` and `#operation:<op>` in this file runs i
 - Runtime operations: run `node agentic-system/bin/agentic-system.mjs <token>` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); pass arguments as flags (`--sessionId s1`) or as one JSON object: inline when it is short (`--json '{"sessionId":"s1"}'`), on stdin in the same command when it is large (`--json -` with a quoted heredoc, in a POSIX shell), or else with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run `node agentic-system/bin/agentic-system.mjs <token> --help` only when a call is refused or you need a field's definition. On a design command it prints every field of `request` and of its rows, so read that rather than the contract files. A long answer arrives in parts: when it ends with `[part N of M. The answer continues …]`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `agentic-system/contracts/` gives and record that the gate ran instruction-only.
 - Runtime command arguments:
   - `session-activate`: sessionId
-  - `session-artifact-write`: sessionId, artifactFrontMatter, name, artifactName, description, intendedUse, intended_use, use, mimeType, mime_type, origin, content, contentFile
+  - `session-artifact-write`: sessionId, name (letters, digits, `.`, `_` and `-` only, no spaces), description, intendedUse, mimeType, origin, content, contentFile
 - `#capability:work-item-comment-retrieval`: Read the issue's comments with `issue_read` (method `get_comments`).
 - `#capability:work-item-retrieval`: Read the issue on violabg/serviceDeskDemo with the GitHub MCP server's `issue_read` (method `get`); it returns the title and Markdown body.

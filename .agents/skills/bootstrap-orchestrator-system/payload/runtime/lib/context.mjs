@@ -2,8 +2,9 @@
 //
 //   runtime root  the folder holding bin/, lib/, assets/ (and, in a target repo, workflows/ and config.json)
 //   config file   <runtime root>/config.json, optional: { workspaceRoot, knowledgeRoot, userRoot,
-//                 workflowsRoot, sessionsRoot, cacheRoot, partLimit, roles } — relative paths resolve against
-//                 the runtime root; partLimit is the largest part in bytes; roles lists each role's tokens
+//                 workflowsRoot, sessionsRoot, cacheRoot, partLimit, partLimits, roles } — relative paths resolve against
+//                 the runtime root; partLimit is the largest part in bytes and partLimits the one of each client
+//                 that has its own; roles lists each role's tokens
 //   sessions      may live outside the repository; the cache defaults to <sessionsRoot>/.cache so the
 //                 runtime root itself stays free of generated files
 //   environment   AGENTIC_SYSTEM_<KEY> overrides the config (e.g. AGENTIC_SYSTEM_WORKSPACE_ROOT)
@@ -42,6 +43,8 @@ export function createContext(overrides = {}) {
     // Installed beside the runtime in a target (<runtime root>/contracts); in the Lab, beside runtime/.
     contractsRoot: pick("contractsRoot", "CONTRACTS_ROOT", existsSync(join(runtimeRoot, "contracts")) ? "contracts" : "../contracts"),
     partLimit: overrides.partLimit ?? (Number(env.AGENTIC_SYSTEM_PART_LIMIT) || config.partLimit || PART_LIMIT),
+    // Lab-authored: the part limit of each client that has its own, by the id the role files pass as `--client`.
+    partLimits: overrides.partLimits ?? config.partLimits ?? null,
     roles: overrides.roles ?? config.roles ?? null,
     now: overrides.now ?? (() => new Date()),
   };

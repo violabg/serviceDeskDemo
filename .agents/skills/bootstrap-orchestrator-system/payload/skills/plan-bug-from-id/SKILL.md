@@ -15,17 +15,17 @@ Use the available tools to invoke subagent. The subagent sees only the prompt yo
 Use the following prompt template for the subagent:
 
 ```
-Activate agent session with id `<sessionId>` with `#capability:session-activate`.
+Activate agent session with id `<sessionId>` with `#capability:session-activate`. This subagent loads no role contract and no knowledge: it calls only the operations of this template and `#capability:session-artifact-write`.
 For the bug <WORK_ITEM_BUG_ID>, gather the information with the approved work item integration tools, which already return Markdown: call `#capability:work-item-retrieval` with the bug id for the title, the description, the URLs of the images and the acceptance criteria, then call `#capability:work-item-comment-retrieval` with the bug id for the comments.
 Do not include related work items.
 
-With `#capability:session-artifact-write`, attach to the session a new artifact with the Markdown returned by the tools, in this order:
+With `#capability:session-artifact-write`, attach to the session a new artifact named `work_item_<work item id>` with the Markdown returned by the tools, in this order:
 - title
 - description
 - Images
 - comments
 
-then answer with the name of the artifact you created. The orchestrator that started you reads it and creates the plan.
+then answer with the name of the artifact you created. Write the artifact once and do not read it back. The orchestrator that started you reads it and creates the plan.
 ```
 
 # Pulling related knowledge

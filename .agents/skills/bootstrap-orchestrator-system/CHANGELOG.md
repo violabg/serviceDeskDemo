@@ -2,6 +2,34 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 6.2.1
+
+A patch: wording and compatible fixes from a kit report, with the workflows still on upstream 3.0.3. Re-installing keeps the answers and sessions.
+
+- **Artifact names.** `session-artifact-write` drops a trailing `.md` from `name` before it stores the artifact, and returns the name it stored. Before, `work_item_1.md` was stored as `work_item_1.md.md` and could not be read back as `work_item_1`. An artifact already stored under a doubled `.md` is still read by the name the old answer gave.
+- **Work item intake.** The intake subagent of the user-story and bug planning skills names its artifact `work_item_<work item id>`, loads no role contract and no knowledge, and writes the artifact once without reading it back.
+- **Step 1.** A work item id or other requirement source, and the name of the session, are not particular requests, so a first prompt that holds only those leaves the user instruction register empty.
+
+## 6.2.0
+
+The workflows still follow upstream 3.0.3. A repository with several clients no longer runs all of them at the smallest answer size, so this is a minor version. Re-installing keeps the answers and sessions.
+
+- **A part limit per client.** When the selected clients show different amounts of a command's output, `config.json` records the larger ones in `partLimits` and the role files of those clients pass `--client <id>`. Before, every client ran at the smallest limit: with a 7,000-byte client installed, the nine instructions of a DESIGN job up to the review took 28 calls on every client instead of 11. A repository with one client, or with clients of the same limit, renders as before.
+- **After a compaction or a resume.** The router tells an agent whose context was compacted, or whose session was resumed in the middle of a job, to read its role file again, get the active instruction with `workflow-step-pending` and read again the knowledge the design cites.
+- **Argument help.** The `name` of `session-artifact-write` states its allowed characters, and `edit` says the id is given as the design shows it, such as `CT1`.
+- **Client guide.** Each client's guide says to start the role or the planning skill directly, and to run without tool servers the roles do not use.
+
+## 6.1.0
+
+The workflows still follow upstream 3.0.3. The runtime gains edits in place and kept requests, so this is a minor version. Re-installing keeps the answers and sessions.
+
+- **Edit in place.** The design writes (`design-obligations`, `design-decisions`, `design-file-references`, `design-overview`, `design-contracts`, `design-file-system` and `design-operations`) take `edit`: a list of `{ id, field, from, to }` that changes text inside one field.
+- **Kept requests.** A refused design write of 600 bytes or more is kept for 24 hours. The next call sends only the correction (`draft`, `set`, `drop`, `move` or `replace`), and the kept request with the correction is applied as one whole request. Refused JSON text is kept as well, so `replace` repairs it without typing it again.
+- **Design snapshot filters.** `design-snapshot` takes `fields`, `brief` and `grep` to read only some fields, the start of each row, or the rows that contain some text.
+- **Command definitions.** The first instruction that names a design write in a job is followed by that command's arguments and request fields, so the agent does not probe `--help` first.
+- **Parts.** A long runtime answer is split by the client's limit, and every continuation names the client. A unit longer than the limit starts in the part that holds its lead-in.
+- **Argument help.** The runtime's `--help` and the role contracts list the arguments each command takes; accepted alternative spellings are no longer listed.
+
 ## 6.0.0
 
 The workflows follow upstream 3.0.3. Runtime commands were removed and renamed and both code workflows changed shape, so this is a major version. Re-installing keeps the answers and sessions; a design written by 5.x stays readable and servable.

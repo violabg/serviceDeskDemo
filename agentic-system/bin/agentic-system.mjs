@@ -5,6 +5,7 @@
 //   node agentic-system.mjs --help [--role <role>]   every command's arguments, one line each
 //   node agentic-system.mjs <token> --help           the token's arguments, from its contract
 //   --role <role>                                    runs the token as that role; a token outside the role is refused
+//   --client <id>                                    the client that calls, which selects its part limit
 //
 // The JSON payload is the operation's argument object (e.g. { "sessionId", "jobId", "request" }). Flags
 // set top-level arguments and override the payload. Large payloads must go through a file or stdin:
@@ -13,6 +14,7 @@ import { readFileSync } from "node:fs";
 import { call, handlers, roleRefusal } from "../lib/api.mjs";
 import { createContext } from "../lib/context.mjs";
 import { commandsHelp, tokenHelp } from "../lib/help.mjs";
+import { jsonContext, keepText } from "../lib/kept.mjs";
 import { bounded } from "../lib/responses.mjs";
 
 const INLINE_LIMIT = 2000;
@@ -38,7 +40,8 @@ function payloadOf(value) {
   try {
     payload = JSON.parse(text);
   } catch (error) {
-    throw new Error(`--json: ${source} is not valid JSON (${error.message})`);
+    // The text travels with the error: a long payload is kept and repaired, not typed again (lib/kept.mjs).
+    throw Object.assign(new Error(`--json: ${source} is not valid JSON (${error.message})${jsonContext(text, error)}`), { payloadText: text });
   }
   if (payload === null || typeof payload !== "object" || Array.isArray(payload)) throw new Error(`--json: ${source} must be a JSON object of the operation's arguments`);
   return payload;
@@ -95,12 +98,14 @@ if (argv.length === 0 || argv[0] === "--help" || argv[0] === "help") {
   try {
     parsed = parse(argv);
   } catch (error) {
-    console.error(`agentic-system: ${error.message}`);
+    const kept = error.payloadText !== undefined && handlers[argv[0]] ? keepText(createContext(), argv[0], error.payloadText) : null;
+    const how = kept ? ` The payload is kept as draft ${kept}: do not send it again. Repair it on the same command with --draft ${kept} --json '{"replace":[{"from":"<the wrong text>","to":"<the right text>"}]}'.` : "";
+    console.error(`agentic-system: ${error.message}${how}`);
     process.exit(2);
   }
-  const { role, ...args } = parsed.args;
+  const { role, client, ...args } = parsed.args;
   const ctx = createContext();
   const refusal = roleRefusal(ctx, role, parsed.token);
-  const result = refusal ? { output: refusal, exitCode: 2 } : await call(ctx, parsed.token, args, { role });
+  const result = refusal ? { output: refusal, exitCode: 2 } : await call(ctx, parsed.token, args, { role, client });
   finish(result.exitCode === 0 ? process.stdout : process.stderr, result.output, result.exitCode);
 }

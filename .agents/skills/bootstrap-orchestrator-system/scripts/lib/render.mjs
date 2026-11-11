@@ -21,6 +21,12 @@ export function render(kit, answers) {
   const enabled = (skill) => !["skip", "defer"].includes(answers.skills[skill.name]);
   const sharing = answers.skillSharing;
   const sharedClients = [];
+  // The largest runtime answer each client shows whole. The smallest is the config's `partLimit`, which every call
+  // without `--client` gets; a client with a larger one is named in `partLimits` and passes `--client` from its
+  // role files, so it is not held to the smallest limit of the clients installed beside it.
+  const partLimitOf = (env) => env.profile.runtime?.partLimit ?? DEFAULT_PART_LIMIT;
+  const smallestPartLimit = Math.min(...answers.environments.map(partLimitOf));
+  const ownPartLimits = Object.fromEntries(answers.environments.filter((env) => partLimitOf(env) > smallestPartLimit).map((env) => [env.id, partLimitOf(env)]));
 
   for (const env of answers.environments) {
     const { profile } = env;
@@ -57,8 +63,10 @@ export function render(kit, answers) {
       const lines = [];
       const runtimeTokens = tokens.filter((t) => index.tokens[t]?.kind === "runtime");
       if (runtimeTokens.length || role?.operations.includes("runtime")) {
-        const roleFlag = role ? ` --role ${role.name}` : "";
-        lines.push(`- Runtime operations: run \`${runtimeCommand} <token>${roleFlag}\` from the repository root, where \`<token>\` is the name of a runtime \`#capability:<token>\` (an \`#operation:<op>\` is never a runtime command)${role ? `; always pass \`--role ${role.name}\`, and the runtime refuses a command outside this role` : ""}; pass arguments as flags (\`--sessionId s1\`) or as one JSON object: inline when it is short (\`--json '{"sessionId":"s1"}'\`), on stdin in the same command when it is large (\`--json -\` with a quoted heredoc, in a POSIX shell), or else with \`--json <file>\`. The JSON payload is the operation's argument object, defined in \`${rt}/contracts/\`: design operations take \`{ "sessionId", "jobId", "request": { ... } }\`, and fields such as \`operation\`, \`rows\` and \`ids\` go inside \`request\`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run \`${runtimeCommand} <token> --help\` only when a call is refused or you need a field's definition. On a design command it prints every field of \`request\` and of its rows, so read that rather than the contract files. A long answer arrives in parts: when it ends with \`[part N of M. The answer continues …]\`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with \`;\`, \`&&\` or a loop, and never pipe an answer through \`head\`, \`tail\`, \`cut\`, \`sed\` or \`dd\`. The runtime is required; when it cannot run, follow the procedure its contract under \`${rt}/contracts/\` gives and record that the gate ran instruction-only.`);
+        // Role files are per client, so only they name the client; a shared skill keeps the smallest limit.
+        const clientFlag = role && ownPartLimits[env.id] ? ` --client ${env.id}` : "";
+        const roleFlag = role ? ` --role ${role.name}${clientFlag}` : "";
+        lines.push(`- Runtime operations: run \`${runtimeCommand} <token>${roleFlag}\` from the repository root, where \`<token>\` is the name of a runtime \`#capability:<token>\` (an \`#operation:<op>\` is never a runtime command)${role ? `; always pass \`--role ${role.name}\`, and the runtime refuses a command outside this role` : ""}${clientFlag ? `; always pass \`--client ${env.id}\` as well, in every call including the one for a later part, so that an answer is cut to what ${profile.label} shows whole` : ""}; pass arguments as flags (\`--sessionId s1\`) or as one JSON object: inline when it is short (\`--json '{"sessionId":"s1"}'\`), on stdin in the same command when it is large (\`--json -\` with a quoted heredoc, in a POSIX shell), or else with \`--json <file>\`. The JSON payload is the operation's argument object, defined in \`${rt}/contracts/\`: design operations take \`{ "sessionId", "jobId", "request": { ... } }\`, and fields such as \`operation\`, \`rows\` and \`ids\` go inside \`request\`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run \`${runtimeCommand} <token> --help\` only when a call is refused or you need a field's definition. On a design command it prints every field of \`request\` and of its rows, so read that rather than the contract files. A long answer arrives in parts: when it ends with \`[part N of M. The answer continues …]\`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with \`;\`, \`&&\` or a loop, and never pipe an answer through \`head\`, \`tail\`, \`cut\`, \`sed\` or \`dd\`. The runtime is required; when it cannot run, follow the procedure its contract under \`${rt}/contracts/\` gives and record that the gate ran instruction-only.`);
         const commands = runtimeTokens.filter((t) => index.commandArguments[t]);
         if (commands.length) lines.push(`- Runtime command arguments:\n${commands.map((t) => `  - \`${t}\`: ${index.commandArguments[t]}`).join("\n")}`);
       }
@@ -201,7 +209,8 @@ export function render(kit, answers) {
     sessionsRoot: runtimeRelative(rt, answers.locations.sessionsRoot),
     userRoot: answers.locations.userRuntimeRoot,
     workflowsRoot: "workflows",
-    partLimit: Math.min(...answers.environments.map((env) => env.profile.runtime?.partLimit ?? DEFAULT_PART_LIMIT)),
+    partLimit: smallestPartLimit,
+    ...(Object.keys(ownPartLimits).length ? { partLimits: ownPartLimits } : {}),
     roles: Object.fromEntries(index.roles.map((role) => [role.name, role.tokens.filter((t) => index.tokens[t]?.kind === "runtime")])),
   };
   add({ path: `${rt}/config.json`, kind: "config", content: `${JSON.stringify(config, null, 2)}\n` });
