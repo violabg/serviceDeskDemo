@@ -13,6 +13,11 @@ Roles start as {{ROUTE}}. Each role is the main conversation of its own session;
 
 The orchestrator always asks which workflow you want when you have not said it, and asks before it creates or resumes a session.
 
+Two habits keep a run cheap, because everything loaded at the start is carried on every turn:
+
+- Start the role or the planning skill directly. Do not ask the agent to load the repository's skills first: each skill loads its own role and nothing else is needed.
+- Run the session without tool servers the roles do not use. Their tool definitions are sent on every turn whether or not a tool is called.
+
 ## While a workflow runs
 
 - The orchestrator stops at every halt point and waits for you: an interview question, a decision, or the design review.

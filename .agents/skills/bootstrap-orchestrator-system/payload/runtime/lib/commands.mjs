@@ -14,7 +14,10 @@ const JOB = ["sessionId", "jobId"];
 const FRONT_MATTER = ["name", "description", "intendedUse", "mimeType", "origin"];
 const FRONT_MATTER_ALIASES = ["artifactFrontMatter", "artifactName", "intended_use", "use", "mime_type"];
 // Lab-authored (contracts/design-model.md, edits and kept requests).
-const EDIT = { edit: "changes text inside a field in place: [{ id, field, from, to }]" };
+const EDIT = { edit: "changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1" };
+// The name of an artifact (contracts/session-store.md): stated in the argument list, because a delegate that
+// writes one sees only that list.
+const ARTIFACT_NAME = { name: "letters, digits, `.`, `_` and `-` only, no spaces" };
 const KEPT = ["draft", "set", "drop", "move", "replace"];
 
 export const COMMANDS = {
@@ -23,7 +26,7 @@ export const COMMANDS = {
   "session-memory-read": { args: SESSION },
   "session-memory-append": { args: SESSION, freeText: true },
   "session-event-log": { args: SESSION, freeText: true },
-  "session-artifact-write": { args: [...SESSION, ...FRONT_MATTER, "content", "contentFile"], aliases: FRONT_MATTER_ALIASES },
+  "session-artifact-write": { args: [...SESSION, ...FRONT_MATTER, "content", "contentFile"], aliases: FRONT_MATTER_ALIASES, notes: ARTIFACT_NAME },
   "session-artifact-read": { args: [...SESSION, "name"], aliases: ["artifact", "artifactId", "artifactName"] },
   "session-artifact-list": { args: SESSION },
   "session-image-attach": { args: [...SESSION, ...FRONT_MATTER, "blobUrl"], aliases: FRONT_MATTER_ALIASES },

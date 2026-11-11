@@ -2,6 +2,15 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 6.2.0
+
+The workflows still follow upstream 3.0.3. A repository with several clients no longer runs all of them at the smallest answer size, so this is a minor version. Re-installing keeps the answers and sessions.
+
+- **A part limit per client.** When the selected clients show different amounts of a command's output, `config.json` records the larger ones in `partLimits` and the role files of those clients pass `--client <id>`. Before, every client ran at the smallest limit: with a 7,000-byte client installed, the nine instructions of a DESIGN job up to the review took 28 calls on every client instead of 11. A repository with one client, or with clients of the same limit, renders as before.
+- **After a compaction or a resume.** The router tells an agent whose context was compacted, or whose session was resumed in the middle of a job, to read its role file again, get the active instruction with `workflow-step-pending` and read again the knowledge the design cites.
+- **Argument help.** The `name` of `session-artifact-write` states its allowed characters, and `edit` says the id is given as the design shows it, such as `CT1`.
+- **Client guide.** Each client's guide says to start the role or the planning skill directly, and to run without tool servers the roles do not use.
+
 ## 6.1.0
 
 The workflows still follow upstream 3.0.3. The runtime gains edits in place and kept requests, so this is a minor version. Re-installing keeps the answers and sessions.
