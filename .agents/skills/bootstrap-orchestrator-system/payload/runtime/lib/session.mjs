@@ -165,10 +165,16 @@ function requireArtifactName(name, tool) {
   return name;
 }
 
+// Every artifact is stored as `<name>.md` (contracts/session-store.md), so a name that already ends in `.md`
+// drops it: `work_item_1.md` is the artifact `work_item_1`, not `work_item_1.md.md`. The name written is returned.
+function dropMarkdownSuffix(name) {
+  return typeof name === "string" ? name.replace(/(?<=.)\.md$/, "") : name;
+}
+
 export function artifactWrite(ctx, args) {
   const dir = requireSession(ctx, arg(args, "sessionId"), "session-artifact-write");
   const meta = frontMatterArgs(args);
-  const name = requireArtifactName(meta.name, "session-artifact-write");
+  const name = requireArtifactName(dropMarkdownSuffix(meta.name), "session-artifact-write");
   let content = arg(args, "content");
   const contentFile = arg(args, "contentFile");
   if (content === undefined && contentFile) content = readFileSync(resolve(ctx.workspaceRoot, contentFile), "utf8");

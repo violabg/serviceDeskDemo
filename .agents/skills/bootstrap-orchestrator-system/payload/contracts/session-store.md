@@ -56,7 +56,7 @@ Keep events (actions, decisions, errors) in the log and durable knowledge in mem
 
 ## session-artifacts
 
-`session-artifact-write` — arguments `sessionId`, `name` (or `artifactFrontMatter.name`), `description`, `intendedUse`, `mimeType` (default `text/markdown`), and `content` (or `contentFile`, a workspace-relative path to read the content from). Write `artifacts/<name>.md`:
+`session-artifact-write` — arguments `sessionId`, `name` (or `artifactFrontMatter.name`), `description`, `intendedUse`, `mimeType` (default `text/markdown`), and `content` (or `contentFile`, a workspace-relative path to read the content from). Write `artifacts/<name>.md`; a `name` that ends in `.md` drops that suffix first, and the response names the artifact written (Lab-authored, report 2026-11-11 finding 3: `work_item_1.md` was stored as `work_item_1.md.md` and could not be read back as `work_item_1`):
 
 ```markdown
 ---

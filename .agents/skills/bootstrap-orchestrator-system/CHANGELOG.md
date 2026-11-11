@@ -2,6 +2,14 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 6.2.1
+
+A patch: wording and compatible fixes from a kit report, with the workflows still on upstream 3.0.3. Re-installing keeps the answers and sessions.
+
+- **Artifact names.** `session-artifact-write` drops a trailing `.md` from `name` before it stores the artifact, and returns the name it stored. Before, `work_item_1.md` was stored as `work_item_1.md.md` and could not be read back as `work_item_1`. An artifact already stored under a doubled `.md` is still read by the name the old answer gave.
+- **Work item intake.** The intake subagent of the user-story and bug planning skills names its artifact `work_item_<work item id>`, loads no role contract and no knowledge, and writes the artifact once without reading it back.
+- **Step 1.** A work item id or other requirement source, and the name of the session, are not particular requests, so a first prompt that holds only those leaves the user instruction register empty.
+
 ## 6.2.0
 
 The workflows still follow upstream 3.0.3. A repository with several clients no longer runs all of them at the smallest answer size, so this is a minor version. Re-installing keeps the answers and sessions.
