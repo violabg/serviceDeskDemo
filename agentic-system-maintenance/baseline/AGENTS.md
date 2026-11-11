@@ -24,6 +24,7 @@ Every `#capability:<token>` in a role, skill or workflow instruction is an opera
 - Workflow instructions are served one at a time by the runtime. Never open `agentic-system/workflows/` directly.
 - Never edit runtime-owned files by hand: designs, jobs and integrity seals change only through runtime operations.
 - A delegate that returns its report is never a stop point: continue the active instruction.
+- When your context was compacted or the session was resumed in the middle of a job, what you read earlier is gone: before you continue, read your role file again, get the active instruction with `#capability:workflow-step-pending`, and read again with `#capability:knowledge-read` the knowledge the design cites.
 
 ## Skills
 

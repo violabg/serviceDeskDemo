@@ -230,7 +230,7 @@ Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<t
   - `session-activate`: sessionId
   - `session-artifact-list`: sessionId
   - `session-artifact-read`: sessionId, name
-  - `session-artifact-write`: sessionId, name, description, intendedUse, mimeType, origin, content, contentFile
+  - `session-artifact-write`: sessionId, name (letters, digits, `.`, `_` and `-` only, no spaces), description, intendedUse, mimeType, origin, content, contentFile
   - `session-event-log`: sessionId, and the text under any field name
   - `session-image-attach`: sessionId, name, description, intendedUse, mimeType, origin, blobUrl
   - `session-list`: no arguments

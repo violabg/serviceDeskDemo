@@ -100,20 +100,20 @@ Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<t
   - `codebase-clusters`: WorkspacePath, fileExtension
   - `design-approve`: sessionId, jobId, request { planName, description }
   - `design-checks`: sessionId, jobId, acceptExternalEdit
-  - `design-contracts`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }])
-  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-contracts`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-decisions`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
   - `design-document`: sessionId, jobId
-  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }])
-  - `design-file-system`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-file-references`: sessionId, jobId, request { operation, rows, ids }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-file-system`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
   - `design-implementation-operation`: sessionId, jobId, operationId, part
   - `design-implementation-operation-close`: sessionId, jobId
   - `design-iteration-close`: sessionId, jobId, request { iterationId, verifications, blocks, notes }
   - `design-iteration-open`: sessionId, jobId, request { workspacePath, request }
   - `design-knowledge-references`: sessionId, jobId, request { operation, references }
-  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline (with Read: one line per obligation, its id and claim), edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-obligations`: sessionId, jobId, request { operation, rows, ids }, outline (with Read: one line per obligation, its id and claim), edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
   - `design-operation-status`: sessionId, jobId, request { ids, status }
-  - `design-operations`: sessionId, jobId, request { header, add, patch, delete, order }, edit (changes text inside a field in place: [{ id, field, from, to }])
-  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }, edit (changes text inside a field in place: [{ id, field, from, to }])
+  - `design-operations`: sessionId, jobId, request { header, add, patch, delete, order }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
+  - `design-overview`: sessionId, jobId, request { operation, currentState, gaps }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
   - `design-snapshot`: sessionId, jobId, section (one section only, such as Operations), ids (those items only, such as IM3,CT1), fields (those fields of each row only, such as instructions), brief (true: the start of each row), grep (the rows that contain this text, with the text around each match), part, revision
   - `documentation-check`: templateNameOrPath, outputFile, outputContent, mode
   - `documentation-template-read`: templateNameOrPath
@@ -124,7 +124,7 @@ Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<t
   - `session-activate`: sessionId
   - `session-artifact-list`: sessionId
   - `session-artifact-read`: sessionId, name
-  - `session-artifact-write`: sessionId, name, description, intendedUse, mimeType, origin, content, contentFile
+  - `session-artifact-write`: sessionId, name (letters, digits, `.`, `_` and `-` only, no spaces), description, intendedUse, mimeType, origin, content, contentFile
   - `session-event-log`: sessionId, and the text under any field name
   - `session-image-attach`: sessionId, name, description, intendedUse, mimeType, origin, blobUrl
   - `session-list`: no arguments
