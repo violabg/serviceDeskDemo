@@ -5,35 +5,32 @@ types:
     name: "Design"
     description: "Design complex requirements with a human in the middle decision judgement."
     steps:
-      - shared/01-user-instruction-space
-      - design/02-image-intake
-      - design/03-requirement-decomposition
-      - design/04-knowledge-enrichment
-      - design/05-decision-consolidation
-      - design/06-contracts
-      - design/07-filesystem
-      - design/08-operations
-      - design/09-design-review
-      - design/10-implementation
-      - design/11-terminal-handoff
+      - design/01-image-intake
+      - design/02-requirement-decomposition
+      - design/03-knowledge-enrichment
+      - design/04-decision-consolidation
+      - design/05-contracts
+      - design/06-filesystem
+      - design/07-operations
+      - design/08-design-review
+      - design/09-implementation
+      - design/10-terminal-handoff
   - id: FAST_IMPLEMENTATION
     name: "Fast Implementation"
     description: "Smart and quick implementation workflow for simple requirements or mechanical tasks."
     steps:
-      - shared/01-user-instruction-space
-      - fast-implementation/02-intake
-      - fast-implementation/03-knowledge
-      - fast-implementation/04-implementation
-      - fast-implementation/05-terminal-handoff
+      - fast-implementation/01-intake
+      - fast-implementation/02-knowledge
+      - fast-implementation/03-implementation
+      - fast-implementation/04-terminal-handoff
   - id: DOCUMENTATION
     name: "Documentation"
     description: "Generate technical documentation."
     steps:
-      - shared/01-user-instruction-space
-      - documentation/02-intake
-      - documentation/03-knowledge-discovery
-      - documentation/04-codebase-exploration
-      - documentation/05-authoring
-      - documentation/06-coverage-check
-      - documentation/07-review
-      - documentation/08-wrap-up
+      - documentation/01-intake
+      - documentation/02-knowledge-discovery
+      - documentation/03-codebase-exploration
+      - documentation/04-authoring
+      - documentation/05-coverage-check
+      - documentation/06-review
+      - documentation/07-wrap-up

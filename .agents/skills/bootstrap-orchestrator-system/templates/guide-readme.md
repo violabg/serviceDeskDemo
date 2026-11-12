@@ -6,7 +6,7 @@ This repository runs an orchestrator-based agentic system. You choose one of thr
 - `FAST_IMPLEMENTATION`: a quick path for simple or mechanical changes, with no design and no approval step.
 - `DOCUMENTATION`: a guide written from a template, then reviewed.
 
-In `DESIGN` the orchestrator never writes production code: it hands the operations to the code implementor, which works in its own context, and reviews every work unit itself. In `FAST_IMPLEMENTATION` the orchestrator implements the change directly.
+In `DESIGN` the orchestrator never writes production code: it hands the operations to the code implementor, which works in its own context, and reviews every work unit itself. In `FAST_IMPLEMENTATION` the orchestrator implements the change directly. In both it does not search the codebase itself: it starts read-only explorers, several at once, each for one fact, and works from the positions they return.
 
 ## Where things live
 

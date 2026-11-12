@@ -19,6 +19,8 @@ The installer renders the files from the current kit and answers, and compares e
 
 The maintenance plan states the mode and why, the kit versions, the changed answers, every entry other than `unchanged` with its reason, the clients to re-verify, and rollback notes (git restores every tracked file; files in the user folder are listed separately). Approval is false by default.
 
+A job keeps the list of instructions it was created with. When the changelog between the two kit versions says the upgrade ends running jobs (the workflow steps were removed or renumbered), say so in the plan and ask the user whether a job is in progress: it is finished before the apply, or started again as a new job after it. Never edit a job file to carry it over.
+
 ## Merge a customizable file
 
 Three versions exist:

@@ -70,7 +70,7 @@ export const COMMANDS = {
   "knowledge-update": { args: ["fileId", "content", "intent"], aliases: ["fileIds", "id", "ids"] },
   "knowledge-index-rebuild": { args: [] },
 
-  "codebase-clusters": { args: ["WorkspacePath", "fileExtension"] },
+  "codebase-clusters": { args: ["WorkspacePath", "fileExtension", "matches"] },
   "codebase-cluster-files": { args: ["WorkspacePath", "fileExtension", "clusterName"] },
 
   "documentation-templates-list": { args: ["templatesDirectory"] },

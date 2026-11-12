@@ -25,15 +25,15 @@ Write `sessions/<sessionId>/jobs/<jobId>.json`:
 
 ```json
 { "jobId": "...", "sessionId": "...", "agentName": "orchestrator", "workflowType": "DESIGN",
-  "designId": "...", "steps": ["shared/01-user-instruction-space", "design/02-image-intake", "..."],
+  "designId": "...", "steps": ["design/01-image-intake", "design/02-requirement-decomposition", "..."],
   "currentStep": 0, "createdAt": "...", "knowledgeBaseline": { "<path>": "<sha256>" } }
 ```
 
 - `steps` is the ordered list of the type in `workflow-types.yaml`, frozen into the job.
 - A DESIGN job without `designId` creates a new design whose id is the job id. A job with `designId` reuses that existing design, approval included: follow-up work continues on the same design.
-- A FAST_IMPLEMENTATION job without `designId` has no design: since 3.0.3 none of its five steps uses a design operation, and the orchestrator implements the requirement directly.
+- A FAST_IMPLEMENTATION job without `designId` creates a job design whose id is the job id, as a DESIGN job does. Since 3.0.4 its steps register the knowledge references of the job with `#capability:design-knowledge-references` and its compliance gate reads them back; the job design holds them. It has no approval gate, and the orchestrator implements the requirement directly. Lab-authored: the 3.0.4 captures show the call on a FAST_IMPLEMENTATION job and not where the server keeps the rows, and the runtime does not limit the job design to that one operation.
 - `knowledgeBaseline` (Lab-authored) records the hash of every knowledge file when the job is created, in every workflow (`contracts/knowledge-catalog.md`, guard).
-- FAST_IMPLEMENTATION and DOCUMENTATION jobs started without `designId` have no design (`designId: null`); every `#capability:design-*` operation on them is refused.
+- A DOCUMENTATION job started without `designId` has no design (`designId: null`); every `#capability:design-*` operation on it is refused.
 - Activating an existing job resumes it; asking for a different workflow type on an existing job is refused.
 
 Response: `Agent job created;\nJobId: <jobId>\nDesignId: <designId given, or <none>>`, or `Agent job resumed; ...` with the current instruction.
@@ -49,15 +49,9 @@ The served text is:
 ```text
 Instruction <N>/<M>.
 <the content of workflows/<step>.md>
-
----
-
-## ACTIVE USER INSTRUCTION REGISTER
-
-<the content of the session artifact user_instruction_register_<jobId>>
 ```
 
-The register section is appended from instruction 2 on, in every workflow. When the artifact does not exist, the section says so instead of being silently dropped.
+Since 3.0.4 no workflow has a User Instruction Space step, so no instruction writes a `user_instruction_register_<jobId>` artifact and the runtime appends no register to an instruction. A job created before 3.0.4 keeps the step list it froze, whose instruction files are no longer installed: it cannot be resumed, and the work continues in a new job.
 
 **Command definitions** (Lab-authored). Upstream gives the shape of a design write through the argument descriptions its server hands the client; a command line has no such channel, and in three measured runs agents called `--help` before almost every first write (8 to 24 calls a run, a turn each). So an instruction that names a design write (a command that takes `request`) for the first time in its job is followed by:
 

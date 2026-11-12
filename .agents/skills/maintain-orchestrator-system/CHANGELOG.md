@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning.
 
+## 1.2.1
+
+- The maintenance plan says when an upgrade ends running jobs, as the Bootstrap changelog states it, and asks whether a job is in progress. A job file is never edited to carry it over.
+
 ## 1.2.0
 
 - New `patch` mode: applies an approved fix to the installed runtime and records it as a kept customization, so the next upgrade recognizes it. Workflows and role contracts stay out of scope.

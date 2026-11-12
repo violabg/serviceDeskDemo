@@ -700,19 +700,39 @@ dialog[open] { animation: rise .16s ease-out; }
   });
 
   // ---------- Navigation: the hash names a stage or any ID; the stage holding it is shown. ----------
+  // The URL fragment is the only source of the current section, so the browser history moves between sections and
+  // a link opens one. The scroll position of every visited fragment is remembered in the page (no storage, so it
+  // works from disk): returning to a fragment, with the browser's Back too, reopens it where the reader left it.
+  const scrollByFragment = new Map();
+  let shownHash = null;
+  window.addEventListener("scroll", () => {
+    if (shownHash && location.hash === shownHash) scrollByFragment.set(shownHash, window.scrollY);
+  }, { passive: true });
   function show(hash, scroll) {
     const id = decodeURIComponent(hash.replace(/^#/, ""));
     let target = id && document.getElementById(id);
     let section = target && target.closest ? target.closest("section.stage") : null;
-    if (!section) { section = document.querySelector("section.stage"); target = null; }
+    if (!section) {
+      section = document.querySelector("section.stage");
+      target = null;
+      // A fragment that names nothing is rewritten to the section shown, without a history entry.
+      try { history.replaceState(null, "", "#" + section.id); hash = "#" + section.id; } catch (_) { /* best effort */ }
+    }
+    const restored = scrollByFragment.has(hash) ? scrollByFragment.get(hash) : null;
     document.querySelectorAll("section.stage").forEach((s) => { s.hidden = s !== section; });
     document.querySelectorAll("[data-to]").forEach((a) => a.setAttribute("aria-current", String(a.dataset.to === section.id)));
     const current = document.querySelector('.step[aria-current="true"]');
     if (current && current.scrollIntoView) current.scrollIntoView({ block: "nearest", inline: "nearest" });
     if (fileDialog.open && !(target && target.dataset.file)) fileDialog.close();
+    shownHash = hash;
     if (!scroll) return;
+    if (target && target !== section) for (let p = target.parentElement; p; p = p.parentElement) if (p.tagName === "DETAILS") p.open = true;
+    if (restored !== null) {
+      window.scrollTo(0, restored);
+      if (target && target.dataset.file) openFile(target.dataset.file);
+      return;
+    }
     if (!target || target === section) { window.scrollTo(0, 0); return; }
-    for (let p = target.parentElement; p; p = p.parentElement) if (p.tagName === "DETAILS") p.open = true;
     const box = target.closest(".card, tr, .row") || target;
     box.scrollIntoView({ block: target.dataset.file ? "center" : "start" });
     box.classList.remove("flash");

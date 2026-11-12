@@ -74,6 +74,11 @@ export function runChecks(design) {
     if (!(operation.fileReferences ?? []).length && blank(operation.referencesExemption?.file)) {
       warnings.push({ rule: "operation-references-undeclared", element: operation.id, detail: `${operation.id} declares no fileReferences and no referencesExemption.file saying why it needs none` });
     }
+    // Captured on 3.0.4 (get_design_checks, run 5): a warning, on a Production operation that declares no obligation.
+    // The capture shows no Documentation or Testing operation with it, so only Production is reported (Lab-authored).
+    if (operation.kind === "Production" && !(operation.refObligations ?? []).length) {
+      warnings.push({ rule: "operation-without-obligations", element: operation.id, detail: "the operation writes code but realizes no obligation of R" });
+    }
     if (operation.source && operation.source !== "Design" && blank(operation.sourceRef)) {
       errors.push({ rule: "operation-source-without-ref", element: operation.id, detail: `${operation.id} comes from ${operation.source} but cites no sourceRef` });
     }

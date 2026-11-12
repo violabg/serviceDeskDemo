@@ -81,7 +81,7 @@
     },
     "workflow-step-next": {
       "kind": "runtime",
-      "summary": "Serve the next instruction of the job's workflow with the active user instruction register appended.",
+      "summary": "Serve the next instruction of the job's workflow.",
       "fallback": "contracts/workflow-loop.md#step-serving"
     },
     "design-obligations": {
@@ -358,6 +358,23 @@
       "tokens": []
     },
     {
+      "name": "explorer",
+      "description": "orchestrator Explorer subagent. It explores the codebase to locate a symbol, a reference or a file, and returns the results to the caller.",
+      "invocation": "delegate",
+      "operations": [
+        "read",
+        "terminal",
+        "runtime"
+      ],
+      "delegates": [],
+      "file": "agents/explorer.agent.md",
+      "tokens": [
+        "codebase-cluster-files",
+        "codebase-clusters",
+        "session-artifact-read"
+      ]
+    },
+    {
       "name": "implementation-verifier",
       "description": "Implementation verifier subagent: judges whether the code produced for a work unit is congruent with its specification, applies the project knowledge and respects the specification it was given. Read-only.",
       "invocation": "delegate",
@@ -421,9 +438,8 @@
       ],
       "delegates": [
         "general-purpose",
-        "design-verifier",
-        "code-implementor",
-        "documentation-reviewer"
+        "explorer",
+        "code-implementor"
       ],
       "file": "agents/orchestrator.agent.md",
       "tokens": [
@@ -555,28 +571,27 @@
     "instructions/sessions.instructions.md"
   ],
   "workflows": [
-    "workflows/design/02-image-intake.md",
-    "workflows/design/03-requirement-decomposition.md",
-    "workflows/design/04-knowledge-enrichment.md",
-    "workflows/design/05-decision-consolidation.md",
-    "workflows/design/06-contracts.md",
-    "workflows/design/07-filesystem.md",
-    "workflows/design/08-operations.md",
-    "workflows/design/09-design-review.md",
-    "workflows/design/10-implementation.md",
-    "workflows/design/11-terminal-handoff.md",
-    "workflows/documentation/02-intake.md",
-    "workflows/documentation/03-knowledge-discovery.md",
-    "workflows/documentation/04-codebase-exploration.md",
-    "workflows/documentation/05-authoring.md",
-    "workflows/documentation/06-coverage-check.md",
-    "workflows/documentation/07-review.md",
-    "workflows/documentation/08-wrap-up.md",
-    "workflows/fast-implementation/02-intake.md",
-    "workflows/fast-implementation/03-knowledge.md",
-    "workflows/fast-implementation/04-implementation.md",
-    "workflows/fast-implementation/05-terminal-handoff.md",
-    "workflows/shared/01-user-instruction-space.md",
+    "workflows/design/01-image-intake.md",
+    "workflows/design/02-requirement-decomposition.md",
+    "workflows/design/03-knowledge-enrichment.md",
+    "workflows/design/04-decision-consolidation.md",
+    "workflows/design/05-contracts.md",
+    "workflows/design/06-filesystem.md",
+    "workflows/design/07-operations.md",
+    "workflows/design/08-design-review.md",
+    "workflows/design/09-implementation.md",
+    "workflows/design/10-terminal-handoff.md",
+    "workflows/documentation/01-intake.md",
+    "workflows/documentation/02-knowledge-discovery.md",
+    "workflows/documentation/03-codebase-exploration.md",
+    "workflows/documentation/04-authoring.md",
+    "workflows/documentation/05-coverage-check.md",
+    "workflows/documentation/06-review.md",
+    "workflows/documentation/07-wrap-up.md",
+    "workflows/fast-implementation/01-intake.md",
+    "workflows/fast-implementation/02-knowledge.md",
+    "workflows/fast-implementation/03-implementation.md",
+    "workflows/fast-implementation/04-terminal-handoff.md",
     "workflows/workflow-types.yaml"
   ],
   "contracts": [
@@ -656,7 +671,7 @@
     "knowledge-create": "title, content, tier, folder, keywords, intent",
     "knowledge-update": "fileId, content, intent",
     "knowledge-index-rebuild": "no arguments",
-    "codebase-clusters": "WorkspacePath, fileExtension",
+    "codebase-clusters": "WorkspacePath, fileExtension, matches",
     "codebase-cluster-files": "WorkspacePath, fileExtension, clusterName",
     "documentation-templates-list": "templatesDirectory",
     "documentation-template-read": "templateNameOrPath",

@@ -2,6 +2,22 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 7.0.0
+
+The workflows follow upstream 3.0.4. Every workflow lost its first step and was renumbered, the user instruction register is gone and a role was added, so this is a major version. Re-installing keeps the answers, the sessions and the designs.
+
+- **Finish running jobs first.** A job keeps the list of instructions it was created with, and those files are replaced. A job started before this version cannot be continued: finish it before upgrading, or start a new job afterwards. A new DESIGN job can still be started on an existing design.
+- **No User Instruction Space.** The step that recorded the particular requests of the first prompt is removed from all three workflows, and no register is appended to the later instructions. `DESIGN` has ten steps and its review is step 8; `FAST_IMPLEMENTATION` has four; `DOCUMENTATION` has seven. Each starts with its own intake.
+- **New role: `explorer`.** A read-only delegate that locates symbols, strings, files, usages and callers. In `DESIGN` (decisions, contracts, filesystem, operations) and in `FAST_IMPLEMENTATION` the orchestrator no longer searches the codebase itself: it splits what it needs into small scopes and starts one explorer per scope, all in one batch, each with a budget of 8 tool calls. The role contract is in Italian, as upstream ships it.
+- **Delegates of the orchestrator.** Its contract now names `explorer`, `code-implementor` and the general-purpose agent. On OpenCode, which enforces that list, the `DOCUMENTATION` review step cannot start `documentation-reviewer`; the other clients take the list as an instruction. This follows upstream and is reported there.
+- **`FAST_IMPLEMENTATION` registers its knowledge.** After every knowledge read it registers the applicable prescriptions with `design-knowledge-references`, kept in a job design with no approval gate. Before the implementation step ends, a knowledge compliance gate reads them back and checks the code against each one.
+- **`codebase-clusters` takes `matches`:** a list of terms. The clusters with a file whose path carries a term come first, marked `[match: <n>] <terms>`.
+- **`design-operations` takes `instructionsPatch`** on a patched operation: an ordered list of `{ oldText, newText }` exact edits of the stored instructions. Each `oldText` must occur once.
+- **New check warning `operation-without-obligations`:** a `Production` operation that realizes no obligation. Warnings do not block approval.
+- **Review document.** Returning to a section, with the browser's Back too, reopens it where you left it, and an address that names nothing opens the first section.
+- **Implementor prompt.** It lists every session artifact, not only images, and the work-unit loop is stated as a short protocol.
+- The last three `DESIGN` steps and the last `FAST_IMPLEMENTATION` step end with rules for disagreeing with the developer: judge claims on evidence, do not repeat a failed approach, ask at most one question.
+
 ## 6.2.1
 
 A patch: wording and compatible fixes from a kit report, with the workflows still on upstream 3.0.3. Re-installing keeps the answers and sessions.

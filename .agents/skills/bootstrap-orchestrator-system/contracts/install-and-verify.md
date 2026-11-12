@@ -40,7 +40,7 @@ Then, in each selected client and on each surface the team uses, in a disposable
 
 1. The orchestrator starts through its route, can ask a question, and asks for the workflow type.
 2. It creates a session through the runtime; the session appears in the chosen sessions folder.
-3. It starts one delegate (for example `design-verifier` on a throwaway job) and the delegate runs in its own context and reports back.
+3. It starts one delegate (for example `explorer`, asked where one symbol is defined) and the delegate runs in its own context and reports back. Where the client can run several subagents at once, it starts two explorers in one batch and both report back.
 4. Each bound host token works from the role that uses it: one work item read, one image inspected, one wiki page when bound.
 5. On the skill route, a role skill refuses to start inside a conversation that already runs a role.
 6. Each shared workflow skill is discovered on this surface, once, with its role activation working. Installed files that parse do not prove it.

@@ -147,6 +147,19 @@
         "kind": { "type": "string", "enum": ["Production", "Documentation", "Testing"], "description": "Production writes the production code; Documentation writes documentation; Testing writes and runs the tests" },
         "testType": { "type": "string", "enum": ["Unit", "Integration", "E2E", "Harness"], "description": "required on a Testing operation, refused on any other; at most one Testing operation per type" },
         "instructions": { "type": "string", "description": "complete, executable by an implementor starting from an empty context" },
+        "instructionsPatch": {
+          "type": "array",
+          "description": "patch only: ordered exact edits of the stored instructions, instead of sending the whole text again",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["oldText", "newText"],
+            "properties": {
+              "oldText": { "type": "string", "description": "the exact text to find; it must occur once" },
+              "newText": { "type": "string", "description": "the text that replaces it" }
+            }
+          }
+        },
         "files": { "type": "array", "items": { "type": "string" } },
         "dependsOn": { "type": "array", "items": { "type": "integer" }, "description": "cardinal operation numbers this one waits for (they become IM#)" },
         "realizes": { "type": "array", "items": { "type": "string" }, "description": "the D# ids of the decisions this operation realizes; each decision must already exist" },

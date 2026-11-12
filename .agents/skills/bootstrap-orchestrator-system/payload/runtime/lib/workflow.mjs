@@ -6,7 +6,7 @@ import { COMMANDS } from "./commands.mjs";
 import { createDesign, designExists } from "./design-store.mjs";
 import { commandDefinition } from "./help.mjs";
 import { knowledgeChangedOutsideRuntime, knowledgeHashes } from "./knowledge.mjs";
-import { readArtifactBody, requireSession } from "./session.mjs";
+import { requireSession } from "./session.mjs";
 import { RuntimeError, arg, iso, jobFlags, readJson, requireId, requireString, servePart, writeJson } from "./util.mjs";
 
 // workflow-types.yaml is generated with a fixed, simple shape; this reader accepts exactly that shape.
@@ -46,9 +46,10 @@ function saveJob(ctx, job) {
   writeJson(jobPath(ctx, job.sessionId, job.jobId), job);
 }
 
-// A DESIGN job builds its design. Since 3.0.3 FAST_IMPLEMENTATION writes no design row (its steps use no design
-// operation), so like DOCUMENTATION it has none unless the developer starts it on an existing design.
-const JOB_DESIGN_WORKFLOWS = new Set(["DESIGN"]);
+// A DESIGN job builds its design. Since 3.0.4 a FAST_IMPLEMENTATION job registers and re-reads the knowledge
+// references of its job (design-knowledge-references), so it keeps them in a job design of its own, with no
+// approval gate. DOCUMENTATION jobs have none unless the developer starts them on an existing design.
+const JOB_DESIGN_WORKFLOWS = new Set(["DESIGN", "FAST_IMPLEMENTATION"]);
 
 export function jobActivate(ctx, args) {
   const tool = "workflow-job-activate";
@@ -122,14 +123,8 @@ function serve(ctx, job, role) {
   const path = join(ctx.workflowsRoot, `${ref}.md`);
   if (!existsSync(path)) throw new RuntimeError(`instruction file is missing: ${path}`);
   const instruction = readFileSync(path, "utf8").trimEnd();
-  let text = `Instruction ${job.currentStep}/${job.steps.length}.\n${instruction}\n`;
-  if (job.currentStep > 1) {
-    const name = `user_instruction_register_${job.jobId}`;
-    const register = readArtifactBody(ctx, job.sessionId, name);
-    text += `\n---\n\n## ACTIVE USER INSTRUCTION REGISTER\n\n`;
-    text += register === null ? `(no session artifact '${name}' exists: the register was never created)\n` : `${register.trimEnd()}\n`;
-  }
-  return text + commandDefinitions(ctx, job, instruction, role);
+  // Since 3.0.4 no instruction writes a user instruction register, so none is appended.
+  return `Instruction ${job.currentStep}/${job.steps.length}.\n${instruction}\n` + commandDefinitions(ctx, job, instruction, role);
 }
 
 // A long instruction is served in parts that start at a paragraph. workflow-step-next always serves part 1;

@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # Bootstrap Orchestrator System
 
-Install the orchestrator agentic system into the target repository. The system is fixed: seven roles, three workflows served one instruction at a time by a local Node runtime, and the skills that start them. What you decide with the user is how it binds to this repository: the clients, where files live, the tracker and the other integrations.
+Install the orchestrator agentic system into the target repository. The system is fixed: eight roles, three workflows served one instruction at a time by a local Node runtime, and the skills that start them. What you decide with the user is how it binds to this repository: the clients, where files live, the tracker and the other integrations.
 
 Bootstrap writes agent-system files only: role files, skills, routers, the runtime and its config, workflows, contracts, client settings for the runtime command, guides and the installation records. It never changes application code, product tests or schema. It changes application configuration only to add the exact tooling exclusions the user approved for the visible system folders.
 
