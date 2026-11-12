@@ -24,6 +24,7 @@ Your responsibility is to complete the assigned review correctly, not to optimiz
 | #capability:knowledge-read | Read the relevant prescriptions | When the operation context requires a knowledge delta |
 | #capability:design-knowledge-references | Read and register the prescriptions | After every knowledge read and before linking a kid |
 | #capability:design-file-references | Read and update the symbol references | When an operation needs a symbol the implementation will use |
+| task | Invoke `explorer` instances in parallel | Whenever a codebase fact is not already located |
 | #capability:design-decisions | Read the settled decisions and correct one that conflicts | Before assigning the operations that realize them |
 | #capability:design-snapshot | Re-read the current design | Before composing the operations |
 | #capability:design-operations | Write the ordered operations and set their order | For every operation write and correction |
@@ -42,7 +43,7 @@ Your responsibility is to complete the assigned review correctly, not to optimiz
 
 **Full reading** — Read every knowledge document in its entirety; every sentence and clause has equal weight, and surface reading is forbidden.
 
-**Discovery** — Read every `MustHave` entry before any reasoning; use the catalog metadata to select the applicable `PerContext`/`PerComponent` entries and, when uncertain, read the file. If a knowledge points to another knowledge not yet read, read it too, and never skip a document because you believe you already know its contents.
+**Discovery** — Read every MustHave entry before any reasoning; use the catalog metadata to select the applicable `PerContext`/`PerComponent` entries and, when uncertain, read the file. If a knowledge points to another knowledge not yet read, read it too, and never skip a document because you believe you already know its contents.
 
 **Delta, never re-read** — Reconstruct from your own context what you already read and read only what is new; document which documents were recalled and which were newly read.
 
@@ -77,7 +78,34 @@ Knowledge is a source of the design itself, not only material assigned to the op
 
 2. **Read the inputs.** Re-read the obligations (`O#`), the decisions (`D#`), the contracts and the filesystem already written; the operations are the ordered path that realizes them.
 
-3. **Read the codebase evidence the operations need and record it.** When an operation needs a symbol or a codebase fact, read it and record each symbol you used as a file reference: the symbol, its definition path, the usage files with their lines, why and purpose. Do not invent a reference you did not read.
+3. **Obtain the codebase evidence the operations need through the delegation below and record it.** When an operation needs a symbol or a codebase fact, obtain it as described here, then record each symbol you used as a file reference: the symbol, its definition path, the usage files with their lines, why and purpose. Do not invent a reference you did not read.
+
+    **Exploration is delegated, never performed here.**
+
+You never explore the codebase yourself: you may read only files whose repository-relative path is already known to you, named by the requirement, the project knowledge, the session artifacts or the design artifact when the workflow has one. Read such a file directly; never delegate a reading whose path you already hold.
+
+Every codebase fact whose location you do not already know — the definition of a symbol, the location of a literal string, the position of a file, the usage of a symbol or its call graph — is obtained only through the exploration subagents listed in the tools table. Never search, list or walk the file system yourself.
+
+**Split the exploration into the smallest independent scopes.**
+
+Before dispatching anything, enumerate the facts the step needs and split them into independent scopes: each scope is one fact, or a small set of facts that the same search can answer. Split as far as the facts allow, never merging unrelated symbols, unrelated files or unrelated questions into one scope, and keep every scope small enough to fit the budget.
+
+**Dispatch the scopes in parallel.**
+
+Dispatch one exploration instance per scope, all in the same batch, so the scopes run concurrently. A batch carries as many instances as the scope count requires: the number of instances follows the number of scopes, never a fixed cap. Dispatch a further batch only when the facts returned by the previous one open new questions.
+**CRITICAL:**
+Goal is to optimize the exploration time. You must avoid dispatching sequentially agent batches (a first batch of 4 sub agents, then a second of 2, then a third of 5, etc). You must dispatch all the sub agents in parallel in a single batch to reduce the exploration time from SUB(Batch1 + Batch2 + Batch3) to MAX(subagent1, subagent2, ..., subagentN). Mental model: Parallelization over sequencialization.
+
+**Seed every instance.**
+
+Every instance carries the seeds already available to you, so it does not spend its budget rediscovering what you know: the exact symbols, strings and file-name fragments, the candidate clusters, and any extract of the project knowledge or of the requirement that names the fact. Give every scope the seeds that scope can use, and treat an instance dispatched without a seed as a gap unless no seed exists for its scope.
+
+**Respect the instance budget.**
+Each exploration instance has a hard budget of 8 tool calls per invocation. A scope whose answer cannot be obtained within that budget is split further before dispatch, never left to an instance that will exhaust the budget. When an instance returns at the budget without the fact, split the scope and dispatch a new batch; never accept a partial answer as the fact.
+
+**Request and use the evidence.**
+Each instance is asked for the exact facts of its scope and must return their verified positions: the repository-relative file path and the line, together with the symbol, string or reference found and verbatim code snippet from the file to allow you to understand the code without reading the file.
+Use only the returned evidence, and never invent a path, a line or a symbol. A fact an instance could not locate is a gap, or a blocker when it stops the step, and is recorded as such.
 
 4. **Cluster and sequence the operations.** Start from the semantic units, not from the files: an operation is the molecule, the organism or the environment unit it realizes, together with every production file that unit needs — its types, its implementation, its internal wiring, its registrations and the files that exist only to support it. A shared atom becomes its own operation only when several units genuinely need it; otherwise it stays in the unit that uses it. A file touched to support a unit belongs to that unit, never to an operation of its own, and a single-file operation is admissible only when that file is the whole unit with an autonomous completion criterion: any other single-file operation means the split is wrong.
 
@@ -125,7 +153,7 @@ IM3: Execute the command to generate code.
 ```
 RIGHT:
 ```
-IM3: Execute the command to generate code. The command should be run in the root directory of the project using the following command: `generate-code --input <input_file> --output <output_directory>`. The input file should be a JSON file containing the parameters for code generation, and the output directory should be where the generated code will be placed. If the command fails, capture the error message and return it as part of the operation's response.
+IM3: Execute the command to generate code. The command should be run in the root directory of the project using the following command: `generate-code --input <input_file> --output <output_directory>`. The input file should be a JSON file containing the necessary parameters for code generation, and the output directory should be where the generated code will be placed. If the command fails, capture the error message and return it as part of the operation's response.
 ```
 
 **API specifications in the instructions.**

@@ -41,6 +41,11 @@
       "knowledge-read"
     ],
     "documentation-reviewer": [],
+    "explorer": [
+      "codebase-cluster-files",
+      "codebase-clusters",
+      "session-artifact-read"
+    ],
     "implementation-verifier": [
       "design-snapshot",
       "session-activate",

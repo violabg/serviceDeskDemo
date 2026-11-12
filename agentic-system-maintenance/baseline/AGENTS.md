@@ -12,7 +12,7 @@ Started by the developer, each as the main conversation of its session:
 
 Started only by the orchestrator, each in a fresh context with only its prompt, reporting back in the same conversation:
 
-- `code-implementor`, `design-verifier`, `implementation-verifier`, `documentation-reviewer`.
+- `explorer`, `code-implementor`, `design-verifier`, `implementation-verifier`, `documentation-reviewer`.
 
 Full role contracts live in `.claude/agents (Claude Code), .github/agents (GitHub Copilot (VS Code and CLI)), .opencode/agents (OpenCode)`. Do not restate them here.
 

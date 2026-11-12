@@ -104,9 +104,16 @@ function buildClusters(ctx, args, tool) {
 export function clusters(ctx, args) {
   const { clusters } = buildClusters(ctx, args, "codebase-clusters");
   if (clusters.size === 0) return "No file with that extension exists in the workspace.";
+  // `matches` (captured on 3.0.4, get_codebase_clusters run 5): the clusters that hold a match are listed first and
+  // annotated `[match: <n>] <terms>`. Lab-authored: a term matches a cluster when a file of it carries the term in
+  // its workspace-relative path, ignoring case; the matched clusters keep the usual order among themselves.
+  const raw = arg(args, "matches");
+  const terms = [...new Set((Array.isArray(raw) ? raw : typeof raw === "string" ? raw.split(",") : []).map((term) => String(term).trim()).filter(Boolean))];
+  const matched = (members) => terms.filter((term) => members.some((file) => file.toLowerCase().includes(term.toLowerCase())));
   return [...clusters.entries()]
-    .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
-    .map(([name, members]) => `- ${name} (${members.length})`)
+    .map(([name, members]) => ({ name, members, hits: matched(members) }))
+    .sort((a, b) => Number(b.hits.length > 0) - Number(a.hits.length > 0) || b.members.length - a.members.length || a.name.localeCompare(b.name))
+    .map(({ name, members, hits }) => `- ${name} (${members.length})${hits.length ? ` [match: ${hits.length}] ${hits.join(", ")}` : ""}`)
     .join("\n");
 }
 

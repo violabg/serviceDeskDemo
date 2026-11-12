@@ -2,7 +2,7 @@
 
 Lab-authored contract, derived from the captured design tools, the reference design artifact and the 3.0.3 design artifact and instructions (the implementation loop's serve and close have no tool capture). The runtime implements it in `runtime/lib/design.mjs`, `runtime/lib/plan.mjs` and `runtime/lib/design-store.mjs`. The runtime validates requests against `runtime/assets/design-requests.schema.json`; no command serves it, because upstream removed that tool. The argument descriptions of an operation are its section here, which `<token> --help` prints.
 
-A DESIGN job produces one design. FAST_IMPLEMENTATION and DOCUMENTATION jobs have none, unless the job is started on an existing design (since 3.0.3 no FAST_IMPLEMENTATION step uses a design operation). A design lives in `sessions/<sessionId>/designs/<designId>/`:
+A DESIGN job produces one design. A FAST_IMPLEMENTATION job has a job design that holds the knowledge references of the job and has no approval gate (since 3.0.4, `contracts/workflow-loop.md`, job-activate). A DOCUMENTATION job has none, unless it is started on an existing design. A design lives in `sessions/<sessionId>/designs/<designId>/`:
 
 | File | What it is |
 | --- | --- |
@@ -202,6 +202,7 @@ An operation row:
 - `hasDestructiveSideEffects: true` keeps the operation out of the automatic batches: it is served only on the developer's selection.
 - `order` (operations only) lists the cardinal operation ids in execution order after the call: a permutation of every operation that exists once the call's deletions and additions apply. Without `order`, added rows go before the first stored row with a higher id, so parallel calls with disjoint ranges build the same plan whichever arrives first; stored rows are reordered only by `order`.
 - `add` appends rows whose ids are new; `patch` updates existing rows field by field; `delete` removes rows. One call may combine them, and non-empty `header` fields are applied.
+- `instructionsPatch` (operations, `patch` only; captured on 3.0.4) is an ordered list of `{ oldText, newText }` exact edits of the stored `instructions`, applied in order instead of sending the whole text. Lab-authored, the capture leaves them unspecified: it is rejected on an added row and beside `instructions`, and each `oldText` must occur exactly once in the text the earlier edits left.
 
 **All or nothing.** A call that names a table of another section is rejected with `rejected here — <table> belong to <operation>`, as captured. A row the schema refuses (the captured case: a `premortem` entry with a property other than `what` and `mitigation`), an `add` of an id that exists, a `patch` or `delete` of one that does not, an operation naming a kid no knowledge reference registers or a decision that does not exist, and an `order` that is not a permutation are rejected too. Any rejection rejects the whole call: nothing is applied, every rejection is listed and the exit code is 1. A rejected call of some size is kept, so it is corrected and not sent again (kept-requests).
 

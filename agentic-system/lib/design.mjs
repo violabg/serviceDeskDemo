@@ -319,6 +319,23 @@ function operationRowProblems(design, row) {
   return problems;
 }
 
+// `instructionsPatch` (captured on 3.0.4, design_operations run 5): an ordered list of { oldText, newText } exact edits
+// of the stored instructions of a patched operation. Lab-authored: it is refused on an added row and beside
+// `instructions`, and each oldText must occur exactly once in the text the earlier edits left.
+function patchedInstructions(stored, row, id) {
+  if (!stored) return { problem: `instructionsPatch edits the stored instructions of an existing operation; ${id} is added by this call, so send instructions` };
+  if (row.instructions !== undefined) return { problem: "send instructions or instructionsPatch, not both" };
+  let text = stored.instructions ?? "";
+  for (const [index, edit] of row.instructionsPatch.entries()) {
+    const count = edit.oldText === "" ? 0 : text.split(edit.oldText).length - 1;
+    if (count === 0) return { problem: `instructionsPatch[${index}]: oldText was not found in the instructions of ${id}` };
+    if (count > 1) return { problem: `instructionsPatch[${index}]: oldText occurs ${count} times in the instructions of ${id}; quote more of the text around it` };
+    text = text.replace(edit.oldText, () => edit.newText);
+  }
+  const { instructionsPatch, ...rest } = row;
+  return { row: { ...rest, instructions: text } };
+}
+
 // One section write. The call is all or nothing: a rejected row, a table of another section or a wrong `order`
 // rejects the whole call, and nothing is applied. The tool runs no mechanical checks: design-checks does.
 export function sectionWrite(ctx, tool, args) {
@@ -377,6 +394,11 @@ export function sectionWrite(ctx, tool, args) {
         if (table === "operations") for (const problem of operationRowProblems(design, row)) reject(path, problem);
         const id = `${spec.prefix}${row.id}`;
         const exists = spec.get(design).some((r) => r.id === id);
+        if (row.instructionsPatch !== undefined) {
+          const patched = patchedInstructions(mode === "patch" ? spec.get(design).find((r) => r.id === id) : null, row, id);
+          if (patched.problem) reject(path, patched.problem);
+          else row = patched.row;
+        }
         const repeated = writes.some((w) => w.table === table && w.mode === mode && w.id === id);
         if (mode === "add" && (exists || repeated)) reject(path, `${id} already exists`);
         if (mode === "patch" && !exists && !writes.some((w) => w.table === table && w.mode === "add" && w.id === id)) reject(path, `${id} does not exist; add it first`);

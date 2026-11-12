@@ -36,7 +36,7 @@ The section writes run no check: call `#capability:design-checks` after them. Th
 | `testing-operations` | two `Testing` operations declare the same `testType`; reported on the second |
 | `operation-test-type-misplaced` | an operation of another kind declares a `testType` |
 
-`decision-not-realized`, `file-without-operation` and `file-reference-without-detail` are captured slugs. The 3.0.3 captures state the realization of contracts and APIs and the declared contract file as `get_design_checks` rules without showing their slugs; those slugs, and the slugs of the other rules the instructions state, are Lab-authored.
+`decision-not-realized`, `file-without-operation`, `file-reference-without-detail` and `operation-without-obligations` are captured slugs. The 3.0.3 captures state the realization of contracts and APIs and the declared contract file as `get_design_checks` rules without showing their slugs; those slugs, and the slugs of the other rules the instructions state, are Lab-authored.
 
 A highlighted decision (`highlight: true`, or the 3.0.0 `blocking: true`) is exempt from `decision-not-realized`. Before any operation exists, the realization rules and `file-without-operation` do not apply; before any filesystem row exists, `contract-file-undeclared` does not apply (Lab-authored: the 3.0.3 steps write the contracts, then the filesystem, then the operations, and a check that fires on a section not written yet tells the author nothing).
 
@@ -47,6 +47,7 @@ Rules the 3.0.3 captures still list that the runtime cannot apply: an operation 
 | Rule | Reported when |
 | --- | --- |
 | `file-reference-without-detail` | a file of a file reference has no `details` entry with both `why` and `purpose` |
+| `operation-without-obligations` | a `Production` operation declares no `refObligations`; detail `the operation writes code but realizes no obligation of R` (captured on 3.0.4; the capture shows it on a `Production` operation and on no `Documentation` one, so the limit to `Production` is Lab-authored) |
 | `operation-references-undeclared` | an operation declares no `knowledgeReferences` and no `referencesExemption.knowledge`, or no `fileReferences` and no `referencesExemption.file` (Lab-authored: the 3.0.3 instructions require the references or the reason; no capture shows a finding for it, so it does not block approval) |
 
 ## Coverage

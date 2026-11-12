@@ -58,7 +58,7 @@ After Pass F, produce the outputs the including instruction defines (Pass G).
 
 2. **Document, do not design.** Do not design and do not propose changes; you document what exists.
 
-3. **Stop when grounded.** Stop as soon as every directive has its evidence. If a directive cannot be grounded in the code, record it and explain why in the final document.
+3. **Stop when grounded.** Stop as soon as every directive has its evidence. If a directive cannot be grounded in the code, record it as ungrounded and explained in the final document.
 
 ---
 

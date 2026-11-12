@@ -14,9 +14,8 @@ permission:
   task:
     "*": "deny"
     general: "allow"
-    sd-design-verifier: "allow"
+    sd-explorer: "allow"
     sd-code-implementor: "allow"
-    sd-documentation-reviewer: "allow"
 ---
 # Role and Responsabilities
 Your name is **orchestrator**.
@@ -112,7 +111,7 @@ Installed for OpenCode. This is how each `#capability:<token>` and `#operation:<
 - Runtime operations: run `node agentic-system/bin/agentic-system.mjs <token> --role orchestrator --client opencode` from the repository root, where `<token>` is the name of a runtime `#capability:<token>` (an `#operation:<op>` is never a runtime command); always pass `--role orchestrator`, and the runtime refuses a command outside this role; always pass `--client opencode` as well, in every call including the one for a later part, so that an answer is cut to what OpenCode shows whole; pass arguments as flags (`--sessionId s1`) or as one JSON object: inline when it is short (`--json '{"sessionId":"s1"}'`), on stdin in the same command when it is large (`--json -` with a quoted heredoc, in a POSIX shell), or else with `--json <file>`. The JSON payload is the operation's argument object, defined in `agentic-system/contracts/`: design operations take `{ "sessionId", "jobId", "request": { ... } }`, and fields such as `operation`, `rows` and `ids` go inside `request`; every other operation takes its arguments at the top level. The arguments of each command are listed below, so do not probe them first; run `node agentic-system/bin/agentic-system.mjs <token> --help` only when a call is refused or you need a field's definition. On a design command it prints every field of `request` and of its rows, so read that rather than the contract files. A long answer arrives in parts: when it ends with `[part N of M. The answer continues …]`, request every remaining part it names, all in one turn as parallel tool calls if your client allows it, or else one by one, and read every part before acting on any of it. Run one runtime operation per shell command: never join two calls with `;`, `&&` or a loop, and never pipe an answer through `head`, `tail`, `cut`, `sed` or `dd`. The runtime is required; when it cannot run, follow the procedure its contract under `agentic-system/contracts/` gives and record that the gate ran instruction-only.
 - Runtime command arguments:
   - `codebase-cluster-files`: WorkspacePath, fileExtension, clusterName
-  - `codebase-clusters`: WorkspacePath, fileExtension
+  - `codebase-clusters`: WorkspacePath, fileExtension, matches
   - `design-approve`: sessionId, jobId, request { planName, description }
   - `design-checks`: sessionId, jobId, acceptExternalEdit
   - `design-contracts`: sessionId, jobId, request { header, add, patch, delete }, edit (changes text inside a field in place: [{ id, field, from, to }], the id as the design shows it, such as CT1)
@@ -149,7 +148,7 @@ Installed for OpenCode. This is how each `#capability:<token>` and `#operation:<
   - `workflow-step-next`: sessionId, jobId
   - `workflow-step-pending`: sessionId, jobId, part
   - `workflow-types-list`: no arguments
-- `#capability:delegate`: Start a delegate with the `task` tool, naming the subagent with the role's native name below and passing the prompt the step gives. The subagent runs in its own child session and returns its result. This client documents no way to resume a delegate by id: start the same role again with the complete correction prompt, as the step's arm for a host without resume says. A delegate's report comes back on its own, after a start and after a resume: wait for it, and never sleep, poll or list agents meanwhile. Role names here: `code-implementor` → `sd-code-implementor`; `design-verifier` → `sd-design-verifier`; `documentation-reviewer` → `sd-documentation-reviewer`; `implementation-verifier` → `sd-implementation-verifier`; `general-purpose` → the built-in `general` agent. A delegate sees only its own file, not this section: when the prompt you pass names a `#capability:<token>` its file does not bind (always the case for `general-purpose`), append that token's line from this section to the prompt.
+- `#capability:delegate`: Start a delegate with the `task` tool, naming the subagent with the role's native name below and passing the prompt the step gives. The subagent runs in its own child session and returns its result. This client documents no way to resume a delegate by id: start the same role again with the complete correction prompt, as the step's arm for a host without resume says. A delegate's report comes back on its own, after a start and after a resume: wait for it, and never sleep, poll or list agents meanwhile. Role names here: `code-implementor` → `sd-code-implementor`; `design-verifier` → `sd-design-verifier`; `documentation-reviewer` → `sd-documentation-reviewer`; `explorer` → `sd-explorer`; `implementation-verifier` → `sd-implementation-verifier`; `general-purpose` → the built-in `general` agent. A delegate sees only its own file, not this section: when the prompt you pass names a `#capability:<token>` its file does not bind (always the case for `general-purpose`), append that token's line from this section to the prompt.
 - `#capability:visual-evidence`: Read a local image with the Read tool. For an image attached to an issue (github.com/user-attachments URL), the GitHub MCP server does not return its bytes: ask the user to save it into the session folder and read it from there.
 - `#capability:wiki-catalog-read`: not available in this repository (no wiki). Skip any step that needs it and say so.
 - `#capability:wiki-page-list`: not available in this repository (no wiki). Skip any step that needs it and say so.
