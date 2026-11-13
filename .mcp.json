@@ -7,18 +7,18 @@
         "Authorization": "Bearer ${GITHUB_PAT}"
       }
     },
-    "neon": {
-      "type": "http",
-      "url": "https://mcp.neon.tech/mcp"
-    },
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
     },
-    "next-devtools": {
+    "io.github.vercel/next-devtools-mcp": {
       "type": "stdio",
       "command": "npx",
       "args": ["next-devtools-mcp@0.3.6"]
+    },
+    "neon": {
+      "type": "http",
+      "url": "https://mcp.neon.tech/mcp"
     }
   }
 }
