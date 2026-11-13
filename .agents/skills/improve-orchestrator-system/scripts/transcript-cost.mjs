@@ -6,7 +6,8 @@
 //   node transcript-cost.mjs <file> --replay <response type>=<fraction kept>
 //   node transcript-cost.mjs <file> --cached-read 0.1 --cache-write 1.25
 //
-// Copilot CLI (`events.jsonl`) and Claude Code (`<session>.jsonl`, with its `subagents/` folder) are supported. Usage
+// Copilot CLI (`events.jsonl`), Claude Code (`<session>.jsonl`, with its `subagents/` folder) and OpenCode (the JSON of
+// `opencode session export <session>`) are supported. Usage
 // a client does not record is reported as unavailable, never as zero.
 import { existsSync, readFileSync, readdirSync, realpathSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
@@ -101,7 +102,39 @@ export function parseClaude(lines, agent = "main") {
   return { client: "claude-code", turns, responses, usageAvailable: turns.length > 0 };
 }
 
+// OpenCode, from `opencode session export <session>`: one JSON object whose assistant messages carry their usage and
+// their tool calls. A subagent runs in its own session, which this file does not hold.
+export function parseOpenCode(exported) {
+  const turns = [];
+  const responses = [];
+  for (const message of exported.messages ?? []) {
+    if (message.type !== "assistant") continue;
+    const t = message.tokens;
+    if (t) turns.push({ agent: "main", input: t.input ?? 0, output: (t.output ?? 0) + (t.reasoning ?? 0), cacheRead: t.cache?.read ?? 0, cacheWrite: t.cache?.write ?? 0 });
+    for (const part of message.content ?? []) {
+      if (part.type !== "tool") continue;
+      const state = part.state ?? {};
+      const text = toolResultText(state.content) || (typeof state.error === "string" ? state.error : "");
+      responses.push({ agent: "main", type: responseType(part.name, state.input), chars: text.length, spilled: Boolean(state.metadata?.truncated), afterTurn: turns.length, ...detail(part.name, state.input, text, state.status === "error") });
+    }
+  }
+  return { client: "opencode", turns, responses, usageAvailable: turns.length > 0 };
+}
+
+const openCodeExport = (path) => {
+  const text = readFileSync(path, "utf8").trimStart();
+  if (!text.startsWith("{")) return null;
+  try {
+    const value = JSON.parse(text);
+    return value?.info && Array.isArray(value.messages) ? value : null;
+  } catch {
+    return null;
+  }
+};
+
 export function load(path) {
+  const exported = openCodeExport(path);
+  if (exported) return parseOpenCode(exported);
   const lines = jsonLines(path);
   if (lines.some((line) => line.type === "session.usage_record" || line.type === "session.start")) return parseCopilot(lines);
   const main = parseClaude(lines);

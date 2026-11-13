@@ -212,8 +212,8 @@
         "file": ".vscode/settings.json"
       },
       "runtime": {
-        "partLimit": 7000,
-        "evidence": "measured on Copilot CLI 1.0.103: a tool result of about 8 KB or more is replaced by a file path and a 500-character preview. The VS Code terminal limit is not documented, so the same limit is used"
+        "partLimit": 18000,
+        "evidence": "measured in Copilot CLI transcripts: on 1.0.105 and 1.0.110 a shell result of up to 20,152 characters was shown whole, and the smallest replaced by a file path and a preview was 21.1 KB; only the 1.0.103 pre-release builds replaced results from 8 KB. The documentation states no limit. The VS Code terminal limit is not documented, so the same limit is used"
       }
     },
     "opencode": {

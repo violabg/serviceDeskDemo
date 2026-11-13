@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning.
 
+## 2.1.0
+
+- OpenCode transcripts: `digest` and `transcript-cost.mjs` read the JSON of `opencode session export <session>`, with usage per turn and every tool call of the main conversation. Subagents run in sessions of their own and are not included.
+
 ## 2.0.0
 
 - `digest` reports a design's operations instead of its open points, which designs no longer have since bootstrap 6.0.0. The `openPoints` field of the design summary is replaced by `operations`.

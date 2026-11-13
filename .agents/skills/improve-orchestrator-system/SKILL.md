@@ -33,7 +33,7 @@ The target needs `answers.json` in its maintenance folder. If it has none, there
 node <skill>/scripts/digest.mjs locate --repo <target> --session <id> [--session <id>]...
 ```
 
-It lists, per session, the Claude Code and Copilot CLI transcripts whose runtime calls name that session, and prints no content. A file can hold more than one session, and a resumed session can span several files. Show the list and ask the user to confirm the files to read, in one question for all the sessions. For another client, ask for the path; if there is no parser for it, continue with the session store only and say so.
+It lists, per session, the Claude Code and Copilot CLI transcripts whose runtime calls name that session, and prints no content. A file can hold more than one session, and a resumed session can span several files. Show the list and ask the user to confirm the files to read, in one question for all the sessions. For OpenCode, ask the user to run `opencode session export <session> > <file>` in the repository, with the session from `opencode session list`, and pass that file to the digest: it holds the main conversation, not the subagents' sessions. For another client, ask for the path; if there is no parser for it, continue with the session store only and say so.
 
 ### 3. Build the digest
 

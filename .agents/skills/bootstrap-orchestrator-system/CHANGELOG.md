@@ -2,6 +2,11 @@
 
 Versions follow semantic versioning. The installer reads the first version heading as the kit version it records in the target's manifest.
 
+## 7.0.1
+
+- **Copilot part size.** GitHub Copilot answers now come in parts of up to 18,000 bytes instead of 7,000. Copilot CLI 1.0.105 and 1.0.110 show shell results of about 20 KB whole; only the 1.0.103 pre-release builds cut them at 8 KB. A long instruction or design section takes about half the calls. Re-render a target to apply it.
+- **Review step reads.** In `DESIGN` step 8, the read before each correction covers only the rows that correction touches (`design-snapshot` with `ids`, plus `fields` or `grep`). The whole design is still read cold before the adversarial analysis, and the checks, the verifier and the approval gate are unchanged.
+
 ## 7.0.0
 
 The workflows follow upstream 3.0.4. Every workflow lost its first step and was renumbered, the user instruction register is gone and a role was added, so this is a major version. Re-installing keeps the answers, the sessions and the designs.

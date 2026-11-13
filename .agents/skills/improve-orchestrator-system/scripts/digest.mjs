@@ -339,7 +339,7 @@ function textLocate(found) {
     lines.push(`${id}: ${candidates.length ? "" : "no transcript found"}`);
     for (const c of candidates) lines.push(`  ${c.client}  ${c.runtimeCalls} runtime calls  ${Math.round(c.bytes / 1024)} KB  ${c.modified}  ${c.path}`);
   }
-  lines.push("Searched Claude Code and Copilot CLI transcripts only. OpenCode keeps its sessions in its own database, which this script does not read, so a run there is not listed.");
+  lines.push("Searched Claude Code and Copilot CLI transcripts only. For an OpenCode run, export its conversation with `opencode session export <session> > <file>` (the session from `opencode session list`, in the repository) and pass that file with --transcript.");
   return lines.join("\n");
 }
 

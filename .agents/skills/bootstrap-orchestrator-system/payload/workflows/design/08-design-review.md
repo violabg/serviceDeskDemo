@@ -32,7 +32,7 @@ When work remains, the correct response is to continue executing the remaining w
 | #capability:design-decisions | Read the settled decisions and correct a decision the review touches | Before citing decisions and when a correction changes one |
 | #capability:design-obligations | Apply a behavior the developer requests | Only when the developer changes a behavior |
 | #capability:design-overview | Record a behavior change in the overview | After any obligation change |
-| #capability:design-snapshot | Re-read the current design | Before the adversarial analysis and before every correction |
+| #capability:design-snapshot | Re-read the current design | Whole, before the adversarial analysis; before every correction, only the rows the correction touches (`ids`, with `fields` or `grep`) |
 | #capability:design-contracts | Correct the header, the contracts and the public APIs | When the analysis touches them |
 | #capability:design-file-system | Correct the filesystem tree | When the analysis touches it |
 | #capability:design-operations | Correct the ordered operations | When the analysis touches them |
