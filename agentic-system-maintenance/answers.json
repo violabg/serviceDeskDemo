@@ -183,6 +183,10 @@
         "explorer delegate (new role in kit 7.0.0)": {
           "status": "unverified",
           "note": ".claude/agents/sd-explorer.md is installed; starting one explorer, and two in one batch, from sd-orchestrator was not run (2026-11-12, kit 7.0.0)"
+        },
+        "static install and runtime (verify.mjs) after the 7.0.1 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 7.0.0 -> 7.0.1: 3 updated (config.json partLimit 7000 -> 18000, contracts/projections.md, workflows/design/08-design-review.md), 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. verify.mjs passes on all three checks; the runtime starts (--help) and config.json carries partLimit 18000. pnpm lint/typecheck/test not run: no product code and no tooling exclusion changed. HEADLESS claude -p through /sd-orchestrator served the three workflow types and asked the first question (2026-11-13, kit 7.0.1); the DESIGN step 8 read before a correction was not exercised."
         }
       }
     },
@@ -367,6 +371,10 @@
         "explorer delegate (new role in kit 7.0.0)": {
           "status": "unverified",
           "note": ".github/agents/sd-explorer.agent.md is installed; starting one explorer, and two in one batch, from sd-orchestrator was not run in VS Code or the CLI (2026-11-12, kit 7.0.0)"
+        },
+        "static install and runtime (verify.mjs) after the 7.0.1 upgrade": {
+          "status": "verified-fallback",
+          "note": "upgrade 7.0.0 -> 7.0.1: 3 updated (config.json partLimit 7000 -> 18000, contracts/projections.md, workflows/design/08-design-review.md), 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. verify.mjs passes on all three checks; the runtime starts (--help) and config.json carries partLimit 18000. pnpm lint/typecheck/test not run: no product code and no tooling exclusion changed. copilot -p --agent sd-orchestrator served the three workflow types and asked the first question, but the headless run denied the runtime command (no interactive approver), so the 18000-byte part size was not exercised; VS Code surface not re-exercised (2026-11-13, kit 7.0.1)."
         }
       }
     },
@@ -515,6 +523,10 @@
         "explorer delegate (new role in kit 7.0.0)": {
           "status": "unverified",
           "note": ".opencode/agents/sd-explorer.md is installed; starting explorers from sd-orchestrator was not run. The kit changelog says the orchestrator delegate list, which OpenCode enforces, leaves out documentation-reviewer, so the DOCUMENTATION review step cannot start it; not exercised (2026-11-12, kit 7.0.0)"
+        },
+        "static install and runtime (verify.mjs) after the 7.0.1 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 7.0.0 -> 7.0.1: 3 updated (config.json partLimit 7000 -> 18000, contracts/projections.md, workflows/design/08-design-review.md), 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. verify.mjs passes on all three checks; the runtime starts (--help) and config.json carries partLimit 18000. pnpm lint/typecheck/test not run: no product code and no tooling exclusion changed. opencode run --agent sd-orchestrator served the three workflow types and asked the first question (2026-11-13, kit 7.0.1); the DESIGN step 8 read before a correction was not exercised."
         }
       }
     }

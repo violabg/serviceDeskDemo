@@ -4,7 +4,7 @@
   "sessionsRoot": "../agentic-system-sessions",
   "userRoot": "~/.agentic-system",
   "workflowsRoot": "workflows",
-  "partLimit": 7000,
+  "partLimit": 18000,
   "partLimits": {
     "claude-code": 24000,
     "opencode": 24000

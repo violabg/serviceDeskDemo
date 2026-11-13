@@ -35,7 +35,7 @@ Three more optional arguments read the design for a review without reading every
 - `grep` keeps the rows that contain a text, ignoring case and reading any white space as one space, and answers for each `- <id> | <n> matches | …<80 characters before and after each of the first five>…`. A section with no match is left out, and a search that finds nothing says `No row contains '<text>'.`
 - `brief: true` cuts each row to its first 200 characters.
 
-The call for a later part repeats the whole selection.
+The call for a later part repeats the whole selection. The DESIGN review step names `ids` with `fields` or `grep` for the read before each correction (a declared adaptation, report 2026-11-12).
 
 On a DOCUMENTATION job, which has no design, the snapshot says the job has no design artifact. A long snapshot is served in parts (optional argument `part`, `contracts/workflow-loop.md`, Parts) that start at a section heading or an item.
 
