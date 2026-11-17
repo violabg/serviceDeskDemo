@@ -2,10 +2,10 @@
   "version": 1,
   "kit": {
     "skill": "bootstrap-orchestrator-system",
-    "version": "7.0.1"
+    "version": "7.0.2"
   },
-  "appliedOn": "2026-11-13",
-  "answersSha256": "c30a917be702e44d75c8edb03e39a5f567033d370f3b0310a64848b2a744a13b",
+  "appliedOn": "2026-11-17",
+  "answersSha256": "9e291c203ed1af25b3b75b47e1769293b2f27b08487ec3a6a6b1c6578b292595",
   "files": {
     ".claude/agents/sd-code-implementor.md": {
       "sha256": "8c8b5e41f7651e94eb3692ff78367170191a69b2c42d236498470651a41c92b8",
@@ -127,7 +127,7 @@
       "customizable": false
     },
     ".claude/skills/sd-knowledge-builder/SKILL.md": {
-      "sha256": "8a18e67382e424284e4037e7e9a363e143b4f4714bec1b43f80b78fba8a029d3",
+      "sha256": "48b382b20d477a814f7813a2aae0af6b87e57613f7347bf43ec7ebb70fe9221a",
       "kind": "role-skill",
       "mode": "file",
       "envs": [
@@ -210,7 +210,7 @@
       "customizable": false
     },
     ".github/agents/sd-knowledge-builder.agent.md": {
-      "sha256": "5f6878e1bb40a017e8f3f4c2d3de99f49084b0e1f0f8e8e097c95d180f02ea69",
+      "sha256": "1aabe6159d4f43af81e20ace46a86c22a58e0732d1d2b5e5cb662ec68b24edfb",
       "kind": "role",
       "mode": "file",
       "envs": [
@@ -299,7 +299,7 @@
       "customizable": false
     },
     ".opencode/agents/sd-knowledge-builder.md": {
-      "sha256": "7254d103372893939163848e463860555ce8b7e5ad53af243060f939e4a558e2",
+      "sha256": "a9af70a4e17077050dc108772e930cd92fdc2e8197e94f52a77d14edb6954680",
       "kind": "role",
       "mode": "file",
       "envs": [
@@ -737,7 +737,7 @@
       "customizable": false
     },
     "AGENTS.md": {
-      "sha256": "bd42278d7d18fd8b37ecad7c16aa89f5a144d8642a0ea4a8493c849640f3f37d",
+      "sha256": "cd5f9b2eaf92f8173c26bb148b81892a08f43348f9a1d693ea7df8851260b63d",
       "kind": "router",
       "mode": "block",
       "envs": [],
@@ -755,21 +755,21 @@
       "syntax": "html"
     },
     "docs/agentic-system/claude-code.md": {
-      "sha256": "d9e44a91fadbc163a1a0c681c6ee7a082f560929db270e54e52fcc51a085edbb",
+      "sha256": "15d82a767e47f4f6b25d95d42489874ec3b0fccd34719cbb390df34e0e105b14",
       "kind": "guide",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     "docs/agentic-system/github-copilot-vscode.md": {
-      "sha256": "63bc422609b0e8bd886f75fb8242a128d418863b46faed4c204e367c90db0045",
+      "sha256": "8c41b0f302bc8e109b6dba68d00ee7e21f563248dcd434fdf2cc174e0f0db676",
       "kind": "guide",
       "mode": "file",
       "envs": [],
       "customizable": false
     },
     "docs/agentic-system/opencode.md": {
-      "sha256": "862092f364579133b9730bd6703be4270153c4f1ba7922bef4b2756a52ffb491",
+      "sha256": "7ded07d80a1ed2f3b1d8039f1b8610d9629880cab23df434b661aa83772bb76e",
       "kind": "guide",
       "mode": "file",
       "envs": [],
