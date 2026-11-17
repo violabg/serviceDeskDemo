@@ -1,44 +1,33 @@
 ---
-
 ---
-# Agent Knowledge Index
 
-This repo-local knowledge index lists the project knowledge documents and when an agent should read each one.
+# Knowledge Index
 
-## Purpose
+Select the smallest set of documents a task needs. Read the catalog intent for each id and open only the documents whose trigger matches.
 
-Help planning and implementation agents choose the smallest useful knowledge set for a task.
+## Entries
 
-## Token Budget Rule
+| ID | Path | Tier | When to read | Do not read when |
+| --- | --- | --- | --- | --- |
+| 1 | `knowledge/access-control.md` | MustHave | Any permission-gated design, role statement translation, role or permission assignment change, read/write/manage policy, or seed and effective-permission diagnosis | Never skipped |
+| 2 | `knowledge/base-ui-composition-checklist.md` | PerComponent | Creating or editing a Base UI wrapper, or a navigation or action control built on one | No Base UI wrapper or navigation control is touched |
+| 3 | `knowledge/customers_domain.md` | PerContext | Changing customer pages, customer status, or the customer-to-ticket link | No customer behaviour changes |
+| 4 | `knowledge/dashboard-forms-best-practices.md` | PerComponent | Creating or refactoring interactive dashboard forms, URL-driven filter forms, or fields submitting a server action | The task has no form or form mutation |
+| 5 | `knowledge/dashboard-navigation-boundaries.md` | PerContext | Adding or changing breadcrumbs, sidebar groups or links, navigation visibility or active state, or dashboard route structure | Navigation, breadcrumbs and route structure are untouched |
+| 6 | `knowledge/dashboard-section-permission-flow-checklist.md` | PerContext | Adding an entity that needs independent privileges or a new `ACCESS_SECTIONS` boundary, and wiring its routes or navigation | The change stays inside an existing section's keys |
+| 7 | `knowledge/nextjs-cache-components-pattern.md` | PerContext | Adding or refactoring pages, Server Action invalidation, or instant-navigation behaviour involving caching or Suspense | No cache, invalidation, skeleton or Suspense change is in scope |
+| 8 | `knowledge/nextjs-server-execution-checklist.md` | PerContext | Adding or changing app router pages, layouts, server actions, form submit wiring, or session and permission checks | The task is non-app-router code or docs only |
+| 9 | `knowledge/shared-component-reuse-checklist.md` | PerComponent | Creating any new UI component in pages, navigation or app chrome | No UI component work is planned |
+| 10 | `knowledge/testing-flow-checklist.md` | PerContext | Planning, creating, changing or running tests or validation | No test or validation implication |
+| 11 | `knowledge/ticket_workflow.md` | PerContext | Changing ticket creation, reference data, status, priority, technician, notes or the activity log | No ticket behaviour changes |
 
-- Read this index before loading knowledge files.
-- Do not bulk-load all knowledge files.
-- Load only files whose `When to read` triggers match the current task.
-- Prefer the smallest set that can constrain requirements, plan scope, validation, and handoff.
-- Record selected files and skipped related candidates in planning artifacts.
-
-## Knowledge Entries
-
-| ID | Path | Topic | When to read | Do not read when | Key rules to extract |
-| --- | --- | --- | --- | --- | --- |
-| K1 | `knowledge/nextjs-server-execution-checklist.md` | App Router execution rules | Before adding or changing app router pages, layouts, or mutations in dashboard and admin areas | The task is limited to shared utilities, docs, or non-App Router code | Server execution boundaries, server action constraints, route ownership rules |
-| K2 | `knowledge/base-ui-composition-checklist.md` | Base UI wrapper composition | Before creating or updating Base UI wrappers, button-link composition, and navigation controls | No Base UI wrapper or navigation control changes are in scope | Composition safety rules, primitive ownership, accessible interaction constraints |
-| K3 | `knowledge/dashboard-forms-best-practices.md` | Dashboard form patterns | Before creating or refactoring interactive dashboard forms that use server actions | The task does not touch dashboard forms or form mutations | Form validation, server action wiring, loading and error handling rules |
-| K4 | `knowledge/dashboard-navigation-boundaries.md` | Dashboard navigation ownership | Before adding or changing dashboard breadcrumbs, sidebar groups or links, navigation visibility or active state, or dashboard route structure | Navigation, breadcrumbs, sidebar visibility/active state and dashboard grouping are untouched | Route ownership, metadata groups, permission-filtered links, active/expanded state, breadcrumb destinations and labels |
-| K5 | `knowledge/dashboard-section-permission-flow-checklist.md` | Section permission flow | Before adding a database entity needing independent privileges or a new ACCESS_SECTIONS boundary and wiring its routes or navigation | A new entity or nested route uses only an existing section and does not need a separate access boundary | Privilege-key creation, Admin role grant and configured administrator assignment, navigation eligibility, access gating rules |
-| K6 | `knowledge/shared-component-reuse-checklist.md` | Shared component reuse | Before adding new UI components to ensure existing shared primitives are reused | No UI component or wrapper work is planned | Reuse requirements, duplication avoidance, wrapper selection rules |
-| K7 | `knowledge/nextjs-cache-components-pattern.md` | Cache component pattern | When adding or refactoring pages, Server Action invalidation, or instant-navigation behavior involving caching or Suspense | No cache, invalidation, skeleton, or Suspense behavior changes are in scope | Caching boundaries, shared tag invalidation, read-your-writes, access and Suspense boundaries |
-| K8 | `knowledge/testing-flow-checklist.md` | Test planning and execution | Before planning, creating, changing, or running tests for approved demo work | The task is pure documentation or workflow editing with no test or validation implication | Test scope order, validation sequence, excluded surfaces, focused regression rules |
-| K9 | `knowledge/access-control.md` | Access-control reference | Before changing an existing role, permission assignment, read/write/manage policy, or diagnosing seed and effective-permission behavior | The task only adds a new ACCESS_SECTIONS boundary and does not change existing role assignments; read K5 instead | Code-defined base permissions, operation gates, role assignment boundaries |
-
-## Selection Workflow
+## Selection
 
 1. Restate the task in one sentence.
-2. Match task terms, domain area, workflow risk, and expected artifacts against the `When to read` triggers.
-3. Select only matching knowledge entries.
-4. Read selected files and extract a rule inventory.
-5. If no entry matches, record `Selected Knowledge: None` and continue with bounded discovery.
-6. If a likely entry is stale or conflicts with stronger evidence, record the conflict instead of loading more files blindly.
+2. Match its terms and risk against the triggers above.
+3. Read only the matching documents, and re-evaluate `PerContext` and `PerComponent` entries as the task evolves.
+4. If none matches, record `Selected Knowledge: None` and continue with bounded discovery.
+5. When a selected document conflicts with stronger evidence, record the conflict instead of loading more documents.
 
 ## Artifact Record
 
@@ -47,5 +36,4 @@ Help planning and implementation agents choose the smallest useful knowledge set
 
 | ID | Path | Why Selected | Rules Extracted | Skipped Related Knowledge |
 | --- | --- | --- | --- | --- |
-| K1 | `<path>` |  |  |  |
 ```
