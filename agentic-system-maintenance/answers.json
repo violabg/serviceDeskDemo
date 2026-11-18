@@ -191,6 +191,10 @@
         "static install and runtime (verify.mjs) after the 7.0.2 upgrade": {
           "status": "verified-native",
           "note": "upgrade 7.0.1 -> 7.0.2: 4 updated (AGENTS.md router line, sd-knowledge-builder in claude-code, copilot and opencode), 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. AGENTS.md keeps the next dev block outside the managed block. verify.mjs passes on all three checks; the runtime starts (--help) and the new audience wording is present in the three knowledge-builder role files. pnpm lint/typecheck/test not run: no product code and no tooling exclusion changed. (shared check, 2026-11-17, kit 7.0.2)."
+        },
+        "static install and runtime (verify.mjs) after the 8.0.0 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 7.0.2 -> 8.0.0: 18 updated (lib/api.mjs, lib/checks.mjs, lib/design.mjs; contracts codebase-clusters, design-checks, design-model, workflow-loop; DESIGN steps 01 to 10; .opencode/agents/sd-orchestrator.md, whose orchestrator may start documentation-reviewer again), 80 unchanged, 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. verify.mjs passes on all three checks and the runtime starts (--help). The check is renamed operation-without-source in lib/checks.mjs and contracts/design-checks.md, and no repository file outside the kit uses the old name. pnpm lint 0 errors (12 pre-existing warnings), typecheck clean, 327 tests passed (shared check, not re-exercised in a Claude Code run, 2026-11-18, kit 8.0.0)."
         }
       }
     },
@@ -383,6 +387,10 @@
         "static install and runtime (verify.mjs) after the 7.0.2 upgrade": {
           "status": "verified-native",
           "note": "upgrade 7.0.1 -> 7.0.2: 4 updated (AGENTS.md router line, sd-knowledge-builder in claude-code, copilot and opencode), 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. AGENTS.md keeps the next dev block outside the managed block. verify.mjs passes on all three checks; the runtime starts (--help) and the new audience wording is present in the three knowledge-builder role files. pnpm lint/typecheck/test not run: no product code and no tooling exclusion changed. (shared check, not re-exercised in a Copilot session, 2026-11-17, kit 7.0.2)."
+        },
+        "static install and runtime (verify.mjs) after the 8.0.0 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 7.0.2 -> 8.0.0: 18 updated (lib/api.mjs, lib/checks.mjs, lib/design.mjs; contracts codebase-clusters, design-checks, design-model, workflow-loop; DESIGN steps 01 to 10; .opencode/agents/sd-orchestrator.md, whose orchestrator may start documentation-reviewer again), 80 unchanged, 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. verify.mjs passes on all three checks and the runtime starts (--help). The check is renamed operation-without-source in lib/checks.mjs and contracts/design-checks.md, and no repository file outside the kit uses the old name. pnpm lint 0 errors (12 pre-existing warnings), typecheck clean, 327 tests passed (shared check, not re-exercised in a Copilot session, 2026-11-18, kit 8.0.0)."
         }
       }
     },
@@ -539,6 +547,10 @@
         "static install and runtime (verify.mjs) after the 7.0.2 upgrade": {
           "status": "verified-native",
           "note": "upgrade 7.0.1 -> 7.0.2: 4 updated (AGENTS.md router line, sd-knowledge-builder in claude-code, copilot and opencode), 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. AGENTS.md keeps the next dev block outside the managed block. verify.mjs passes on all three checks; the runtime starts (--help) and the new audience wording is present in the three knowledge-builder role files. pnpm lint/typecheck/test not run: no product code and no tooling exclusion changed. (shared check, not re-exercised in an opencode run, 2026-11-17, kit 7.0.2)."
+        },
+        "static install and runtime (verify.mjs) after the 8.0.0 upgrade": {
+          "status": "verified-native",
+          "note": "upgrade 7.0.2 -> 8.0.0: 18 updated (lib/api.mjs, lib/checks.mjs, lib/design.mjs; contracts codebase-clusters, design-checks, design-model, workflow-loop; DESIGN steps 01 to 10; .opencode/agents/sd-orchestrator.md, whose orchestrator may start documentation-reviewer again), 80 unchanged, 0 merged, 0 conflicts, answers unchanged; a repeated plan reports 98 unchanged and nothing to do. verify.mjs passes on all three checks and the runtime starts (--help). The check is renamed operation-without-source in lib/checks.mjs and contracts/design-checks.md, and no repository file outside the kit uses the old name. pnpm lint 0 errors (12 pre-existing warnings), typecheck clean, 327 tests passed (shared check, not re-exercised in an opencode run, 2026-11-18, kit 8.0.0)."
         }
       }
     }

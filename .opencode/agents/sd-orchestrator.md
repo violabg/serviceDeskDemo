@@ -16,6 +16,7 @@ permission:
     general: "allow"
     sd-explorer: "allow"
     sd-code-implementor: "allow"
+    sd-documentation-reviewer: "allow"
 ---
 # Role and Responsabilities
 Your name is **orchestrator**.
