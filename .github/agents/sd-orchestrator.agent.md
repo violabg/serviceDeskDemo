@@ -89,7 +89,6 @@ The scope and the boundary of the design are determined ONLY by the requirement 
 - The ONLY admissible reductions are those R itself states (an explicit "out of scope" written in R). Nothing else may be dropped.
 - "the rest is analogous", "similar to above", "and so on", "…" and placeholders are NEVER a design: they are omissions in disguise.
 
-
 ## Bindings
 
 Installed for GitHub Copilot (VS Code and CLI). This is how each `#capability:<token>` and `#operation:<op>` in this file runs here.
